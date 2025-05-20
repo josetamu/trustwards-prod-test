@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from './components/Card'
 import { Modal } from './components/Modal'
 import './App.css'
@@ -16,19 +16,18 @@ function App() {
   return (
     <div className="card-table">
       <button onClick={() => setIsModalOpen(true)} className="md-card-button">
-        Add Card
+        Add Domain
       </button>
 
       <div className="cards-list">
         {cards.map((card) => (
           <Card key={card.id} text={card.text}/>
         ))}
-      </div>
+      </div> 
 
       {isModalOpen && (
         <Modal
-          onClose={() => setIsModalOpen(false)}
-          onCreate={addCard}
+          onSave={addCard}
         />
       )}
     </div>

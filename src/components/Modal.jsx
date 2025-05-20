@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
-export function Modal({ onClose, onCreate }) {
+export function Modal({ onSave}) {
   const [inputValue, setInputValue] = useState('');
 
   // creation of a new card
   const handleCreate = () => {
     if (inputValue.trim()) {
-      onCreate(inputValue);
+      onSave(inputValue);
       setInputValue('');
     }
   };
@@ -14,16 +14,21 @@ export function Modal({ onClose, onCreate }) {
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        <h2>Create a new card</h2>
+        <h2>New domain</h2>
         <input
           type="text"
           value={inputValue}
-          placeholder="Type here"
+          placeholder="Type here the name of the domain"
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <input
+          type="text"
+          value={inputValue}
+          placeholder="Domain"
           onChange={(e) => setInputValue(e.target.value)}
         />
         <div className="modal-buttons">
-          <button onClick={handleCreate}>Create</button>
-          <button onClick={onClose}>Cancel</button>
+          <button onClick={handleCreate}>Save</button>
         </div>
       </div>
     </div>

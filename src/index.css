@@ -92,7 +92,7 @@ body {
 
 .modal-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: right;
 }
 
 h2 {
