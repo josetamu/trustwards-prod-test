@@ -1,7 +1,7 @@
-export const Card = ({ children }) => {
-    return ( /* cada vez que se clickee en el div(cada cuadrado), ejecuta la función 'handleClick' */
+export const Card = ({ text }) => {
+    return (
       <div className='card'>
-        {children}
+        {text}
       </div>
     )
   }
