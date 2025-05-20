@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react'
-import { Card } from './components/Card'
-import { Modal } from './components/Modal'
 import { Sidebar } from './components/Sidebar'
 import { supabase } from './supabase/supabaseClient';
+import { pages } from './components/Sidebar'
 import './App.css'
+import { Sites } from './components/Sites'  
+import { Settings } from './components/settings'
+
+
+
+
 
 function App() {
   const [cards, setCards] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const pages = ['Domains', 'Settings'];
+  const [activePage, setActivePage] = useState('Domains');
 
   //Force login (only dev mode)
   const _loginDevUser = async () => {
@@ -42,23 +47,34 @@ function App() {
     setIsModalOpen(false);
   };
 
+  // Render the appropriate view based on active page
+  const renderActivePage = () => {
+    switch (activePage) {
+      case 'Sites':
+        return (
+          <Sites 
+            cards={cards}
+            onAddCard={addCard}
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+          />
+        );
+      case 'Settings':
+        return <Settings />;
+      default:
+        return <Sites
+          cards={cards}
+          onAddCard={addCard}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />;
+    }
+  };
+
   return (
-    <div className="card-table">
-      <button onClick={() => setIsModalOpen(true)} className="md-card-button">
-        Add Domain
-      </button>
-
-      <div className="cards-list">
-        {cards.map((card) => (
-          <Card key={card.id} text={card.text}/>
-        ))}
-      </div> 
-
-      {isModalOpen && (
-        <Modal
-          onSave={addCard}
-        />
-      )}
+    <div className="app-container">
+      <Sidebar pages={pages} onPageChange={setActivePage} />
+      {renderActivePage()}
     </div>
   );
 }
