@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from './components/Card'
 import { Modal } from './components/Modal'
 import { Sidebar } from './components/Sidebar'
+import { supabase } from './supabase/supabaseClient';
 import './App.css'
 
 function App() {
@@ -25,6 +26,31 @@ function App() {
       icon: settingsIcon
     }
   ];
+
+  //Force login (only dev mode)
+  const _loginDevUser = async () => {
+    await supabase.auth.signInWithPassword({
+      email: 'oscar.abad.brickscore@gmail.com',
+      password: 'TW.141109'
+    });
+  };
+
+  const getUser = async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if(error) {
+      console.log(error);
+    }else{
+      const user = data.user;
+
+      console.log('Name:', user.user_metadata.display_name);
+      console.log('Email:', user.email);
+    }
+  };
+
+  useEffect(() => {
+    _loginDevUser();
+    getUser();
+  }, []);
 
   // creates a custom new card
   const addCard = (text) => {
