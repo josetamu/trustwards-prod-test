@@ -18,6 +18,7 @@ function App() {
     });
   };
 
+  //Get user data
   const getUser = async () => {
     const { data, error } = await supabase.auth.getUser();
     if(error) {
