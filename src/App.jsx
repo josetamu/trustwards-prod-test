@@ -1,35 +1,38 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Card } from './components/Card'
+import { Modal } from './components/Modal'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [cards, setCards] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // creates a custom new card
+  const addCard = (text) => {
+    setCards([...cards, { id: cards.length + 1, text }]);
+    setIsModalOpen(false);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="card-table">
+      <button onClick={() => setIsModalOpen(true)} className="md-card-button">
+        Add Card
+      </button>
+
+      <div className="cards-list">
+        {cards.map((card) => (
+          <Card key={card.id} text={card.text}/>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      {isModalOpen && (
+        <Modal
+          onClose={() => setIsModalOpen(false)}
+          onCreate={addCard}
+        />
+      )}
+    </div>
+  );
 }
 
 export default App
