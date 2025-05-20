@@ -16,7 +16,7 @@ function App() {
   return (
     <div className="card-table">
       <button onClick={() => setIsModalOpen(true)} className="md-card-button">
-        Add Card
+        Add Domain
       </button>
 
       <div className="cards-list">
@@ -27,8 +27,7 @@ function App() {
 
       {isModalOpen && (
         <Modal
-          onClose={() => setIsModalOpen(false)}
-          onCreate={addCard}
+          onSave={addCard}
         />
       )}
     </div>
