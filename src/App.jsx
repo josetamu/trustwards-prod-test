@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Card } from './components/Card'
 import { Modal } from './components/Modal'
+import { Sidebar } from './components/Sidebar'
 import './App.css'
 
 function App() {
   const [cards, setCards] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const pages = ['Domains', 'Settings'];
 
   // creates a custom new card
   const addCard = (text) => {
@@ -23,7 +25,7 @@ function App() {
         {cards.map((card) => (
           <Card key={card.id} text={card.text}/>
         ))}
-      </div>
+      </div> 
 
       {isModalOpen && (
         <Modal
