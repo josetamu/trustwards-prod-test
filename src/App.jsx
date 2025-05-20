@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Card } from './components/Card'
 import { Modal } from './components/Modal'
+import { Sidebar } from './components/Sidebar'
 import './App.css'
 
 function App() {
   const [cards, setCards] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const pages = ['Domains', 'Settings'];
 
   // creates a custom new card
   const addCard = (text) => {
