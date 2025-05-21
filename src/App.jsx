@@ -5,8 +5,10 @@ import { pages } from './components/Sidebar'
 import './App.css'
 import { Sites } from './components/Sites'  
 import { Settings } from './components/settings'
-
-
+import { Reports } from './components/Reports'
+import Home from './components/Home'
+import Academy from './components/Academy'
+import { LegalNews } from './components/LegalNews'
 
 
 
@@ -23,7 +25,6 @@ function App() {
     });
   };
 
-  //Get user data
   const getUser = async () => {
     const { data, error } = await supabase.auth.getUser();
     if(error) {
@@ -50,6 +51,8 @@ function App() {
   // Render the appropriate view based on active page
   const renderActivePage = () => {
     switch (activePage) {
+      case 'Home':
+        return <Home />;
       case 'Sites':
         return (
           <Sites 
@@ -59,15 +62,14 @@ function App() {
             setIsModalOpen={setIsModalOpen}
           />
         );
-      case 'Settings':
-        return <Settings />;
+      case 'Reports':
+        return <Reports />;
+      case 'Academy':
+        return <Academy />;
+      case 'Legal news':
+        return <LegalNews />;
       default:
-        return <Sites
-          cards={cards}
-          onAddCard={addCard}
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-        />;
+        return <Home />
     }
   };
 
