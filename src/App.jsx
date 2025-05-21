@@ -15,6 +15,11 @@ function App() {
     setIsModalOpen(false);
   };
 
+  /*
+  el componente sea site con 2 parametros (nombre y domain) y darle estilo
+  accesiblidad con esc, enter, clickear fuera, tabs entre inputs
+  opcion de editar y/o eliminar
+  */
   return (
     <div className="card-table">
       <button onClick={() => setIsModalOpen(true)} className="md-card-button">
