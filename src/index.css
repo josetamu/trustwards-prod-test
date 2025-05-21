@@ -22,44 +22,53 @@ body {
 }
 
 .card-table {
-  width: 500px;
+  width: 100vh;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 16px;
-  padding: 20px;
-  max-width: 400px;
   margin: 0 auto;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  background-color: #ffffff;
 }
 
 .md-card-button {
+  width: fit-content;
+  align-self: flex-end;
   padding: 10px 20px;
   background-color: #3b82f6;
   color: #ffffff;
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 500;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgb(0, 0, 0, 0.1);
   cursor: pointer;
   transition: background 0.3s;
 }
-
 .md-card-button:hover {
   background-color: #2563eb;
 }
 
 .cards-list {
-  width: 100%;
-  border: 2px solid #747272;
   border-radius: 12px;
   padding: 16px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .card {
-  background-color: #da2323;
-  padding: 12px;
-  border-radius: 8px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: left;
+}
+.card:hover {
+  background-color: #ebeced;
+  border-radius: 0px;
 }
 
 .card-text {
@@ -83,17 +92,44 @@ body {
   background: #d3d3d3;
   padding: 20px;
   border-radius: 10px;
-  width: 300px;
-}
-
-.modal input {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.modal-buttons {
+  width: fit-content;
+  height: auto;
   display: flex;
-  justify-content: right;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-inputs {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.modal input {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #000;
+  background-color: #fff;
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+.modal input::placeholder {
+  color: #858585;
+  font-weight: 500;
+}
+
+.modal-button {
+  width: fit-content;
+  display: flex;
+  align-self: flex-end;
+  border-radius: 5px;
+  padding: 5px 20px;
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 h2 {

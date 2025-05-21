@@ -3,7 +3,7 @@ import { Modal } from './Modal'
 export const Sites = ({ cards, onAddCard, isModalOpen, setIsModalOpen }) => (
     <div className="card-table">
       <button onClick={() => setIsModalOpen(true)} className="md-card-button">
-        Add Domain
+        Add Site
       </button>
   
       <div className="cards-list">

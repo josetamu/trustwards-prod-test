@@ -48,28 +48,28 @@ export function Modal({ onSave }) {
   return (
     <div className="modal-backdrop" onClick={handleBackdropClick}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>New domain</h2>
-        <input
-          type="text"
-          value={inputValue}
-          placeholder="Type here the name of the domain"
-          onChange={(e) => setInputValue(e.target.value)}
-          autoFocus
-        />
-        <input
-          type="text"
-          value={domainValue}
-          placeholder="Domain URL"
-          onChange={(e) => setDomainValue(e.target.value)}
-        />
-        <div className="modal-buttons">
-          <button
+        <h2>New site</h2>
+        <div className='modal-inputs'>
+          <input
+            type="text"
+            value={inputValue}
+            placeholder="Type here the name of the domain"
+            onChange={(e) => setInputValue(e.target.value)}
+            autoFocus
+          />
+          <input
+            type="text"
+            value={domainValue}
+            placeholder="Domain URL"
+            onChange={(e) => setDomainValue(e.target.value)}
+          />
+        </div>
+          <button className="modal-button"
             onClick={handleCreate}
             disabled={!inputValue.trim() || !domainValue.trim()}
           >
             Save
           </button>
-        </div>
       </div>
     </div>
   );
