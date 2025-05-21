@@ -58,6 +58,7 @@ export const Sites = ({ cards, onAddCard, isModalOpen, setIsModalOpen }) => {
             key={card.id}
             id={card.id}
             text={card.text}
+            //domain={card.domain}
             onEdit={handleEditCard}
             onDelete={handleDeleteCard}
           />
