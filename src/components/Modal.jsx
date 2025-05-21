@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-export function Modal({ onSave }) {
-  const [inputValue, setInputValue] = useState('');
-  const [domainValue, setDomainValue] = useState('');
+export function Modal({ onSave, onCancel, initialData = null }) {
+  const [inputValue, setInputValue] = useState(initialData?.text || '');
+  const [domainValue, setDomainValue] = useState(initialData?.domain || '');
 
   // Close modal without saving
   const closeModal = useCallback(() => {
-    onSave(null);
+    onCancel();
     setInputValue('');
     setDomainValue('');
-  }, [onSave]);
+  }, [onCancel]);
 
   // Click outside modal
   const handleBackdropClick = useCallback((e) => {
@@ -39,11 +39,16 @@ export function Modal({ onSave }) {
   // Save the new site when "Save" button is clicked or Enter is pressed
   const handleCreate = () => {
     if (inputValue.trim() && domainValue.trim()) {
-      onSave(inputValue.trim());
+      onSave(inputValue.trim(), domainValue.trim());
       setInputValue('');
       setDomainValue('');
     }
   };
+
+  useEffect(() => {
+    setInputValue(initialData?.text || '');
+    setDomainValue(initialData?.domain || '');
+  }, [initialData]);
 
   return (
     <div className="modal-backdrop" onClick={handleBackdropClick}>
