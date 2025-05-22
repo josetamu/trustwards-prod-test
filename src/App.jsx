@@ -14,7 +14,7 @@ import './components/Components.css'
 
 
 function App() {
-  const [cards, setCards] = useState([]);
+  const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activePage, setActivePage] = useState('Domains');
 
@@ -43,13 +43,13 @@ function App() {
     getUser();
   }, []);
 
-  // Creates a custom new card
-  const addCard = (text) => {
+  // Creates a custom new site
+  const addSite = (text) => {
     if (text === null) {
       setIsModalOpen(false);
       return;
     }
-    setCards([...cards, { id: cards.length + 1, text }]);
+    setSites([...sites, { id: sites.length + 1, text }]);
     setIsModalOpen(false);
   };
   
@@ -62,8 +62,8 @@ function App() {
       case 'Sites':
         return (
           <Sites 
-            cards={cards}
-            onAddCard={addCard}
+            sites={sites}
+            onAddSite={addSite}
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen}
           />
