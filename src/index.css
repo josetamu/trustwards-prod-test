@@ -14,14 +14,10 @@
 }
 
 body {
-  margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  background-color: #F3F3F3;
+ /*  padding-left: 200px;  */
 }
 
 
-h2 {
-  color: #000;
-}

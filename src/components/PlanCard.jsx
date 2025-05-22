@@ -1,4 +1,6 @@
 export const PlanCard = ({ currentPlan, monthlyVisitors, totalVisitors }) => {
+    const percentage = (monthlyVisitors / totalVisitors) * 100;
+
     return (
         <div className="planCard">
             <div className="planCard__header">
@@ -39,9 +41,9 @@ export const PlanCard = ({ currentPlan, monthlyVisitors, totalVisitors }) => {
                 <span className="planCard__header-subtitle">{monthlyVisitors}/{totalVisitors} monthly visitors</span>
             </div>
             <div className="planCard__widgets">
-                <span className="planCard__widgets-bar">
-                    <span className="planCard__widgets-bar-fill"></span>
-                </span>
+                <div className="planCard__widgets-bar">
+                    <div className="planCard__widgets-bar-fill" style={{ width: `${percentage}%` }}></div>
+                </div>
                 <button className={`${currentPlan === "Free plan" ? "planCard__widgets-button" : "planCard__widgets-button-disabled"}`}>Upgrade to Pro</button>
             </div>
         </div>
