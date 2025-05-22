@@ -1,16 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-
-:root {
-  --items-font-size: 12px;
-  --items-font-color: #686B74;
-  --category-items-font-color: #191919;
-  --font-family: 'Inter', sans-serif;
-  --font-weight: 500;
-  --icon-main-size: 16px;
-  --icon-size: 16px;
-  --letter-spacing: -0.05em;
-}
 
 .card-table {
     width: 100vh;
@@ -24,7 +11,8 @@
     background-color: #ffffff;
   }
   
-  .md-card-button {
+  /* ADD SITE BUTTON */
+  .sites-button {
     width: fit-content;
     align-self: flex-end;
     padding: 10px 20px;
@@ -39,11 +27,12 @@
     cursor: pointer;
     transition: background 0.3s;
   }
-  .md-card-button:hover {
+  .sites-button:hover {
     background-color: #2563eb;
   }
   
-  .cards-list {
+  /* ALL SITES */
+  .sites-list {
     border-radius: 12px;
     padding: 16px;
     display: flex;
@@ -51,70 +40,68 @@
     align-items: flex-start;
   }
   
-  .card {
-    width: 100%;
+  /* SINGLE CARD SITE */
+  .site {
+    width: calc(100% - 32px);
     padding: 10px 16px;
-    text-align: left;
     background-color: #f9fafb;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: background-color 0.3s;
   }
-  .card:hover {
+  .site:hover {
     background-color: #ebeced;
     cursor: default;
   }
   
-  .card-text {
-    font-weight: 600;
-    color: #374151;
-  }
-  
-  .card-content {
+  .site-content {
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
-  
-  .card-content strong {
+  .site-content strong {
     font-weight: 600;
     color: #111827;
     font-size: 16px;
   }
-  
-  .card-content p {
+  .site-content p {
     margin: 0;
     color: #6b7280;
     font-size: 14px;
   }
   
-  .card-actions {
+  /* SITE EDIT AND DELETE BUTTONS */
+  .site-actions {
     display: flex;
     gap: 8px;
   }
   
-  .card-actions button {
+  .site-actions button {
     background: none;
     border: none;
     padding: 4px;
     cursor: pointer;
     transition: transform 0.2s;
   }
-  .card-actions button:hover {
+  .site-actions button:hover {
     transform: scale(1.1);
   }
   
-  .card-actions button svg {
+  .site-actions button svg {
     display: block;
     stroke: #374151;
     transition: stroke 0.2s;
   }
-  .card-actions button:hover svg {
+  .site-actions button:hover svg {
     stroke: #1f2937;
   }
-  
-  .modal-backdrop {
+  /* SITES */
+
+  /**/
+
+  /* MODAL */
+.modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
@@ -158,6 +145,7 @@
     font-weight: 500;
   }
   
+  /*MODAL BUTTONS */
   .modal-button {
     width: fit-content;
     display: flex;
@@ -172,7 +160,7 @@
 
 
 
-
+  
 /* <SIDEBAR */
 .app-container {
     display: flex;
