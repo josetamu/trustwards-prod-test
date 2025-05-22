@@ -5,6 +5,7 @@ import { UserConfig } from './UserConfig';
 import { Settings } from './settings';
 import logo from '../assets/pepsi-logo.png';
 import { PlanCard } from './PlanCard';
+import { ProfileDropdown } from './ProfileDropdown';
 
 // names and icons used in the sidebar
 export const homePages = [
@@ -154,6 +155,8 @@ export function Sidebar({ homePages, docPages, onPageChange }) {
                 </div>
                 <div className="sidebar__lower">
                     <PlanCard currentPlan={"Free plan"} monthlyVisitors={20} totalVisitors={100} />
+                    <ProfileDropdown avatar="avatar" name="Oscar Abad" />
+
                 </div>
             </div>
         </div>
