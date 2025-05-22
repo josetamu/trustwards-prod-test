@@ -67,42 +67,50 @@ export function Sidebar({ pages, onPageChange }) {
     }, []); 
 
     return (
-        <div className="sidebar">
-            {/* upper part of the sidebar where we map the pages and icons*/}
-            <div className="sidebar__upper">
-                {pages.map((page) => (
+        <div className="sidebar-container">
+            <SidebarLink
+                /* onClick={() => setIsUserConfigOpen(true)} */
+                icon={<img className="sidebar__user-avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="User" />}
+            >
+
+            </SidebarLink>
+            <div className="sidebar">
+                {/* upper part of the sidebar where we map the pages and icons*/}
+                <div className="sidebar__upper">
+                    {pages.map((page) => (
+                        <SidebarLink
+                            key={page.name}
+                            icon={page.icon}
+                            text={page.name}
+                            onClick={() => onPageChange(page.name)}
+                        />
+                    ))}
+                </div>
+                {/* lower part of the sidebar where we usea links that open modals*/}
+                <div className="sidebar__lower">
                     <SidebarLink
-                        key={page.name}
-                        icon={page.icon}
-                        text={page.name}
-                        onClick={() => onPageChange(page.name)}
-                    />
-                ))}
+                        onClick={() => setIsUserConfigOpen(true)}
+                    >
+                        <img className="sidebar__user-avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="User" />
+                        <span>{user?.user_metadata?.display_name}</span>
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
+                                <path d="M18 15L12 9L6 15" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="16" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
+                                <path d="M18 15L12 9L6 15" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="16" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                    </SidebarLink>
+                </div>
+                {/* function to open the user config modal*/}
+                {isUserConfigOpen && (
+                    <UserConfig onClose={() => setIsUserConfigOpen(false)} />
+                )}
+                {/* <UserConfig /> */}
             </div>
-            {/* lower part of the sidebar where we usea links that open modals*/}
-            <div className="sidebar__lower">
-                <SidebarLink
-                    onClick={() => setIsUserConfigOpen(true)}
-                >
-                    <img className="sidebar__user-avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="User" />
-                    <span>{user?.user_metadata?.display_name}</span>
-                    <span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-                            <path d="M18 15L12 9L6 15" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="16" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </span>
-                    <span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-                            <path d="M18 15L12 9L6 15" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="16" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </span>
-                </SidebarLink>
-            </div>
-            {/* function to open the user config modal*/}
-            {isUserConfigOpen && (
-                <UserConfig onClose={() => setIsUserConfigOpen(false)} />
-            )}
-            {/* <UserConfig /> */}
         </div>
     );
 }

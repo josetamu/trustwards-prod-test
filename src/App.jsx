@@ -9,6 +9,7 @@ import { Reports } from './components/Reports'
 import Home from './components/Home'
 import Academy from './components/Academy'
 import { LegalNews } from './components/LegalNews'
+import './components/Components.css'
 
 
 
