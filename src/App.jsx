@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Sidebar } from './components/Sidebar'
 import { supabase } from './supabase/supabaseClient';
-import { pages } from './components/Sidebar'
+import { homePages } from './components/Sidebar'
 import './App.css'
 import { Sites } from './components/Sites'  
 import { Settings } from './components/settings'
@@ -10,13 +10,13 @@ import Home from './components/Home'
 import Academy from './components/Academy'
 import { LegalNews } from './components/LegalNews'
 import './components/Components.css'
-
+import { docPages } from './components/Sidebar'
 
 
 function App() {
   const [cards, setCards] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activePage, setActivePage] = useState('Domains');
+  const [activePage, setActivePage] = useState('Websites');
 
   //Force login (only dev mode)
   const _loginDevUser = async () => {
@@ -32,9 +32,6 @@ function App() {
       console.log(error);
     }else{
       const user = data.user;
-
-      console.log('Name:', user.user_metadata.display_name);
-      console.log('Email:', user.email);
     }
   };
 
@@ -59,7 +56,7 @@ function App() {
     switch (activePage) {
       case 'Home':
         return <Home />;
-      case 'Sites':
+      case 'Websites':
         return (
           <Sites 
             cards={cards}
@@ -68,20 +65,20 @@ function App() {
             setIsModalOpen={setIsModalOpen}
           />
         );
-      case 'Reports':
+      case 'Analytics':
         return <Reports />;
       case 'Academy':
         return <Academy />;
       case 'Legal news':
         return <LegalNews />;
       default:
-        return <Home />
+        return <Sites />
     }
   };
 
   return (
     <div className="app-container">
-      <Sidebar pages={pages} onPageChange={setActivePage} />
+      <Sidebar homePages={homePages} docPages={docPages} onPageChange={setActivePage} />
       {renderActivePage()}
     </div>
   );
