@@ -60,13 +60,19 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
       </button>
 
       <div className="sites-list">
-        <h2>Sites</h2>
+        <div className="sites-list-header">
+          <h2>Sites</h2>
+          <div className="sites-list-headings">
+            <h4>Edit</h4>
+            <h4>Delete</h4>
+          </div>
+        </div>
         {siteList.map((site) => (
           <Site
             key={site.id}
             id={site.id}
             text={site.text}
-            //domain={site.domain}
+            domain={site.domain}
             onEdit={handleEditSite}
             onDelete={handleDeleteSite}
           />
