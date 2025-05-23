@@ -1,14 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 :root{
+    --font-family: 'Inter', sans-serif;
     --category-items-font-color: #191919;
     --items-font-color: #686B74;
     --font-weight: 500;
+    --letter-spacing: 0.05em;
+    --items-font-size: 14px;
     --icon-main-size: 20px;
     --icon-size: 16px;
+    
   }
+  .app-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #fff;
+    justify-content: center;
+    border-radius: 15px;
+    border: 2px solid #00000015;
+    transition: margin-left 0.4s ease;
+}
  
-  .open{
-    margin-left: 250px;
-  }
  
  /* SITES */
 .sites-wrapper {
@@ -222,16 +235,9 @@
   /**/
   
 /* <SIDEBAR */
-.app-container {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
-    background-color: #fff;
-    justify-content: center;
-    border-radius: 15px;
-    border: 2px solid #00000015;
-    transition: margin-left 0.4s ease;
-}
+.open{
+    margin-left: 250px;
+  }
 
 #root.open .app-container {
     margin-left: 250px;
@@ -259,7 +265,7 @@
     top: 0;
     height: 100vh;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
     transition: width 0.4s ease;
 }
@@ -353,6 +359,7 @@
     white-space: nowrap;
     align-items: center;
     color: var(--category-items-font-color);
+        
 }
 .sidebar__home-text-icon{
     background-color: #0099FE;
@@ -375,6 +382,10 @@
 .sidebar__home-text-text{
     font-size: var(--items-font-size);
     font-weight: var(--font-weight);
+    font-family: var(--font-family);
+    color: var(--category-items-font-color);
+    letter-spacing: var(--letter-spacing);
+
 }
 .sidebar__lower {
     display: flex;
@@ -395,6 +406,8 @@
     color: var(--items-font-color);
     font-size: var(--items-font-size);
     font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing);
+    font-family: var(--font-family);
     display: flex;
     overflow: hidden;
     gap: 12px;
@@ -451,57 +464,69 @@
   .planCard{
     width: 100%;
     height: 121PX;
-    background: linear-gradient(to bottom, #488AED, #FFFFFF);
+    background: linear-gradient(to bottom, #93BFFF 0%, #ffffff 50%);
     border-radius: 10px;
-    border: 1px solid #E0E0E0;
+    border: 2px solid #E0E0E0;
+    padding: 10px;
+    transition: border 0.4s ease;
   } 
+  .planCard:hover{
+    border: 2px solid #000000;
+    transition: border 0.4s ease;
+  }
+  
   .planCard__header{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: start;
-    padding: 10px;
+    gap: 5px;
   } 
-  .planCard__header-icon-container{
+  
+.planCard__header-icon-container{
     color: var(--category-items-font-color);
     }
 
-    .planCard__header-icon {
-        width: var(--icon-main-size);
-        height: var(--icon-main-size);
-        background-color: #000;
-        padding: 4px;
-        border-radius: 20%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .planCard__header-icon svg{
-      max-width: 100%;
-      max-height: 100%;
-      position: relative;
-      top: 20%;
-    }
+.planCard__header-icon {
+    width: var(--icon-main-size);
+    height: var(--icon-main-size);
+    background-color: #000;
+    padding: 4px;
+    border-radius: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} 
+.planCard__header-icon svg{
+    max-width: 100%;
+    max-height: 100%;
+    position: relative;
+    top: 20%;
+}
   .planCard__header-title{
     font-size: var(--items-font-size);
     font-weight: var(--font-weight);
     color: var(--category-items-font-color);
+    letter-spacing: var(--letter-spacing);
+    font-family: var(--font-family);
   }
   .planCard__header-subtitle{
-    font-size: var(--items-font-size);
+    font-size: 12px;
     font-weight: var(--font-weight);
-    color: var(--items-font-color);
+    color: #969696;
+    letter-spacing: var(--letter-spacing);
+    font-family: var(--font-family);
+    margin-bottom: 5px;
   }
   .planCard__widgets{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    gap: 7.5px;
   }
   .planCard__widgets-bar {
     width: 100%;
-    height: 7.5px;
+    height: 5px;
     background-color: #D9D9D9;
     border-radius: 10px;
     position: relative;
@@ -516,8 +541,29 @@
     top: 0;
     transition: width 0.3s ease; /* animación opcional */
   }
-
-  
+  .planCard__widgets-button{
+    height: 30px;
+    width: 100%;
+    border-radius: 6px;
+    background-color: var(--category-items-font-color);
+    color: #ffffff;
+    font-size: 12px;
+    padding: 10px 10px;
+    font-weight: var(--font-weight);
+    cursor: pointer;
+    font-family: Inter;
+    letter-spacing: var(--letter-spacing);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px 0 rgb(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  .planCard__widgets-button:hover{
+    opacity: 0.95;
+  }
+  .planCard__widgets-button-disabled{
+    display: none;
+  }
   
   
   /* <SETTINGS */
