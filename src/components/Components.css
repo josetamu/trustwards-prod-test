@@ -236,17 +236,17 @@
   
 /* <SIDEBAR */
 .open{
-    margin-left: 250px;
+    margin-left: 225px;
   }
 
 #root.open .app-container {
-    margin-left: 250px;
+    margin-left: 225px;
 }
 
 .sidebar-container-open {
     width: 250px;
     background-color: transparent;
-    padding: 2rem 4rem; 
+    padding: 4rem 6rem; 
     position: fixed;
     left: 0;
     top: 0;
@@ -259,7 +259,7 @@
 .sidebar-container{
     width: 50px;
     background-color: transparent;
-    padding: 2rem 2rem; 
+    padding: 4rem 4rem; 
     position: fixed;
     left: 0;
     top: 0;
@@ -272,7 +272,7 @@
 .sidebar{
     width: 0px;
     background-color: transparent;
-    padding: 0 1rem; 
+    padding: 2rem 1rem; 
     position: fixed;
     left: 0;
     top: 0;
@@ -316,7 +316,7 @@
 .sidebar-open{
     width: 250px;
     background-color: transparent;
-    padding: 0 1rem; 
+    padding: 2rem 1rem; 
     position: fixed;
     left: 0;
     top: 0;
@@ -333,6 +333,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1;
+    
     
 }
 .sidebar-action svg {
@@ -391,7 +392,7 @@
     display: flex;
     flex-direction: column;
     margin-top: auto;
-    padding-bottom: 25px;
+    padding-bottom: 100px;
     gap: 20px;
 }
   
@@ -469,6 +470,8 @@
     border: 2px solid #E0E0E0;
     padding: 10px;
     transition: border 0.4s ease;
+    white-space: nowrap;
+    overflow: hidden;
   } 
   .planCard:hover{
     border: 2px solid #000000;
@@ -565,7 +568,63 @@
     display: none;
   }
   
-  
+  /* <PROFILE DROPDOWN */
+  .profileDropdown{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid #E0E0E0;
+  } 
+  .profileDropdown__header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .profileDropdown__header-avatar{
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    border: 1px solid #E0E0E0;
+    padding: 2px;
+  }
+  .profileDropdown__header-name{
+    font-size: 12px;
+    font-weight: var(--font-weight);
+    color: var(--category-items-font-color);
+    letter-spacing: var(--letter-spacing);
+    font-family: var(--font-family);
+  }
+  .profileDropdown__icons{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    gap: 10px;
+  }
+  .profileDropdown__icons-down{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .profileDropdown__icons-up{
+    display: none;
+  }
+  .profileDropdown:hover .profileDropdown__icons-up{
+    display: flex;
+  }
+  .profileDropdown:hover .profileDropdown__icons-down{
+    display: none;
+  }
+
+  /* >PROFILE DROPDOWN */
   /* <SETTINGS */
   .settingsUser {
     position: fixed;
