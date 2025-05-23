@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.jsx'
 
 const rootElement = document.getElementById('root')
-rootElement.classList.add('open')
+ 
 createRoot(rootElement).render(
   <StrictMode>
     <App />

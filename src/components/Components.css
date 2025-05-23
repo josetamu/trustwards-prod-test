@@ -1,25 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
+		
 :root{
     --font-family: 'Inter', sans-serif;
     --category-items-font-color: #191919;
     --items-font-color: #686B74;
     --font-weight: 500;
-    --letter-spacing: 0.05em;
-    --items-font-size: 14px;
-    --icon-main-size: 20px;
+    --letter-spacing: -0.05em;
+    --items-font-size: 12px;
+    --icon-main-size: 16px;
     --icon-size: 16px;
     
   }
   .app-container {
     display: flex;
-    min-height: 100vh;
-    width: 100%;
     background-color: #fff;
     justify-content: center;
-    border-radius: 15px;
-    border: 2px solid #00000015;
-    transition: margin-left 0.4s ease;
+    border-radius: 10px;
+    border: 2px solid #E0E0E0;
+    transition: all 0.4s ease;
+    top: 20px;
+    min-height: calc(100vh - 40px);
+    width: calc(100vw - 40px);
+    height: fit-content;
+    padding: 20px;
+    left: 20px;
+    position: relative;
+    overflow-x: hidden;
+    
 }
  
  
@@ -31,7 +38,6 @@
     flex-direction: column;
     gap: 16px;
     margin: 0 auto;
-    border: 1px solid #E5E7EB;
     border-radius: 20px;
     background-color: #ffffff;
   }
@@ -236,17 +242,19 @@
   
 /* <SIDEBAR */
 .open{
-    margin-left: 225px;
-  }
-
-#root.open .app-container {
-    margin-left: 225px;
+    left: 200px;
+    width: calc(100vw - 240px);
+    transition: all 0.4s ease;
 }
+
+/* #root.open .app-container {
+    margin-left: 225px;
+} */
 
 .sidebar-container-open {
     width: 250px;
     background-color: transparent;
-    padding: 4rem 6rem; 
+    padding: 55px 176px; 
     position: fixed;
     left: 0;
     top: 0;
@@ -254,12 +262,13 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: width 0.4s ease;
+    transition: all 0.4s ease;
+    white-space: nowrap;
 }
 .sidebar-container{
     width: 50px;
     background-color: transparent;
-    padding: 4rem 4rem; 
+    padding: 55px 64px; 
     position: fixed;
     left: 0;
     top: 0;
@@ -267,7 +276,8 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    transition: width 0.4s ease;
+    transition: all 0.4s ease;
+    white-space: nowrap;
 }
 .sidebar{
     width: 0px;
@@ -282,6 +292,7 @@
     background-color: transparent;
     transition: width 0.4s ease;
     animation: sidebarHide 0.4s ease forwards;
+    white-space: nowrap;
 }
 
 @keyframes sidebarHide {
@@ -316,7 +327,7 @@
 .sidebar-open{
     width: 250px;
     background-color: transparent;
-    padding: 2rem 1rem; 
+    padding: 30px 15px;
     position: fixed;
     left: 0;
     top: 0;
@@ -326,6 +337,7 @@
     transition: width 0.4s ease;
     background-color: transparent;
     animation: sidebarShow 0.4s ease forwards;
+    white-space: nowrap;
 }
   
 
@@ -338,10 +350,10 @@
 }
 .sidebar-action svg {
     transition: all 0.3s ease;
+    width: var(--icon-size);
+    height: var(--icon-size);
 }
-.sidebar-action:hover svg {
-    fill: #fff;
-}
+
 .sidebar__upper {
     display: flex;
     flex-direction: column;
@@ -394,6 +406,7 @@
     margin-top: auto;
     padding-bottom: 100px;
     gap: 20px;
+    width: 200px;
 }
   
 .sidebar:hover .sidebar__link{
@@ -437,9 +450,7 @@
     width: 25px;
     height: 25px;
 }
-.sidebar__lower .sidebar__link:hover {
-  background-color: #ff0000;
-}
+
 .dark-icon {
     display: none;
 }
@@ -468,10 +479,10 @@
     background: linear-gradient(to bottom, #93BFFF 0%, #ffffff 50%);
     border-radius: 10px;
     border: 2px solid #E0E0E0;
-    padding: 10px;
     transition: border 0.4s ease;
     white-space: nowrap;
     overflow: hidden;
+    padding: 10px;
   } 
   .planCard:hover{
     border: 2px solid #000000;
@@ -571,21 +582,33 @@
   /* <PROFILE DROPDOWN */
   .profileDropdown{
     display: flex;
+    width: 100%;
+    height: 60px;
+    justify-content: space-between;
+    width: 220px;
+
+  } 
+  .profileDropdown__profile{
+    display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    align-self: end;
+    gap: 10px;
+    height: 40px;
     background-color: #fff;
-    padding: 10px;
-    width: 100%;
     border-radius: 10px;
     border: 2px solid #E0E0E0;
-  } 
+    width: 100%;
+    
+  }
   .profileDropdown__header{
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    padding: 10px;
   }
   .profileDropdown__header-avatar{
     width: 21px;
@@ -607,6 +630,7 @@
     align-items: center;
     justify-content: end;
     gap: 10px;
+    padding: 10px;
   }
   .profileDropdown__icons-down{
     display: flex;
@@ -619,12 +643,88 @@
   }
   .profileDropdown:hover .profileDropdown__icons-up{
     display: flex;
+    transition: all 0.6s ease;
   }
   .profileDropdown:hover .profileDropdown__icons-down{
     display: none;
+    transition: all 0.6s ease;
+  }
+
+  /* Dropdonw */
+  .profileDropdown__dropdown{
+    display: none;
+  }
+ .profileDropdown:hover .profileDropdown__dropdown{
+    background-color: rgba(255, 255, 255, 0.97);
+    display: flex;
+    width: 82%;
+    height: 189px;
+    border-radius: 10px;
+    border: 2px solid #E0E0E0;
+    padding: 10px;
+    flex-direction: column;
+    position: absolute;
+    bottom: 190px;
+    z-index: 1;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+
+  
+  .sidebar__profile-upper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .sidebar__profile-lower{
+    border-top: 1px solid #E0E0E0;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-top: 20px;
+    width: 100%;
+  }
+  .sidebar__profile-link {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    color: var(--items-font-color);
+    font-size: var(--items-font-size);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing);
+    font-family: var(--font-family);
+    width: 100%;
+   
+  }
+
+  .sidebar__profile-link svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar__profile-link:hover {
+    color: #000;
+    stroke: #000;
+  }
+  .sidebar__profile-link:hover svg path{
+    stroke: #000;
+  }
+
+  .sidebar__profile-link.logout:hover {
+    color: #db1515;
+  }
+  .sidebar__profile-link:hover.logout svg path{
+    stroke: #db1515;
   }
 
   /* >PROFILE DROPDOWN */
+   
+
   /* <SETTINGS */
   .settingsUser {
     position: fixed;
