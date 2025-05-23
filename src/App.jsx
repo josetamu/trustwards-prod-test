@@ -77,10 +77,12 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <Sidebar homePages={homePages} docPages={docPages} onPageChange={setActivePage} />
+  <div className="app-container">
+    <Sidebar homePages={homePages} docPages={docPages} onPageChange={setActivePage} />
       {renderActivePage()}
-    </div>
+  </div>
+    
+      
   );
 }
 

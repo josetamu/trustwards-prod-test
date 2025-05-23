@@ -6,6 +6,10 @@
     --icon-size: 16px;
   }
  
+  .open{
+    margin-left: 250px;
+  }
+ 
  /* SITES */
 .sites-wrapper {
     width: 100vh;
@@ -226,8 +230,14 @@
     justify-content: center;
     border-radius: 15px;
     border: 2px solid #00000015;
-  }
-  .sidebar-container-open {
+    transition: margin-left 0.4s ease;
+}
+
+#root.open .app-container {
+    margin-left: 250px;
+}
+
+.sidebar-container-open {
     width: 250px;
     background-color: transparent;
     padding: 2rem 4rem; 
@@ -239,8 +249,8 @@
     flex-direction: column;
     justify-content: space-between;
     transition: width 0.4s ease;
-  }
-  .sidebar-container{
+}
+.sidebar-container{
     width: 50px;
     background-color: transparent;
     padding: 2rem 2rem; 
@@ -252,8 +262,8 @@
     flex-direction: column;
     justify-content: space-between;
     transition: width 0.4s ease;
-  }
-  .sidebar{
+}
+.sidebar{
     width: 0px;
     background-color: transparent;
     padding: 0 1rem; 
@@ -266,9 +276,9 @@
     background-color: transparent;
     transition: width 0.4s ease;
     animation: sidebarHide 0.4s ease forwards;
-  }
+}
 
-  @keyframes sidebarHide {
+@keyframes sidebarHide {
     0% {
       width: 200px;
       display: flex;
@@ -281,9 +291,9 @@
       width: 0px;
       display: none;
     }
-  }
+}
 
-  @keyframes sidebarShow {
+@keyframes sidebarShow {
     0% {
       width: 0px;
       display: none;
@@ -296,8 +306,8 @@
       width: 200px;
       display: flex;
     }
-  }
-  .sidebar-open{
+}
+.sidebar-open{
     width: 250px;
     background-color: transparent;
     padding: 0 1rem; 
@@ -310,29 +320,29 @@
     transition: width 0.4s ease;
     background-color: transparent;
     animation: sidebarShow 0.4s ease forwards;
-  }
+}
   
 
-  .sidebar-action {
+.sidebar-action {
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1;
     
-  }
-  .sidebar-action svg {
+}
+.sidebar-action svg {
     transition: all 0.3s ease;
-  }
-  .sidebar-action:hover svg {
+}
+.sidebar-action:hover svg {
     fill: #fff;
-  }
-  .sidebar__upper {
+}
+.sidebar__upper {
     display: flex;
     flex-direction: column;
-  }
-  .sidebar__home{
+}
+.sidebar__home{
     border-bottom: 1px solid #00000015;
-  }
-  .sidebar__home-text{
+}
+.sidebar__home-text{
     padding: 0.5rem;
     text-decoration: none;
     margin-bottom: 0.5rem;
@@ -343,42 +353,42 @@
     white-space: nowrap;
     align-items: center;
     color: var(--category-items-font-color);
-  }
-  .sidebar__home-text-icon{
+}
+.sidebar__home-text-icon{
     background-color: #0099FE;
     padding: 4px;
     border-radius: 20%;
-  }
-  .sidebar__docs-text-icon{
+}
+.sidebar__docs-text-icon{
     background-color: #000;
     padding: 4px;
     border-radius: 20%;
-  }
-  .sidebar__home-text-icon,
-  .sidebar__docs-text-icon {
+}
+.sidebar__home-text-icon,
+.sidebar__docs-text-icon {
     display: flex;
     justify-content: center;
     align-items: center;
     width: var(--icon-main-size);
     height: var(--icon-main-size);
-  }
-  .sidebar__home-text-text{
+}
+.sidebar__home-text-text{
     font-size: var(--items-font-size);
     font-weight: var(--font-weight);
-  }
-  .sidebar__lower {
+}
+.sidebar__lower {
     display: flex;
     flex-direction: column;
     margin-top: auto;
     padding-bottom: 25px;
     gap: 20px;
-  }
+}
   
-  .sidebar:hover .sidebar__link{
+.sidebar:hover .sidebar__link{
     overflow: visible;
-  }
+}
   
-  .sidebar__link {
+.sidebar__link {
     text-decoration: none;
     margin-bottom: 0.5rem;
     text-decoration: none;
@@ -392,35 +402,35 @@
     align-items: center;
     padding: 10px 9px;
     border: 1px solid transparent;
-  }
+}
   
-  .sidebar__link:hover {
+.sidebar__link:hover {
     background-color: #fff;
     border-radius: 12px;
     border: 1px solid #E0E0E0;
-  }
+}
 
-  .sidebar__link svg {
+.sidebar__link svg {
     width: var(--icon-size);
     height: var(--icon-size);
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+}
   
-  .sidebar__user-avatar {
+.sidebar__user-avatar {
     border-radius: 50%;
     width: 25px;
     height: 25px;
-  }
-  .sidebar__lower .sidebar__link:hover {
+}
+.sidebar__lower .sidebar__link:hover {
   background-color: #ff0000;
-  }
-  .dark-icon {
+}
+.dark-icon {
     display: none;
-  }
+}
 
-  .logo-container{
+.logo-container{
     display: flex;
     justify-content: start;
     align-items: center;
@@ -428,13 +438,13 @@
     height: 25px;
     border-bottom: 1px solid #00000015;
     cursor: pointer;
-  }
-  .logo-container__logo{
+}
+.logo-container__logo{
     width: 20px;
     
 
-  }
-  /* >SIDEBAR */
+}
+/* >SIDEBAR */
   
   
   /* <PLAN CARD */

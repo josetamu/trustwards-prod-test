@@ -55,6 +55,16 @@ export function Sidebar({ homePages, docPages, onPageChange }) {
     // funtion to open and close the sidebar
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+        const rootElement = document.getElementById('root');
+        if (!isSidebarOpen) {
+            rootElement.classList.add('open');
+        } else {
+            rootElement.classList.remove('open');
+        }
+    };
+
 //supa base with dev user
     const _loginDevUser = async () => {
         await supabase.auth.signInWithPassword({
@@ -79,7 +89,7 @@ export function Sidebar({ homePages, docPages, onPageChange }) {
 
     return (
         <div className={`${isSidebarOpen ? 'sidebar-container-open' : 'sidebar-container'}`}>
-            <a className="sidebar-action" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            <a className="sidebar-action" onClick={toggleSidebar}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
                 <path d="M2 12C2 8.25027 2 6.3754 2.95491 5.06107C3.26331 4.6366 3.6366 4.26331 4.06107 3.95491C5.3754 3 7.25027 3 11 3H13C16.7497 3 18.6246 3 19.9389 3.95491C20.3634 4.26331 20.7367 4.6366 21.0451 5.06107C22 6.3754 22 8.25027 22 12C22 15.7497 22 17.6246 21.0451 18.9389C20.7367 19.3634 20.3634 19.7367 19.9389 20.0451C18.6246 21 16.7497 21 13 21H11C7.25027 21 5.3754 21 4.06107 20.0451C3.6366 19.7367 3.26331 19.3634 2.95491 18.9389C2 17.6246 2 15.7497 2 12Z" stroke="#000000" stroke-width="1.5" stroke-linejoin="round"></path>
                 <path d="M9.5 3.5L9.5 20.5" stroke="#000000" stroke-width="1.5" stroke-linejoin="round"></path>
