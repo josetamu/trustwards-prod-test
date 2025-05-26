@@ -6,7 +6,6 @@
   background-color: #F3F3F3;
   
 }
-    
 
 * {
   margin: 0;
@@ -23,7 +22,18 @@
     --items-font-size: 14px;
     --icon-main-size: 16px;
     --icon-size: 16px;
-    
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100svh;
+    background-color: #F3F3F3;
   }
   .content__container {
     display: flex;
