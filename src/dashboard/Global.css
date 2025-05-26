@@ -1,18 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 		
-#root {
-  width: 100%;
-  min-height: 100svh;
-  background-color: #F3F3F3;
-  
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 :root{
     --font-family: 'Inter', sans-serif;
     --category-items-font-color: #191919;
@@ -22,8 +9,20 @@
     --items-font-size: 12px;
     --icon-main-size: 16px;
     --icon-size: 16px;
-    
   }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100svh;
+    background-color: #F3F3F3;
+  }
+  
   .app-container {
     display: flex;
     background-color: #fff;
