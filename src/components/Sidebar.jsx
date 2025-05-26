@@ -155,13 +155,19 @@ export function Sidebar({ homePages, docPages, onPageChange }) {
     return (
         <div className={`${isSidebarOpen ? 'sidebar-container-open' : 'sidebar-container'}`}>
             <a className="sidebar-action" onClick={toggleSidebar}>
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
-                <path d="M7.125 2.625V15.375" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
-                <path d="M3.75 5.25C3.75 5.25 4.43566 5.25 4.875 5.25" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M3.75 8.25H4.875" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M12.75 7.5L11.8301 8.2929C11.4434 8.6262 11.25 8.79292 11.25 9C11.25 9.20708 11.4434 9.3738 11.8301 9.7071L12.75 10.5" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+                <svg className="sidebar-action-desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                    <path d="M7.125 2.625V15.375" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                    <path d="M3.75 5.25C3.75 5.25 4.43566 5.25 4.875 5.25" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3.75 8.25H4.875" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12.75 7.5L11.8301 8.2929C11.4434 8.6262 11.25 8.79292 11.25 9C11.25 9.20708 11.4434 9.3738 11.8301 9.7071L12.75 10.5" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                <svg className="sidebar-action-mobile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5C3 4.44772 3.44772 4 4 4L20 4C20.5523 4 21 4.44772 21 5C21 5.55229 20.5523 6 20 6L4 6C3.44772 6 3 5.55228 3 5Z" fill="#000000"></path>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 12C3 11.4477 3.44772 11 4 11L20 11C20.5523 11 21 11.4477 21 12C21 12.5523 20.5523 13 20 13L4 13C3.44772 13 3 12.5523 3 12Z" fill="#000000"></path>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 19C3 18.4477 3.44772 18 4 18L20 18C20.5523 18 21 18.4477 21 19C21 19.5523 20.5523 20 20 20L4 20C3.44772 20 3 19.5523 3 19Z" fill="#000000"></path>
+                </svg>
 
             </a>
             <div className={`${isSidebarOpen ? 'sidebar-open' : 'sidebar'}`}>
