@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabase/supabaseClient';
-import { SidebarLink } from './SitebarLink';
-import { UserConfig } from './UserConfig';
-import { Settings } from './settings';
-import { PlanCard } from './PlanCard';
-import { ProfileDropdown } from './ProfileDropdown';
+import { supabase } from '../../supabase/supabaseClient';
+import { SidebarLink } from '../sitebarLink/SitebarLink';
+import { UserConfig } from '../UserConfig';
+import { Settings } from '../settings';
+import { PlanCard } from '../planCard/PlanCard';
+import { ProfileDropdown } from '../profileDropdown/ProfileDropdown';
+import "./Sidebar.css";
+
 
 // names and icons used in the sidebar
 export const homePages = [
@@ -122,11 +124,11 @@ export function Sidebar({ homePages, docPages, onPageChange }) {
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
-        const appContainer = document.querySelector('.app-container');
+        const contentContainer = document.querySelector('.content__container');
         if (!isSidebarOpen) {
-            appContainer.classList.add('open');
+            contentContainer.classList.add('open');
         } else {
-            appContainer.classList.remove('open');
+            contentContainer.classList.remove('open');
         }
     };
 
@@ -153,25 +155,9 @@ export function Sidebar({ homePages, docPages, onPageChange }) {
     }, []); 
 
     return (
-        <div className={`${isSidebarOpen ? 'sidebar-container-open' : 'sidebar-container'}`}>
-            <a className="sidebar-action" onClick={toggleSidebar}>
-                <svg className="sidebar-action-desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
-                    <path d="M7.125 2.625V15.375" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
-                    <path d="M3.75 5.25C3.75 5.25 4.43566 5.25 4.875 5.25" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M3.75 8.25H4.875" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12.75 7.5L11.8301 8.2929C11.4434 8.6262 11.25 8.79292 11.25 9C11.25 9.20708 11.4434 9.3738 11.8301 9.7071L12.75 10.5" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-
-                <svg className="sidebar-action-mobile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5C3 4.44772 3.44772 4 4 4L20 4C20.5523 4 21 4.44772 21 5C21 5.55229 20.5523 6 20 6L4 6C3.44772 6 3 5.55228 3 5Z" fill="#000000"></path>
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 12C3 11.4477 3.44772 11 4 11L20 11C20.5523 11 21 11.4477 21 12C21 12.5523 20.5523 13 20 13L4 13C3.44772 13 3 12.5523 3 12Z" fill="#000000"></path>
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 19C3 18.4477 3.44772 18 4 18L20 18C20.5523 18 21 18.4477 21 19C21 19.5523 20.5523 20 20 20L4 20C3.44772 20 3 19.5523 3 19Z" fill="#000000"></path>
-                </svg>
-
-            </a>
-            <div className={`${isSidebarOpen ? 'sidebar-open' : 'sidebar'}`}>
-                <div className="logo-container">
+        <div className={`${isSidebarOpen ? 'sidebar__container-open' : 'sidebar__container'}`}>
+            <div className="sidebar__logos">
+                <div className="sidebar_logos-logo">
                     <svg width="21" height="15" viewBox="0 0 21 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0 0H21V4.09091H0V0Z" fill="url(#paint0_linear_64_364)"/>
                         <path d="M5.6 15V6.81818H14L5.6 15Z" fill="url(#paint1_linear_64_364)"/>
@@ -192,56 +178,75 @@ export function Sidebar({ homePages, docPages, onPageChange }) {
                         </defs>
                     </svg>
                 </div>
+                <a className="sidebar__logos-action" onClick={toggleSidebar}>
+                    <svg className="sidebar-action-desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                        <path d="M7.125 2.625V15.375" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                        <path d="M3.75 5.25C3.75 5.25 4.43566 5.25 4.875 5.25" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3.75 8.25H4.875" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12.75 7.5L11.8301 8.2929C11.4434 8.6262 11.25 8.79292 11.25 9C11.25 9.20708 11.4434 9.3738 11.8301 9.7071L12.75 10.5" stroke="#686B74" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+
+                    <svg className="sidebar-action-mobile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5C3 4.44772 3.44772 4 4 4L20 4C20.5523 4 21 4.44772 21 5C21 5.55229 20.5523 6 20 6L4 6C3.44772 6 3 5.55228 3 5Z" fill="#000000"></path>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 12C3 11.4477 3.44772 11 4 11L20 11C20.5523 11 21 11.4477 21 12C21 12.5523 20.5523 13 20 13L4 13C3.44772 13 3 12.5523 3 12Z" fill="#000000"></path>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 19C3 18.4477 3.44772 18 4 18L20 18C20.5523 18 21 18.4477 21 19C21 19.5523 20.5523 20 20 20L4 20C3.44772 20 3 19.5523 3 19Z" fill="#000000"></path>
+                    </svg>
+
+                </a>
+            </div>
+            
+            <div className={`${isSidebarOpen ? 'sidebar-open' : 'sidebar'}`}>
+                
                 <div className="sidebar__upper">
-                <div className="sidebar__home">
-                    <span className="sidebar__home-text">
-                       <span className="sidebar__home-text-icon">
-                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g clip-path="url(#clip0_79_131)">
-                            <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/>
-                            <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/>
-                            <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/>
-                            <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/>
-                            </g>
-                            <defs>
-                            <clipPath id="clip0_79_131">
-                            <rect width="12" height="12" fill="white"/>
-                            </clipPath>
-                            </defs>
-                        </svg>
+                    <div className="sidebar__home">
+                        <span className="sidebar__home-text">
+                        <span className="sidebar__home-text-icon">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0_79_131)">
+                                <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/>
+                                <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/>
+                                <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/>
+                                <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_79_131">
+                                <rect width="12" height="12" fill="white"/>
+                                </clipPath>
+                                </defs>
+                            </svg>
 
+                            </span>
+                            <span className="sidebar__home-text-text">Home</span>
                         </span>
-                        <span className="sidebar__home-text-text">Home</span>
-                    </span>
-                    {homePages.map((homePage) => (
-                        <SidebarLink
-                            key={homePage.name}
-                            icon={homePage.icon}
-                            text={homePage.name}
-                            onClick={() => onPageChange(homePage.name)}
-                        />
-                    ))}
-                </div>
-                <div className="sidebar__docs">
-                    <span className="sidebar__home-text">
-                        <span className="sidebar__docs-text-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M20.4253 3.28231C19.6271 2.95101 18.5745 2.67059 17.2694 2.32287L16.2094 2.04043C14.9041 1.69265 13.8516 1.4122 12.9939 1.30229C12.1033 1.18818 11.3124 1.241 10.5821 1.66025C9.85117 2.07986 9.40864 2.73583 9.06207 3.5614C8.72864 4.35566 8.44647 5.40287 8.09691 6.70016L7.04517 10.6032L7.04517 10.6032C6.69559 11.9004 6.41338 12.9476 6.30275 13.8013C6.18777 14.6885 6.24094 15.4779 6.66391 16.2064C7.08651 16.9342 7.74618 17.3737 8.57474 17.7176C9.3729 18.0489 10.4255 18.3293 11.7306 18.677L12.7907 18.9595C14.0959 19.3073 15.1484 19.5877 16.0061 19.6976C16.8967 19.8117 17.6877 19.7589 18.4179 19.3396C19.1488 18.92 19.5914 18.2641 19.9379 17.4385C20.2714 16.6442 20.5535 15.597 20.9031 14.2997L21.9548 10.3967C22.3044 9.09953 22.5866 8.05231 22.6973 7.19861C22.8122 6.31139 22.7591 5.52199 22.3361 4.79352C21.9135 4.06567 21.2538 3.62623 20.4253 3.28231ZM15.5 8.5C16.3284 8.5 17 7.82843 17 7C17 6.17157 16.3284 5.5 15.5 5.5C14.6716 5.5 14 6.17157 14 7C14 7.82843 14.6716 8.5 15.5 8.5Z" fill="#ffffff"></path>
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M6.42476 5.96656C6.58145 6.49615 6.27914 7.05249 5.74955 7.20917C4.16184 7.67891 3.67122 7.99964 3.43 8.4151C3.27585 8.68059 3.19912 9.0304 3.28691 9.72268C3.37843 10.4444 3.62427 11.3754 3.9895 12.7462L5.00185 16.5459C5.36709 17.9168 5.61705 18.8466 5.89654 19.5175C6.16472 20.1613 6.40448 20.424 6.66771 20.5751C6.93178 20.7267 7.28263 20.8022 7.97972 20.7109C8.70497 20.616 9.64091 20.366 11.0171 19.9951L11.4898 19.8678C12.0231 19.7241 12.5719 20.0399 12.7155 20.5731C12.8592 21.1064 12.5434 21.6552 12.0102 21.7989L11.4697 21.9445C10.1785 22.2925 9.11292 22.5796 8.23931 22.694C7.32231 22.814 6.46842 22.7668 5.67196 22.3096C4.87467 21.8519 4.40521 21.1385 4.05034 20.2866C3.71275 19.4763 3.42985 18.4143 3.08748 17.1292L2.03873 13.1929C1.69626 11.9076 1.41331 10.8457 1.3028 9.97429C1.18661 9.05805 1.23879 8.20589 1.7004 7.41087C2.38641 6.22933 3.65434 5.74336 5.18215 5.29135C5.71174 5.13467 6.26808 5.43697 6.42476 5.96656Z" fill="#ffffff"></path>
-                        </svg>
+                        {homePages.map((homePage) => (
+                            <SidebarLink
+                                key={homePage.name}
+                                icon={homePage.icon}
+                                text={homePage.name}
+                                onClick={() => onPageChange(homePage.name)}
+                            />
+                        ))}
+                    </div>
+                    <div className="sidebar__docs">
+                        <span className="sidebar__home-text">
+                            <span className="sidebar__docs-text-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M20.4253 3.28231C19.6271 2.95101 18.5745 2.67059 17.2694 2.32287L16.2094 2.04043C14.9041 1.69265 13.8516 1.4122 12.9939 1.30229C12.1033 1.18818 11.3124 1.241 10.5821 1.66025C9.85117 2.07986 9.40864 2.73583 9.06207 3.5614C8.72864 4.35566 8.44647 5.40287 8.09691 6.70016L7.04517 10.6032L7.04517 10.6032C6.69559 11.9004 6.41338 12.9476 6.30275 13.8013C6.18777 14.6885 6.24094 15.4779 6.66391 16.2064C7.08651 16.9342 7.74618 17.3737 8.57474 17.7176C9.3729 18.0489 10.4255 18.3293 11.7306 18.677L12.7907 18.9595C14.0959 19.3073 15.1484 19.5877 16.0061 19.6976C16.8967 19.8117 17.6877 19.7589 18.4179 19.3396C19.1488 18.92 19.5914 18.2641 19.9379 17.4385C20.2714 16.6442 20.5535 15.597 20.9031 14.2997L21.9548 10.3967C22.3044 9.09953 22.5866 8.05231 22.6973 7.19861C22.8122 6.31139 22.7591 5.52199 22.3361 4.79352C21.9135 4.06567 21.2538 3.62623 20.4253 3.28231ZM15.5 8.5C16.3284 8.5 17 7.82843 17 7C17 6.17157 16.3284 5.5 15.5 5.5C14.6716 5.5 14 6.17157 14 7C14 7.82843 14.6716 8.5 15.5 8.5Z" fill="#ffffff"></path>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.42476 5.96656C6.58145 6.49615 6.27914 7.05249 5.74955 7.20917C4.16184 7.67891 3.67122 7.99964 3.43 8.4151C3.27585 8.68059 3.19912 9.0304 3.28691 9.72268C3.37843 10.4444 3.62427 11.3754 3.9895 12.7462L5.00185 16.5459C5.36709 17.9168 5.61705 18.8466 5.89654 19.5175C6.16472 20.1613 6.40448 20.424 6.66771 20.5751C6.93178 20.7267 7.28263 20.8022 7.97972 20.7109C8.70497 20.616 9.64091 20.366 11.0171 19.9951L11.4898 19.8678C12.0231 19.7241 12.5719 20.0399 12.7155 20.5731C12.8592 21.1064 12.5434 21.6552 12.0102 21.7989L11.4697 21.9445C10.1785 22.2925 9.11292 22.5796 8.23931 22.694C7.32231 22.814 6.46842 22.7668 5.67196 22.3096C4.87467 21.8519 4.40521 21.1385 4.05034 20.2866C3.71275 19.4763 3.42985 18.4143 3.08748 17.1292L2.03873 13.1929C1.69626 11.9076 1.41331 10.8457 1.3028 9.97429C1.18661 9.05805 1.23879 8.20589 1.7004 7.41087C2.38641 6.22933 3.65434 5.74336 5.18215 5.29135C5.71174 5.13467 6.26808 5.43697 6.42476 5.96656Z" fill="#ffffff"></path>
+                            </svg>
+                            </span>
+                            <span className="sidebar__home-text-text">Docs</span>
                         </span>
-                        <span className="sidebar__home-text-text">Docs</span>
-                    </span>
-                    {docPages.map((docPage) => (
-                        <SidebarLink
-                            key={docPage.name}
-                            icon={docPage.icon}
-                            text={docPage.name}
-                            onClick={() => onPageChange(docPage.name)}
-                        />
-                    ))}
-                </div>
-
+                        {docPages.map((docPage) => (
+                            <SidebarLink
+                                key={docPage.name}
+                                icon={docPage.icon}
+                                text={docPage.name}
+                                onClick={() => onPageChange(docPage.name)}
+                            />
+                        ))}
+                    </div>
                 </div>
                 <div className="sidebar__lower">
                     <PlanCard currentPlan={"Free plan"} monthlyVisitors={20} totalVisitors={100} />

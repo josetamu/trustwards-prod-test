@@ -8,9 +8,7 @@ import Academy from './Academy'
 import Home from './Home'
 import { LegalNews } from './LegalNews'
 import { Settings } from './settings'
-import { Sidebar } from './Sidebar'
-import { homePages } from './Sidebar'
-import { docPages } from './Sidebar'
+import { Sidebar, homePages, docPages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './Reports'
 
@@ -81,7 +79,9 @@ function App() {
   return (
   <div className="app-container">
     <Sidebar homePages={homePages} docPages={docPages} onPageChange={setActivePage} />
+    <div className="content__container">
       {renderActivePage()}
+    </div>
   </div>
     
       

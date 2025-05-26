@@ -1,3 +1,4 @@
+import "./plancard.css";
 export const PlanCard = ({ currentPlan, monthlyVisitors, totalVisitors }) => {
     const percentage = (monthlyVisitors / totalVisitors) * 100;
 

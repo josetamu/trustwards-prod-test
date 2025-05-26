@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabase/supabaseClient';
-import { SidebarLink } from './SitebarLink';
-import { profilePages } from './Sidebar';
+import { supabase } from '../../supabase/supabaseClient';
+import { SidebarLink } from '../sitebarLink/SitebarLink';
+import { profilePages } from '../sideBar/Sidebar';
+import "./ProfileDropdown.css";
 
 
 

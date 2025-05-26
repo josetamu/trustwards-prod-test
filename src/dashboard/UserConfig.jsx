@@ -1,4 +1,4 @@
-import { SidebarLink } from './SitebarLink';
+import { SidebarLink } from './sitebarLink/SitebarLink';
 
 
 // Modal profile
