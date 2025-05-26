@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Site } from './Site';
-import { Modal } from './Modal';
-import { DeleteModal } from './DeleteModal';
+import { Modal } from '../modal/Modal';
+import { DeleteModal } from '../modal/DeleteModal';
 
 export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
   const [siteList, setSiteList] = useState(sites);

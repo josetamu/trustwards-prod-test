@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react'
-import { Sidebar } from './components/Sidebar'
-import { supabase } from './supabase/supabaseClient';
-import { homePages } from './components/Sidebar'
-import './App.css'
-import { Sites } from './components/Sites'  
-import { Settings } from './components/settings'
-import { Reports } from './components/Reports'
-import Home from './components/Home'
-import Academy from './components/Academy'
-import { LegalNews } from './components/LegalNews'
-import './components/Components.css'
-import { docPages } from './components/Sidebar'
+import { supabase } from '../supabase/supabaseClient';
+import './Global.css'
+import './modal/Modal.css'
+import './sites/Sites.css'
+
+import Academy from './Academy'
+import Home from './Home'
+import { LegalNews } from './LegalNews'
+import { Settings } from './settings'
+import { Sidebar } from './Sidebar'
+import { homePages } from './Sidebar'
+import { docPages } from './Sidebar'
+import { Sites } from './sites/Sites'  
+import { Reports } from './Reports'
 
 
 function App() {
