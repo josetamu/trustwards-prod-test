@@ -2,7 +2,7 @@
 export const SidebarLink = ({ icon, text, onClick, className, children }) => {
     return (
         <a 
-            className={`sidebar__link ${className || ''}`}
+            className={` ${className || 'sidebar__link'}`}
             onClick={onClick}
             style={{ cursor: 'pointer' }}
         >
