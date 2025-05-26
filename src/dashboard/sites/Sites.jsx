@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Site } from './Site';
 import { Modal } from '../modal/Modal';
-import { DeleteModal } from '../modal/DeleteModal';
+import './Sites.css'
 
 export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
   const [siteList, setSiteList] = useState(sites);
@@ -51,20 +51,20 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
   };
 
   return (
-    <div className="sites-wrapper">
+    <div className="sites__wrapper">
       <button onClick={() => {
         setEditingSite(null);
         setIsModalOpen(true);
-      }} className="sites-button">
+      }} className="sites__add-button">
         Add Site
       </button>
 
-      <div className="sites-list">
-        <div className="sites-list-header">
-          <h2>Sites</h2>
-          <div className="sites-list-headings">
-            <h4>Edit</h4>
-            <h4>Delete</h4>
+      <div className="sites__list">
+        <div className="sites__header">
+          <h2 className="sites__title">Sites</h2>
+          <div className="sites__headings">
+            <h4 className="sites__heading">Edit</h4>
+            <h4 className="sites__heading">Delete</h4>
           </div>
         </div>
         {siteList.map((site) => (
@@ -91,8 +91,9 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
       )}
 
       {siteToDelete && (
-        <DeleteModal
-          onConfirm={confirmDelete}
+        <Modal
+          type="delete"
+          onSave={confirmDelete}
           onCancel={() => setSiteToDelete(null)}
         />
       )}

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabase/supabaseClient';
 import './Global.css'
-import './modal/Modal.css'
-import './sites/Sites.css'
 
 import Academy from './Academy'
 import Home from './Home'
