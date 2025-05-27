@@ -3,12 +3,13 @@ import { supabase } from '../supabase/supabaseClient';
 import './Global.css'
 
 import Academy from './Academy'
-import Home from './Home'
-import { LegalNews } from './LegalNews'
-import { Settings } from './settings'
+import Home from './home/Home'
+import { LegalNews } from './legalNews/LegalNews'
+import { Settings } from './settings/Settings'
 import { Sidebar, homePages, docPages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
-import { Reports } from './Reports'
+import { Reports } from './reports/Reports'
+import { UserConfig } from './userConfig/UserConfig'
 
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
     <Sidebar homePages={homePages} docPages={docPages} onPageChange={setActivePage} />
     <div className="content__container">
       {renderActivePage()}
+     {/* {<UserConfig onClose={() => setIsModalOpen(false)} />} */}
     </div>
   </div>
     

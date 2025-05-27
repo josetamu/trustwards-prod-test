@@ -5,7 +5,7 @@ export const PlanCard = ({ currentPlan, monthlyVisitors, totalVisitors }) => {
     return (
         <div className="planCard">
             <div className="planCard__header">
-                <span className="planCard__header-icon">
+                <span className="planCard__icon">
                 <svg width="23" height="16" viewBox="0 0 23 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g filter="url(#filter0_d_79_136)">
                     <path d="M4 0H19V3H4V0Z" fill="url(#paint0_linear_79_136)"/>
@@ -38,14 +38,14 @@ export const PlanCard = ({ currentPlan, monthlyVisitors, totalVisitors }) => {
                     </defs>
                     </svg>
                 </span>
-                <span className="planCard__header-title">{currentPlan}</span>
-                <span className="planCard__header-subtitle">{monthlyVisitors}/{totalVisitors} monthly visitors</span>
+                <span className="planCard__title">{currentPlan}</span>
+                <span className="planCard__subtitle">{monthlyVisitors}/{totalVisitors} monthly visitors</span>
             </div>
             <div className="planCard__widgets">
-                <div className="planCard__widgets-bar">
-                    <div className="planCard__widgets-bar-fill" style={{ width: `${percentage}%` }}></div>
+                <div className="planCard__bar">
+                    <div className="planCard__fill" style={{ width: `${percentage}%` }}></div>
                 </div>
-                <button className={`${currentPlan === "Free plan" ? "planCard__widgets-button" : "planCard__widgets-button-disabled"}`}>Upgrade to Pro</button>
+                <button className={`${currentPlan === "Free plan" ? "planCard__button" : "planCard__button--disabled"}`}>Upgrade to Pro</button>
             </div>
         </div>
     )
