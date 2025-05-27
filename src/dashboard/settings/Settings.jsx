@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabase/supabaseClient';
+import { supabase } from '../../supabase/supabaseClient';
 
 
 export function Settings({ onClose }) {

@@ -30,14 +30,14 @@
     gap: 10px;
     padding: 10px;
   }
-  .profileDropdown__header-avatar{
+  .profileDropdown__header--avatar{
     width: 21px;
     height: 21px;
     border-radius: 50%;
     border: 1px solid #E0E0E0;
     padding: 2px;
   }
-  .profileDropdown__header-name{
+  .profileDropdown__header--name{
     font-size: var(--items-font-size);
     font-weight: var(--font-weight);
     color: var(--category-items-font-color);
@@ -52,20 +52,20 @@
     gap: 10px;
     padding: 10px;
   }
-  .profileDropdown__icons-down{
+  .profileDropdown__icons--down{
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
   }
-  .profileDropdown__icons-up{
+  .profileDropdown__icons--up{
     display: none;
   }
-  .profileDropdown:hover .profileDropdown__icons-up{
+  .profileDropdown:hover .profileDropdown__icons--up{
     display: flex;
     transition: all 0.6s ease;
   }
-  .profileDropdown:hover .profileDropdown__icons-down{
+  .profileDropdown:hover .profileDropdown__icons--down{
     display: none;
     transition: all 0.6s ease;
   }
@@ -84,21 +84,21 @@
     padding: 10px;
     flex-direction: column;
     position: absolute;
-    bottom: 190px;
+    bottom: 100px;
     z-index: 1;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
 
   
-  .sidebar__profile-upper{
+  .profileDropdown__upper{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
   }
-  .sidebar__profile-lower{
+  .profileDropdown__lower{
     border-top: 1px solid #E0E0E0;
     display: flex;
     flex-direction: column;
@@ -106,7 +106,7 @@
     padding-top: 10px;
     width: 100%;
   }
-  .sidebar__profile-link {
+  .profileDropdown__link {
     margin-bottom: 10px;
     display: flex;
     flex-direction: row;
@@ -121,28 +121,28 @@
    
   }
 
-  .sidebar__profile-link svg {
+  .profileDropdown__link svg {
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .sidebar__profile-link:hover {
+  .profileDropdown__link:hover {
     color: #000;
     stroke: #000;
   }
-  .sidebar__profile-link:hover svg path{
+  .profileDropdown__link:hover svg path{
     stroke: #000;
   }
-  .sidebar__profile-link:hover svg .fill{
+  .profileDropdown__link:hover svg .fill{
     fill: #000;
     stroke: none;
   }
 
-  .sidebar__profile-link.logout:hover {
+  .profileDropdown__link--logout:hover {
     color: #db1515;
   }
-  .sidebar__profile-link:hover.logout svg path{
+  .profileDropdown__link--logout:hover svg path {
     stroke: #db1515;
   }
 
@@ -156,26 +156,26 @@
         width: 100%;
     
       } 
-      
+    
     .profileDropdown:hover .profileDropdown__dropdown{
     background-color: rgba(255, 255, 255, 0.97);
     display: flex;
-    width: 205px;
+    width: 100%;
     height: 170px;
     border-radius: 10px;
     border: 2px solid #E0E0E0;
     padding: 10px;
     flex-direction: column;
     position: absolute;
-    bottom: -20px;
-    right: 220px;
+    bottom: 80px;
+    
     z-index: 1;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   .profileDropdown__profile{
     height: 40px;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     width: 100%;
     gap: 0px;
 
@@ -185,24 +185,24 @@
   }
 
   
-  .sidebar__profile-upper{
+  .profileDropdown__upper{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
   }
-  .sidebar__profile-lower{
+  .profileDropdown__lower{
     padding: 0;
     border-top: 1px solid #E0E0E0;
     display: flex;
     flex-direction: column;
     align-items: start;
-    padding-top: 10px;
+    padding-top: 5px;
 
     width: 100%;
   }
-  .sidebar__profile-link {
+  .profileDropdown__link {
   
     display: flex;
     flex-direction: row;
@@ -217,31 +217,28 @@
    
   }
 
-  .sidebar__profile-link svg {
+  .profileDropdown__link svg {
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .sidebar__profile-link:hover {
+  .profileDropdown__link:hover {
     color: #000;
     stroke: #000;
   }
-  .sidebar__profile-link:hover svg path{
+  .profileDropdown__link:hover svg path{
     stroke: #000;
   }
-  .sidebar__profile-link:hover svg .fill{
+  .profileDropdown__link:hover svg .fill{
     fill: #000;
     stroke: none;
   }
 
-  .sidebar__profile-link.logout:hover {
+  .profileDropdown__link--logout:hover {
     color: #db1515;
   }
-  .sidebar__profile-link:hover.logout svg path{
+  .profileDropdown__link--logout:hover svg path {
     stroke: #db1515;
   }
-  
-  
   }
-
