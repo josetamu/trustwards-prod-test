@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Site } from './Site';
+import { Site } from '../site/Site';
 import { Modal } from '../modal/Modal';
 import './Sites.css'
 
@@ -52,21 +52,22 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
 
   return (
     <div className="sites__wrapper">
-      <button onClick={() => {
-        setEditingSite(null);
-        setIsModalOpen(true);
-      }} className="sites__add-button">
-        Add Site
-      </button>
-
-      <div className="sites__list">
-        <div className="sites__header">
-          <h2 className="sites__title">Sites</h2>
-          <div className="sites__headings">
-            <h4 className="sites__heading">Edit</h4>
-            <h4 className="sites__heading">Delete</h4>
-          </div>
+      <div className="sites__header">
+        <h2 className="sites__title">Sites</h2>
+        <div className="sites__header-actions">
+          <button 
+            onClick={() => {
+              setEditingSite(null);
+              setIsModalOpen(true);
+            }} 
+            className="sites__new-button"
+          >
+            New
+          </button>
         </div>
+      </div>
+
+      <div className="sites__grid">
         {siteList.map((site) => (
           <Site
             key={site.id}

@@ -3,11 +3,12 @@ import './Alert.css';
 
 export function Alert({ 
   message,
-  className = ''
+  className = '',
+  position
 }) {
   return (
     <div 
-      className={`alert ${className}`}
+      className={`alert alert--${position} ${className}`}
       role="alert"
       aria-live="polite"
     >

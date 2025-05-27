@@ -25,14 +25,12 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
     }
   }, [closeModal]);
 
-  // Press Escape or Enter
+  // Press Escape (global)
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') {
       closeModal();
-    } else if (e.key === 'Enter' && type === 'create') {
-      handleCreate();
     }
-  }, [inputValue, domainValue, type]);
+  }, [closeModal]);
 
   // Validate inputs
   const validateInputs = () => {
@@ -57,8 +55,8 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
     }
   };
 
-  // Handle input change
-  const handleInputChange = (field, value) => {
+  // Handle input editing and clear errors when input is valid
+  const handleInputEdit = (field, value) => {
     if (field === 'input') {
       setInputValue(value);
       if (value.trim()) {
@@ -72,6 +70,17 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
     }
   };
 
+  // Save the new site when "Save" button is clicked or Enter is pressed
+  const handleCreate = () => {
+    if (validateInputs()) {
+      onSave(inputValue.trim(), domainValue.trim());
+      setInputValue('');
+      setDomainValue('');
+      setErrors({});
+    }
+  };
+
+  // Accessibility
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     // Focus trap
@@ -104,16 +113,7 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
     };
   }, [handleKeyDown]);
 
-  // Save the new site when "Save" button is clicked or Enter is pressed
-  const handleCreate = () => {
-    if (validateInputs()) {
-      onSave(inputValue.trim(), domainValue.trim());
-      setInputValue('');
-      setDomainValue('');
-      setErrors({});
-    }
-  };
-
+  // Update values when editing
   useEffect(() => {
     setInputValue(initialData?.text?.trim() || '');
     setDomainValue(initialData?.domain?.trim() || '');
@@ -149,48 +149,81 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <h2 className="modal__title" id="modal-title">New site</h2>
-        <div className="modal__inputs">
-          <div className="modal__input-wrapper">
-            <input
-              ref={firstInputRef}
-              type="text"
-              value={inputValue}
-              placeholder="Type here the name of the domain"
-              onChange={(e) => handleInputChange('input', e.target.value)}
-              onBlur={() => handleInputBlur('input')}
-              className="modal__input"
-              autoFocus
-              aria-invalid={!!errors.input}
-              aria-describedby={errors.input ? 'input-error' : undefined}
-            />
-            {errors.input && (
-              <Alert message={errors.input} id="input-error" />
-            )}
+        <div className="modal__header">
+          <div className="modal__avatar" />
+        </div>
+        <div className='modal__content'>
+          <h2 className="modal__title" id="modal-title">New site</h2>
+          <div className="modal__inputs">
+            <div className="modal__input-wrapper">
+              <input
+                ref={firstInputRef}
+                type="text"
+                value={inputValue}
+                placeholder="Type here the name of the domain"
+                onChange={(e) => handleInputEdit('input', e.target.value)}
+                onBlur={() => handleInputBlur('input')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && inputValue.trim() && domainValue.trim()) {
+                    handleCreate();
+                  }
+                }}
+                className="modal__input"
+                autoFocus
+                aria-invalid={!!errors.input}
+                aria-describedby={errors.input ? 'input-error' : undefined}
+              />
+              {errors.input && (
+                <Alert 
+                  message={errors.input} 
+                  id="input-error"
+                  position="right"
+                />
+              )}
+            </div>
+            <div className="modal__input-wrapper">
+              <input
+                ref={secondInputRef}
+                type="text"
+                value={domainValue}
+                placeholder="Domain URL"
+                onChange={(e) => handleInputEdit('domain', e.target.value)}
+                onBlur={() => handleInputBlur('domain')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && inputValue.trim() && domainValue.trim()) {
+                    handleCreate();
+                  }
+                }}
+                className="modal__input"
+                aria-invalid={!!errors.domain}
+                aria-describedby={errors.domain ? 'domain-error' : undefined}
+              />
+              {errors.domain && (
+                <Alert 
+                  message={errors.domain} 
+                  id="domain-error"
+                  position="right"
+                />
+              )}
+            </div>
           </div>
-          <div className="modal__input-wrapper">
-            <input
-              ref={secondInputRef}
-              type="text"
-              value={domainValue}
-              placeholder="Domain URL"
-              onChange={(e) => handleInputChange('domain', e.target.value)}
-              onBlur={() => handleInputBlur('domain')}
-              className="modal__input"
-              aria-invalid={!!errors.domain}
-              aria-describedby={errors.domain ? 'domain-error' : undefined}
-            />
-            {errors.domain && (
-              <Alert message={errors.domain} id="domain-error" />
-            )}
+          <div className="modal__actions-bar">
+            <button 
+              className="modal__button modal__button--cancel"
+              onClick={closeModal}
+              type="button"
+            >
+              Cancel
+            </button>
+            <button 
+              className="modal__button modal__button--save"
+              onClick={handleCreate}
+              type="button"
+            >
+              Save
+            </button>
           </div>
         </div>
-        <button 
-          className="modal__button modal__button--save"
-          onClick={handleCreate}
-        >
-          Save
-        </button>
       </div>
     </div>
   );

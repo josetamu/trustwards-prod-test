@@ -1,44 +1,16 @@
 /* SITES */
 .sites__wrapper {
   width: 100%;
-  padding: 20px;
+  max-width: 1200px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   margin: 0 auto;
-  border-radius: 20px;
   background-color: #ffffff;
 }
 
-/* ADD SITE BUTTON */
-.sites__add-button {
-  width: fit-content;
-  align-self: flex-end;
-  padding: 10px 20px;
-  background-color: #3b82f6;
-  color: #ffffff;
-  font-family: Inter;
-  font-size: 16px;
-  font-weight: 500;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 0 10px 0 rgb(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.sites__add-button:hover {
-  background-color: #2563eb;
-}
-
-/* ALL SITES */
-.sites__list {
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
+/* HEADER */
 .sites__header {
   display: flex;
   justify-content: space-between;
@@ -46,73 +18,42 @@
   width: 100%;
 }
 
-.sites__headings {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: fit-content;
-  gap: 15px;
-}
-
-/* SINGLE CARD SITE */
-.site {
-  width: calc(100% - 32px);
-  padding: 10px 16px;
-  background-color: #f9fafb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.3s;
-}
-
-.site:hover {
-  background-color: #ebeced;
-  cursor: default;
-}
-
-.site__content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-}
-.site__content strong {
-  font-family: Inter;
+.sites__title {
+  font-size: 24px;
   font-weight: 600;
-  font-size: 20px;
-  color: #000;
-}
-.site__content p {
+  color: #111827;
   margin: 0;
-  font-family: Inter;
-  font-weight: 600;
-  font-size: 16px;
-  color: #6b7280;
 }
 
-/* SITE EDIT AND DELETE BUTTONS */
-.site__actions {
+.sites__header-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  align-items: center;
 }
 
-.site__actions button {
-  background: none;
+/* NEW BUTTON */
+.sites__new-button {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
   border: none;
-  padding: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.2s;
-}
-.site__actions button:hover {
-  transform: scale(1.1);
+  transition: background-color 0.2s;
 }
 
-.site__actions button svg {
-  display: block;
-  stroke: #374151;
-  transition: stroke 0.2s;
+.sites__new-button:hover {
+  background-color: #2563eb;
 }
-.site__actions button:hover svg {
-  stroke: #1f2937;
+
+/* SITES GRID */
+.sites__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  width: 100%;
 }
+
 /* SITES */

@@ -10,108 +10,148 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-  }
-  
-  .modal {
-    background: #d3d3d3;
-    padding: 20px;
-    border-radius: 10px;
-    width: fit-content;
-    height: auto;
+}
+
+.modal {
+    background: #F3F3F3D9;
+    padding: 3px;
+    border: 1px solid #DBDBDB;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10);
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    gap: 35px;
+    align-items: center;
   }
   
-  .modal__title {
-    margin-bottom: 1rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-  
-  .modal__inputs {
-    width: 300px;
+
+.modal__header {
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(135deg, #3b5998 0%, #e17055 100%);
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  position: relative;
+}
+
+.modal__avatar {
+  width: 60px;
+  height: 60px;
+  background: #fff;
+  border-radius: 50%;
+  border: 1px solid #E0E0E0;
+  position: absolute;
+  bottom: -28px;
+  left: 13px;
+  box-shadow: 0 0px 0px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+.modal__content {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-  }
-  
-  .modal__input-wrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .modal__input {
-    border-radius: 10px;
-    padding: 10px;
-    border: 1px solid #000;
-    background-color: #fff;
-    font-family: Inter;
-    font-size: 14px;
-    font-weight: 600;
-    color: #000;
-  }
-  .modal__input::placeholder {
-    color: #858585;
-    font-weight: 500;
-  }
-  .modal__input[aria-invalid="true"] {
-    border-color: #dc2626;
-  }
-  
-  /*MODAL BUTTONS */
-  .modal__button {
-    width: fit-content;
-    display: flex;
-    align-self: flex-end;
-    border-radius: 5px;
-    padding: 5px 20px;
-    font-family: Inter;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .modal__button--save {
-    background-color: #007bff;
-    color: white;
-  }
-  .modal__button--save:hover {
-    background-color: #0056b3;
-  }
-  
-  /* DELETE MODAL - CANCEL AND DELETE BUTTONS */
-  .modal__actions {
+    gap: 25px;
+}
+
+.modal__title {
+  font-family: var(--font-family);
+  letter-spacing: var(--letter-spacing);
+  font-weight: 500;
+  font-size: 20px;
+  font-weight: 500;
+  color: #000000;
+  text-align: center;
+}
+
+.modal__inputs {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal__input-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal__input {
+  width: 100%;
+  padding: 13px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #ffffff;
+  font-family: var(--font-family);
+  letter-spacing: var(--letter-spacing);
+  font-size: 12px;
+  font-weight: 500;
+  color: #191919;
+  transition: border-color 0.2s;
+}
+/*
+.modal__input:focus {
+  outline: none;
+  border-color: #2196f3;
+}
+.modal__input[aria-invalid="true"] {
+  border-color: #ef4444;
+}
+*/
+.modal__actions-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.modal__button--save {
+  background: var(--btn-bg);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 7px 14px;
+  font-family: var(--font-family);
+  letter-spacing: var(--letter-spacing);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal__button--save:hover {
+  background: #1769aa;
+}
+
+/* CANCEL AND DELETE BUTTONS */
+.modal__actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-  }
-  
-  .modal__button--cancel {
-    background-color: transparent;
-    color: black;
-    border: 1px solid #000;
-    padding: 8px 16px;
+}
+
+.modal__button--cancel {
+    background: transparent;
+    color: #888;
+    border: var(--btn-cdn-border);
     border-radius: 6px;
+    padding: 7x 14px;
+    font-family: var(--font-family);
+    letter-spacing: var(--letter-spacing);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
     transition: background 0.2s;
   }
-  .modal__button--cancel:hover {
-    background-color: #f3f4f6;
-  }
-  
-  .modal__button--delete {
+
+.modal__button--delete {
     background-color: #dc2626;
     color: black;
-    border: 1px solid #000;
-    padding: 8px 16px;
-    border-radius: 6px;
-    transition: background 0.2s;
-  }
-  .modal__button--delete:hover {
+}
+.modal__button--delete:hover {
     background-color: #ef4444;
-  }
-  /* >MODAL */
+}
+/* >MODAL */
