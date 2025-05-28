@@ -150,10 +150,12 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
         aria-labelledby="modal-title"
       >
         <div className="modal__header">
-          <div className="modal__avatar" />
+          <div className="modal__avatar">
+            <img src="/logo test.png" alt="logo" />
+          </div>
         </div>
         <div className='modal__content'>
-          <h2 className="modal__title" id="modal-title">New site</h2>
+          <h2 className="modal__title" id="modal-title">{type === 'edit' ? 'Edit site' : 'New site'}</h2>
           <div className="modal__inputs">
             <div className="modal__input-wrapper">
               <input

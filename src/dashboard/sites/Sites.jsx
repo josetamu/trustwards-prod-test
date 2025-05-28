@@ -5,49 +5,16 @@ import './Sites.css'
 
 export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
   const [siteList, setSiteList] = useState(sites);
-  const [editingSite, setEditingSite] = useState(null);
-  const [siteToDelete, setSiteToDelete] = useState(null);
 
-   // Handles both adding a new site and editing an existing one
-  const handleAddOrEditSite = (newText, newDomain) => {
-    if (editingSite) {
-      // Edit an existing site
-      setSiteList(prev =>
-        prev.map(site =>
-          site.id === editingSite.id ? { ...site, text: newText, domain: newDomain } : site
-        )
-      );
-      setEditingSite(null);
-    } else {
-      // Add a new site
-      const newSite = {
-        id: crypto.randomUUID(),
-        text: newText,
-        domain: newDomain,
-      };
-      setSiteList(prev => [...prev, newSite]);
-    }
-
+  // Añadir un nuevo site
+  const handleAddSite = (newText, newDomain) => {
+    const newSite = {
+      id: crypto.randomUUID(),
+      text: newText,
+      domain: newDomain,
+    };
+    setSiteList(prev => [...prev, newSite]);
     setIsModalOpen(false);
-  };
-
-  // Delete the site
-  const handleDeleteSite = (id) => {
-    setSiteToDelete(id);
-  };
-  const confirmDelete = () => {
-    setSiteList(prev => prev.filter(site => site.id !== siteToDelete));
-    setSiteToDelete(null);
-  };
-  
-
-  // Open the modal to edit the site
-  const handleEditSite = (id) => {
-    const siteToEdit = siteList.find(c => c.id === id);
-    if (siteToEdit) {
-      setEditingSite(siteToEdit);
-      setIsModalOpen(true);
-    }
   };
 
   return (
@@ -57,7 +24,6 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
         <div className="sites__header-actions">
           <button 
             onClick={() => {
-              setEditingSite(null);
               setIsModalOpen(true);
             }} 
             className="sites__new-button"
@@ -74,31 +40,22 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
             id={site.id}
             text={site.text}
             domain={site.domain}
-            onEdit={handleEditSite}
-            onDelete={handleDeleteSite}
+            onUpdate={(updatedText, updatedDomain) => {
+              setSiteList(prev => prev.map(s => s.id === site.id ? { ...s, text: updatedText, domain: updatedDomain } : s));
+            }}
+            onRemove={() => {
+              setSiteList(prev => prev.filter(s => s.id !== site.id));
+            }}
           />
         ))}
       </div>
 
       {isModalOpen && (
         <Modal
-          onSave={(text, domain) => handleAddOrEditSite(text, domain)}
-          onCancel={() => {
-            setIsModalOpen(false);
-            setEditingSite(null);
-          }}
-          initialData={editingSite}
+          onSave={handleAddSite}
+          onCancel={() => setIsModalOpen(false)}
         />
       )}
-
-      {siteToDelete && (
-        <Modal
-          type="delete"
-          onSave={confirmDelete}
-          onCancel={() => setSiteToDelete(null)}
-        />
-      )}
-
     </div>
   );
 };

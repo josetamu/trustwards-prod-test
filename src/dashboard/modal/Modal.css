@@ -3,9 +3,11 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,24 +15,23 @@
 }
 
 .modal {
-    background: #F3F3F3D9;
+    background: rgba(243, 243, 243, 0.65);
     padding: 3px;
-    border: 1px solid #DBDBDB;
+    border: 1px solid rgba(219, 219, 219, 0.85);
     border-radius: 16px;
     width: 100%;
     max-width: 380px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10);
     display: flex;
     flex-direction: column;
-    gap: 35px;
+    gap: 0;
     align-items: center;
-  }
-  
+}
 
 .modal__header {
   width: 100%;
   height: 50px;
-  background: linear-gradient(135deg, #3b5998 0%, #e17055 100%);
+  background: linear-gradient(135deg, #3b5998 30%, #e17055 100%);
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
   position: relative;
@@ -39,64 +40,75 @@
 .modal__avatar {
   width: 60px;
   height: 60px;
+  padding: 7px;
   background: #fff;
   border-radius: 50%;
   border: 1px solid #E0E0E0;
   position: absolute;
-  bottom: -28px;
-  left: 13px;
-  box-shadow: 0 0px 0px rgba(0,0,0,0.5);
+  bottom: -27px;
+  left: 18px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .modal__content {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 18px;
+    padding: 38px 22px 22px 22px;
+    box-sizing: border-box;
 }
 
 .modal__title {
   font-family: var(--font-family);
   letter-spacing: var(--letter-spacing);
   font-weight: 500;
-  font-size: 20px;
-  font-weight: 500;
-  color: #000000;
-  text-align: center;
+  font-size: 18px;
+  color: #000;
 }
 
 .modal__inputs {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .modal__input-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .modal__input {
   width: 100%;
-  padding: 13px 10px;
+  padding: 12px 12px;
   border: none;
   border-radius: 6px;
-  background: #ffffff;
+  background: #E2E2E2;
   font-family: var(--font-family);
   letter-spacing: var(--letter-spacing);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-  color: #191919;
-  transition: border-color 0.2s;
+  color: #5E5E5E;
+  /*transition: border-color 0.2s;*/
 }
 /*
 .modal__input:focus {
   outline: none;
-  border-color: #2196f3;
+  border-color: #3b5998;
+  background: #fff;
 }
 .modal__input[aria-invalid="true"] {
   border-color: #ef4444;
@@ -106,7 +118,8 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+  margin-top: 10px;
 }
 
 .modal__button--save {
@@ -114,44 +127,46 @@
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 7px 14px;
+  padding: 8px 12px;
   font-family: var(--font-family);
   letter-spacing: var(--letter-spacing);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
-}
-.modal__button--save:hover {
-  background: #1769aa;
+  box-shadow: 0 2px 8px rgba(60,60,60,0.10);
 }
 
 /* CANCEL AND DELETE BUTTONS */
 .modal__actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .modal__button--cancel {
     background: transparent;
-    color: #888;
+    color: #5E5E5E;
     border: var(--btn-cdn-border);
-    border-radius: 6px;
-    padding: 7x 14px;
+    border-radius: 10px;
+    padding: 6px 12px;
     font-family: var(--font-family);
     letter-spacing: var(--letter-spacing);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s;
-  }
+    text-decoration: none;
+}
 
 .modal__button--delete {
     background-color: #dc2626;
-    color: black;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-family: var(--font-family);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
 }
-.modal__button--delete:hover {
-    background-color: #ef4444;
-}
+
 /* >MODAL */
