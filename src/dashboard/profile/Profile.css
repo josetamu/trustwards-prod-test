@@ -22,7 +22,7 @@
     border-radius: 10px;
     width: 330px;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-color);
     border-radius: 16px;
     position: relative;
     display: flex;
@@ -52,9 +52,9 @@
     padding: 25px 10px 0px 10px;
   }
   .userConfig__header--name{
-    font-size: var(--items-font-size);
+    font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
-    color: var(--category-items-font-color);
+    color: var(--sidebar-items-color);
     letter-spacing: var(--letter-spacing);
     font-family: var(--font-family);
   }
@@ -74,7 +74,7 @@
     width: 47px;
     height: 47px;
     border-radius: 50%;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border-color);
     background-color: #fff;
     padding: 4px;
   }
@@ -95,7 +95,7 @@
     width: 8px;
     height: 8px;
     padding: 1px;
-    border: 0.5px solid #e0e0e0;
+    border: 0.5px solid var(--border-color);
     cursor: pointer;
 
   }
@@ -111,7 +111,7 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 10px 0px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
   }
   .userConfig__row--last{
     border-bottom: none;
@@ -126,7 +126,7 @@
   .userConfig__row-span{
     font-size: 10px;
     font-weight: var(--font-weight);
-    color: var(--category-items-font-color);
+    color: var(--sidebar-items-color);
     letter-spacing: var(--letter-spacing);
     font-family: var(--font-family);
   }
@@ -141,7 +141,7 @@
     padding: 5px;
     font-size: 10px;
     font-weight: var(--font-weight);
-    color: var(--category-items-font-color);
+    color: var(--sidebar-items-color);
     letter-spacing: var(--letter-spacing);
     font-family: var(--font-family);
   }
@@ -152,7 +152,7 @@
     height: 20px;
     width: 60px;
     border-radius: 6px;
-    background-color: var(--category-items-font-color);
+    background-color: var(--background-color-black);
     color: #ffffff;
     font-size: 10px;
     padding: 5px 5px;
@@ -177,7 +177,7 @@
 .userConfig__footer__logout{
     height: 20px;
     background-color: transparent;
-    border: 1px dashed #E3E3E3;
+    border: 1px dashed var(--border-color);
     border-radius: 6px;
     padding: 5px;
     font-size: 10px;
@@ -192,7 +192,7 @@
 
 .userConfig__footer__save{
     height: 20px;
-    background-color: #0099FE;
+    background-color: var(--background-color-blue);
     color: #ffffff;
     border-radius: 6px;
     border: none;
@@ -212,9 +212,7 @@
   
 
 
-
-
-    /* <SETTINGS */
+/* 
     .settingsUser {
         position: fixed;
         top: 0;
@@ -265,4 +263,4 @@
       .settingsUser__table-body:hover {
         background-color: #f3f3f3;
       }
-      /* >SETTINGS */
+       */

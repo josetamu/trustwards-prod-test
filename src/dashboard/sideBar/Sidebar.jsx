@@ -259,7 +259,7 @@ export function Sidebar({ homePages,
                     <PlanCard currentPlan={"Free plan"} monthlyVisitors={20} totalVisitors={100} />
                     <ProfileDropdown avatar="avatar" 
                     name="Oscar Abad" 
-                    toggleSidebar={toggleSidebar} 
+                    toggleSidebar={toggleSidebar}
                     isSidebarOpen={isSidebarOpen} 
                     setIsSidebarOpen={setIsSidebarOpen}
                     setUserSettings={setUserSettings}/>
