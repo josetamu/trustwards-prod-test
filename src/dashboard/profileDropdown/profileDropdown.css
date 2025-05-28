@@ -121,7 +121,7 @@
    
   }
 
-  .profileDropdown__link svg {
+  .profileDropdown__link--svg {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,10 +131,10 @@
     color: #000;
     stroke: #000;
   }
-  .profileDropdown__link:hover svg path{
+  .profileDropdown__link:hover .profileDropdown__link--path{
     stroke: #000;
   }
-  .profileDropdown__link:hover svg .fill{
+  .profileDropdown__link:hover .profileDropdown__link--fill{
     fill: #000;
     stroke: none;
   }
@@ -142,7 +142,7 @@
   .profileDropdown__link--logout:hover {
     color: #db1515;
   }
-  .profileDropdown__link--logout:hover svg path {
+  .profileDropdown__link--logout:hover .profileDropdown__link--path {
     stroke: #db1515;
   }
 
@@ -193,13 +193,12 @@
     width: 100%;
   }
   .profileDropdown__lower{
-    padding: 0;
+   
     border-top: 1px solid #E0E0E0;
     display: flex;
     flex-direction: column;
     align-items: start;
     padding-top: 5px;
-
     width: 100%;
   }
   .profileDropdown__link {
@@ -217,7 +216,7 @@
    
   }
 
-  .profileDropdown__link svg {
+  .profileDropdown__link--svg {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -227,10 +226,10 @@
     color: #000;
     stroke: #000;
   }
-  .profileDropdown__link:hover svg path{
+  .profileDropdown__link:hover .profileDropdown__link--path{
     stroke: #000;
   }
-  .profileDropdown__link:hover svg .fill{
+  .profileDropdown__link:hover .profileDropdown__link--fill{
     fill: #000;
     stroke: none;
   }
@@ -238,7 +237,7 @@
   .profileDropdown__link--logout:hover {
     color: #db1515;
   }
-  .profileDropdown__link--logout:hover svg path {
+  .profileDropdown__link--logout:hover .profileDropdown__link--path {
     stroke: #db1515;
   }
   }
