@@ -9,17 +9,26 @@
 
 :root {
   --font-family: 'Inter', sans-serif;
-  --category-items-font-color: #191919;
-  --items-font-color: #686B74;
   --font-weight: 500;
   --letter-spacing: -0.05em;
-  --items-font-size: 14px;
-  --icon-main-size: 16px;
-  --icon-size: 16px;
-
   --btn-cdn-border: 2px dashed #E3E3E3;
+  --background-color-blue: #0099FE;
+  --background-color-black: #191919;
+  --border-color: #E0E0E0;
+
+
+
+
+
+
+
+
+ 
+
+ 
   --font-size-btn: 14px;
-  --btn-bg: #0099FE;
+ 
+
   --btn-bg-hover: #1769aa;
   --font-size-name: 20px;
   --font-size-domain: 12px;

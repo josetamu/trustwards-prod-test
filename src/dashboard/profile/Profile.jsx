@@ -3,7 +3,7 @@ import { supabase } from '../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
 
 // Modal profile
-export function Profile({ setUserSettings }) {
+export function Profile({ setUserSettings}) {
     /* const [loading, setLoading] = useState(true); */
     const [user, setUser] = useState(null);
 
