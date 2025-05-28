@@ -37,7 +37,7 @@
     width: 18px;
     height: 18px;
 }
-.planCard__icon svg {
+.planCard__icon--svg {
     transform: translateY(2.5px);
 }
   .planCard__title{
@@ -96,7 +96,7 @@
     box-shadow: 0 0 10px 0 rgb(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
   .planCard__button:hover{
-    opacity: 0.95;
+    opacity: 0.9;
   }
   .planCard__button--disabled{
     display: none;

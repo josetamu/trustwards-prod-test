@@ -8,7 +8,7 @@ import "./ProfileDropdown.css";
 
 
 
-export const ProfileDropdown = () => {
+export const ProfileDropdown = ({toggleSidebar, setUserSettings, setIsSidebarOpen}) => {
     const [user, setUser] = useState(null);
 
     const _loginDevUser = async () => {
@@ -28,6 +28,7 @@ export const ProfileDropdown = () => {
         }
     };
 
+
     useEffect(() => {
         _loginDevUser();
         getUser(); 
@@ -42,6 +43,11 @@ export const ProfileDropdown = () => {
                                     key={profilePage.name}
                                     icon={profilePage.icon}
                                     text={profilePage.name}
+                                    onClick={() => {
+                                        setUserSettings(profilePage.name);
+                                        setIsSidebarOpen(false); 
+                                        toggleSidebar();
+                                    }}
                                 />
                             ))}
                         </div>
