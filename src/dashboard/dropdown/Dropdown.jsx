@@ -78,9 +78,7 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro" 
         <div className="dropdown__content">
           <span className={`dropdown__label ${showDots ? 'is-hidden' : ''}`}>{label}</span>
           <div className={`dropdown__dots ${showDots ? 'is-visible' : ''}`}>
-            <div className="dropdown__dots-item"></div>
-            <div className="dropdown__dots-item"></div>
-            <div className="dropdown__dots-item"></div>
+            <img className="dropdown__dots-item" src="/dots.svg" alt="dots" />
           </div>
         </div>
       </button>
