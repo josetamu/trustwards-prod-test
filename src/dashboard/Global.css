@@ -11,7 +11,7 @@
   --font-family: 'Inter', sans-serif;
   --font-weight: 500;
   --letter-spacing: -0.05em;
-  --btn-cdn-border: 2px dashed #E3E3E3;
+  --dashed-border: 2px dashed #E3E3E3;
   --background-color-blue: #0099FE;
   --background-color-black: #191919;
   --border-color: #E0E0E0;
@@ -32,6 +32,11 @@
   --btn-bg-hover: #1769aa;
   --font-size-name: 20px;
   --font-size-domain: 12px;
+  --backdrop-blur: 22px;
+  --modal-background: rgba(243, 243, 243, 0.85);
+  --heading-font-size: 18px;
+  --input-background: #E2E2E2;
+  --avatar-background: #fff;
 }
 
 #root {
