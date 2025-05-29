@@ -1,10 +1,11 @@
 /* SITE CARD */
 .site {
-  background: #F3F3F3;
+  background: var(--modal-background);
   border-radius: 18px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
+  gap: 25px;
   align-items: center;
   position: relative;
   width: 100%;
@@ -29,26 +30,36 @@
 }
 
 .site__avatar {
-  width: 48px;
-  height: 48px;
-  background: white;
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  background: var(--avatar-background);
   border-radius: 50%;
-  border: 4px solid #fff;
+  border: 1px solid #E0E0E0;
   position: absolute;
-  bottom: -24px;
+  bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
   z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.site__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
-.site__main-content {
-  margin-top: 36px;
+.site__content {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
 }
 
 .site__name {
@@ -64,9 +75,8 @@
   font-family: var(--font-family);
   letter-spacing: var(--letter-spacing);
   font-size: var(--font-size-domain);
-  font-weight: 600;
+  font-weight: 700;
   color: #B1B1B1;
-  margin-top: 2px;
   text-align: center;
 }
 
@@ -75,7 +85,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 24px;
   padding: 0 18px 18px 18px;
 }
 
@@ -90,9 +99,9 @@
   letter-spacing: var(--letter-spacing);
   color: #B1B1B1;
   background: transparent;
-  border: var(--btn-cdn-border);
-  border-radius: 6px;
-  padding: 8px 16px;
+  border: var(--dashed-border);
+  border-radius: 12px;
+  padding: 7px 10px;
   font-size: var(--font-size-btn);
   font-weight: 700;
   cursor: pointer;
@@ -101,11 +110,11 @@
 .site__builder-btn {
   font-family: var(--font-family);
   letter-spacing: var(--letter-spacing);
-  background: var(--btn-bg);
+  background: var(--background-color-blue);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
+  border-radius: 10px;
+  padding: 7px 12px;
   font-size: var(--font-size-btn);
   font-weight: 500;
   cursor: pointer;

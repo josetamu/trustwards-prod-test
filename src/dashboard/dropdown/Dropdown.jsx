@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Dropdown.css';
 
-export function Dropdown({ onEdit, onDelete, openOnHover = false }) {
+export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro" }) {
   const [open, setOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const dropdownRef = useRef(null);
@@ -34,7 +34,32 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false }) {
     if (openOnHover) setOpen(false);
   };
 
+  // Close dropdown and call the callback function when clicking edit or delete
+  const closeDropdown = (callback) => {
+    setOpen(false);
+    setIsHovering(false);
+    if (callback) callback();
+  };  
+
   const showDots = isHovering || open;
+
+  // Menu alignment
+  const [menuAlignRight, setMenuAlignRight] = useState(true);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (open && menuRef.current) {
+      const menuRect = menuRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+  
+      // Left alignment
+      if (menuRect.right > viewportWidth) {
+        setMenuAlignRight(false);
+      } else {
+        setMenuAlignRight(true);
+      }
+    }
+  }, [open]);
 
   return (
     <div
@@ -42,6 +67,7 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false }) {
       ref={dropdownRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      data-align={menuAlignRight ? 'right' : 'left'}
     >
       <button
         className="dropdown__toggle"
@@ -49,14 +75,20 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false }) {
         aria-label="Open menu"
         type="button"
       >
-        <span className={`dropdown__label ${showDots ? 'is-hidden' : ''}`}>Pro</span>
-        <span className={`dropdown__dots ${showDots ? 'is-visible' : ''}`}>&hellip;</span>
+        <div className="dropdown__content">
+          <span className={`dropdown__label ${showDots ? 'is-hidden' : ''}`}>{label}</span>
+          <div className={`dropdown__dots ${showDots ? 'is-visible' : ''}`}>
+            <div className="dropdown__dots-item"></div>
+            <div className="dropdown__dots-item"></div>
+            <div className="dropdown__dots-item"></div>
+          </div>
+        </div>
       </button>
 
       {open && (
-        <div className="dropdown__menu">
-          <button className="dropdown__item" onClick={() => { setOpen(false); onEdit(); }}>Edit</button>
-          <button className="dropdown__item dropdown__item--delete" onClick={() => { setOpen(false); onDelete(); }}>Delete</button>
+        <div className={`dropdown__menu ${menuAlignRight ? '' : 'dropdown__menu--left'}`} ref={menuRef}>
+          <button className="dropdown__item dropdown__item--edit" onClick={() => { closeDropdown(onEdit) }}>Edit</button>
+          <button className="dropdown__item dropdown__item--delete" onClick={() => { closeDropdown(onDelete) }}>Delete</button>
         </div>
       )}
     </div>

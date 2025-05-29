@@ -10,9 +10,11 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
   return (
     <div className="site">
       <div className="site__gradient-header">
-        <div className="site__avatar" />
+        <div className="site__avatar">
+            <img src="/logo test.png" alt="logo" />
+        </div>
       </div>
-      <div className="site__main-content">
+      <div className="site__content">
         <div className="site__name">{text}</div>
         <div className="site__domain">{domain}</div>
       </div>
