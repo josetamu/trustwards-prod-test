@@ -45,7 +45,7 @@ export function Profile({ setUserSettings,user}) {
    }, []);
 
     return (
-        <div className="profile" onClick={() => setUserSettings(null)}>
+        <div className="profile open" onClick={() => setUserSettings(null)}>
             <div className="profile__modal" onClick={(e) => e.stopPropagation()}>
                 <div className="profile__banner">
 
