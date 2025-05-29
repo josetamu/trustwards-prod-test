@@ -31,7 +31,7 @@
     white-space: nowrap;
   }
   .sidebar{
-    width: 0px;
+    width: 50px;
     background-color: transparent;
     padding: 32.5px 15px;
     position: fixed;
@@ -108,7 +108,11 @@
     justify-content: space-between;
     ;
   }
-  
+  .sidebar__logos{
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+  }
   .sidebar__logos--open{
     display: flex;
     flex-direction: row;
@@ -120,7 +124,7 @@
     display: none;
   }
   .sidebar__logo--open{
-    display: flex;
+    display: none;
   }
   
   .sidebar__action {
@@ -432,3 +436,4 @@
     align-items: center;
 }
 }
+

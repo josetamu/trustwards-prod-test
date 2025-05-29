@@ -156,7 +156,9 @@ export function Sidebar({ homePages,
         <div className={`${isSidebarOpen ? 'sidebar--open' : 'sidebar'}`}>
             <div className={`${isSidebarOpen ? 'sidebar__logos--open' : 'sidebar__logos'}`}>
                 <div className={`${isSidebarOpen ? 'sidebar__logo--open' : 'sidebar__logo'}`}>
+                
                     <svg width="21" height="15" viewBox="0 0 21 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        
                         <path d="M0 0H21V4.09091H0V0Z" fill="url(#paint0_linear_64_364)"/>
                         <path d="M5.6 15V6.81818H14L5.6 15Z" fill="url(#paint1_linear_64_364)"/>
                         <path d="M11.2 15V6.81818H18.2L11.2 15Z" fill="url(#paint2_linear_64_364)"/>
@@ -175,6 +177,7 @@ export function Sidebar({ homePages,
                         </linearGradient>
                         </defs>
                     </svg>
+                    
                 </div>
                 <a className="sidebar__action" onClick={toggleSidebar}>
                     <svg className="sidebar__action__desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
