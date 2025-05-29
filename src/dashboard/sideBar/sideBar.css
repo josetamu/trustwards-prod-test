@@ -31,9 +31,9 @@
     white-space: nowrap;
   }
   .sidebar{
-    width: 50px;
+    width: 0px;
     background-color: transparent;
-    padding: 32.5px 40px;
+    padding: 32.5px 15px;
     position: fixed;
     left: 0;
     top: 0;
@@ -125,7 +125,7 @@
   
   .sidebar__action {
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     
     
   }

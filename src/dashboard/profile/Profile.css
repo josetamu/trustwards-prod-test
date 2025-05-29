@@ -154,6 +154,9 @@
     letter-spacing: var(--letter-spacing);
     font-family: var(--font-family);
   }
+  .profile__label:focus{
+    outline: 2px solid var(--border-color);
+  }
   .profile__label__name{
     width: 100px;
   }
