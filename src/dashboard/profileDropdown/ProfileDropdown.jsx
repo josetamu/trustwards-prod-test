@@ -33,6 +33,7 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user }) => {
         _loginDevUser();
         getUser(); 
     }, []);  */
+    console.log(user);
     return (
         <div className="profileDropdown">
             <div className="profileDropdown__dropdown">
@@ -73,7 +74,7 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user }) => {
             <div className="profileDropdown__profile">
             <div className="profileDropdown__header">
                 <img className="profileDropdown__header__avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="avatar" />
-                <span className="profileDropdown__header__name">{user?.user_metadata?.display_name || 'User'}</span>
+                <span className="profileDropdown__header__name">{user?.["First Name"]} {user?.["Second Name"] || "User"}</span>
             </div>
             <div className="profileDropdown__icons">
                 <span className="profileDropdown__icons--down">

@@ -59,8 +59,8 @@ export function Profile({ setUserSettings,user}) {
                             </svg>
 
                         </div> 
-                        <span className="profile__header__name">{user?.user_metadata?.display_name || 'Name'}</span>
-                        <span className="profile__header__email">{user?.email || 'Email'}</span>
+                        <span className="profile__header__name">{user?.["First Name"]} {user?.["Second Name"] || 'User'}</span>
+                        <span className="profile__header__email">{user?.Email || 'Email'}</span>
                       
                  
                 </div>
@@ -68,14 +68,14 @@ export function Profile({ setUserSettings,user}) {
                     <div className="profile__row">
                         <span className="profile__row__span">Name</span>
                         <div className="profile__input">
-                            <input className="profile__label profile__label__name" type="text" placeholder={`${user?.user_metadata?.display_name || 'Name'}`} />
-                            <input className="profile__label profile__label__name" type="text" placeholder="Last name" />
+                            <input className="profile__label profile__label__name" type="text" placeholder={`${user?.["First Name"] || 'FirstName'}`} />
+                            <input className="profile__label profile__label__name" type="text" placeholder={`${user?.["Second Name"] || 'Second Name'}`} />
                         </div>
                     </div>
                     <div className="profile__row">
                         <span className="profile__row__span">Email</span>
                         <div className="profile__input">
-                            <input className="profile__label" type="text" placeholder={`${user?.email || 'example@email.com'}`} />
+                            <input className="profile__label" type="text" placeholder={`${user?.Email || 'example@email.com'}`} />
                         </div>
                     </div>
                     <div className="profile__row profile__row--last">

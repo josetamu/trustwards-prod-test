@@ -49,18 +49,37 @@ function App() {
   };
 
   const getUser = async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if(error) {
-      console.log(error);
-    }else{
-      /* const user = data.user; */
-      setUser(data.user);
+    const { data: { user }, error: authError, } = await supabase.auth.getUser();
+    if(authError) {
+      console.log(authError);
     }
+   
+    if(!user) {
+      console.log('No user found');
+      return;
+    }
+    const userID = user.id;
+    const {data: userData, error: dbError} = await supabase
+    .from('Users')
+    .select('*')
+    .eq('id', userID)
+    .single();
+    if(dbError) {
+      console.log(dbError);
+    }
+
+    setUser(userData);
+  
   };
 
+
+
   useEffect(() => {
-    _loginDevUser();
-    getUser();
+    const init = async () => {
+      await _loginDevUser();
+      await getUser();
+    };
+    init();
   }, []);
 
   useEffect(() => {

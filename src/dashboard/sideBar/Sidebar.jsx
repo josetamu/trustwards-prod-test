@@ -151,7 +151,7 @@ export function Sidebar({ homePages,
         _loginDevUser();
         getUser(); 
     }, []);  */
-
+    console.log(user);
     return (
         <div className={`${isSidebarOpen ? 'sidebar--open' : 'sidebar'}`}>
             <div className={`${isSidebarOpen ? 'sidebar__logos--open' : 'sidebar__logos'}`}>
