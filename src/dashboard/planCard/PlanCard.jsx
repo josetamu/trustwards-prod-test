@@ -6,7 +6,7 @@ export const PlanCard = ({ currentPlan, monthlyVisitors, totalVisitors }) => {
         <div className="planCard">
             <div className="planCard__header">
                 <span className="planCard__icon">
-                    <svg className="planCard__icon--svg" width="23" height="16" viewBox="0 0 23 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg className="planCard__icon__svg" width="23" height="16" viewBox="0 0 23 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g filter="url(#filter0_d_79_136)">
                             <path d="M4 0H19V3H4V0Z" fill="url(#paint0_linear_79_136)"/>
                             <path d="M8 11V5H14L8 11Z" fill="url(#paint1_linear_79_136)"/>

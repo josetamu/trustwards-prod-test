@@ -18,11 +18,12 @@ function App() {
   const [activePage, setActivePage] = useState('Websites');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userSettings, setUserSettings] = useState(null);
+  const [user, setUser] = useState(null);
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
     const contentContainer = document.querySelector('.content__container');
-    const userSettings = document.querySelector('.userConfig');
+    const userSettings = document.querySelector('.profile');
     if (!isSidebarOpen) {
         contentContainer.classList.add('open');
         if(userSettings){
@@ -52,7 +53,8 @@ function App() {
     if(error) {
       console.log(error);
     }else{
-      const user = data.user;
+      /* const user = data.user; */
+      setUser(data.user);
     }
   };
 
@@ -96,24 +98,17 @@ function App() {
         return <Academy />;
       case 'Legal news':
         return <LegalNews />;
-      case 'Profile':
-        return <Profile />;
       default:
         return <Sites />
     }
     
   };
 
+  
   const renderUserSettings = () => {
-    window.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape'){
-        setUserSettings(null);
-      }
-    });
-    
     switch (userSettings) {
       case 'Profile':
-        return <Profile setUserSettings={setUserSettings}/>;
+        return <Profile setUserSettings={setUserSettings} user={user}/>;
       default:
         return;
     }
@@ -129,7 +124,8 @@ function App() {
       isSidebarOpen={isSidebarOpen} 
       setIsSidebarOpen={setIsSidebarOpen} 
       toggleSidebar={toggleSidebar}
-      setUserSettings={setUserSettings}/>
+      setUserSettings={setUserSettings}
+      user={user}/>
     <div className="content__container">
       {renderActivePage()}
      {renderUserSettings()}

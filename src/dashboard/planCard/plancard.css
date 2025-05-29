@@ -28,7 +28,7 @@
     } */
 
 .planCard__icon {
-    background-color: #000;
+    background-color: var(--background-color-black);
     border-radius: 20%;
     padding: 2px 2px;
     display: flex;
@@ -37,7 +37,7 @@
     width: 18px;
     height: 18px;
 }
-.planCard__icon--svg {
+.planCard__icon__svg {
     transform: translateY(2.5px);
 }
   .planCard__title{
@@ -88,7 +88,7 @@
     padding: 10px 10px;
     font-weight: var(--font-weight);
     cursor: pointer;
-    font-family: Inter;
+    font-family: var(--font-family);
     letter-spacing: var(--letter-spacing);
     display: flex;
     align-items: center;

@@ -18,7 +18,7 @@
     height: 40px;
     background-color: #fff;
     border-radius: 10px;
-    border: 2px solid #E0E0E0;
+    border: 2px solid var(--border-color);
     width: 100%;
     
   }
@@ -30,14 +30,14 @@
     gap: 10px;
     padding: 10px;
   }
-  .profileDropdown__header--avatar{
+  .profileDropdown__header__avatar{
     width: 21px;
     height: 21px;
     border-radius: 50%;
-    border: 1px solid #E0E0E0;
+    border: 1px solid var(--border-color);
     padding: 2px;
   }
-  .profileDropdown__header--name{
+  .profileDropdown__header__name{
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--sidebar-items-color);
@@ -121,7 +121,7 @@
    
   }
 
-  .profileDropdown__link--svg {
+  .profileDropdown__link__svg {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,18 +131,18 @@
     color: var(--background-color-black);
     stroke: var(--background-color-black);
   }
-  .profileDropdown__link:hover .profileDropdown__link--path{
+  .profileDropdown__link:hover .profileDropdown__link__path{
     stroke: var(--background-color-black);
   }
-  .profileDropdown__link:hover .profileDropdown__link--fill{
+  .profileDropdown__link:hover .profileDropdown__link__fill{
     fill: var(--background-color-black);
     stroke: none;
   }
 
-  .profileDropdown__link--logout:hover {
+  .profileDropdown__link__logout:hover {
     color: #db1515;
   }
-  .profileDropdown__link--logout:hover .profileDropdown__link--path {
+  .profileDropdown__link__logout:hover .profileDropdown__link__path {
     stroke: #db1515;
   }
 
@@ -161,7 +161,7 @@
     background-color: rgba(255, 255, 255, 0.97);
     display: flex;
     width: 100%;
-    height: 170px;
+    height: 180px;
     border-radius: 10px;
     border: 2px solid var(--border-color);
     padding: 10px;
@@ -198,7 +198,7 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    padding-top: 5px;
+    padding-top: 10px;
     width: 100%;
   }
   .profileDropdown__link {
@@ -216,7 +216,7 @@
    
   }
 
-  .profileDropdown__link--svg {
+  .profileDropdown__link__svg {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -226,18 +226,18 @@
     color: var(--background-color-black);
     stroke: var(--background-color-black);
   }
-  .profileDropdown__link:hover .profileDropdown__link--path{
+  .profileDropdown__link:hover .profileDropdown__link__path{
     stroke: var(--background-color-black);
   }
-  .profileDropdown__link:hover .profileDropdown__link--fill{
+  .profileDropdown__link:hover .profileDropdown__link__fill{
     fill: var(--background-color-black);
     stroke: none;
   }
 
-  .profileDropdown__link--logout:hover {
+  .profileDropdown__link__logout:hover {
     color: #db1515;
   }
-  .profileDropdown__link--logout:hover .profileDropdown__link--path {
+  .profileDropdown__link__logout:hover .profileDropdown__link__path {
     stroke: #db1515;
   }
   }
