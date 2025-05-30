@@ -9,31 +9,8 @@ import "./ProfileDropdown.css";
 
 
 export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user }) => {
-/*     const [user, setUser] = useState(null);
-
-    const _loginDevUser = async () => {
-        await supabase.auth.signInWithPassword({
-          email: 'oscar.abad.brickscore@gmail.com', 
-          password: 'TW.141109'
-        });
-      };
-    
-      const getUser = async () => {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-            console.log(error);
-        } else {
-            setUser(data.user);
-
-        }
-    };
 
 
-    useEffect(() => {
-        _loginDevUser();
-        getUser(); 
-    }, []);  */
-    console.log(user);
     return (
         <div className="profileDropdown">
             <div className="profileDropdown__dropdown">
@@ -46,7 +23,9 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user }) => {
                                     text={profilePage.name}
                                     onClick={() => {
                                         setUserSettings(profilePage.name);
-                                          
+                                        if(window.innerWidth < 767) {
+                                            setIsSidebarOpen(false);
+                                        }
                                         
                                     }}
                                 />
