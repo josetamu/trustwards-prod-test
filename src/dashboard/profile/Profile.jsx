@@ -44,6 +44,29 @@ const updateUser = async () => {
  alert('User updated successfully');
 };
 
+//function to reset password
+/* const resetPassword = async () => {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'http://localhost:5173/reset-password'
+    });
+} */
+
+    //function to logout
+    const userLogout = async () => {
+        /* const { error } = await supabase.auth.signOut();
+        if(error) throw error;
+        setUser(null);
+        setUserSettings(null); */
+
+       
+        /* await supabase.auth.signOut();
+        window.location.reload(); // o redirige a login */
+
+        console.log('logout');
+        window.location.reload();
+        
+          
+    }
 
 
 
@@ -105,7 +128,7 @@ const updateUser = async () => {
                     </div>
                 </div>
                 <div className="profile__footer">
-                    <button className="profile__footer__logout">Log out</button>
+                    <button className="profile__footer__logout" onClick={userLogout}>Log out</button>
                     <button className="profile__footer__save" onClick={updateUser}>Save</button>
                 </div>
             </div>
