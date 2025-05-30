@@ -23,6 +23,7 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
           <Dropdown
             onEdit={() => setEditModalOpen(true)}
             onDelete={() => setDeleteModalOpen(true)}
+            position="bottom-right"
           />
         </div>
         <div className="site__button-wrapper">
