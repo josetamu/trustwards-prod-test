@@ -127,7 +127,7 @@ function App() {
   const renderUserSettings = () => {
     switch (userSettings) {
       case 'Profile':
-        return <Profile setUserSettings={setUserSettings} user={user}/>;
+        return <Profile setUserSettings={setUserSettings} user={user} setUser={setUser}/>;
       default:
         return;
     }
