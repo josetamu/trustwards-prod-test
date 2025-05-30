@@ -15,6 +15,7 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
     const toggleDropdown = () => {
         if(window.innerWidth < 767){
             setIsDropdownOpen(!isDropdownOpen);
+            
         }
     };
 

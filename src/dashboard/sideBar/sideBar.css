@@ -406,7 +406,7 @@
     flex-direction: column;
     justify-content: space-between;
     width: 100%; 
-    gap: 40px;
+    gap: 20px;
 }
 .sidebar__logos{
     display: flex;
