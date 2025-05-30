@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Dropdown.css';
 
-export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro" }) {
+export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro", position = "bottom-right", }) {
   const [open, setOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const dropdownRef = useRef(null);
+  const menuRef = useRef(null);
+  const [currentPosition, setCurrentPosition] = useState(position);
 
   // Close dropdown when clicking outside (only if not openOnHover)
   useEffect(() => {
@@ -44,22 +46,42 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro" 
   const showDots = isHovering || open;
 
   // Menu alignment
-  const [menuAlignRight, setMenuAlignRight] = useState(true);
-  const menuRef = useRef(null);
-
   useEffect(() => {
-    if (open && menuRef.current) {
+    if (open && dropdownRef.current && menuRef.current) {
+      const dropdownRect = dropdownRef.current.getBoundingClientRect();
       const menuRect = menuRef.current.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
   
-      // Left alignment
-      if (menuRect.right > viewportWidth) {
-        setMenuAlignRight(false);
-      } else {
-        setMenuAlignRight(true);
+      // Default position
+      let newPos = position;
+  
+      // Check horizontal overflow (right side)
+      const overflowsRight = dropdownRect.left + menuRect.width > vw;
+      const overflowsLeft = dropdownRect.right - menuRect.width < 0;
+  
+      // Right overflow then switch to left, left overflow then switch to right
+      if (newPos.includes('right') && overflowsRight) {
+        newPos = newPos.replace('right', 'left');
+      } else if (newPos.includes('left') && overflowsLeft) {
+        newPos = newPos.replace('left', 'right');
       }
+  
+       // Check vertical overflow (bottom side)
+      const overflowsBottom = dropdownRect.bottom + menuRect.height > vh;
+      const overflowsTop = dropdownRect.top - menuRect.height < 0;
+  
+      // Bottom overflow then switch to top, top overflow then switch to bottom
+      if (newPos.startsWith('bottom') && overflowsBottom) {
+        newPos = newPos.replace('bottom', 'top');
+      } else if (newPos.startsWith('top') && overflowsTop) {
+        newPos = newPos.replace('top', 'bottom');
+      }
+  
+      setCurrentPosition(newPos);
     }
-  }, [open]);
+  }, [open, position]);
+  
 
   return (
     <div
@@ -67,7 +89,7 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro" 
       ref={dropdownRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      data-align={menuAlignRight ? 'right' : 'left'}
+      data-position={currentPosition}
     >
       <button
         className="dropdown__toggle"
@@ -84,7 +106,7 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro" 
       </button>
 
       {open && (
-        <div className={`dropdown__menu ${menuAlignRight ? '' : 'dropdown__menu--left'}`} ref={menuRef}>
+        <div className={`dropdown__menu dropdown__menu--${currentPosition}`} ref={menuRef}>
           <button className="dropdown__item dropdown__item--edit" onClick={() => { closeDropdown(onEdit) }}>Edit</button>
           <button className="dropdown__item dropdown__item--delete" onClick={() => { closeDropdown(onDelete) }}>Delete</button>
         </div>

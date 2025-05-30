@@ -66,8 +66,6 @@
 
 .dropdown__menu {
   position: absolute;
-  top: 110%;
-  right: 0;
   width: 100px;
   max-width: 90vw;
   background: #B1B1B1;
@@ -79,14 +77,32 @@
   flex-direction: column;
   transition: transform 0.2s ease;
 }
-.dropdown[data-align="right"] .dropdown__menu {
-  left: auto;
+/* Bottom-right (default) */
+.dropdown[data-position="bottom-right"] .dropdown__menu {
+  top: 110%;
   right: 0;
 }
-.dropdown__menu--left {
-  right: auto;
+
+/* Bottom-left */
+.dropdown[data-position="bottom-left"] .dropdown__menu {
+  top: 110%;
   left: 0;
 }
+
+/* Top-left */
+.dropdown__menu--top-left {
+  bottom: 110%; /* Aparece arriba */
+  left: 0;
+  top: auto;
+}
+
+/* Top-right */
+.dropdown__menu--top-right {
+  bottom: 110%; /* Aparece arriba */
+  right: 0;
+  top: auto;
+}
+
 
 .dropdown__item {
   background: none;

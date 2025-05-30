@@ -22,11 +22,13 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
       <div className="sites__header">
         <h2 className="sites__title">Sites</h2>
         <div className="sites__header-actions">
+          <button className='sites__view-button'>View</button>
+          <button className='sites__sort-button'>Sort</button>
           <button 
+            className="sites__new-button"
             onClick={() => {
               setIsModalOpen(true);
             }} 
-            className="sites__new-button"
           >
             New
           </button>

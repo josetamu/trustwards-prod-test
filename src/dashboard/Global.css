@@ -36,6 +36,8 @@
   --modal-background: rgba(243, 243, 243, 0.85);
   --heading-font-size: 18px;
   --input-background: #E2E2E2;
+  --input-color: #5E5E5E;
+  --input-padding: 12px;
   --avatar-background: #fff;
 }
 
