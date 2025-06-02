@@ -1,6 +1,15 @@
 .planCard{
-  display: none;
-
+  opacity: 0;
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 121PX;
+  background: linear-gradient(to bottom, #93BFFF 0%, #ffffff 50%);
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  padding: 5px 10px;
+   
 }
 .planCard--open{
     display: flex;
@@ -14,10 +23,12 @@
     white-space: nowrap;
     overflow: hidden;
     padding: 5px 10px;
-    animation: planCardShow 0.4s ease forwards;
+   /*  animation: planCardShow 0.4s ease forwards; */
+    opacity: 1;
+    transition: all 0.4s ease;
   } 
 
-  
+/*   
   @keyframes planCardShow {
     0% {
       display: none;
@@ -31,7 +42,9 @@
       display: flex;
      
     }
-  }  
+  }   */
+
+ 
 
 
 
