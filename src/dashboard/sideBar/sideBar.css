@@ -47,54 +47,56 @@
     
   }
   .sidebar__container{
-    width: 0px;
+    width: 40px;
     background-color: transparent;
-    padding: 72.5px 15px 22.5px 15px;
+    padding: 72.5px 0px 22.5px 8px;
     position: fixed;
     left: 0;
     top: 0;
     height: 100vh;
-    display: none;
+    display: flex;
     flex-direction: column;
     background-color: transparent;
     transition: width 0.4s ease;
     animation: sidebarHide 0.4s ease forwards;
     white-space: nowrap;
+    overflow: hidden;
   }
-  
+   
   @keyframes sidebarHide {
     0% {
       width: 200px;
-      display: flex;
+      
+     
     }
     30% {
-      width: 0px;
-      display: none;
+      width: 90px;
+   
     }
     100% {
-      width: 0px;
-      display: none;
+      width: 40px;
+  
     }
   }
   
   @keyframes sidebarShow {
     0% {
-      width: 0px;
-      display: none;
+      width: 40px;
+    
     }
     30% {
-      width: 0px;
-      display: flex;
+      width: 90px;
+      
     }
     100% {
       width: 200px;
-      display: flex;
+     
     }
-  } 
+  }  
   .sidebar__container--open{
     width: 250px;
     background-color: transparent;
-    padding: 72.5px 15px 22.5px 15px;
+    padding: 72.5px 8px 22.5px 8px;
     position: fixed;
     left: 0;
     top: 0;
@@ -118,7 +120,7 @@
     flex-direction: row;
     justify-content: space-between;
     z-index: 1;
-    padding: 0px 0px 0px 8px;
+    padding: 0px 0px 0px 0px;
   }
   .sidebar__logo{
     display: none;
@@ -130,6 +132,7 @@
   .sidebar__action {
     cursor: pointer;
     transition: all 0.4s ease;
+    z-index: 1;
     
     
   }
@@ -207,8 +210,6 @@
     display: flex;
     flex-direction: column;
     margin-top: auto;
-    width: 170px;
-    align-self: flex-end;
     gap: 40px;
   }
   
@@ -331,7 +332,7 @@
     display: flex;
     flex-direction: column;
     transition: all .5s ease; 
-    animation: sidebarHide 1s ease forwards;
+    animation: sidebarHide 0.4s ease forwards;
     white-space: nowrap;
     z-index: 1;
     border: 1px solid #E0E0E0;
@@ -380,7 +381,7 @@
     display: flex;
     flex-direction: column;
     transition: all .5s ease; 
-    animation: sidebarShow .5s ease forwards;
+    animation: sidebarShow 0.4s ease forwards;
     white-space: nowrap;
     z-index: 1;
     border: 1px solid #E0E0E0;

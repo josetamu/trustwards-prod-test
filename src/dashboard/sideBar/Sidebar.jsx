@@ -209,9 +209,13 @@ export function Sidebar({ homePages,
                                 icon={homePage.icon}
                                 text={homePage.name}
                                 onClick={() => {
-                                    onPageChange(homePage.name);
+                                    
                                     setIsSidebarOpen(false);
-                                    toggleSidebar();
+                                    if(isSidebarOpen){
+                                        toggleSidebar();
+                                        onPageChange(homePage.name);
+                                    }
+                                   
                                     setUserSettings(null);
                                     handleDropdownClick();
                                 }}
@@ -234,9 +238,12 @@ export function Sidebar({ homePages,
                                 icon={docPage.icon}
                                 text={docPage.name}
                                 onClick={() => {
-                                    onPageChange(docPage.name);
+                                    
                                     setIsSidebarOpen(false);
-                                    toggleSidebar();
+                                    if(isSidebarOpen){
+                                        toggleSidebar();
+                                        onPageChange(docPage.name);
+                                    }
                                     setUserSettings(null);
                                     handleDropdownClick();
                                 }}
@@ -245,7 +252,7 @@ export function Sidebar({ homePages,
                     </div>
                 </div>
                 <div className="sidebar__lower">
-                    <PlanCard currentPlan={"Free plan"} monthlyVisitors={20} totalVisitors={100} />
+                    <PlanCard currentPlan={"Free plan"} monthlyVisitors={20} totalVisitors={100} isSidebarOpen={isSidebarOpen} />
                     <ProfileDropdown 
                     avatar="avatar" 
                     user={user}

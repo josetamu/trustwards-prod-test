@@ -1,27 +1,44 @@
 
   
   /* <PROFILE DROPDOWN */
-  .profileDropdown{
+  .profileDropdown--open{
     display: flex;
     height: 40px;
     justify-content: space-between;
-    width: 170px;
+    width: 100%;
+    transition: all 0.4s ease;
+    align-items: center;
   } 
-  .profileDropdown:hover{
-    height: 80px;
+  .profileDropdown{
+    display: block; 
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.4s ease;
+
   }
-  .profileDropdown__profile{
+  .profileDropdown__profile--open{
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    align-self: end;
+    justify-content: center;
     gap: 10px;
     height: 40px;
     background-color: #fff;
     border-radius: 10px;
     border: 2px solid var(--border-color);
     width: 100%;
+    transition: all 0.4s ease;
+  }
+  .profileDropdown__profile{
+    background-color: #fff;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   
     
   }
   .profileDropdown__header{
@@ -40,20 +57,32 @@
     padding: 2px;
   }
   .profileDropdown__header__name{
+    display: none;
+    transition: all 0.4s ease;
+  }
+  .profileDropdown__header__name--open{
+    display: flex;
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--sidebar-items-color);
     letter-spacing: var(--letter-spacing);
     font-family: var(--font-family);
+    transition: all 0.4s ease;
   }
   .profileDropdown__icons{
+    display: none;
+    transition: all 0.4s ease;
+  }
+  .profileDropdown__icons--open{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: end;
     gap: 10px;
     padding: 10px;
+    transition: all 0.4s ease;
   }
+
   .profileDropdown__icons--down{
     display: flex;
     align-items: center;
@@ -76,10 +105,10 @@
   .profileDropdown__dropdown{
     display: none;
   }
- .profileDropdown:hover .profileDropdown__dropdown{
+ .profileDropdown--open:hover .profileDropdown__dropdown{
     background-color: rgba(255, 255, 255, 0.97);
     display: flex;
-    width: 170px;
+    width: 185px;
     height: 189px;
     border-radius: 10px;
     border: 2px solid var(--border-color);

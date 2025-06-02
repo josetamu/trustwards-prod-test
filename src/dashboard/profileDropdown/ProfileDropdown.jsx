@@ -8,7 +8,7 @@ import "./ProfileDropdown.css";
 
 
 
-export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen }) => {
+export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar }) => {
 
     
 
@@ -33,7 +33,7 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
     
     
     return (
-        <div className="profileDropdown">
+        <div className={`${isSidebarOpen ? 'profileDropdown--open' : 'profileDropdown'}`}>
             <div className=
                     {isMobile 
                         ? `${isDropdownOpen ? "profileDropdown__dropdown--active" : "profileDropdown__dropdown--inactive"}`
@@ -50,6 +50,8 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
                                         setUserSettings(profilePage.name);
                                         if(window.innerWidth < 767) {
                                             setIsSidebarOpen(false);
+                                            toggleSidebar();
+                                            toggleDropdown();
                                         }
                                         
                                     }}
@@ -75,14 +77,14 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
                             />
                         </div>
             </div>
-            <div className="profileDropdown__profile" onClick={() => {
+            <div className={`${isSidebarOpen ? 'profileDropdown__profile--open' : 'profileDropdown__profile'}`} onClick={() => {
               toggleDropdown();
             }}>
             <div className="profileDropdown__header">
                 <img className="profileDropdown__header__avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="avatar" />
-                <span className="profileDropdown__header__name">{user?.["First Name"]} {user?.["Second Name"] || "User"}</span>
+                <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.["First Name"]} {user?.["Second Name"] || "User"}</span>
             </div>
-            <div className="profileDropdown__icons">
+            <div className={`${isSidebarOpen ? 'profileDropdown__icons--open' : 'profileDropdown__icons'}`}>
                 <span className="profileDropdown__icons--down">
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3.00002 4.5C3.00002 4.5 5.20948 7.49999 6.00003 7.5C6.79058 7.5 9 4.5 9 4.5" stroke="#6B6B6B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
