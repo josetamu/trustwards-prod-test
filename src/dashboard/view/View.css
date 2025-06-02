@@ -1,0 +1,22 @@
+.view__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px;
+    background-color: #F7F7F7;
+    color: #5E5E5E;
+    font-family: var(--font-family);
+    letter-spacing: var(--letter-spacing);
+    font-size: 14px;
+    font-weight: 500;
+    border: var(--dashed-border);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+.view__button svg {
+    width: 14px;
+    height: 14px;
+    color: #5E5E5E;
+}
