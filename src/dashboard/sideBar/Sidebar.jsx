@@ -125,33 +125,13 @@ export function Sidebar({ homePages,
     setUserSettings,
     user
     }) {
-/*     const [user, setUser] = useState(null);
-   
-
-   
-
-    //supa base with dev user
-    const _loginDevUser = async () => {
-        await supabase.auth.signInWithPassword({
-          email: 'oscar.abad.brickscore@gmail.com', 
-          password: 'TW.141109'
-        });
-    };
-    
-    const getUser = async () => {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-            console.log(error);
-        } else {
-            setUser(data.user);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const handleDropdownClick = () => {
+        if(window.innerWidth < 767){
+            setIsDropdownOpen(false);
         }
-    }; */
+    };
 
-   /*  useEffect(() => {
-        _loginDevUser();
-        getUser(); 
-    }, []);  */
-    console.log(user);
     return (
         <div className={`${isSidebarOpen ? 'sidebar--open' : 'sidebar'}`}>
             <div className={`${isSidebarOpen ? 'sidebar__logos--open' : 'sidebar__logos'}`}>
@@ -179,7 +159,10 @@ export function Sidebar({ homePages,
                     </svg>
                     
                 </div>
-                <a className="sidebar__action" onClick={toggleSidebar}>
+                <a className="sidebar__action" onClick={() => {
+                    toggleSidebar();
+                    handleDropdownClick();
+                }}>
                     <svg className="sidebar__action__desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
                         <path d="M7.125 2.625V15.375" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
@@ -230,6 +213,7 @@ export function Sidebar({ homePages,
                                     setIsSidebarOpen(false);
                                     toggleSidebar();
                                     setUserSettings(null);
+                                    handleDropdownClick();
                                 }}
                             />
                         ))}
@@ -254,6 +238,7 @@ export function Sidebar({ homePages,
                                     setIsSidebarOpen(false);
                                     toggleSidebar();
                                     setUserSettings(null);
+                                    handleDropdownClick();
                                 }}
                             />
                         ))}
@@ -267,7 +252,11 @@ export function Sidebar({ homePages,
                     toggleSidebar={toggleSidebar}
                     isSidebarOpen={isSidebarOpen} 
                     setIsSidebarOpen={setIsSidebarOpen}
-                    setUserSettings={setUserSettings}/>
+                    setUserSettings={setUserSettings}
+                    isDropdownOpen={isDropdownOpen}
+                    setIsDropdownOpen={setIsDropdownOpen}
+                   
+                    />
 
                 </div>
             </div>

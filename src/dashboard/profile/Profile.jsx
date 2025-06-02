@@ -3,35 +3,76 @@ import { supabase } from '../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
 
 // Modal profile
-export function Profile({ setUserSettings,user}) {
-    /* const [loading, setLoading] = useState(true); */
-/*     const [user, setUser] = useState(null);
+export function Profile({ setUserSettings,user, setUser }) {
 
-    const _loginDevUser = async () => {
-        await supabase.auth.signInWithPassword({
-          email: 'oscar.abad.brickscore@gmail.com', 
-          password: 'TW.141109'
-        });
-      };
-    
-      const getUser = async () => {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-            console.log(error);
-        } else {
-            setUser(data.user);
-            setLoading(false); 
-        }
-    }; */
-/* 
-    useEffect(() => {
-        _loginDevUser();
-        getUser(); 
-    }, []);  */
 
-  /*   if (loading || !user) {
-        return <div>Loading user...</div>;
-    } */
+
+//states to save user data
+const [firstName, setFirstName] = useState(user?.["First Name"]);
+const [secondName, setSecondName] = useState(user?.["Second Name"]);
+const [email, setEmail] = useState(user?.Email);
+
+//useEffect to set user data
+useEffect(() => {
+    setFirstName(user?.["First Name"]);
+    setSecondName(user?.["Second Name"]);
+    setEmail(user?.Email);
+}, [user]);
+
+//function to update user data
+const updateUser = async () => {
+    if (!email || !email.includes('@')) {
+        return alert('Por favor, introduce un email válido.');
+      }
+    const { data, error } = await supabase
+    .from('Users')
+    .update({
+        "First Name": firstName,
+        "Second Name": secondName,
+        Email: email
+    }).eq('id', user?.id);
+
+    if(error) throw error;
+
+ setUser({
+    ...user,
+    "First Name": firstName,
+    "Second Name": secondName,
+    Email: email
+ });
+
+ alert('User updated successfully');
+};
+
+//function to reset password
+/* const resetPassword = async () => {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'http://localhost:5173/reset-password'
+    });
+} */
+
+    //function to logout
+    const userLogout = async () => {
+        /* const { error } = await supabase.auth.signOut();
+        if(error) throw error;
+        setUser(null);
+        setUserSettings(null); */
+
+       
+        /* await supabase.auth.signOut();
+        window.location.reload(); // o redirige a login */
+
+        console.log('logout');
+        window.location.reload();
+        
+          
+    }
+
+
+
+
+
+/* function to close profile modal with escape key */
    useEffect(() => {
     const handelEscape = (e) => {
         if(e.key === 'Escape'){
@@ -43,6 +84,7 @@ export function Profile({ setUserSettings,user}) {
         window.removeEventListener('keydown', handelEscape);
     }
    }, []);
+
 
     return (
         <div className="profile open" onClick={() => setUserSettings(null)}>
@@ -68,14 +110,14 @@ export function Profile({ setUserSettings,user}) {
                     <div className="profile__row">
                         <span className="profile__row__span">Name</span>
                         <div className="profile__input">
-                            <input className="profile__label profile__label__name" type="text" placeholder={`${user?.["First Name"] || 'FirstName'}`} />
-                            <input className="profile__label profile__label__name" type="text" placeholder={`${user?.["Second Name"] || 'Second Name'}`} />
+                            <input className="profile__label profile__label__name" type="text" placeholder={`${user?.["First Name"] || 'FirstName'}`} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                            <input className="profile__label profile__label__name" type="text" placeholder={`${user?.["Second Name"] || 'Second Name'}`} value={secondName} onChange={(e) => setSecondName(e.target.value)} />
                         </div>
                     </div>
                     <div className="profile__row">
                         <span className="profile__row__span">Email</span>
                         <div className="profile__input">
-                            <input className="profile__label" type="text" placeholder={`${user?.Email || 'example@email.com'}`} />
+                            <input className="profile__label" type="text" placeholder={`${user?.Email || 'example@email.com'}`} value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
                     </div>
                     <div className="profile__row profile__row--last">
@@ -86,8 +128,8 @@ export function Profile({ setUserSettings,user}) {
                     </div>
                 </div>
                 <div className="profile__footer">
-                    <button className="profile__footer__logout">Log out</button>
-                    <button className="profile__footer__save">Save</button>
+                    <button className="profile__footer__logout" onClick={userLogout}>Log out</button>
+                    <button className="profile__footer__save" onClick={updateUser}>Save</button>
                 </div>
             </div>
         </div>

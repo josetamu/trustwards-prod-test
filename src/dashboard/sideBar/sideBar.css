@@ -124,7 +124,7 @@
     display: none;
   }
   .sidebar__logo--open{
-    display: none;
+    display: flex;
   }
   
   .sidebar__action {
@@ -209,6 +209,7 @@
     margin-top: auto;
     width: 170px;
     align-self: flex-end;
+    gap: 40px;
   }
   
   .sidebar:hover .sidebar__link{
@@ -254,7 +255,7 @@
     height: 25px;
   }
   
-  .dark-icon {
+ /*  .dark-icon {
     display: none;
   }
   
@@ -271,7 +272,7 @@
     width: 20px;
     
   
-  }
+  } */
   /* >SIDEBAR */
 
     
@@ -405,6 +406,7 @@
     flex-direction: column;
     justify-content: space-between;
     width: 100%; 
+    gap: 20px;
 }
 .sidebar__logos{
     display: flex;

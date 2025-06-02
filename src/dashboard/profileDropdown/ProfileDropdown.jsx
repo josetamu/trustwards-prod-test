@@ -8,35 +8,37 @@ import "./ProfileDropdown.css";
 
 
 
-export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user }) => {
-/*     const [user, setUser] = useState(null);
+export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen }) => {
 
-    const _loginDevUser = async () => {
-        await supabase.auth.signInWithPassword({
-          email: 'oscar.abad.brickscore@gmail.com', 
-          password: 'TW.141109'
-        });
-      };
     
-      const getUser = async () => {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-            console.log(error);
-        } else {
-            setUser(data.user);
 
+    const toggleDropdown = () => {
+        if(window.innerWidth < 767){
+            setIsDropdownOpen(!isDropdownOpen);
+            
         }
     };
 
+    const isMobile = window.innerWidth < 767;
 
-    useEffect(() => {
-        _loginDevUser();
-        getUser(); 
-    }, []);  */
-    console.log(user);
+   /*  const handleOutsideClick = (event) => {
+        if(window.innerWidth < 767){
+            if(!event.target.closest(".profileDropdown__dropdown")){
+                setIsDropdownOpen(false);
+            }
+        }
+    }; */
+
+   
+    
+    
     return (
         <div className="profileDropdown">
-            <div className="profileDropdown__dropdown">
+            <div className=
+                    {isMobile 
+                        ? `${isDropdownOpen ? "profileDropdown__dropdown--active" : "profileDropdown__dropdown--inactive"}`
+                        : `profileDropdown__dropdown`}
+            >
                         <div className="profileDropdown__upper">
                             {profilePages.map((profilePage) => (
                                 <SidebarLink
@@ -46,7 +48,9 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user }) => {
                                     text={profilePage.name}
                                     onClick={() => {
                                         setUserSettings(profilePage.name);
-                                          
+                                        if(window.innerWidth < 767) {
+                                            setIsSidebarOpen(false);
+                                        }
                                         
                                     }}
                                 />
@@ -71,7 +75,9 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user }) => {
                             />
                         </div>
             </div>
-            <div className="profileDropdown__profile">
+            <div className="profileDropdown__profile" onClick={() => {
+              toggleDropdown();
+            }}>
             <div className="profileDropdown__header">
                 <img className="profileDropdown__header__avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="avatar" />
                 <span className="profileDropdown__header__name">{user?.["First Name"]} {user?.["Second Name"] || "User"}</span>
