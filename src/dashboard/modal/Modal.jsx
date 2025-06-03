@@ -91,17 +91,22 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
       }
 
       try {
-        console.log("Modal.jsx: Usuario autenticado encontrado. Procediendo con inserción.");
+        console.log("Objeto a insertar:", {
+          Name: inputValue.trim(),
+          Domain: domainValue.trim(),
+          userid: authenticatedUser.id
+        });
+        console.log("ID de usuario autenticado:", authenticatedUser.id);
+        
         const { data, error } = await supabase
-          .from('Site') // Usamos 'Site' ya que las APIs de Supabase generalmente manejan la capitalización correcta
+          .from('Site')
           .insert([
             { 
               Name: inputValue.trim(), 
               Domain: domainValue.trim(),
-              userid: authenticatedUser.id // <-- Incluir el ID del usuario autenticado
+              userid: authenticatedUser.id
             }
           ])
-          .select();
 
         if (error) throw error;
 
