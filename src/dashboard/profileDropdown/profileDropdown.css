@@ -212,6 +212,10 @@
     .profileDropdown__dropdown{
       display: none;
     }
+
+    .profileDropdown--open:hover .profileDropdown__dropdown{
+     display: none;
+    }
  
     
    .profileDropdown__dropdown--active{

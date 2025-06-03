@@ -129,7 +129,7 @@ const updateUser = async () => {
                 </div>
                 <div className="profile__footer">
                     <button className="profile__footer__logout" onClick={userLogout}>Log out</button>
-                    <button className="profile__footer__save" onClick={updateUser}>Save</button>
+                    <button className="profile__footer__save" onClick={() => {updateUser(); setUserSettings(null);}}>Save</button>
                 </div>
             </div>
         </div>
