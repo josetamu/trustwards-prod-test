@@ -13,8 +13,8 @@ export const PlanCard = ({ currentPlan, monthlyVisitors, totalVisitors, isSideba
                             <path d="M12 11V5H17L12 11Z" fill="url(#paint2_linear_79_136)"/>
                         </g>
                         <defs>
-                            <filter id="filter0_d_79_136" x="0" y="0" width="23" height="19" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                            <filter id="filter0_d_79_136" x="0" y="0" width="23" height="19" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                            <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                             <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                             <feOffset dy="4"/>
                             <feGaussianBlur stdDeviation="2"/>
@@ -24,16 +24,16 @@ export const PlanCard = ({ currentPlan, monthlyVisitors, totalVisitors, isSideba
                             <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_79_136" result="shape"/>
                             </filter>
                             <linearGradient id="paint0_linear_79_136" x1="11.5" y1="0" x2="11.5" y2="11" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white"/>
-                            <stop offset="1" stop-color="#1C6DE8"/>
+                            <stop stopColor="white"/>
+                            <stop offset="1" stopColor="#1C6DE8"/>
                             </linearGradient>
                             <linearGradient id="paint1_linear_79_136" x1="11.5" y1="0" x2="11.5" y2="11" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white"/>
-                            <stop offset="1" stop-color="#1C6DE8"/>
+                            <stop stopColor="white"/>
+                            <stop offset="1" stopColor="#1C6DE8"/>
                             </linearGradient>
                             <linearGradient id="paint2_linear_79_136" x1="11.5" y1="0" x2="11.5" y2="11" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white"/>
-                            <stop offset="1" stop-color="#1C6DE8"/>
+                            <stop stopColor="white"/>
+                            <stop offset="1" stopColor="#1C6DE8"/>
                             </linearGradient>
                         </defs>
                     </svg>
