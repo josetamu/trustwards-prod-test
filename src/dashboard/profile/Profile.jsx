@@ -50,6 +50,14 @@ const updateUser = async () => {
         redirectTo: 'http://localhost:5173/reset-password'
     });
 } */
+    /* function to handle key press */
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            updateUser();
+            setUserSettings(null);
+        }
+    };
 
     //function to logout
     const userLogout = async () => {
@@ -106,7 +114,7 @@ const updateUser = async () => {
                       
                  
                 </div>
-                <div className="profile__body">
+                <div className="profile__body" onKeyDown={handleKeyPress}>
                     <div className="profile__row">
                         <span className="profile__row__span">Name</span>
                         <div className="profile__input">
