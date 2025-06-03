@@ -263,7 +263,7 @@ export function Sidebar({ homePages,
                     isDropdownOpen={isDropdownOpen}
                     setIsDropdownOpen={setIsDropdownOpen}
                    
-                    />
+                    /> 
 
                 </div>
             </div>

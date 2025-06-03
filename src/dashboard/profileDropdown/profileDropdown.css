@@ -6,38 +6,41 @@
     height: 40px;
     justify-content: space-between;
     width: 100%;
-    transition: all 0.2s ease;
     align-items: center;
+    transition: all 0.4s ease;
   } 
   .profileDropdown{
     display: block; 
     align-items: center;
     justify-content: space-between;
-    transition: all 0.2s ease;
+    transition: all 0.4s ease;
 
   }
   .profileDropdown__profile--open{
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 10px;
     height: 40px;
     background-color: #fff;
     border-radius: 10px;
     border: 2px solid var(--border-color);
     width: 100%;
-    transition: all 0.2s ease;
+    transition: width 0.4s ease;
   }
   .profileDropdown__profile{
+    height: 40px;
+    width: 100%;
     background-color: #fff;
-    border: none;
+    border: 2px solid var(--border-color);
     border-radius: 10px;
     overflow: hidden;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
+    justify-content: space-between;
+    transition: width 0.4s ease;
+    flex-direction: row;
     
   }
   .profileDropdown__header{
@@ -46,7 +49,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 10px;
+    padding: 5px;
   }
   .profileDropdown__header__avatar{
     width: 21px;
@@ -56,20 +59,30 @@
     padding: 2px;
   }
   .profileDropdown__header__name{
-    display: none;
-    
-  }
-  .profileDropdown__header__name--open{
-    display: flex;
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--sidebar-items-color);
     letter-spacing: var(--letter-spacing);
     font-family: var(--font-family);
-    
+    transition: all 0.4s ease;
+    display: flex;
+    opacity: 0;
+  }
+  .profileDropdown__header__name--open{
+   
+    font-size: var(--sidebar-font-size);
+    font-weight: var(--font-weight);
+    color: var(--sidebar-items-color);
+    letter-spacing: var(--letter-spacing);
+    font-family: var(--font-family);
+    transition: all 0.4s ease;
+    display: flex;
+    opacity: 1;
   }
   .profileDropdown__icons{
-    display: none;
+    display: flex;
+    transition: all 0.4s ease;
+    opacity: 0;
     
   }
   .profileDropdown__icons--open{
@@ -79,7 +92,8 @@
     justify-content: end;
     gap: 10px;
     padding: 10px;
-    
+    transition: all 0.4s ease;
+    opacity: 1;
   }
 
   .profileDropdown__icons--down{

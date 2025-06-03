@@ -1,6 +1,5 @@
 .planCard{
   opacity: 0;
-  transition: all 0.4s ease;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -9,6 +8,7 @@
   border-radius: 10px;
   border: 2px solid var(--border-color);
   padding: 5px 10px;
+  transition: all 0.4s ease;
    
 }
 .planCard--open{
@@ -23,38 +23,14 @@
     white-space: nowrap;
     overflow: hidden;
     padding: 5px 10px;
-   /*  animation: planCardShow 0.4s ease forwards; */
     opacity: 1;
     transition: all 0.4s ease;
   } 
 
-/*   
-  @keyframes planCardShow {
-    0% {
-      display: none;
-    
-    }
-    30% {
-      display: none;
-      
-    }
-    100% {
-      display: flex;
-     
-    }
-  }   */
-
- 
 
 
 
-
-
-
-
-
-
-  .planCard:hover{
+  .planCard--open:hover{
     border: 2px solid var(--background-color-black);
     transition: border 0.4s ease;
   }

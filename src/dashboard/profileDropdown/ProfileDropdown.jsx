@@ -81,8 +81,8 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
               toggleDropdown();
             }}>
             <div className="profileDropdown__header">
-                <img className="profileDropdown__header__avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="avatar" />
-                <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.["First Name"]} {user?.["Second Name"] || "User"}</span>
+                <img className="profileDropdown__header__avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="avatar" /> 
+                <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.["First Name"]} {user?.["Second Name"] || "User"}</span> 
             </div>
             <div className={`${isSidebarOpen ? 'profileDropdown__icons--open' : 'profileDropdown__icons'}`}>
                 <span className="profileDropdown__icons--down">
@@ -96,7 +96,7 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
                     </svg>
 
                 </span>
-            </div>                  
+            </div>                   
             </div> 
             
         </div>
