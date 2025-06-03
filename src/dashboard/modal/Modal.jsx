@@ -102,9 +102,9 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
           .from('Site')
           .insert([
             { 
-              "Name": inputValue.trim(), 
-              "Domain": domainValue.trim(),
-              "userid": authenticatedUser.id
+              Name: inputValue.trim(), 
+              Domain: domainValue.trim(),
+              userid: authenticatedUser.id
             }
           ])
 
