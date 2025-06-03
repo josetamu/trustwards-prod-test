@@ -4,8 +4,8 @@
     justify-content: center;
     gap: 5px;
     padding: 6px;
-    background-color: #F7F7F7;
-    color: #5E5E5E;
+    background-color: var(--dashed-btn-background);
+    color: var(--dashed-btn-color);
     font-family: var(--font-family);
     letter-spacing: var(--letter-spacing);
     font-size: 14px;
@@ -18,5 +18,5 @@
 .view__button svg {
     width: 14px;
     height: 14px;
-    color: #5E5E5E;
+    color: var(--dashed-btn-color);
 }

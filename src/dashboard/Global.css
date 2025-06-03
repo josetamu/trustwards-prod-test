@@ -39,6 +39,8 @@
   --input-color: #5E5E5E;
   --input-padding: 12px;
   --avatar-background: #fff;
+  --dashed-btn-color: #5E5E5E;
+  --dashed-btn-background: #F7F7F7;
 }
 
 #root {

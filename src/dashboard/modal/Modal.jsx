@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert } from '../alert/Alert';
+import { supabase } from '../../supabase/supabaseClient';
 import './Modal.css'
 
 export function Modal({ onSave, onCancel, initialData = null, type = 'create' }) {
@@ -71,12 +72,51 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
   };
 
   // Save the new site when "Save" button is clicked or Enter is pressed
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (validateInputs()) {
-      onSave(inputValue.trim(), domainValue.trim());
-      setInputValue('');
-      setDomainValue('');
-      setErrors({});
+      // Verificar la autenticación justo antes de la inserción
+      const { data: { user: authenticatedUser }, error: authError } = await supabase.auth.getUser();
+
+      console.log("Modal.jsx: Resultado de supabase.auth.getUser():", authenticatedUser, "Error:", authError);
+
+      
+
+      if (authError || !authenticatedUser) {
+        console.error('Authentication check failed or user not found:', authError);
+        setErrors(prev => ({
+          ...prev,
+          general: 'You must be logged in to save a site.'
+        }));
+        return;
+      }
+
+      try {
+        console.log("Modal.jsx: Usuario autenticado encontrado. Procediendo con inserción.");
+        const { data, error } = await supabase
+          .from('Site') // Usamos 'Site' ya que las APIs de Supabase generalmente manejan la capitalización correcta
+          .insert([
+            { 
+              Name: inputValue.trim(), 
+              Domain: domainValue.trim(),
+              userid: authenticatedUser.id // <-- Incluir el ID del usuario autenticado
+            }
+          ])
+          .select();
+
+        if (error) throw error;
+
+        console.log("Modal.jsx: Inserción exitosa!", data); // Log de éxito
+        onSave(inputValue.trim(), domainValue.trim());
+        setInputValue('');
+        setDomainValue('');
+        setErrors({});
+      } catch (error) {
+        console.error('Modal.jsx: Error saving site during insert:', error); // Log de error específico de inserción
+        setErrors(prev => ({
+          ...prev,
+          general: 'Error saving site. Please try again.'
+        }));
+      }
     }
   };
 

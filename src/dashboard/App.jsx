@@ -43,44 +43,49 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'oscar.abad.brickscore@gmail.com',
+      email: 'darezo.2809@gmail.com',
       password: 'TW.141109'
     });
   };
 
-  const getUser = async () => {
-    const { data: { user }, error: authError, } = await supabase.auth.getUser();
-    if(authError) {
-      console.log(authError);
-    }
-   
-    if(!user) {
-      console.log('No user found');
+  const getUser = async (userId) => {
+    console.log(userId)
+    if (!userId) {
+      setUser(null);
       return;
     }
-    const userID = user.id;
     const {data: userData, error: dbError} = await supabase
     .from('Users')
     .select('*')
-    .eq('id', userID)
+    .eq('id', userId)
     .single();
     if(dbError) {
       console.log(dbError);
+      setUser(null);
+    } else {
+      setUser(userData);
     }
-
-    setUser(userData);
-  
   };
 
-
-
   useEffect(() => {
-    const init = async () => {
-      await _loginDevUser();
-      await getUser();
+    // Usar el listener onAuthStateChange
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          getUser(session.user.id);
+        } else {
+          getUser(null); // Limpiar el usuario si no hay sesión
+        }
+      }
+    );
+
+    // Llamar a _loginDevUser solo una vez al montar el componente para forzar el inicio de sesión en desarrollo
+    _loginDevUser();
+
+    return () => {
+      authListener?.subscription.unsubscribe();
     };
-    init();
-  }, []);
+  }, []); // Dependencia vacía para que se ejecute solo una vez
 
   useEffect(() => {
     setIsSidebarOpen(false);
@@ -109,6 +114,7 @@ function App() {
             onAddSite={addSite}
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen}
+            user={user}
           />
         );
       case 'Analytics':
