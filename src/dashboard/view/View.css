@@ -20,3 +20,14 @@
     height: 14px;
     color: var(--dashed-btn-color);
 }
+
+/* Mobile */
+@media (max-width: 480px) {
+  .view__button {
+    font-size: 12px;
+  }
+  .view__button svg {
+    width: 12px;
+    height: 12px;
+  }
+}
