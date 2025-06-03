@@ -4,8 +4,8 @@
     justify-content: center;
     gap: 5px;
     padding: 6px;
-    background-color: #F7F7F7;
-    color: #5E5E5E;
+    background-color: var(--dashed-btn-background);
+    color: var(--dashed-btn-color);
     font-family: var(--font-family);
     letter-spacing: var(--letter-spacing);
     font-size: 14px;
@@ -19,5 +19,16 @@
     width: 16px;
     height: 16px;
     cursor: pointer;
-    color: #5E5E5E;
+    color: var(--dashed-btn-color);
 }
+
+/* Mobile */
+@media (max-width: 480px) {
+    .sort__button {
+      font-size: 12px;
+    }
+    .sort__button svg {
+      width: 12px;
+      height: 12px;
+    }
+  }

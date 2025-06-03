@@ -27,6 +27,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   width: 100%;
 }
 
@@ -41,6 +42,7 @@
 .sites__header-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 5px;
 }
 
@@ -69,3 +71,13 @@
 }
 
 /* SITES */
+
+/* Mobile */
+@media (max-width: 480px) {
+  .sites__title {
+    font-size: 22px;
+  }
+  .sites__new-button {
+    font-size: 12px;
+  }
+}

@@ -5,7 +5,7 @@ import { Sort } from '../sort/sort';
 import { View } from '../view/View';
 import './Sites.css'
 
-export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
+export const Sites = ({ sites, isModalOpen, setIsModalOpen, user }) => {
   const [siteList, setSiteList] = useState(sites);
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
@@ -92,6 +92,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen }) => {
         <Modal
           onSave={handleAddSite}
           onCancel={() => setIsModalOpen(false)}
+          user={user}
         />
       )}
     </div>
