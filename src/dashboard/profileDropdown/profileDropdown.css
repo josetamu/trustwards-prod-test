@@ -7,14 +7,14 @@
     justify-content: space-between;
     width: 100%;
     align-items: center;
-    transition: all 0.4s ease;
+    transition: all 0.8s ease;
     position: relative;
   } 
   .profileDropdown{
     display: block; 
     align-items: center;
     justify-content: space-between;
-    transition: all 0.4s ease;
+    transition: all 0.8s ease;
 
   }
   .profileDropdown__profile--open{
@@ -50,7 +50,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 5px;
+    padding: 3.5px;
   }
   .profileDropdown__header__avatar{
     width: 21px;
@@ -65,7 +65,7 @@
     color: var(--sidebar-items-color);
     letter-spacing: var(--letter-spacing);
     font-family: var(--font-family);
-    transition: all 0.4s ease;
+    transition: all 0.4s ease 0.4s;
     display: flex;
     opacity: 0;
   }
@@ -82,7 +82,7 @@
   }
   .profileDropdown__icons{
     display: flex;
-    transition: all 0.4s ease;
+    transition: all 0.4s ease 0.4s;
     opacity: 0;
     
   }

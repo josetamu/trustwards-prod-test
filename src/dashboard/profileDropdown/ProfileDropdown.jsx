@@ -39,9 +39,6 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
     
     return (
         <div className={`${isSidebarOpen ? 'profileDropdown--open' : 'profileDropdown'}`}>
-            <div className="felipevi">
-                
-            </div>
             <div className=
                     {isMobile 
                         ? `${isDropdownOpen ? "profileDropdown__dropdown--active" : "profileDropdown__dropdown--inactive"}`
@@ -85,7 +82,7 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
                             />
                         </div>
             </div>
-
+            
            <div className={`${isSidebarOpen ? 'profileDropdown__profile--open' : 'profileDropdown__profile'}`} onClick={() => {
               toggleDropdown();
             }}>
