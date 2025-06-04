@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Dropdown.css';
 
-export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro", position = "bottom-right", }) {
+export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro", position = "bottom-right", customMenu, showButton = true }) {
   const [open, setOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const dropdownRef = useRef(null);
@@ -67,7 +67,7 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro",
         newPos = newPos.replace('left', 'right');
       }
   
-       // Check vertical overflow (bottom side)
+      // Check vertical overflow (bottom side)
       const overflowsBottom = dropdownRect.bottom + menuRect.height > vh;
       const overflowsTop = dropdownRect.top - menuRect.height < 0;
   
@@ -91,24 +91,34 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro",
       onMouseLeave={handleMouseLeave}
       data-position={currentPosition}
     >
-      <button
-        className="dropdown__toggle"
-        onClick={!openOnHover ? () => setOpen((v) => !v) : undefined}
-        aria-label="Open menu"
-        type="button"
-      >
-        <div className="dropdown__content">
-          <span className={`dropdown__label ${showDots ? 'is-hidden' : ''}`}>{label}</span>
-          <div className={`dropdown__dots ${showDots ? 'is-visible' : ''}`}>
-            <img className="dropdown__dots-item" src="/dots.svg" alt="dots" />
+      {showButton ? (
+        <button
+          className="dropdown__toggle"
+          onClick={!openOnHover ? () => setOpen((v) => !v) : undefined}
+          aria-label="Open menu"
+          type="button"
+        >
+          <div className="dropdown__content">
+            <span className={`dropdown__label ${showDots ? 'is-hidden' : ''}`}>{label}</span>
+            <div className={`dropdown__dots ${showDots ? 'is-visible' : ''}`}>
+              <img className="dropdown__dots-item" src="/dots.svg" alt="dots" />
+            </div>
           </div>
+        </button>
+      ) : (
+        <div className="dropdown__toggle" onClick={() => setOpen((v) => !v)}>
+          {label}
         </div>
-      </button>
+      )}
 
       {open && (
         <div className={`dropdown__menu dropdown__menu--${currentPosition}`} ref={menuRef}>
-          <button className="dropdown__item dropdown__item--edit" onClick={() => { closeDropdown(onEdit) }}>Edit</button>
-          <button className="dropdown__item dropdown__item--delete" onClick={() => { closeDropdown(onDelete) }}>Delete</button>
+          {customMenu ? customMenu() : (
+            <>
+              <button className="dropdown__item dropdown__item--edit" onClick={() => { closeDropdown(onEdit) }}>Edit</button>
+              <button className="dropdown__item dropdown__item--delete" onClick={() => { closeDropdown(onDelete) }}>Delete</button>
+            </>
+          )}
         </div>
       )}
     </div>

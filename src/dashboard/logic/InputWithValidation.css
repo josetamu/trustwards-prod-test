@@ -1,0 +1,14 @@
+.input-validation-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.input-validation-field {
+  padding: 8px;
+  border: 1px solid #ccc; 
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}

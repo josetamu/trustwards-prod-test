@@ -1,22 +1,60 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert } from '../alert/Alert';
 import { supabase } from '../../supabase/supabaseClient';
+import { InputWithValidation } from '../logic/InputWithValidation';
 import './Modal.css'
 
 export function Modal({ onSave, onCancel, initialData = null, type = 'create' }) {
-  const [inputValue, setInputValue] = useState(initialData?.text?.trim() || '');
-  const [domainValue, setDomainValue] = useState(initialData?.domain?.trim() || '');
-  const [errors, setErrors] = useState({});
+  const [formValues, setFormValues] = useState({
+    input: initialData?.text?.trim() || '',
+    domain: initialData?.domain?.trim() || ''
+  });
+  const [formErrors, setFormErrors] = useState({});
+
   const modalRef = useRef(null);
   const firstInputRef = useRef(null);
   const secondInputRef = useRef(null);
 
+  // ALERT
+  // Validate inputs
+  // (name)
+  const validateInput = (value) => {
+    if (!value.trim()) {
+      return 'Please enter a domain name';
+    }
+    return null;
+  };
+
+  // (domain)
+  const validateDomain = (value) => {
+    if (!value.trim()) {
+      return 'Please enter a domain URL';
+    }
+    return null;
+  };
+
+  // Function to validate the entire form (clicked Save button)
+  const validateForm = () => {
+    const inputError = validateInput(formValues.input);
+    const domainError = validateDomain(formValues.domain);
+    const newErrors = { input: inputError, domain: domainError };
+    setFormErrors(newErrors);
+    return !inputError && !domainError;
+  };
+
+  // Handler for value changes from InputWithValidation components
+  // This function receives the field name dynamically ('input' or 'domain'(in this case))
+  const handleValueChange = (field) => (value, error) => {
+    setFormValues(prev => ({ ...prev, [field]: value }));
+    setFormErrors(prev => ({ ...prev, [field]: error }));
+  };
+  // ALERT
+
   // Close modal without saving
   const closeModal = useCallback(() => {
     onCancel();
-    setInputValue('');
-    setDomainValue('');
-    setErrors({});
+    setFormValues({ input: '', domain: '' });
+    setFormErrors({});
   }, [onCancel]);
 
   // Click outside modal
@@ -33,94 +71,30 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
     }
   }, [closeModal]);
 
-  // Validate inputs
-  const validateInputs = () => {
-    const newErrors = {};
-    if (!inputValue.trim()) {
-      newErrors.input = 'Please enter a domain name';
-    }
-    if (!domainValue.trim()) {
-      newErrors.domain = 'Please enter a domain URL';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Handle input blur
-  const handleInputBlur = (field) => {
-    if (field === 'input' && !inputValue.trim()) {
-      setErrors(prev => ({ ...prev, input: 'Please enter a domain name' }));
-    }
-    if (field === 'domain' && !domainValue.trim()) {
-      setErrors(prev => ({ ...prev, domain: 'Please enter a domain URL' }));
-    }
-  };
-
-  // Handle input editing and clear errors when input is valid
-  const handleInputEdit = (field, value) => {
-    if (field === 'input') {
-      setInputValue(value);
-      if (value.trim()) {
-        setErrors(prev => ({ ...prev, input: undefined }));
-      }
-    } else {
-      setDomainValue(value);
-      if (value.trim()) {
-        setErrors(prev => ({ ...prev, domain: undefined }));
-      }
-    }
-  };
-
-  // Save the new site when "Save" button is clicked or Enter is pressed
+   // Save the new site when "Save" button is clicked or Enter is pressed
   const handleCreate = async () => {
-    if (validateInputs()) {
-      // Verificar la autenticación justo antes de la inserción
+    if (validateForm()) {
       const { data: { user: authenticatedUser }, error: authError } = await supabase.auth.getUser();
-
-      console.log("Modal.jsx: Resultado de supabase.auth.getUser():", authenticatedUser, "Error:", authError);
-
-      
 
       if (authError || !authenticatedUser) {
         console.error('Authentication check failed or user not found:', authError);
-        setErrors(prev => ({
-          ...prev,
-          general: 'You must be logged in to save a site.'
-        }));
+        setFormErrors(prev => ({ ...prev, general: 'You must be logged in to save a site.' }));
         return;
       }
 
       try {
-        console.log("Objeto a insertar:", {
-          Name: inputValue.trim(),
-          Domain: domainValue.trim(),
-          userid: authenticatedUser.id
-        });
-        console.log("ID de usuario autenticado:", authenticatedUser.id);
-        
         const { data, error } = await supabase
           .from('Site')
-          .insert([
-            { 
-              Name: inputValue.trim(), 
-              Domain: domainValue.trim(),
-              userid: authenticatedUser.id
-            }
-          ])
+          .insert([{ Name: formValues.input.trim(), Domain: formValues.domain.trim(), userid: authenticatedUser.id }]);
 
         if (error) throw error;
 
-        console.log("Modal.jsx: Inserción exitosa!", data); // Log de éxito
-        onSave(inputValue.trim(), domainValue.trim());
-        setInputValue('');
-        setDomainValue('');
-        setErrors({});
+        onSave(formValues.input.trim(), formValues.domain.trim());
+        setFormValues({ input: '', domain: '' });
+        setFormErrors({});
       } catch (error) {
-        console.error('Modal.jsx: Error saving site during insert:', error); // Log de error específico de inserción
-        setErrors(prev => ({
-          ...prev,
-          general: 'Error saving site. Please try again.'
-        }));
+        console.error('Modal.jsx: Error saving site during insert:', error);
+        setFormErrors(prev => ({ ...prev, general: 'Error saving site. Please try again.' }));
       }
     }
   };
@@ -130,25 +104,6 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
     window.addEventListener('keydown', handleKeyDown);
     // Focus trap
     const handleTabKey = (e) => {
-      if (e.key === 'Tab') {
-        const focusableElements = modalRef.current.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            lastElement.focus();
-            e.preventDefault();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            firstElement.focus();
-            e.preventDefault();
-          }
-        }
-      }
     };
 
     modalRef.current.addEventListener('keydown', handleTabKey);
@@ -156,14 +111,16 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
       window.removeEventListener('keydown', handleKeyDown);
       modalRef.current?.removeEventListener('keydown', handleTabKey);
     };
-  }, [handleKeyDown]);
+  }, [handleKeyDown]); // <-- handleKeyDown está en las dependencias
 
-  // Update values when editing
-  useEffect(() => {
-    setInputValue(initialData?.text?.trim() || '');
-    setDomainValue(initialData?.domain?.trim() || '');
-    setErrors({});
-  }, [initialData]);
+    // Update values when editing
+    useEffect(() => {
+      setFormValues({
+        input: initialData?.text?.trim() || '',
+        domain: initialData?.domain?.trim() || ''
+      });
+      setFormErrors({});
+    }, [initialData]);
 
   // Delete verification modal
   if (type === 'delete') {
@@ -186,9 +143,9 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
 
   return (
     <div className="modal__backdrop" onClick={handleBackdropClick}>
-      <div 
-        className="modal" 
-        onClick={(e) => e.stopPropagation()} 
+      <div
+        className="modal"
+        onClick={(e) => e.stopPropagation()}
         ref={modalRef}
         role="dialog"
         aria-modal="true"
@@ -202,67 +159,57 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
         <div className='modal__content'>
           <h2 className="modal__title" id="modal-title">{type === 'edit' ? 'Edit site' : 'New site'}</h2>
           <div className="modal__inputs">
-            <div className="modal__input-wrapper">
-              <input
-                ref={firstInputRef}
+            <div className="modal__input-wrapper" ref={firstInputRef}>
+              <InputWithValidation
                 type="text"
-                value={inputValue}
                 placeholder="Type here the name of the domain"
-                onChange={(e) => handleInputEdit('input', e.target.value)}
-                onBlur={() => handleInputBlur('input')}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && inputValue.trim() && domainValue.trim()) {
-                    handleCreate();
-                  }
-                }}
-                className="modal__input"
+                initialValue={formValues.input}
+                validation={validateInput}
+                onValueChange={handleValueChange('input')}
+                position="right"
                 autoFocus
-                aria-invalid={!!errors.input}
-                aria-describedby={errors.input ? 'input-error' : undefined}
-              />
-              {errors.input && (
-                <Alert 
-                  message={errors.input} 
-                  id="input-error"
-                  position="right"
-                />
-              )}
-            </div>
-            <div className="modal__input-wrapper">
-              <input
-                ref={secondInputRef}
-                type="text"
-                value={domainValue}
-                placeholder="Domain URL"
-                onChange={(e) => handleInputEdit('domain', e.target.value)}
-                onBlur={() => handleInputBlur('domain')}
+                id="domain-name-input"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && inputValue.trim() && domainValue.trim()) {
+                  if (e.key === 'Enter') {
                     handleCreate();
                   }
                 }}
-                className="modal__input"
-                aria-invalid={!!errors.domain}
-                aria-describedby={errors.domain ? 'domain-error' : undefined}
+                containerClassName="modal__input-wrapper"
+                inputClassName="modal__input"
+                errorMessage={formErrors.input}
+                containerRef={firstInputRef}
               />
-              {errors.domain && (
-                <Alert 
-                  message={errors.domain} 
-                  id="domain-error"
-                  position="right"
-                />
-              )}
+            </div>
+            <div className="modal__input-wrapper" ref={secondInputRef}>
+              <InputWithValidation
+                type="text"
+                placeholder="Domain URL"
+                initialValue={formValues.domain}
+                validation={validateDomain}
+                onValueChange={handleValueChange('domain')}
+                position="right"
+                id="domain-url-input"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCreate();
+                  }
+                }}
+                containerClassName="modal__input-wrapper"
+                inputClassName="modal__input"
+                errorMessage={formErrors.domain}
+                containerRef={secondInputRef}
+              />
             </div>
           </div>
           <div className="modal__actions-bar">
-            <button 
+            <button
               className="modal__button modal__button--cancel"
               onClick={closeModal}
               type="button"
             >
               Cancel
             </button>
-            <button 
+            <button
               className="modal__button modal__button--save"
               onClick={handleCreate}
               type="button"
