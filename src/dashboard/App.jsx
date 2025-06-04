@@ -43,7 +43,7 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'darezo.2809@gmail.com',
+      email: 'oscar.abad.brickscore@gmail.com',
       password: 'TW.141109'
     });
   };

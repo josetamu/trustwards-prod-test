@@ -57,7 +57,6 @@
     display: flex;
     flex-direction: column;
     transition: width 0.4s ease;
-    animation: sidebarHide 0.4s ease forwards;
     white-space: nowrap;
     overflow: hidden;
   }
@@ -93,7 +92,7 @@
     }
   }  
   .sidebar__container--open{
-    width: 250px;
+    width: 200px;
     background-color: transparent;
     padding: 72.5px 8px 22.5px 8px;
     position: fixed;
@@ -104,10 +103,8 @@
     flex-direction: column;
     transition: width 0.4s ease;
     background-color: transparent;
-    animation: sidebarShow 0.4s ease forwards;
     white-space: nowrap;
     justify-content: space-between;
-    ;
   }
   .sidebar__logos{
     display: flex;
@@ -253,25 +250,7 @@
     width: 25px;
     height: 25px;
   }
-  
- /*  .dark-icon {
-    display: none;
-  }
-  
-  .logo-container{
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    padding: 32px 12px;
-    height: 25px;
-    border-bottom: 1px solid #00000015;
-    cursor: pointer;
-  }
-  .logo-container__logo{
-    width: 20px;
-    
-  
-  } */
+
   /* >SIDEBAR */
 
     
@@ -441,5 +420,14 @@
     justify-content: start;
     align-items: center;
 }
+}
+
+/* Animaciones solo se aplican cuando hay un cambio de estado */
+.sidebar__container.animating {
+    animation: sidebarHide 0.4s ease forwards;
+}
+
+.sidebar__container--open.animating {
+    animation: sidebarShow 0.4s ease forwards;
 }
 
