@@ -182,7 +182,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                   <Alert 
                     message={errors.firstName} 
                     id="firstName-error"
-                    position="right"
+                    position="bottom"
                   />
                 )}
               </div>
@@ -201,7 +201,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                   <Alert 
                     message={errors.secondName} 
                     id="secondName-error"
-                    position="right"
+                    position="top"
                   />
                 )}
               </div>
@@ -225,7 +225,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                   <Alert 
                     message={errors.email} 
                     id="email-error"
-                    position="right"
+                    position="bottom"
                   />
                 )}
               </div>
@@ -239,7 +239,7 @@ export function Profile({ setUserSettings, user, setUser }) {
           </div>
         </div>
         <div className="profile__footer">
-          <button className="profile__footer__logout" onClick={userLogout}>Log out</button>
+         {/*  <button className="profile__footer__logout" onClick={userLogout}>Log out</button> */}
           <button className="profile__footer__save" onClick={async () => {
             try {
               const success = await updateUser();

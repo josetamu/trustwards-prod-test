@@ -6,7 +6,7 @@ import Academy from './Academy'
 import Home from './home/Home'
 import { LegalNews } from './legalNews/LegalNews'
 import { Settings } from './settings/Settings'
-import { Sidebar, homePages, docPages } from './sideBar/Sidebar'
+import { Sidebar, homePages, docPages, otherpages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
 import { Profile } from './profile/Profile'
@@ -145,6 +145,7 @@ function App() {
   <div className="app-container">
     <Sidebar homePages={homePages} 
       docPages={docPages} 
+      otherPages={otherpages}
       onPageChange={setActivePage} 
       isSidebarOpen={isSidebarOpen} 
       setIsSidebarOpen={setIsSidebarOpen} 
