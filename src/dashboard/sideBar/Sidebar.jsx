@@ -70,6 +70,39 @@ export const profilePages = [
               </svg>
         
     },
+
+    {
+        name: 'Billing',
+        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path className="profileDropdown__link__path" d="M6.70898 6.41602H4.95898" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M8.45898 4.08398H4.95898" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M11.6673 12.541V2.33268C11.6673 1.68835 11.145 1.16602 10.5007 1.16602H3.50065C2.85632 1.16602 2.33398 1.68835 2.33398 2.33268V12.541L4.66732 11.3743L7.00065 12.8327L9.33398 11.3743L11.6673 12.541Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+        </svg>
+        
+    },
+
+    {
+        name: 'Affiliate',
+        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path className="profileDropdown__link__path" d="M7.58268 4.08333C7.58268 5.372 6.53799 6.41667 5.24935 6.41667C3.96068 6.41667 2.91602 5.372 2.91602 4.08333C2.91602 2.79467 3.96068 1.75 5.24935 1.75C6.53799 1.75 7.58268 2.79467 7.58268 4.08333Z" stroke="#686B74" strokeWidth="1.3"/>
+        <path className="profileDropdown__link__path" d="M8.75 6.41667C10.0386 6.41667 11.0833 5.372 11.0833 4.08333C11.0833 2.79467 10.0386 1.75 8.75 1.75" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M6.41602 8.16602H4.08268C2.47185 8.16602 1.16602 9.47187 1.16602 11.0827C1.16602 11.727 1.68835 12.2493 2.33268 12.2493H8.16602C8.81037 12.2493 9.33268 11.727 9.33268 11.0827C9.33268 9.47187 8.02683 8.16602 6.41602 8.16602Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M9.91602 8.16602C11.5268 8.16602 12.8327 9.47187 12.8327 11.0827C12.8327 11.727 12.3104 12.2493 11.666 12.2493H10.791" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        
+    }
+
+];
+
+export const otherpages = [
+    {
+        name: 'Support',
+        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path className="profileDropdown__link__path" d="M8.26553 11.8938C10.7056 11.7316 12.6493 9.76038 12.8092 7.28571C12.8405 6.80142 12.8405 6.29987 12.8092 5.81559C12.6493 3.3409 10.7056 1.36967 8.26553 1.20747C7.43306 1.15214 6.56395 1.15225 5.73316 1.20747C3.29308 1.36967 1.34942 3.3409 1.18949 5.81559C1.15819 6.29987 1.15819 6.80142 1.18949 7.28571C1.24774 8.18702 1.64635 9.02153 2.11563 9.7262C2.3881 10.2195 2.20828 10.8352 1.92447 11.3731C1.71984 11.7609 1.61752 11.9548 1.69967 12.0948C1.78183 12.2349 1.96533 12.2394 2.33235 12.2483C3.05816 12.266 3.54758 12.0602 3.93608 11.7737C4.15641 11.6112 4.26659 11.53 4.34252 11.5206C4.41845 11.5113 4.56788 11.5729 4.86669 11.6959C5.13525 11.8065 5.44707 11.8748 5.73316 11.8938C6.56395 11.949 7.43306 11.9492 8.26553 11.8938Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M7.00065 9.04232V9.33398M7.00065 7.58398V7.29232L7.97931 5.82432C8.10193 5.64044 8.16732 5.42438 8.16732 5.20339C8.16732 4.55634 7.6275 4.08398 7.00065 4.08398C6.3563 4.08398 5.83398 4.60632 5.83398 5.25065" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        
+    }, 
     {
         name: 'Appearance',
         icon: <svg className="profileDropdown__link__svg" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,36 +117,10 @@ export const profilePages = [
         </defs>
         </svg>
         
-    },
-    {
-        name: 'Billing',
-        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path className="profileDropdown__link__path" d="M6.70898 6.41602H4.95898" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M8.45898 4.08398H4.95898" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M11.6673 12.541V2.33268C11.6673 1.68835 11.145 1.16602 10.5007 1.16602H3.50065C2.85632 1.16602 2.33398 1.68835 2.33398 2.33268V12.541L4.66732 11.3743L7.00065 12.8327L9.33398 11.3743L11.6673 12.541Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
-        </svg>
-        
-    },
-    {
-        name: 'Support',
-        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path className="profileDropdown__link__path" d="M8.26553 11.8938C10.7056 11.7316 12.6493 9.76038 12.8092 7.28571C12.8405 6.80142 12.8405 6.29987 12.8092 5.81559C12.6493 3.3409 10.7056 1.36967 8.26553 1.20747C7.43306 1.15214 6.56395 1.15225 5.73316 1.20747C3.29308 1.36967 1.34942 3.3409 1.18949 5.81559C1.15819 6.29987 1.15819 6.80142 1.18949 7.28571C1.24774 8.18702 1.64635 9.02153 2.11563 9.7262C2.3881 10.2195 2.20828 10.8352 1.92447 11.3731C1.71984 11.7609 1.61752 11.9548 1.69967 12.0948C1.78183 12.2349 1.96533 12.2394 2.33235 12.2483C3.05816 12.266 3.54758 12.0602 3.93608 11.7737C4.15641 11.6112 4.26659 11.53 4.34252 11.5206C4.41845 11.5113 4.56788 11.5729 4.86669 11.6959C5.13525 11.8065 5.44707 11.8748 5.73316 11.8938C6.56395 11.949 7.43306 11.9492 8.26553 11.8938Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M7.00065 9.04232V9.33398M7.00065 7.58398V7.29232L7.97931 5.82432C8.10193 5.64044 8.16732 5.42438 8.16732 5.20339C8.16732 4.55634 7.6275 4.08398 7.00065 4.08398C6.3563 4.08398 5.83398 4.60632 5.83398 5.25065" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        
-    },
-    {
-        name: 'Affiliate',
-        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path className="profileDropdown__link__path" d="M7.58268 4.08333C7.58268 5.372 6.53799 6.41667 5.24935 6.41667C3.96068 6.41667 2.91602 5.372 2.91602 4.08333C2.91602 2.79467 3.96068 1.75 5.24935 1.75C6.53799 1.75 7.58268 2.79467 7.58268 4.08333Z" stroke="#686B74" strokeWidth="1.3"/>
-        <path className="profileDropdown__link__path" d="M8.75 6.41667C10.0386 6.41667 11.0833 5.372 11.0833 4.08333C11.0833 2.79467 10.0386 1.75 8.75 1.75" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M6.41602 8.16602H4.08268C2.47185 8.16602 1.16602 9.47187 1.16602 11.0827C1.16602 11.727 1.68835 12.2493 2.33268 12.2493H8.16602C8.81037 12.2493 9.33268 11.727 9.33268 11.0827C9.33268 9.47187 8.02683 8.16602 6.41602 8.16602Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M9.91602 8.16602C11.5268 8.16602 12.8327 9.47187 12.8327 11.0827C12.8327 11.727 12.3104 12.2493 11.666 12.2493H10.791" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        
     }
 
-];
+    
+]
 
 // Sidebar component
 export function Sidebar({ homePages, 
@@ -126,10 +133,22 @@ export function Sidebar({ homePages,
     user
     }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
+
     const handleDropdownClick = () => {
         if(window.innerWidth < 767){
             setIsDropdownOpen(false);
         }
+    };
+
+    const handleToggleSidebar = () => {
+        setIsAnimating(true);
+        toggleSidebar();
+        handleDropdownClick();
+        // Remover la clase animating después de que termine la animación
+        setTimeout(() => {
+            setIsAnimating(false);
+        }, 400); // 400ms es la duración de la animación
     };
 
     return (
@@ -159,10 +178,7 @@ export function Sidebar({ homePages,
                     </svg>
                     
                 </div>
-                <a className="sidebar__action" onClick={() => {
-                    toggleSidebar();
-                    handleDropdownClick();
-                }}>
+                <a className="sidebar__action" onClick={handleToggleSidebar}>
                     <svg className="sidebar__action__desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
                         <path d="M7.125 2.625V15.375" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
@@ -180,18 +196,18 @@ export function Sidebar({ homePages,
                 </a>
             </div>
             
-            <div className={`${isSidebarOpen ? 'sidebar__container--open' : 'sidebar__container'}`}>
+            <div className={`${isSidebarOpen ? 'sidebar__container--open' : 'sidebar__container'} ${isAnimating ? 'animating' : ''}`}>
                 
                 <div className="sidebar__upper">
                     <div className="sidebar__home">
-                        <span className="sidebar__header">
+                        <a className="sidebar__header">
                         <span className="sidebar__header__icon">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clipPath="url(#clip0_79_131)">
-                                <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="white" strokeWidth="1.3" strokeLinejoin="round"/>
-                                <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="white" strokeWidth="1.3" strokeLinejoin="round"/>
-                                <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="white" strokeWidth="1.3" strokeLinejoin="round"/>
-                                <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="white" strokeWidth="1.3" strokeLinejoin="round"/>
+                                <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="black" strokeWidth="1.3" strokeLinejoin="round"/>
+                                <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="black" strokeWidth="1.3" strokeLinejoin="round"/>
+                                <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="black" strokeWidth="1.3" strokeLinejoin="round"/>
+                                <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="black" strokeWidth="1.3" strokeLinejoin="round"/>
                                 </g>
                                 <defs>
                                 <clipPath id="clip0_79_131">
@@ -201,9 +217,9 @@ export function Sidebar({ homePages,
                             </svg>
 
                             </span>
-                            <span className="sidebar__header__text">Home</span>
-                        </span>
-                        {homePages.map((homePage) => (
+                            <span className="sidebar__header__text">Dashboard</span>
+                        </a>
+                        {/* {homePages.map((homePage) => (
                             <SidebarLink
                                 key={homePage.name}
                                 icon={homePage.icon}
@@ -221,19 +237,25 @@ export function Sidebar({ homePages,
                                     handleDropdownClick();
                                 }}
                             />
-                        ))}
+                        ))} */}
                     </div>
-                    <div className="sidebar__docs">
-                        <span className="sidebar__header">
-                            <span className="sidebar__docs__icon">
+                    <div className="sidebar__sites">
+                        <div className="sidebar__sites-header">
+                            
+                        </div>
+                        <div className="sidebar__sites-container">
+                            <div className="sitesDisplay"></div>
+                        </div>
+                        {/* <span className="sidebar__header">
+                            <span className="sidebar__sites__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
                                 <path fillRule="evenodd" clipRule="evenodd" d="M20.4253 3.28231C19.6271 2.95101 18.5745 2.67059 17.2694 2.32287L16.2094 2.04043C14.9041 1.69265 13.8516 1.4122 12.9939 1.30229C12.1033 1.18818 11.3124 1.241 10.5821 1.66025C9.85117 2.07986 9.40864 2.73583 9.06207 3.5614C8.72864 4.35566 8.44647 5.40287 8.09691 6.70016L7.04517 10.6032L7.04517 10.6032C6.69559 11.9004 6.41338 12.9476 6.30275 13.8013C6.18777 14.6885 6.24094 15.4779 6.66391 16.2064C7.08651 16.9342 7.74618 17.3737 8.57474 17.7176C9.3729 18.0489 10.4255 18.3293 11.7306 18.677L12.7907 18.9595C14.0959 19.3073 15.1484 19.5877 16.0061 19.6976C16.8967 19.8117 17.6877 19.7589 18.4179 19.3396C19.1488 18.92 19.5914 18.2641 19.9379 17.4385C20.2714 16.6442 20.5535 15.597 20.9031 14.2997L21.9548 10.3967C22.3044 9.09953 22.5866 8.05231 22.6973 7.19861C22.8122 6.31139 22.7591 5.52199 22.3361 4.79352C21.9135 4.06567 21.2538 3.62623 20.4253 3.28231ZM15.5 8.5C16.3284 8.5 17 7.82843 17 7C17 6.17157 16.3284 5.5 15.5 5.5C14.6716 5.5 14 6.17157 14 7C14 7.82843 14.6716 8.5 15.5 8.5Z" fill="#ffffff"></path>
                                 <path fillRule="evenodd" clipRule="evenodd" d="M6.42476 5.96656C6.58145 6.49615 6.27914 7.05249 5.74955 7.20917C4.16184 7.67891 3.67122 7.99964 3.43 8.4151C3.27585 8.68059 3.19912 9.0304 3.28691 9.72268C3.37843 10.4444 3.62427 11.3754 3.9895 12.7462L5.00185 16.5459C5.36709 17.9168 5.61705 18.8466 5.89654 19.5175C6.16472 20.1613 6.40448 20.424 6.66771 20.5751C6.93178 20.7267 7.28263 20.8022 7.97972 20.7109C8.70497 20.616 9.64091 20.366 11.0171 19.9951L11.4898 19.8678C12.0231 19.7241 12.5719 20.0399 12.7155 20.5731C12.8592 21.1064 12.5434 21.6552 12.0102 21.7989L11.4697 21.9445C10.1785 22.2925 9.11292 22.5796 8.23931 22.694C7.32231 22.814 6.46842 22.7668 5.67196 22.3096C4.87467 21.8519 4.40521 21.1385 4.05034 20.2866C3.71275 19.4763 3.42985 18.4143 3.08748 17.1292L2.03873 13.1929C1.69626 11.9076 1.41331 10.8457 1.3028 9.97429C1.18661 9.05805 1.23879 8.20589 1.7004 7.41087C2.38641 6.22933 3.65434 5.74336 5.18215 5.29135C5.71174 5.13467 6.26808 5.43697 6.42476 5.96656Z" fill="#ffffff"></path>
                             </svg>
                             </span>
                             <span className="sidebar__header__text">Docs</span>
-                        </span>
-                        {docPages.map((docPage) => (
+                        </span> */}
+                       {/*  {docPages.map((docPage) => (
                             <SidebarLink
                                 key={docPage.name}
                                 icon={docPage.icon}
@@ -250,11 +272,29 @@ export function Sidebar({ homePages,
                                     handleDropdownClick();
                                 }}
                             />
-                        ))}
+                        ))} */}
                     </div>
                 </div>
                 <div className="sidebar__lower">
-                    <PlanCard currentPlan={"Free plan"} monthlyVisitors={20} totalVisitors={100} isSidebarOpen={isSidebarOpen} />
+                   {/*  <PlanCard currentPlan={"Free plan"} monthlyVisitors={20} totalVisitors={100} isSidebarOpen={isSidebarOpen} /> */}
+                    <div className="sidebar__others">
+                        {otherpages.map((otherPage) => (
+                            <SidebarLink
+                                key={otherPage.name}
+                                icon={otherPage.icon}
+                                text={otherPage.name}
+                                onClick={() => {
+                                    setIsSidebarOpen(false);
+                                    if(isSidebarOpen){
+                                        toggleSidebar();
+                                    }
+                                    onPageChange(otherPage.name);
+                                    setUserSettings(null);
+                                    handleDropdownClick();
+                                }}
+                            />
+                        ))}
+                    </div>
                     <ProfileDropdown 
                     avatar="avatar" 
                     user={user}

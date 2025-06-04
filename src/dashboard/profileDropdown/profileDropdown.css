@@ -1,6 +1,13 @@
 
   
   /* <PROFILE DROPDOWN */
+  .profileDropdown{
+    display: block; 
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.8s ease;
+
+  }
   .profileDropdown--open{
     display: flex;
     height: 40px;
@@ -10,26 +17,6 @@
     transition: all 0.8s ease;
     position: relative;
   } 
-  .profileDropdown{
-    display: block; 
-    align-items: center;
-    justify-content: space-between;
-    transition: all 0.8s ease;
-
-  }
-  .profileDropdown__profile--open{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    height: 40px;
-    background-color: #fff;
-    border-radius: 10px;
-    border: 2px solid var(--border-color);
-    width: 100%;
-    transition: width 0.4s ease;
-  }
   .profileDropdown__profile{
     height: 40px;
     width: 100%;
@@ -44,6 +31,21 @@
     flex-direction: row;
     
   }
+
+  .profileDropdown__profile--open{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: 40px;
+    background-color: transparent;
+    border-radius: 10px;
+    padding-right: 10px;
+    width: 100%;
+    transition: width 0.4s ease;
+  }
+
   .profileDropdown__header{
     display: flex;
     flex-direction: row;
@@ -82,7 +84,7 @@
   }
   .profileDropdown__icons{
     display: flex;
-    transition: all 0.4s ease 0.4s;
+    transition: all 0.4s ease;
     opacity: 0;
     
   }
@@ -122,14 +124,15 @@
  .profileDropdown--open:hover .profileDropdown__dropdown{
     background-color: rgba(255, 255, 255, 0.97);
     display: flex;
-    width: 185px;
-    height: 189px;
+    width: 175px;
+    height: 131px;
     border-radius: 10px;
     border: 2px solid var(--border-color);
     padding: 10px;
     flex-direction: column;
     position: absolute;
-    bottom: 80px;
+    bottom: 55px;
+    
     z-index: 1;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
@@ -232,7 +235,7 @@
     background-color: rgba(255, 255, 255, 0.97);
     display: flex !important;
     width: 100%;
-    height: 180px;
+    height: 130px;
     border-radius: 10px;
     border: 2px solid var(--border-color);
     padding: 10px;
@@ -265,12 +268,11 @@
     width: 100%;
   }
   .profileDropdown__lower{
-   gap: 20px;
     border-top: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     align-items: start;
-    padding-top: 0px;
+    
     width: 100%;
   }
   .profileDropdown__link {
