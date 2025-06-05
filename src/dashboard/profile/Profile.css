@@ -3,7 +3,7 @@
 .profile{
   position: fixed;
   top: 0;
-  left: 50px;
+  left: 70px;
   width: 100%;
   height: 100%;
   background: rgba(255, 255, 255, 0.7);
@@ -193,7 +193,7 @@
 
 .profile__footer{
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   flex-direction: row;
   padding: 10px;
 }

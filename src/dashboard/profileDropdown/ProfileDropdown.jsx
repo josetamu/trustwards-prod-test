@@ -87,25 +87,28 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
               toggleDropdown();
             }}>
             <div className="profileDropdown__header">
-                <img className="profileDropdown__header__avatar" src="https://cdn-icons-png.flaticon.com/512/1308/1308845.png" alt="avatar" /> 
+                <img className="profileDropdown__header__avatar" src="logo test.png" alt="avatar" /> 
+                    
                 <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.["First Name"]} {user?.["Second Name"] || "User"}</span> 
             </div>
             <div className={`${isSidebarOpen ? 'profileDropdown__icons--open' : 'profileDropdown__icons'}`}>
                 <span className="profileDropdown__icons--down">
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.00002 4.5C3.00002 4.5 5.20948 7.49999 6.00003 7.5C6.79058 7.5 9 4.5 9 4.5" stroke="#6B6B6B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3.00002 4.5C3.00002 4.5 5.20948 7.49999 6.00003 7.5C6.79058 7.5 9 4.5 9 4.5" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                 </span>
                 <span className="profileDropdown__icons--up">
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.00002 7.5C3.00002 7.5 5.20948 4.50001 6.00003 4.5C6.79058 4.5 9 7.5 9 7.5" stroke="#6B6B6B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3.00002 7.5C3.00002 7.5 5.20948 4.50001 6.00003 4.5C6.79058 4.5 9 7.5 9 7.5" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
 
                 </span>
             </div>                   
             </div> 
             
+            
         </div>
+        
     )
 }
 
