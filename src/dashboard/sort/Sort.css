@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 3px;
     padding: 6px;
     background-color: var(--dashed-btn-background);
     color: var(--dashed-btn-color);
@@ -14,11 +14,9 @@
     border-radius: 8px;
     cursor: pointer;
 }
-
-.sort__icon svg {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
+.sort__button svg {
+    width: 14px;
+    height: 14px;
     color: var(--dashed-btn-color);
 }
 

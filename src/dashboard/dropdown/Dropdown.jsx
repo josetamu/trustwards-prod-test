@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Dropdown.css';
 
-export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro", position = "bottom-right", customMenu, showButton = true }) {
+export function Dropdown({ 
+  trigger,
+  menu,
+  openOnHover = false, 
+  position = "bottom-left", 
+  onMouseEnter,
+  onMouseLeave
+}) {
   const [open, setOpen] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
   const dropdownRef = useRef(null);
   const menuRef = useRef(null);
   const [currentPosition, setCurrentPosition] = useState(position);
@@ -27,23 +33,14 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro",
 
   // Mouse enter and leave events
   const handleMouseEnter = () => {
-    setIsHovering(true);
+    if (onMouseEnter) onMouseEnter();
     if (openOnHover) setOpen(true);
   };
 
   const handleMouseLeave = () => {
-    setIsHovering(false);
+    if (onMouseLeave) onMouseLeave();
     if (openOnHover) setOpen(false);
   };
-
-  // Close dropdown and call the callback function when clicking edit or delete
-  const closeDropdown = (callback) => {
-    setOpen(false);
-    setIsHovering(false);
-    if (callback) callback();
-  };  
-
-  const showDots = isHovering || open;
 
   // Menu alignment
   useEffect(() => {
@@ -81,7 +78,6 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro",
       setCurrentPosition(newPos);
     }
   }, [open, position]);
-  
 
   return (
     <div
@@ -91,34 +87,13 @@ export function Dropdown({ onEdit, onDelete, openOnHover = false, label = "Pro",
       onMouseLeave={handleMouseLeave}
       data-position={currentPosition}
     >
-      {showButton ? (
-        <button
-          className="dropdown__toggle"
-          onClick={!openOnHover ? () => setOpen((v) => !v) : undefined}
-          aria-label="Open menu"
-          type="button"
-        >
-          <div className="dropdown__content">
-            <span className={`dropdown__label ${showDots ? 'is-hidden' : ''}`}>{label}</span>
-            <div className={`dropdown__dots ${showDots ? 'is-visible' : ''}`}>
-              <img className="dropdown__dots-item" src="/dots.svg" alt="dots" />
-            </div>
-          </div>
-        </button>
-      ) : (
-        <div className="dropdown__toggle" onClick={() => setOpen((v) => !v)}>
-          {label}
-        </div>
-      )}
+      <div onClick={() => setOpen(v => !v)}>
+        {trigger}
+      </div>
 
       {open && (
         <div className={`dropdown__menu dropdown__menu--${currentPosition}`} ref={menuRef}>
-          {customMenu ? customMenu() : (
-            <>
-              <button className="dropdown__item dropdown__item--edit" onClick={() => { closeDropdown(onEdit) }}>Edit</button>
-              <button className="dropdown__item dropdown__item--delete" onClick={() => { closeDropdown(onDelete) }}>Delete</button>
-            </>
-          )}
+          {menu}
         </div>
       )}
     </div>

@@ -1,31 +1,26 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Alert } from '../alert/Alert';
+import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
-import { InputWithValidation } from '../logic/InputWithValidation';
 import './Modal.css'
 
 export function Modal({ onSave, onCancel, initialData = null, type = 'create' }) {
   const [formValues, setFormValues] = useState({
-    input: initialData?.text?.trim() || '',
+    name: initialData?.text?.trim() || '',
     domain: initialData?.domain?.trim() || ''
   });
   const [formErrors, setFormErrors] = useState({});
 
   const modalRef = useRef(null);
-  const firstInputRef = useRef(null);
-  const secondInputRef = useRef(null);
+  const nameInputRef = useRef(null);
+  const domainInputRef = useRef(null);
 
-  // ALERT
   // Validate inputs
-  // (name)
-  const validateInput = (value) => {
+  const validateName = (value) => {
     if (!value.trim()) {
       return 'Please enter a domain name';
     }
     return null;
   };
-
-  // (domain)
   const validateDomain = (value) => {
     if (!value.trim()) {
       return 'Please enter a domain URL';
@@ -33,45 +28,39 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
     return null;
   };
 
-  // Function to validate the entire form (clicked Save button)
+  // Function to validate the entire form
   const validateForm = () => {
-    const inputError = validateInput(formValues.input);
+    const nameError = validateName(formValues.name);
     const domainError = validateDomain(formValues.domain);
-    const newErrors = { input: inputError, domain: domainError };
+    const newErrors = { name: nameError, domain: domainError };
     setFormErrors(newErrors);
-    return !inputError && !domainError;
+    return !nameError && !domainError;
   };
 
-  // Handler for value changes from InputWithValidation components
-  // This function receives the field name dynamically ('input' or 'domain'(in this case))
-  const handleValueChange = (field) => (value, error) => {
+  // Handle input editing and clear errors when input is valid
+  const handleInputEdit = (field) => (e) => {
+    const value = e.target.value;
     setFormValues(prev => ({ ...prev, [field]: value }));
-    setFormErrors(prev => ({ ...prev, [field]: error }));
+
+    if (field === 'name' && value.trim()) {
+      setFormErrors(prev => ({ ...prev, name: null }));
+    } else if (field === 'domain' && value.trim()) {
+      setFormErrors(prev => ({ ...prev, domain: null }));
+    }
   };
-  // ALERT
 
-  // Close modal without saving
-  const closeModal = useCallback(() => {
-    onCancel();
-    setFormValues({ input: '', domain: '' });
-    setFormErrors({});
-  }, [onCancel]);
-
-  // Click outside modal
-  const handleBackdropClick = useCallback((e) => {
-    if (e.target.className === 'modal__backdrop') {
-      closeModal();
+  // Handle input blur
+  const handleInputBlur = (field) => {
+    if (field === 'name') {
+      const error = validateName(formValues.name);
+      setFormErrors(prev => ({ ...prev, name: error }));
+    } else if (field === 'domain') {
+      const error = validateDomain(formValues.domain);
+      setFormErrors(prev => ({ ...prev, domain: error }));
     }
-  }, [closeModal]);
+  };
 
-  // Press Escape (global)
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Escape') {
-      closeModal();
-    }
-  }, [closeModal]);
-
-   // Save the new site when "Save" button is clicked or Enter is pressed
+  // Save the new site when "Save" button is clicked or Enter is pressed
   const handleCreate = async () => {
     if (validateForm()) {
       const { data: { user: authenticatedUser }, error: authError } = await supabase.auth.getUser();
@@ -85,12 +74,12 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
       try {
         const { data, error } = await supabase
           .from('Site')
-          .insert([{ Name: formValues.input.trim(), Domain: formValues.domain.trim(), userid: authenticatedUser.id }]);
+          .insert([{ Name: formValues.name.trim(), Domain: formValues.domain.trim(), userid: authenticatedUser.id }]);
 
         if (error) throw error;
 
-        onSave(formValues.input.trim(), formValues.domain.trim());
-        setFormValues({ input: '', domain: '' });
+        onSave(formValues.name.trim(), formValues.domain.trim());
+        setFormValues({ name: '', domain: '' });
         setFormErrors({});
       } catch (error) {
         console.error('Modal.jsx: Error saving site during insert:', error);
@@ -98,29 +87,15 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
       }
     }
   };
-
-  // Accessibility
+  
+  // Update values when editing
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    // Focus trap
-    const handleTabKey = (e) => {
-    };
-
-    modalRef.current.addEventListener('keydown', handleTabKey);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      modalRef.current?.removeEventListener('keydown', handleTabKey);
-    };
-  }, [handleKeyDown]); // <-- handleKeyDown está en las dependencias
-
-    // Update values when editing
-    useEffect(() => {
-      setFormValues({
-        input: initialData?.text?.trim() || '',
-        domain: initialData?.domain?.trim() || ''
-      });
-      setFormErrors({});
-    }, [initialData]);
+    setFormValues({
+      name: initialData?.text?.trim() || '',
+      domain: initialData?.domain?.trim() || ''
+    });
+    setFormErrors({});
+  }, [initialData]);
 
   // Delete verification modal
   if (type === 'delete') {
@@ -141,6 +116,43 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
     );
   }
 
+    // Accessibility
+
+  // Close modal without saving
+  const closeModal = useCallback(() => {
+    onCancel();
+    setFormValues({ name: '', domain: '' });
+    setFormErrors({});
+  }, [onCancel]);
+
+  // Click outside modal
+  const handleBackdropClick = useCallback((e) => {
+    if (e.target.className === 'modal__backdrop') {
+      closeModal();
+    }
+  }, [closeModal]);
+
+  // Press Escape (global)
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  }, [closeModal]);
+
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    // Focus trap
+    const handleTabKey = (e) => {
+    };
+
+    modalRef.current.addEventListener('keydown', handleTabKey);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      modalRef.current?.removeEventListener('keydown', handleTabKey);
+    };
+  }, [handleKeyDown]);
+
   return (
     <div className="modal__backdrop" onClick={handleBackdropClick}>
       <div
@@ -159,46 +171,55 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
         <div className='modal__content'>
           <h2 className="modal__title" id="modal-title">{type === 'edit' ? 'Edit site' : 'New site'}</h2>
           <div className="modal__inputs">
-            <div className="modal__input-wrapper" ref={firstInputRef}>
-              <InputWithValidation
+            <div className="modal__input-wrapper" ref={nameInputRef}>
+              <input
                 type="text"
                 placeholder="Type here the name of the domain"
-                initialValue={formValues.input}
-                validation={validateInput}
-                onValueChange={handleValueChange('input')}
-                position="right"
-                autoFocus
+                value={formValues.name}
+                onChange={handleInputEdit('name')}
+                onBlur={() => handleInputBlur('name')}
+                className="modal__input"
                 id="domain-name-input"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleCreate();
                   }
                 }}
-                containerClassName="modal__input-wrapper"
-                inputClassName="modal__input"
-                errorMessage={formErrors.input}
-                containerRef={firstInputRef}
+                aria-invalid={!!formErrors.name}
+                aria-describedby={formErrors.name ? 'name-error' : undefined}
               />
+              {formErrors.name && (
+                <Tooltip
+                  message={formErrors.name}
+                  position="top"
+                  type="alert"
+                />
+              )}
             </div>
-            <div className="modal__input-wrapper" ref={secondInputRef}>
-              <InputWithValidation
+            <div className="modal__input-wrapper" ref={domainInputRef}>
+              <input
                 type="text"
                 placeholder="Domain URL"
-                initialValue={formValues.domain}
-                validation={validateDomain}
-                onValueChange={handleValueChange('domain')}
-                position="right"
+                value={formValues.domain}
+                onChange={handleInputEdit('domain')}
+                onBlur={() => handleInputBlur('domain')}
+                className="modal__input"
                 id="domain-url-input"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleCreate();
                   }
                 }}
-                containerClassName="modal__input-wrapper"
-                inputClassName="modal__input"
-                errorMessage={formErrors.domain}
-                containerRef={secondInputRef}
+                aria-invalid={!!formErrors.domain}
+                aria-describedby={formErrors.domain ? 'domain-error' : undefined}
               />
+              {formErrors.domain && (
+                <Tooltip
+                  message={formErrors.domain}
+                  position="right"
+                  type="alert"
+                />
+              )}
             </div>
           </div>
           <div className="modal__actions-bar">

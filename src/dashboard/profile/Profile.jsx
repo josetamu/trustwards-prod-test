@@ -1,7 +1,7 @@
 import './Profile.css';
 import { supabase } from '../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
-import { Alert } from '../alert/Alert';
+import { Tooltip } from '../tooltip/Tooltip';
 
 // Modal profile
 export function Profile({ setUserSettings, user, setUser }) {
@@ -179,7 +179,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                   aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                 />
                 {errors.firstName && (
-                  <Alert 
+                  <Tooltip 
                     message={errors.firstName} 
                     id="firstName-error"
                     position="bottom"
@@ -198,7 +198,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                   aria-describedby={errors.secondName ? 'secondName-error' : undefined}
                 />
                 {errors.secondName && (
-                  <Alert 
+                  <Tooltip 
                     message={errors.secondName} 
                     id="secondName-error"
                     position="top"
@@ -222,7 +222,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                   aria-describedby={errors.email ? 'email-error' : undefined}
                 />
                 {errors.email && (
-                  <Alert 
+                  <Tooltip 
                     message={errors.email} 
                     id="email-error"
                     position="bottom"
