@@ -193,7 +193,7 @@
 
 .profile__footer{
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   flex-direction: row;
   padding: 10px;
 }

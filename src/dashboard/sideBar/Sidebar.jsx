@@ -265,7 +265,7 @@ export function Sidebar({ homePages,
                         <div className="sidebar__sites-container">
                             <div className="sitesDisplay">
                              {sitesSidebar.length === 0 ? (
-                                <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>You don't have any site yet</span>
+                                <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>You don't have any sites yet</span>
                                 ) : (
                                 sitesSidebar.map((site, index) => (
                                     <div key={index}>{site.name}</div> // revisar esta parte
