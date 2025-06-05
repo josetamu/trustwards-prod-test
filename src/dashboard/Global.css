@@ -15,6 +15,7 @@
   --background-color-blue: #0099FE;
   --background-color-black: #191919;
   --border-color: #E0E0E0;
+  --sidebar-icon-size: 16px;
 
 
 
@@ -46,7 +47,7 @@
 #root {
   width: 100%;
   min-height: 100svh;
-  background-color: #F3F3F3;
+  background-color: rgba(245, 245, 245, 1);
 }
 
 .content__container {
@@ -61,7 +62,7 @@
   width: calc(100vw - 100px);
   height: fit-content;
   padding: 20px;
-  left: 50px;
+  left: 70px;
   position: relative;
   overflow-x: hidden;
   z-index: 1;

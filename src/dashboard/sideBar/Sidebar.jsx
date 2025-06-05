@@ -122,6 +122,8 @@ export const otherpages = [
     
 ]
 
+const sitesSidebar = [];
+
 // Sidebar component
 export function Sidebar({ homePages, 
     docPages, 
@@ -203,18 +205,19 @@ export function Sidebar({ homePages,
                         <a className="sidebar__header">
                         <span className="sidebar__header__icon">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clipPath="url(#clip0_79_131)">
-                                <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="black" strokeWidth="1.3" strokeLinejoin="round"/>
-                                <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="black" strokeWidth="1.3" strokeLinejoin="round"/>
-                                <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="black" strokeWidth="1.3" strokeLinejoin="round"/>
-                                <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="black" strokeWidth="1.3" strokeLinejoin="round"/>
-                                </g>
-                                <defs>
-                                <clipPath id="clip0_79_131">
-                                <rect width="12" height="12" fill="white"/>
-                                </clipPath>
-                                </defs>
-                            </svg>
+                            <g clip-path="url(#clip0_209_250)">
+                            <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                            <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                            <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                            <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                            </g>
+                            <defs>
+                            <clipPath id="clip0_209_250">
+                            <rect width="12" height="12" fill="white"/>
+                            </clipPath>
+                            </defs>
+                        </svg>
+
 
                             </span>
                             <span className="sidebar__header__text">Dashboard</span>
@@ -240,11 +243,35 @@ export function Sidebar({ homePages,
                         ))} */}
                     </div>
                     <div className="sidebar__sites">
-                        <div className="sidebar__sites-header">
+                        <div className={`${isSidebarOpen ? 'sidebar__sites-header--open' : 'sidebar__sites-header'}`}>
+                            <span className='sidebar__sites-title'>SITES</span>
+                            <div className='sidebar__sites-searcher'>
+                                <span className='sidebar__sites-search'>
+                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8.99912 8.99912L7.07031 7.07031" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
+                                        <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
+                                    </svg>
+                                </span>
+                                <input className='sidebar__sites-input' type="text" />
+                                <span className='sidebar__sites-add'>
+                            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="black"/>
+                            </svg>
+
+                            </span>
+                            </div>
                             
                         </div>
                         <div className="sidebar__sites-container">
-                            <div className="sitesDisplay"></div>
+                            <div className="sitesDisplay">
+                             {sitesSidebar.length === 0 ? (
+                                <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>You don't have any site yet</span>
+                                ) : (
+                                sitesSidebar.map((site, index) => (
+                                    <div key={index}>{site.name}</div> // revisar esta parte
+                                ))
+                            )} 
+                            </div>
                         </div>
                         {/* <span className="sidebar__header">
                             <span className="sidebar__sites__icon">
