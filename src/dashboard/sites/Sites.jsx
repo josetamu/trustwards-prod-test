@@ -5,7 +5,7 @@ import { Sort } from '../sort/sort';
 import { View } from '../view/View';
 import './Sites.css'
 
-export const Sites = ({ sites, isModalOpen, setIsModalOpen, user }) => {
+export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen}) => {
   const [siteList, setSiteList] = useState(sites);
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
@@ -85,6 +85,20 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user }) => {
             }}
           />
         ))}
+        {webs.map((web)=>
+          <Site
+          key={web.id}
+          id={web.id}
+          text={web.Name}
+          domain={web.Domain}
+          /* onUpdate={(updatedText, updatedDomain) => {
+            setSiteList(prev => prev.map(s => s.id === site.id ? { ...s, text: updatedText, domain: updatedDomain } : s));
+          }}
+          onRemove={() => {
+            setSiteList(prev => prev.filter(s => s.id !== site.id));
+          }} */
+        />
+        )}
       </div>
 
 
@@ -93,6 +107,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user }) => {
           onSave={handleAddSite}
           onCancel={() => setIsModalOpen(false)}
           user={user}
+          isSidebarOpen={isSidebarOpen}
         />
       )}
     </div>

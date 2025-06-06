@@ -19,21 +19,31 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userSettings, setUserSettings] = useState(null);
   const [user, setUser] = useState(null);
+  const [webs, setwebs] = useState([]);
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
     const contentContainer = document.querySelector('.content__container');
     const userSettings = document.querySelector('.profile');
+    const modal = document.querySelector('.modal__backdrop'); 
+    
     if (!isSidebarOpen) {
         contentContainer.classList.add('open');
         if(userSettings){
           userSettings.classList.add('open');
+        }
+        if(modal){
+          modal.classList.add('open');
         }
     } else {
         contentContainer.classList.remove('open');
         if(userSettings){
           userSettings.classList.remove('open');
         }
+        if(modal){
+          modal.classList.remove('open');
+        }
+
     }
 };
 
@@ -55,7 +65,7 @@ function App() {
       return;
     }
     const {data: userData, error: dbError} = await supabase
-    .from('Users')
+    .from('User')
     .select('*')
     .eq('id', userId)
     .single();
@@ -67,14 +77,29 @@ function App() {
     }
   };
 
+  // Function to fetch sites from Supabase
+  const fetchSites = async () => {
+    const { data, error } = await supabase
+      .from('Site')
+      .select('*');
+    
+    if (error) {
+      console.error('Error fetching sites:', error);
+    } else {
+      setwebs(data);
+    }
+  };
+
   useEffect(() => {
     // Usar el listener onAuthStateChange
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session) {
           getUser(session.user.id);
+          fetchSites(); // Fetch sites when user is authenticated
         } else {
-          getUser(null); // Limpiar el usuario si no hay sesión
+          getUser(null);
+          setwebs([]); // Clear sites when user logs out
         }
       }
     );
@@ -115,11 +140,13 @@ function App() {
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen}
             user={user}
+            webs={webs}
+            isSidebarOpen={isSidebarOpen}
           />
         );
-      case 'Analytics':
+      case 'Support':
         return <Reports />;
-      case 'Academy':
+      case 'Appearance':
         return <Academy />;
       case 'Legal news':
         return <LegalNews />;
@@ -151,7 +178,10 @@ function App() {
       setIsSidebarOpen={setIsSidebarOpen} 
       toggleSidebar={toggleSidebar}
       setUserSettings={setUserSettings}
-      user={user}/>
+      user={user}
+      webs={webs}
+      setIsModalOpen={setIsModalOpen}
+      />
     <div className="content__container">
       {renderActivePage()}
      {renderUserSettings()}

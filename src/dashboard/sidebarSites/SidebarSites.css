@@ -1,0 +1,21 @@
+.sidebarSites__site{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    height: 40px;
+    width: 100%;
+    border-radius: 10px;
+    background-color: transparent;
+    padding: 0 10px;
+    margin: 0 10px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+
+}
+.sidebarSites__site-avatar{
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    border: 1px solid var(--border-color);
+}

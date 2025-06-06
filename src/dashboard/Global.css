@@ -12,8 +12,8 @@
   --content-backgroundcolor: #fff;
   --font-family: 'Inter', sans-serif;
   --font-weight: 500;
-  --letter-spacing-negative: -0.05em;
-  --letter-spacing-positive: 0.05em;
+  --letter-spacing-negative: -0.03em;
+  --letter-spacing-positive: 0.03em;
   --background-color-blue: #0099FE;
   --background-color-black: #191919;
   --border-color: #E0E0E0;
@@ -53,6 +53,7 @@
   background-color: var(--root-backgroundcolor);
 }
 
+
 .content__container {
   display: flex;
   background-color: var(--content-backgroundcolor);
@@ -71,6 +72,8 @@
   z-index: 1;
     
 }
+
+ 
   
 @media (max-width: 767px) {
 

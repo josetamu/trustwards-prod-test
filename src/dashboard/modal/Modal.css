@@ -2,15 +2,16 @@
 .modal__backdrop {
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  left: 70px;
+  width: 100%;
+  height: 100%;
   backdrop-filter: blur(var(--backdrop-blur));
   -webkit-backdrop-filter: blur(var(--backdrop-blur));
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  transition: var(--sidebar-transition);
+  z-index: 3;
 }
 
 .modal {
@@ -169,7 +170,12 @@
 }
 
 /* >MODAL */
-
+@media(max-width: 767px){
+  .modal__backdrop{
+    left: 0;
+    top: 0px;
+  }
+}
 /* Mobile */
 @media (max-width: 480px) {
   .modal {

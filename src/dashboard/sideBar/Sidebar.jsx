@@ -5,6 +5,7 @@ import { Profile } from '../profile/Profile';
 import { Settings } from '../settings/Settings';
 import { PlanCard } from '../PlanCard/PlanCard';
 import { ProfileDropdown } from '../profileDropdown/ProfileDropdown';
+import { SidebarSites } from '../sidebarSites/SidebarSites';
 import "./Sidebar.css";
 
 
@@ -122,17 +123,18 @@ export const otherpages = [
     
 ]
 
-const sitesSidebar = [];
+
 
 // Sidebar component
-export function Sidebar({ homePages, 
-    docPages, 
+export function Sidebar({ 
     onPageChange, 
     isSidebarOpen, 
     setIsSidebarOpen, 
     toggleSidebar, 
     setUserSettings,
-    user
+    user,
+    webs,
+    setIsModalOpen
     }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -205,11 +207,11 @@ export function Sidebar({ homePages,
                         <a className="sidebar__header">
                         <span className="sidebar__header__icon">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g clip-path="url(#clip0_209_250)">
-                            <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
-                            <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
-                            <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
-                            <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="#686B74" stroke-width="1.3" stroke-linejoin="round"/>
+                            <g clipPath="url(#clip0_209_250)">
+                            <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+                            <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+                            <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+                            <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
                             </g>
                             <defs>
                             <clipPath id="clip0_209_250">
@@ -253,22 +255,32 @@ export function Sidebar({ homePages,
                                     </svg>
                                 </span>
                                 <input className='sidebar__sites-input' type="text" />
-                                <span className='sidebar__sites-add'>
-                            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="black"/>
-                            </svg>
+                                <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(true);
+                                                                                     if(window.innerWidth < 767) {
+                                                                                        setIsSidebarOpen(false);
+                                                                                        toggleSidebar();
+                                                                                        toggleDropdown();
+                                                                                    }
+                                                                                    }} >
+                                    <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="black"/>
+                                    </svg>
 
-                            </span>
+                                </span>
                             </div>
                             
                         </div>
                         <div className="sidebar__sites-container">
                             <div className="sitesDisplay">
-                             {sitesSidebar.length === 0 ? (
+                             {webs.length === 0 ? (
                                 <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>You don't have any sites yet</span>
                                 ) : (
-                                sitesSidebar.map((site, index) => (
-                                    <div key={index}>{site.name}</div> // revisar esta parte
+                                webs.map((web) => (
+                                    <SidebarSites
+                                    key={web.id}
+                                    avatar={web["Avatar Url"]}
+                                    name={web.Name}
+                                    />
                                 ))
                             )} 
                             </div>

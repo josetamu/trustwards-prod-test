@@ -59,10 +59,10 @@
   .profileDropdown__header__avatar{
     width: 25px;
     height: 25px;
-    border-radius: 30%;
+    border-radius: 100%;
     border: 1px solid var(--border-color);
     background-color: var(--avatar-background);
-    padding: 4px;
+    padding: 3px;
 
     
   }

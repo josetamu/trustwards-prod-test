@@ -3,7 +3,7 @@ import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
 import './Modal.css'
 
-export function Modal({ onSave, onCancel, initialData = null, type = 'create' }) {
+export function Modal({ onSave, onCancel, initialData = null, type = 'create', isSidebarOpen}) {
   const [formValues, setFormValues] = useState({
     name: initialData?.text?.trim() || '',
     domain: initialData?.domain?.trim() || ''
@@ -154,7 +154,7 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create' })
   }, [handleKeyDown]);
 
   return (
-    <div className="modal__backdrop" onClick={handleBackdropClick}>
+    <div className={`modal__backdrop ${isSidebarOpen ? 'open' : ''}`} onClick={handleBackdropClick}>
       <div
         className="modal"
         onClick={(e) => e.stopPropagation()}

@@ -1,4 +1,12 @@
+
+
+
 /* SITES */
+.open{
+  left: var(--sidebar-width-open);
+  width: calc(100vw - 220px);
+
+} 
 .sites__wrapper {
   width: 100%;
   max-width: 1200px;
@@ -12,7 +20,7 @@
 
 .sites__grid.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
 }
 .sites__grid.list {
@@ -71,7 +79,13 @@
 }
 
 /* SITES */
+@media (max-width: 767px){
+  .open{
+    left: 0px;
+    width: 100%;
+ } 
 
+}
 /* Mobile */
 @media (max-width: 480px) {
   .sites__title {
@@ -80,4 +94,5 @@
   .sites__new-button {
     font-size: 12px;
   }
+
 }
