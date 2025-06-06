@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './Sort.css';
-import { Dropdown } from '../dropdown/Dropdown';
+import { Dropdown } from '../Dropdown/Dropdown';
 
 export const Sort = ({ onSortChange }) => {
   const [sortMode, setSortMode] = useState('alphabetical');
@@ -28,19 +28,37 @@ export const Sort = ({ onSortChange }) => {
         className="dropdown__item" 
         onClick={(e) => {
           e.stopPropagation();
-          handleSortChange('alphabetical', !ascending);
+          handleSortChange('date', true);
         }}
       >
-        {sortMode === 'alphabetical' ? (ascending ? 'A-Z' : 'Z-A') : 'A-Z'} {sortMode === 'alphabetical' ? (ascending ? '↓' : '↑') : '↓'}
+        ↓ Date (newer)
       </button>
       <button 
         className="dropdown__item" 
         onClick={(e) => {
           e.stopPropagation();
-          handleSortChange('date', !ascending);
+          handleSortChange('date', false);
         }}
       >
-        {sortMode === 'date' ? (ascending ? 'Date' : 'Date+') : 'Date'} {sortMode === 'date' ? (ascending ? '↓' : '↑') : '↓'}
+        ↑ Date (older)
+      </button>
+      <button 
+        className="dropdown__item" 
+        onClick={(e) => {
+          e.stopPropagation();
+          handleSortChange('alphabetical', false);
+        }}
+      >
+        ↓ A-Z (desc)
+      </button>
+      <button 
+        className="dropdown__item" 
+        onClick={(e) => {
+          e.stopPropagation();
+          handleSortChange('alphabetical', true);
+        }}
+      >
+        ↑ Z-A (asc)
       </button>
     </>
   );

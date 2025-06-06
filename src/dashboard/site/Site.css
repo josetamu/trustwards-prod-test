@@ -196,21 +196,10 @@
   white-space: nowrap;
 }
 
-.site__menu-item:hover {
-  background: #cccccc;
-}
-
-.site__menu-item--edit {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
 .site__menu-item--edit:hover {
   color: #5E5E5E;
 }
 
 .site__menu-item--delete {
   color: #dc2626;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
 }
