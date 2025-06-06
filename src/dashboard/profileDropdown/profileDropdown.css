@@ -1,4 +1,6 @@
-
+:root{
+  --color-logout: #db1515;
+}
   
   /* <PROFILE DROPDOWN */
   .profileDropdown{
@@ -26,7 +28,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: width 0.4s ease;
+    transition: var(--sidebar-transition);
     flex-direction: row;
     
     
@@ -42,7 +44,7 @@
     background-color: transparent;
     border-radius: 10px;
     width: 100%;
-    transition: width 0.4s ease;
+    transition: var(--sidebar-transition);
    
   }
 
@@ -59,7 +61,7 @@
     height: 25px;
     border-radius: 30%;
     border: 1px solid var(--border-color);
-    background-color: #fff;
+    background-color: var(--avatar-background);
     padding: 4px;
 
     
@@ -68,9 +70,9 @@
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--sidebar-items-color);
-    letter-spacing: var(--letter-spacing);
+    letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
-    transition: all 0.4s ease 0.4s;
+    transition: var(--sidebar-transition);
     display: flex;
     opacity: 0;
   }
@@ -79,15 +81,15 @@
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--background-color-black);
-    letter-spacing: var(--letter-spacing);
+    letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
-    transition: all 0.4s ease;
+    transition: var(--sidebar-transition);
     display: flex;
     opacity: 1;
   }
   .profileDropdown__icons{
     display: flex;
-    transition: all 0.4s ease;
+    transition: var(--sidebar-transition);
     opacity: 0;
     
   }
@@ -98,7 +100,7 @@
     justify-content: end;
     gap: 10px;
     padding: 10px;
-    transition: all 0.4s ease;
+    transition: var(--sidebar-transition);
     opacity: 1;
   }
 
@@ -183,7 +185,7 @@
     color: var(--sidebar-items-color);
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
-    letter-spacing: var(--letter-spacing);
+    letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
     width: 100%;
     justify-items: center;
@@ -220,10 +222,10 @@
   }
 
   .profileDropdown__link__logout:hover {
-    color: #db1515;
+    color: var(--color-logout);
   }
   .profileDropdown__link__logout:hover .profileDropdown__link__path {
-    stroke: #db1515;
+    stroke: var(--color-logout);
   }
 
   .profileDropdown__dropdown--inactive{
@@ -238,7 +240,7 @@
         height: 40px;
         justify-content: center;
         width: 100%;
-        margin-top: 40px;
+        margin-top: 5px;
 
       } 
       .profileDropdown--open:hover{
@@ -306,7 +308,7 @@
     color: var(--sidebar-items-color);
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
-    letter-spacing: var(--letter-spacing);
+    letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
     width: 100%;
    
@@ -331,9 +333,9 @@
   }
 
   .profileDropdown__link__logout:hover {
-    color: #db1515;
+    color: var(--color-logout);
   }
   .profileDropdown__link__logout:hover .profileDropdown__link__path {
-    stroke: #db1515;
+    stroke: var(--color-logout);
   }
   }

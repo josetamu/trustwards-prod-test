@@ -8,14 +8,21 @@
 }
 
 :root {
+  --root-backgroundcolor: rgba(245, 245, 245, 1);
+  --content-backgroundcolor: #fff;
   --font-family: 'Inter', sans-serif;
   --font-weight: 500;
-  --letter-spacing: -0.05em;
-  --dashed-border: 2px dashed #E3E3E3;
+  --letter-spacing-negative: -0.05em;
+  --letter-spacing-positive: 0.05em;
   --background-color-blue: #0099FE;
   --background-color-black: #191919;
   --border-color: #E0E0E0;
+  --font-size-small: 10px;
+  --font-size-medium: 12px;
   --sidebar-icon-size: 16px;
+  --sidebar-width-open: 200px;
+  --sidebar-width-close: 70px;
+  
 
 
 
@@ -24,12 +31,8 @@
 
 
 
- 
-
- 
+  --dashed-border: 2px dashed #E3E3E3;
   --font-size-btn: 14px;
- 
-
   --btn-bg-hover: #1769aa;
   --font-size-name: 20px;
   --font-size-domain: 12px;
@@ -47,12 +50,12 @@
 #root {
   width: 100%;
   min-height: 100svh;
-  background-color: rgba(245, 245, 245, 1);
+  background-color: var(--root-backgroundcolor);
 }
 
 .content__container {
   display: flex;
-  background-color: #fff;
+  background-color: var(--content-backgroundcolor);
   justify-content: center;
   border-radius: 10px;
   border: 2px solid #E0E0E0;
@@ -62,7 +65,7 @@
   width: calc(100vw - 100px);
   height: fit-content;
   padding: 20px;
-  left: 70px;
+  left: var(--sidebar-width-close);
   position: relative;
   overflow-x: hidden;
   z-index: 1;
