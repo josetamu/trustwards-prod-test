@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Site } from '../site/Site';
-import { Modal } from '../modal/Modal';
-import { Sort } from '../sort/sort';
+import { ModalNewSite } from '../ModalNewSite/ModalNewSite';
+import { ModalContainer } from '../ModalContainer/ModalContainer';
+import { Sort } from '../sort/Sort';
 import { View } from '../view/View';
 import './Sites.css'
 
@@ -89,11 +90,12 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user }) => {
 
 
       {isModalOpen && (
-        <Modal
-          onSave={handleAddSite}
-          onCancel={() => setIsModalOpen(false)}
-          user={user}
-        />
+        <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <ModalNewSite
+            onSave={handleAddSite}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        </ModalContainer>
       )}
     </div>
   );

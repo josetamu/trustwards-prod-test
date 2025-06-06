@@ -1,6 +1,7 @@
 import './Site.css';
-import { Dropdown } from '../dropdown/Dropdown';
-import { Modal } from '../modal/Modal';
+import { Dropdown } from '../Dropdown/Dropdown';
+import { ModalNewSite } from '../ModalNewSite/ModalNewSite';
+import { ModalContainer } from '../ModalContainer/ModalContainer';
 import { useState } from 'react';
 
 const ProButton = ({ onClick, isHovering }) => {
@@ -70,25 +71,29 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
         </div>
       </div>
       {editModalOpen && (
-        <Modal
-          type="edit"
-          initialData={{ id, text, domain }}
-          onSave={(newText, newDomain) => {
-            onUpdate(newText, newDomain);
-            setEditModalOpen(false);
-          }}
-          onCancel={() => setEditModalOpen(false)}
-        />
+        <ModalContainer isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
+          <ModalNewSite
+            type="edit"
+            initialData={{ id, text, domain }}
+            onSave={(newText, newDomain) => {
+              onUpdate(newText, newDomain);
+              setEditModalOpen(false);
+            }}
+            onCancel={() => setEditModalOpen(false)}
+          />
+        </ModalContainer>
       )}
       {deleteModalOpen && (
-        <Modal
-          type="delete"
-          onSave={() => {
-            onRemove();
-            setDeleteModalOpen(false);
-          }}
-          onCancel={() => setDeleteModalOpen(false)}
-        />
+        <ModalContainer isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
+          <ModalNewSite
+            type="delete"
+            onSave={() => {
+              onRemove();
+              setDeleteModalOpen(false);
+            }}
+            onCancel={() => setDeleteModalOpen(false)}
+          />
+        </ModalContainer>
       )}
     </div>
   );
