@@ -147,7 +147,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
   }, []);
 
   return (
-      <div className="profile__modal" onClick={(e) => e.stopPropagation()}>
+      <>
         <div className="profile__banner">
 
         </div>
@@ -257,7 +257,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
             }
           }}>Save</button>
         </div>
-      </div>
+      </>
   )
 }
 
