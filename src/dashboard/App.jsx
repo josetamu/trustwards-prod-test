@@ -204,7 +204,6 @@ function App() {
       <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isSidebarOpen={isSidebarOpen}>
         <ModalNewSite
           onSave={handleAddSite}
-          onCancel={() => setIsModalOpen(false)}
         />
       </ModalContainer>
     )}

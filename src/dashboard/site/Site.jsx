@@ -25,8 +25,8 @@ const ProButton = ({ onClick, isHovering }) => {
 const SiteMenu = ({ onEdit, onDelete }) => {
   return (
     <>
-      <button className="site__menu-item site__menu-item--edit" onClick={onEdit}>Edit</button>
-      <button className="site__menu-item site__menu-item--delete" onClick={onDelete}>Delete</button>
+      <button className="dropdown__item" onClick={onEdit}>Edit</button>
+      <button className="dropdown__item" onClick={onDelete}>Delete</button>
     </>
   );
 };
@@ -79,7 +79,6 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
               onUpdate(newText, newDomain);
               setEditModalOpen(false);
             }}
-            onCancel={() => setEditModalOpen(false)}
           />
         </ModalContainer>
       )}
@@ -91,7 +90,6 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
               onRemove();
               setDeleteModalOpen(false);
             }}
-            onCancel={() => setDeleteModalOpen(false)}
           />
         </ModalContainer>
       )}
