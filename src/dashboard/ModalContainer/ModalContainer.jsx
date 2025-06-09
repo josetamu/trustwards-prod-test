@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import './ModalContainer.css';
 
-export function ModalContainer({ isOpen, onClose, children, isSidebarOpen }) {
+export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handleCreate }) {
   const modalRef = useRef(null);
 
   // Set initial focus when modal opens

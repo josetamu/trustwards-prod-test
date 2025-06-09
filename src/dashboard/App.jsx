@@ -183,7 +183,7 @@ function App() {
           return (
             
               <ModalNewSite
-                onSave={handleAddSite}
+                onSave={() => {setIsModalOpen(false); fetchSites()}}
                 onCancel={() => setIsModalOpen(false)}
               />
             
@@ -193,7 +193,7 @@ function App() {
       }
   }
 
-  // Add a new site
+/*   // Add a new site
   const handleAddSite = (newText, newDomain) => {
     const newSite = {
       id: crypto.randomUUID(),
@@ -203,7 +203,7 @@ function App() {
     };    
     setwebs(prev => [...prev, newSite]);
     setIsModalOpen(false);
-  };
+  }; */
 
   return (
   <div className="app-container">

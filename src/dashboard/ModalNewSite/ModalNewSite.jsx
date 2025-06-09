@@ -3,7 +3,7 @@ import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
 import './ModalNewSite.css'
 
-export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create' }) {
+export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create', setIsModalOpen }) {
   const [formValues, setFormValues] = useState({
     name: initialData?.text?.trim() || '',
     domain: initialData?.domain?.trim() || ''
@@ -77,6 +77,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
         onSave(formValues.name.trim(), formValues.domain.trim());
         setFormValues({ name: '', domain: '' });
         setFormErrors({});
+        setIsModalOpen(false);
       } catch (error) {
         console.error('Modal.jsx: Error saving site during insert:', error);
         setFormErrors(prev => ({ ...prev, general: 'Error saving site. Please try again.' }));
