@@ -171,7 +171,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                 <input 
                   className="profile__label profile__label__name" 
                   type="text" 
-                  placeholder={`${user?.["First Name"] || 'FirstName'}`} 
+                  /* placeholder={`${user?.["First Name"] || 'FirstName'}`}  */
                   value={firstName} 
                   onChange={(e) => handleInputEdit('firstName', e.target.value)}
                   onBlur={() => handleInputBlur('firstName')}
@@ -191,7 +191,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                 <input 
                   className="profile__label profile__label__name" 
                   type="text" 
-                  placeholder={`${user?.["Second Name"] || 'Second Name'}`} 
+                  /* placeholder={`${user?.["Second Name"] || 'Second Name'}`}  */
                   value={secondName} 
                   onChange={(e) => handleInputEdit('secondName', e.target.value)}
                   onBlur={() => handleInputBlur('secondName')}
@@ -216,7 +216,7 @@ export function Profile({ setUserSettings, user, setUser }) {
                 <input 
                   className="profile__label" 
                   type="text" 
-                  placeholder={`${user?.Email || 'example@email.com'}`} 
+                 /*  placeholder={`${user?.Email || 'example@email.com'}`} */ 
                   value={email} 
                   onChange={(e) => handleInputEdit('email', e.target.value)}
                   onBlur={() => handleInputBlur('email')}
@@ -237,7 +237,7 @@ export function Profile({ setUserSettings, user, setUser }) {
           <div className="profile__row profile__row--last">
             <span className="profile__row__span">Password</span>
             <div className="profile__input">
-              <button className="profile__input__button">Reset link</button>
+              <button className="profile__input__button">Send link</button>
             </div>    
           </div>
         </div>
