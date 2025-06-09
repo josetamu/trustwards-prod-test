@@ -199,6 +199,7 @@ function App() {
       {renderActivePage()}
      {renderUserSettings()}
     </div>
+    
     {isModalOpen && (
       <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isSidebarOpen={isSidebarOpen}>
         <ModalNewSite
