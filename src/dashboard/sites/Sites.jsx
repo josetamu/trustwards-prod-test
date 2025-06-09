@@ -90,12 +90,21 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
 
 
       {isModalOpen && (
+<<<<<<< HEAD
+        <Modal
+          onSave={handleAddSite}
+          onCancel={() => setIsModalOpen(false)}
+          user={user}
+          isSidebarOpen={isSidebarOpen}
+        />
+=======
         <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <ModalNewSite
             onSave={handleAddSite}
             onCancel={() => setIsModalOpen(false)}
           />
         </ModalContainer>
+>>>>>>> c3ac8278ec0301456a15ec3536e3a8c8dc70af75
       )}
     </div>
   );
