@@ -58,7 +58,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
       </div>
 
       <div className={`sites__grid ${isGridView ? 'grid' : 'list'}`}>
-        {sortedSites.map((site) => (
+      {/*   {sortedSites.map((site) => (
           <Site
             key={site.id}
             id={site.id}
@@ -71,7 +71,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               setSiteList(prev => prev.filter(s => s.id !== site.id));
             }}
           />
-        ))}
+        ))} */}
         {webs.map((web)=>
           <Site
           key={web.id}
@@ -87,6 +87,25 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
         />
         )}
       </div>
+
+
+      {isModalOpen && (
+<<<<<<< HEAD
+        <Modal
+          onSave={handleAddSite}
+          onCancel={() => setIsModalOpen(false)}
+          user={user}
+          isSidebarOpen={isSidebarOpen}
+        />
+=======
+        <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <ModalNewSite
+            onSave={handleAddSite}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        </ModalContainer>
+>>>>>>> c3ac8278ec0301456a15ec3536e3a8c8dc70af75
+      )}
     </div>
   );
 };
