@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import './ModalContainer.css';
 
-export function ModalContainer({ isOpen, onClose, children }) {
+export function ModalContainer({ isOpen, onClose, children, isSidebarOpen }) {
   const modalRef = useRef(null);
 
   // Set initial focus when modal opens
@@ -18,7 +18,7 @@ export function ModalContainer({ isOpen, onClose, children }) {
 
   // Click outside modal
   const handleBackdropClick = useCallback((e) => {
-    if (e.target.className === 'modal__backdrop') {
+    if (e.target.className.includes('modal__backdrop')) {
       onClose();
     }
   }, [onClose]);
@@ -79,7 +79,7 @@ export function ModalContainer({ isOpen, onClose, children }) {
   if (!isOpen) return null;
 
   return (
-    <div className="modal__backdrop" onClick={handleBackdropClick}>
+    <div className={`modal__backdrop ${isSidebarOpen ? 'open' : ''}`} onClick={handleBackdropClick}>
       <div className="modal" ref={modalRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
         {children}
       </div>

@@ -10,4 +10,21 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-  }
+    transition: left 0.4s ease;
+}
+
+.modal__backdrop.open {
+    left: var(--sidebar-width-open);
+    width: calc(100vw - var(--sidebar-width-open));
+}
+
+@media (max-width: 767px) {
+    .modal__backdrop {
+        left: 0;
+        width: 100vw;
+    }
+    .modal__backdrop.open {
+        left: 0;
+        width: 100vw;
+    }
+}

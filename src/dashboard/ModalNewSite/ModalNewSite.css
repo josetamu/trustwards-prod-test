@@ -1,4 +1,22 @@
+/* MODAL */
+<<<<<<< HEAD:src/dashboard/modal/Modal.css
+.modal__backdrop {
+  position: fixed;
+  top: 0;
+  left: 70px;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: var(--sidebar-transition);
+  z-index: 3;
+}
 
+=======
+>>>>>>> c3ac8278ec0301456a15ec3536e3a8c8dc70af75:src/dashboard/ModalNewSite/ModalNewSite.css
 .modal {
   background: var(--modal-background);
   padding: 3px;

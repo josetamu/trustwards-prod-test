@@ -10,7 +10,8 @@ import { Sidebar, homePages, docPages, otherpages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
 import { Profile } from './profile/Profile'
-
+import { ModalNewSite } from './ModalNewSite/ModalNewSite'
+import { ModalContainer } from './ModalContainer/ModalContainer'
 
 function App() {
   const [sites, setSites] = useState([]);
@@ -168,6 +169,18 @@ function App() {
    
   }
 
+  // Add a new site
+  const handleAddSite = (newText, newDomain) => {
+    const newSite = {
+      id: crypto.randomUUID(),
+      text: newText,
+      domain: newDomain,
+      createdAt: new Date().toISOString(),
+    };    
+    setSites(prev => [...prev, newSite]);
+    setIsModalOpen(false);
+  };
+
   return (
   <div className="app-container">
     <Sidebar homePages={homePages} 
@@ -186,6 +199,14 @@ function App() {
       {renderActivePage()}
      {renderUserSettings()}
     </div>
+    {isModalOpen && (
+      <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isSidebarOpen={isSidebarOpen}>
+        <ModalNewSite
+          onSave={handleAddSite}
+          onCancel={() => setIsModalOpen(false)}
+        />
+      </ModalContainer>
+    )}
   </div>
     
       
