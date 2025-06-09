@@ -4,7 +4,7 @@ import { Sort } from '../sort/Sort';
 import { View } from '../view/View';
 import './Sites.css'
 
-export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen}) => {
+export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType}) => {
   const [siteList, setSiteList] = useState(sites);
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
@@ -44,7 +44,13 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
           <button 
             className="sites__new-button"
             onClick={() => {
-              setIsModalOpen(true);
+              setIsModalOpen(!isModalOpen);
+              setModalType("NewSite");
+              /* if(window.innerWidth < 767) {
+                setIsSidebarOpen(false);
+                toggleSidebar();
+                toggleDropdown();
+              } */
             }} 
           >
             New
@@ -87,25 +93,6 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
         />
         )}
       </div>
-
-
-      {isModalOpen && (
-<<<<<<< HEAD
-        <Modal
-          onSave={handleAddSite}
-          onCancel={() => setIsModalOpen(false)}
-          user={user}
-          isSidebarOpen={isSidebarOpen}
-        />
-=======
-        <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <ModalNewSite
-            onSave={handleAddSite}
-            onCancel={() => setIsModalOpen(false)}
-          />
-        </ModalContainer>
->>>>>>> c3ac8278ec0301456a15ec3536e3a8c8dc70af75
-      )}
     </div>
   );
 };

@@ -8,7 +8,7 @@ import "./ProfileDropdown.css";
 
 
 
-export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar }) => {
+export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen}) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 767);
 
     useEffect(() => {
@@ -52,7 +52,10 @@ export const ProfileDropdown = ({ setUserSettings,setIsSidebarOpen,user,isDropdo
                                     icon={profilePage.icon}
                                     text={profilePage.name}
                                     onClick={() => {
-                                        setUserSettings(profilePage.name);
+                                        /* setUserSettings(profilePage.name); */
+                                        setIsModalOpen(!isModalOpen);
+                                        setModalType(profilePage.name);
+
                                         if(window.innerWidth < 767) {
                                             setIsSidebarOpen(false);
                                             toggleSidebar();

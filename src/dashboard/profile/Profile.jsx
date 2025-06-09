@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 
 // Modal profile
-export function Profile({ setUserSettings, user, setUser }) {
+export function Profile({ user, setUser, setIsModalOpen }) {
   //states to save user data
   const [firstName, setFirstName] = useState(user?.["First Name"]);
   const [secondName, setSecondName] = useState(user?.["Second Name"]);
@@ -111,7 +111,7 @@ export function Profile({ setUserSettings, user, setUser }) {
       e.preventDefault();
       const success = await updateUser();
       if (success) {
-        setUserSettings(null);
+        setIsModalOpen(false);
       }
     }
   };
@@ -147,7 +147,6 @@ export function Profile({ setUserSettings, user, setUser }) {
   }, []);
 
   return (
-    <div className="profile open" onClick={() => setUserSettings(null)}>
       <div className="profile__modal" onClick={(e) => e.stopPropagation()}>
         <div className="profile__banner">
 
@@ -247,7 +246,7 @@ export function Profile({ setUserSettings, user, setUser }) {
             try {
               const success = await updateUser();
               if (success) {
-                setUserSettings(null);
+                setIsModalOpen(false);
               }
             } catch (error) {
               console.error('Error updating user:', error);
@@ -259,7 +258,6 @@ export function Profile({ setUserSettings, user, setUser }) {
           }}>Save</button>
         </div>
       </div>
-    </div>
   )
 }
 

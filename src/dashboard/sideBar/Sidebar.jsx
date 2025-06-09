@@ -134,7 +134,10 @@ export function Sidebar({
     setUserSettings,
     user,
     webs,
-    setIsModalOpen
+    setIsModalOpen,
+    setModalType,
+    isModalOpen,
+    
     }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -255,7 +258,8 @@ export function Sidebar({
                                     </svg>
                                 </span>
                                 <input className='sidebar__sites-input' type="text" />
-                                <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(true);
+                                <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(!isModalOpen);
+                                setModalType("NewSite");
                                                                                      if(window.innerWidth < 767) {
                                                                                         setIsSidebarOpen(false);
                                                                                         toggleSidebar();
@@ -278,7 +282,7 @@ export function Sidebar({
                                 webs.map((web) => (
                                     <SidebarSites
                                     key={web.id}
-                                    avatar={web["Avatar Url"]}
+                                    avatar={web["Avatar URL"]}
                                     name={web.Name}
                                     />
                                 ))
@@ -343,7 +347,9 @@ export function Sidebar({
                     setUserSettings={setUserSettings}
                     isDropdownOpen={isDropdownOpen}
                     setIsDropdownOpen={setIsDropdownOpen}
-                   
+                    setModalType={setModalType}
+                    setIsModalOpen={setIsModalOpen}
+                    isModalOpen={isModalOpen}
                     /> 
 
                 </div>

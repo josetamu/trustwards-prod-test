@@ -21,6 +21,7 @@ function App() {
   const [userSettings, setUserSettings] = useState(null);
   const [user, setUser] = useState(null);
   const [webs, setwebs] = useState([]);
+  const [modalType, setModalType] = useState(null);
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -118,14 +119,14 @@ function App() {
   }, [activePage]);
 
   // Creates a custom new site
-  const addSite = (text) => {
+/*   const addSite = (text) => {
     if (text === null) {
       setIsModalOpen(false);
       return;
     }
     setSites([...sites, { id: sites.length + 1, text }]);
     setIsModalOpen(false);
-  };
+  }; */
   
 
   // Render the appropriate view based on active page
@@ -137,12 +138,14 @@ function App() {
         return (
           <Sites 
             sites={sites}
-            onAddSite={addSite}
+            /* onAddSite={addSite} */
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen}
             user={user}
             webs={webs}
             isSidebarOpen={isSidebarOpen}
+            setModalType={setModalType}
+            
           />
         );
       case 'Support':
@@ -158,15 +161,36 @@ function App() {
   };
 
   
-  const renderUserSettings = () => {
+ /*  const renderUserSettings = () => {
     switch (userSettings) {
       case 'Profile':
         return <Profile setUserSettings={setUserSettings} user={user} setUser={setUser}/>;
       default:
         return;
     }
-
-   
+  } */
+    const renderModal = () => {
+      if (!isModalOpen) return null;
+  
+      switch (modalType) {
+        case 'Profile':
+          return (
+           
+              <Profile user={user} setUser={setUser} setIsModalOpen={setIsModalOpen} />
+           
+          );
+        case 'NewSite':
+          return (
+            
+              <ModalNewSite
+                onSave={handleAddSite}
+                onCancel={() => setIsModalOpen(false)}
+              />
+            
+          );
+        default:
+          return null;
+      }
   }
 
   // Add a new site
@@ -177,37 +201,38 @@ function App() {
       domain: newDomain,
       createdAt: new Date().toISOString(),
     };    
-    setSites(prev => [...prev, newSite]);
+    setwebs(prev => [...prev, newSite]);
     setIsModalOpen(false);
   };
 
   return (
   <div className="app-container">
-    <Sidebar homePages={homePages} 
-      docPages={docPages} 
+    <Sidebar  
       otherPages={otherpages}
       onPageChange={setActivePage} 
       isSidebarOpen={isSidebarOpen} 
       setIsSidebarOpen={setIsSidebarOpen} 
       toggleSidebar={toggleSidebar}
-      setUserSettings={setUserSettings}
       user={user}
       webs={webs}
       setIsModalOpen={setIsModalOpen}
+      setModalType={setModalType}
+      isModalOpen={isModalOpen}
+      
+      
       />
     <div className="content__container">
       {renderActivePage()}
-     {renderUserSettings()}
-    </div>
-    
-    {isModalOpen && (
+
+      {isModalOpen && (
       <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isSidebarOpen={isSidebarOpen}>
-        <ModalNewSite
-          onSave={handleAddSite}
-          onCancel={() => setIsModalOpen(false)}
-        />
+       {renderModal()}
       </ModalContainer>
     )}
+     
+    </div>
+    
+   
   </div>
     
       
