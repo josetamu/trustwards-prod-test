@@ -1,7 +1,5 @@
 import { useState, useMemo } from 'react';
 import { Site } from '../site/Site';
-import { ModalNewSite } from '../ModalNewSite/ModalNewSite';
-import { ModalContainer } from '../ModalContainer/ModalContainer';
 import { Sort } from '../sort/Sort';
 import { View } from '../view/View';
 import './Sites.css'
@@ -14,18 +12,6 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
     const saved = localStorage.getItem('viewMode');
     return saved === null ? true : JSON.parse(saved);
   });
-
-  // Add a new site
-  const handleAddSite = (newText, newDomain) => {
-    const newSite = {
-      id: crypto.randomUUID(),
-      text: newText,
-      domain: newDomain,
-      createdAt: new Date().toISOString(),
-    };    
-    setSiteList(prev => [...prev, newSite]);
-    setIsModalOpen(false);
-  };
   
   // Handle sort change
   const handleSortChange = (mode, ascending) => {
@@ -101,25 +87,6 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
         />
         )}
       </div>
-
-
-      {isModalOpen && (
-<<<<<<< HEAD
-        <Modal
-          onSave={handleAddSite}
-          onCancel={() => setIsModalOpen(false)}
-          user={user}
-          isSidebarOpen={isSidebarOpen}
-        />
-=======
-        <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <ModalNewSite
-            onSave={handleAddSite}
-            onCancel={() => setIsModalOpen(false)}
-          />
-        </ModalContainer>
->>>>>>> c3ac8278ec0301456a15ec3536e3a8c8dc70af75
-      )}
     </div>
   );
 };
