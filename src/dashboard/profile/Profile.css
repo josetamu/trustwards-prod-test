@@ -46,7 +46,7 @@
   z-index: 1;
   position: relative;	
   flex-direction: column;
-  padding: 25px 10px 0px 10px;
+  padding: 12.5px 10px 0px 10px;
   width: 100%;
 }
 
@@ -68,12 +68,12 @@
 }
 
 .profile__avatar__img {
-  width: 47px;
-  height: 47px;
+  width: 61px;
+  height: 61px;
   border-radius: 50%;
   border: 1px solid var(--border-color);
   background-color: #fff;
-  padding: 4px;
+  padding: 7px;
 }
 
 .profile__avatar {
@@ -92,7 +92,7 @@
   display: block;
   position: absolute;
   bottom: -1px;
-  right: -5px;
+  right: -1px;
   background-color: #fff;
   border-radius: 50%;
   width: 15px;
@@ -165,7 +165,7 @@
 }
 
 .profile__label[aria-invalid="true"] {
-  outline: 2px solid #ef4444;
+  outline: 2px solid rgba(73, 78, 88, .3)
 }
 
 .profile__label__name{

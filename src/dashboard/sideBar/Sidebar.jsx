@@ -7,7 +7,7 @@ import { PlanCard } from '../PlanCard/PlanCard';
 import { ProfileDropdown } from '../profileDropdown/ProfileDropdown';
 import { SidebarSites } from '../sidebarSites/SidebarSites';
 import "./Sidebar.css";
-
+import { Tooltip } from '../tooltip/Tooltip';
 
 // names and icons used in the sidebar
 export const homePages = [
@@ -247,7 +247,7 @@ export function Sidebar({
                             />
                         ))} */}
                     </div>
-                    <div className="sidebar__sites">
+                    <div className={`${isSidebarOpen ? 'sidebar__sites--open' : 'sidebar__sites'}`}>
                         <div className={`${isSidebarOpen ? 'sidebar__sites-header--open' : 'sidebar__sites-header'}`}>
                             <span className='sidebar__sites-title'>SITES</span>
                             <div className='sidebar__sites-searcher'>
@@ -280,11 +280,24 @@ export function Sidebar({
                                 <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>You don't have any sites yet</span>
                                 ) : (
                                 webs.map((web) => (
+                                    <div key={web.id} className="sidebar__sites-tooltip-wrapper">
                                     <SidebarSites
                                     key={web.id}
                                     avatar={web["Avatar URL"]}
                                     name={web.Name}
-                                    />
+                                    isSidebarOpen={isSidebarOpen}
+                                    >
+                                    </SidebarSites>
+                                    {!isSidebarOpen && window.innerWidth > 767 && (
+                                       /*  <span className="sidebar__sites-tooltip">{web.Name}</span> */
+                                       <Tooltip 
+                                       message={web.Name} 
+                                       id={web.id}
+                                       position="sidebar"
+                                       type='default'>
+                                       </Tooltip>
+                                    )}
+                                    </div>
                                 ))
                             )} 
                             </div>

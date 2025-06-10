@@ -70,7 +70,12 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
       try {
         const { data, error } = await supabase
           .from('Site')
-          .insert([{ Name: formValues.name.trim(), Domain: formValues.domain.trim(), userid: authenticatedUser.id }]);
+          .insert([{ 
+            Name: formValues.name.trim(), 
+            Domain: formValues.domain.trim(), 
+            "Avatar URL": 'src/assets/image 571.png', 
+            userid: authenticatedUser.id 
+          }]);
 
         if (error) throw error;
 
