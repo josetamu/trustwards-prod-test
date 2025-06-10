@@ -1,5 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ANIM_TYPES } from '../dashboard_animations';
 import './Dropdown.css';
+
+
 
 export function Dropdown({ 
   trigger,
@@ -99,11 +103,19 @@ export function Dropdown({
         {trigger}
       </div>
 
-      {open && (
-        <div className={`dropdown__menu dropdown__menu--${currentPosition}`} ref={menuRef}>
-          {menu}
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+
+            className={`dropdown__menu dropdown__menu--${currentPosition}`}
+            ref={menuRef}
+          >
+            {menu}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

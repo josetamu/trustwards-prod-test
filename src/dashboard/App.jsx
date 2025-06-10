@@ -12,6 +12,7 @@ import { Reports } from './reports/Reports'
 import { Profile } from './profile/Profile'
 import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
+import './App.css'
 
 function App() {
   const [sites, setSites] = useState([]);

@@ -45,7 +45,7 @@
     transition: var(--sidebar-transition);
     justify-content: space-between;
     align-items: center;
-    z-index: 1;
+    z-index: 2;
     
   }
   .sidebar__container{
@@ -60,7 +60,7 @@
     flex-direction: column;
     transition: var(--sidebar-transition);
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
   }
    
 /*   @keyframes sidebarHide {
@@ -212,8 +212,19 @@
     width: 100%;
     align-items: center;
     position: relative;
+    flex-direction: column-reverse;
+    gap: 20px;
+    padding-top: 20px;
+    
+  }
+  .sidebar__sites--open{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    position: relative;
     flex-direction: column;
     gap: 20px;
+    
     
   }
   .sitesDisplay__nosites{
@@ -241,9 +252,7 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  padding-top: 20px;
   justify-content: start;
-  transition: opacity 0.4s ease;
   padding-left: 5px;
   padding-right: 5px;
   align-items: center;
@@ -260,6 +269,8 @@
   padding-left: 5px;
   padding-right: 5px;
   align-items: center;
+  gap: 0px;
+
 
 }
 
@@ -268,13 +279,38 @@
   display: flex;
   align-items: center;
   justify-content: end;
-}
+  position: relative;
 
+}
+.sidebar__sites-searcher--open{
+  width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  position: relative;
+}
 .sidebar__sites-input{
+  display: flex;
+  width: 0px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+  
+.sidebar__sites-input--open{
   width: 100px;
-  background-color: transparent;
-  border: none;
-  display: none;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  position: absolute;
+  right: 0;
+  border-radius: 7px;
+  padding: 5px;
+  padding-left: 20px;
+  color: var(--background-color-black);
+  opacity: 1;
+  transition: opacity 0.4s ease;
 }
 
 .sidebar__sites-title{
@@ -283,10 +319,18 @@
   font-family: var(--font-family);
   color: var(--background-color-black);
   letter-spacing: var(--letter-spacing-positive);
+  margin-right: 10px; 
 
 }
 .sidebar__sites-search{
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  margin-left: 2px;
+  
+
   
 }
 .sidebar__sites-add{
@@ -297,8 +341,20 @@
 }
 
 
-
-
+.sidebar__sites-container{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+ 
+}
+.sitesDisplay{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+ /*  max-height: 350px;
+  overflow-y: auto; */
+  
+}
 
 
 
@@ -414,7 +470,7 @@
     height: 0px;
     padding: 15px 20px;
     position: relative;
-    left: -5px;
+    left: -2px;
     top: 0;
     display: flex;
     flex-direction: column;
@@ -428,7 +484,7 @@
     background-color: #fff;
     padding: 15px 20px;
     position: relative;
-    left: -5px;
+    left: -2px;
     top: 0;
     height: 0px;
     display: flex;
@@ -439,7 +495,7 @@
 }
 .sidebar__container{
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   padding: 0px 10px;
   position: relative;
@@ -453,7 +509,7 @@
   border: 0px solid var(--border-color);
   border-radius: 10px;
   justify-content: end;
-  
+  overflow: hidden;
   z-index: 2;
   height: auto;
   min-height: 0px;
@@ -482,7 +538,7 @@
 } 
 .sidebar__container--open{
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.80);
     backdrop-filter: blur(20px);
     padding: 10px 10px;
     position: relative;
@@ -499,8 +555,8 @@
     
     z-index: 1;
     height: auto;
-    min-height: 400px;
-   overflow: hidden;
+    min-height: 600px;
+    overflow: hidden;
 }
 .logo-container{
     width: 100%;
@@ -521,6 +577,19 @@
 .sidebar__sites-header--open{
   justify-content: space-between;
 }
+.sidebar__sites-searcher{
+  max-width: 100%;
+  
+}
+.sidebar__sites-searcher--open{
+  max-width: 100%;
+  
+}
+
+.sidebar__sites-input--open{
+  max-width: 100%;
+  
+}
 .sidebar__others{
   max-width: 100%;
 }
@@ -532,7 +601,7 @@
     gap: 20px;
 }
 .sidebar__logos{
-  z-index: 2;
+  z-index: 3;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

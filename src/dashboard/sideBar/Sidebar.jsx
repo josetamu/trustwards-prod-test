@@ -7,7 +7,7 @@ import { PlanCard } from '../PlanCard/PlanCard';
 import { ProfileDropdown } from '../profileDropdown/ProfileDropdown';
 import { SidebarSites } from '../sidebarSites/SidebarSites';
 import "./Sidebar.css";
-
+import { Tooltip } from '../tooltip/Tooltip';
 
 // names and icons used in the sidebar
 export const homePages = [
@@ -141,6 +141,8 @@ export function Sidebar({
     }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);    
+
 
     const handleDropdownClick = () => {
         if(window.innerWidth < 767){
@@ -152,6 +154,7 @@ export function Sidebar({
         setIsAnimating(true);
         toggleSidebar();
         handleDropdownClick();
+        setIsSearchOpen(false);
         // Remover la clase animating después de que termine la animación
         setTimeout(() => {
             setIsAnimating(false);
@@ -247,18 +250,22 @@ export function Sidebar({
                             />
                         ))} */}
                     </div>
-                    <div className="sidebar__sites">
+                    <div className={`${isSidebarOpen ? 'sidebar__sites--open' : 'sidebar__sites'}`}>
                         <div className={`${isSidebarOpen ? 'sidebar__sites-header--open' : 'sidebar__sites-header'}`}>
                             <span className='sidebar__sites-title'>SITES</span>
-                            <div className='sidebar__sites-searcher'>
-                                <span className='sidebar__sites-search'>
+                            <div className={`sidebar__sites-searcher ${isSearchOpen ? 'sidebar__sites-searcher--open' : ''}`}>
+                                <span className='sidebar__sites-search' onClick={() => setIsSearchOpen(!isSearchOpen)}>
                                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8.99912 8.99912L7.07031 7.07031" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
                                         <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
                                     </svg>
+                                    
                                 </span>
-                                <input className='sidebar__sites-input' type="text" />
-                                <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(!isModalOpen);
+                                <input className={`sidebar__sites-input ${isSearchOpen ? 'sidebar__sites-input--open' : ''}`} type="text" placeholder='Example' />
+                                
+                                
+                            </div>
+                            <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(!isModalOpen);
                                 setModalType("NewSite");
                                                                                      if(window.innerWidth < 767) {
                                                                                         setIsSidebarOpen(false);
@@ -271,7 +278,6 @@ export function Sidebar({
                                     </svg>
 
                                 </span>
-                            </div>
                             
                         </div>
                         <div className="sidebar__sites-container">
@@ -280,11 +286,24 @@ export function Sidebar({
                                 <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>You don't have any sites yet</span>
                                 ) : (
                                 webs.map((web) => (
+                                    <div key={web.id} className="sidebar__sites-tooltip-wrapper">
                                     <SidebarSites
                                     key={web.id}
                                     avatar={web["Avatar URL"]}
                                     name={web.Name}
-                                    />
+                                    isSidebarOpen={isSidebarOpen}
+                                    >
+                                    </SidebarSites>
+                                    {!isSidebarOpen && window.innerWidth > 767 && (
+                                       /*  <span className="sidebar__sites-tooltip">{web.Name}</span> */
+                                       <Tooltip 
+                                       message={web.Name} 
+                                       id={web.id}
+                                       position="sidebar"
+                                       type='default'>
+                                       </Tooltip>
+                                    )}
+                                    </div>
                                 ))
                             )} 
                             </div>

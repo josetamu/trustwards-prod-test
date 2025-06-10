@@ -23,13 +23,13 @@ export function Profile({ user, setUser, setIsModalOpen }) {
   const validateInputs = () => {
     const newErrors = {};
     if (!firstName?.trim()) {
-      newErrors.firstName = 'Please enter your first name';
+      newErrors.firstName = 'Name is required';
     }
     if (!secondName?.trim()) {
-      newErrors.secondName = 'Please enter your second name';
+      newErrors.secondName = 'Name is required';
     }
     if (!email?.trim()) {
-      newErrors.email = 'Please enter your email';
+      newErrors.email = 'Email is required';
     } else if (!email.includes('@') || !email.includes('.')) {
       newErrors.email = 'Please enter a valid email address';
     }
@@ -38,21 +38,21 @@ export function Profile({ user, setUser, setIsModalOpen }) {
   };
 
   // Handle input blur
-  const handleInputBlur = (field) => {
+/*   const handleInputBlur = (field) => {
     if (field === 'firstName' && !firstName?.trim()) {
-      setErrors(prev => ({ ...prev, firstName: 'Please enter your first name' }));
+      setErrors(prev => ({ ...prev, firstName: 'Name is required' }));
     }
     if (field === 'secondName' && !secondName?.trim()) {
-      setErrors(prev => ({ ...prev, secondName: 'Please enter your second name' }));
+      setErrors(prev => ({ ...prev, secondName: 'Name is required' }));
     }
     if (field === 'email') {
       if (!email?.trim()) {
-        setErrors(prev => ({ ...prev, email: 'Please enter your email' }));
+        setErrors(prev => ({ ...prev, email: 'Email is required' }));
       } else if (!email.includes('@') || !email.includes('.')) {
         setErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
       }
     }
-  };
+  }; */
 
   // Handle input editing and clear errors when input is valid
   const handleInputEdit = (field, value) => {
