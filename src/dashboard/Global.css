@@ -26,7 +26,7 @@
 
 
 
-
+  --letter-spacing: -0.03em;
 
 
 
@@ -52,40 +52,6 @@
   min-height: 100svh;
   background-color: var(--root-backgroundcolor);
 }
-
-[data-scale-top],
-[data-scale-bottom],
-[data-scale-left],
-[data-scale-right]{
-  opacity: 0;
-  transform: scale(0.9);
-
-  animation: enterAnimation 0.2s cubic-bezier(.2,0,0,1) forwards;
-}
-[data-scale-top] {
-  transform-origin: top;
-}
-[data-scale-bottom] {
-  transform-origin: bottom;
-}
-[data-scale-left] {
-  transform-origin: left;
-}
-[data-scale-right] {
-  transform-origin: right;
-}
-@keyframes enterAnimation {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-
 
 
 
