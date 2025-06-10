@@ -214,7 +214,6 @@
     position: relative;
     flex-direction: column-reverse;
     gap: 20px;
-    padding-left: 2.5px;
     padding-top: 20px;
     
   }
@@ -225,7 +224,7 @@
     position: relative;
     flex-direction: column;
     gap: 20px;
-    padding-left: 2.5px;
+    
     
   }
   .sitesDisplay__nosites{
@@ -270,6 +269,8 @@
   padding-left: 5px;
   padding-right: 5px;
   align-items: center;
+  gap: 0px;
+
 
 }
 
@@ -278,13 +279,38 @@
   display: flex;
   align-items: center;
   justify-content: end;
+  position: relative;
+  
 }
-
+.sidebar__sites-searcher--open{
+  width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  position: relative;
+}
 .sidebar__sites-input{
+  display: flex;
+  width: 0px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+  
+.sidebar__sites-input--open{
   width: 100px;
-  background-color: transparent;
-  border: none;
-  display: none;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  position: absolute;
+  right: 0;
+  border-radius: 7px;
+  padding: 5px;
+  padding-left: 20px;
+  color: var(--background-color-black);
+  opacity: 1;
+  transition: opacity 0.4s ease;
 }
 
 .sidebar__sites-title{
@@ -293,10 +319,18 @@
   font-family: var(--font-family);
   color: var(--background-color-black);
   letter-spacing: var(--letter-spacing-positive);
+  margin-right: 10px; 
 
 }
 .sidebar__sites-search{
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  margin-left: 2px;
+  
+
   
 }
 .sidebar__sites-add{
@@ -316,8 +350,9 @@
 .sitesDisplay{
   display: flex;
   flex-direction: column;
-  gap: 10px;
   width: 100%;
+ /*  max-height: 350px;
+  overflow-y: auto; */
   
 }
 
@@ -435,7 +470,7 @@
     height: 0px;
     padding: 15px 20px;
     position: relative;
-    left: -5px;
+    left: -2px;
     top: 0;
     display: flex;
     flex-direction: column;
@@ -449,7 +484,7 @@
     background-color: #fff;
     padding: 15px 20px;
     position: relative;
-    left: -5px;
+    left: -2px;
     top: 0;
     height: 0px;
     display: flex;
@@ -520,7 +555,7 @@
     
     z-index: 1;
     height: auto;
-    min-height: 500px;
+    min-height: 600px;
     overflow: hidden;
 }
 .logo-container{
