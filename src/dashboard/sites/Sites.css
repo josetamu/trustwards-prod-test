@@ -16,6 +16,7 @@
   gap: 24px;
   margin: 0 auto;
   background-color: #ffffff;
+  max-height: calc(100vh - 40px);
 }
 
 .sites__grid.grid {

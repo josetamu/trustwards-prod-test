@@ -4,17 +4,6 @@ import './ModalContainer.css';
 export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handleCreate }) {
   const modalRef = useRef(null);
 
-  // Set initial focus when modal opens
-  useEffect(() => {
-    if (isOpen && modalRef.current) {
-      const focusableElements = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusableElements.length > 0) {
-        focusableElements[0].focus();
-      }
-    }
-  }, [isOpen]);
 
   // Click outside modal
   const handleBackdropClick = useCallback((e) => {
