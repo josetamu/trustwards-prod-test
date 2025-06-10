@@ -280,7 +280,7 @@
   align-items: center;
   justify-content: end;
   position: relative;
-  
+
 }
 .sidebar__sites-searcher--open{
   width: 150px;
@@ -495,7 +495,7 @@
 }
 .sidebar__container{
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   padding: 0px 10px;
   position: relative;
@@ -538,7 +538,7 @@
 } 
 .sidebar__container--open{
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.80);
     backdrop-filter: blur(20px);
     padding: 10px 10px;
     position: relative;
@@ -576,6 +576,19 @@
 }
 .sidebar__sites-header--open{
   justify-content: space-between;
+}
+.sidebar__sites-searcher{
+  max-width: 100%;
+  
+}
+.sidebar__sites-searcher--open{
+  max-width: 100%;
+  
+}
+
+.sidebar__sites-input--open{
+  max-width: 100%;
+  
 }
 .sidebar__others{
   max-width: 100%;

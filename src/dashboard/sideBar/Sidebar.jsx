@@ -154,6 +154,7 @@ export function Sidebar({
         setIsAnimating(true);
         toggleSidebar();
         handleDropdownClick();
+        setIsSearchOpen(false);
         // Remover la clase animating después de que termine la animación
         setTimeout(() => {
             setIsAnimating(false);
