@@ -8,7 +8,7 @@ export const Sort = ({ onSortChange }) => {
 
   const handleSortChange = (mode, direction) => {
     setSortMode(mode);
-    setAscending(direction);  
+    setAscending(direction);
     onSortChange(mode, direction);
   };
 
