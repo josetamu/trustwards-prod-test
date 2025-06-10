@@ -92,7 +92,7 @@ export function Dropdown({
       </div>
 
       {open && (
-        <div className={`dropdown__menu dropdown__menu--${currentPosition}`} ref={menuRef}>
+        <div data-scale-top className={`dropdown__menu dropdown__menu--${currentPosition}`} ref={menuRef}>
           {menu}
         </div>
       )}
