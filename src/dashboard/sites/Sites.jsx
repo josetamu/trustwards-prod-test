@@ -78,19 +78,17 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
             }}
           />
         ))} */}
-        {webs.map((web)=>
+        {webs.map(site =>
           <Site
-          key={web.id}
-          id={web.id}
-          text={web.Name}
-          domain={web.Domain}
-          /* onUpdate={(updatedText, updatedDomain) => {
-            setSiteList(prev => prev.map(s => s.id === site.id ? { ...s, text: updatedText, domain: updatedDomain } : s));
-          }}
-          onRemove={() => {
-            setSiteList(prev => prev.filter(s => s.id !== site.id));
-          }} */
-        />
+            key={site.id}
+            id={site.id}
+            text={site.Name}
+            domain={site.Domain}
+            onRemove={() => {
+              setSiteList(prev => prev.filter(s => s.id !== site.id));
+              if (typeof window.onDeleteSite === 'function') window.onDeleteSite(site.id);
+            }}
+          />
         )}
       </div>
     </div>

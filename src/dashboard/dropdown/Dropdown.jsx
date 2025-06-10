@@ -7,7 +7,9 @@ export function Dropdown({
   openOnHover = false, 
   position = "bottom-left", 
   onMouseEnter,
-  onMouseLeave
+  onMouseLeave,
+  onOpen,
+  onClose
 }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -78,6 +80,12 @@ export function Dropdown({
       setCurrentPosition(newPos);
     }
   }, [open, position]);
+
+  // Call onOpen/onClose
+  useEffect(() => {
+    if (open && onOpen) onOpen();
+    if (!open && onClose) onClose();
+  }, [open, onOpen, onClose]);
 
   return (
     <div

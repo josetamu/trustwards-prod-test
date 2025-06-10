@@ -148,7 +148,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
                 <Tooltip
                   message={formErrors.name}
                   position="left"
-                  type="alert"
+                  type="default"
                 />
               )}
             </div>
