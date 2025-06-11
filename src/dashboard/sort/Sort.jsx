@@ -3,8 +3,8 @@ import './Sort.css';
 import { Dropdown } from '../dropdown/Dropdown';
 
 export const Sort = ({ onSortChange }) => {
-  const [sortMode, setSortMode] = useState('alphabetical');
-  const [ascending, setAscending] = useState(true);
+  const [setSortMode] = useState('alphabetical');
+  const [setAscending] = useState(true);
 
   const handleSortChange = (mode, direction) => {
     setSortMode(mode);

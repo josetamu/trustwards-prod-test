@@ -56,7 +56,7 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'oscar.abad.brickscore@gmail.com',
+      email: 'darezo.2809@gmail.com',
       password: 'TW.141109'
     });
   };
@@ -92,6 +92,14 @@ function App() {
       setwebs(data);
     }
   };
+
+  // Elimina un sitio del estado webs
+  const handleDeleteSite = (id) => {
+    setwebs(prev => prev.filter(site => site.id !== id));
+  };
+
+  // Expone la función globalmente para Sites.jsx
+  window.onDeleteSite = handleDeleteSite;
 
   useEffect(() => {
     // Usar el listener onAuthStateChange
