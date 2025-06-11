@@ -282,11 +282,11 @@ export function Sidebar({
                             
                         </div>
                         <div className="sidebar__sites-container">
-                            <div className="sitesDisplay">
+                            <div className={`${isSidebarOpen ? 'sitesDisplay--open' : 'sitesDisplay'}`}>
                              {webs.length === 0 ? (
                                 <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>You don't have any sites yet</span>
                                 ) : (
-                                webs.map((web) => (
+                                (isSidebarOpen ? webs : webs.slice(0, 6)).map((web) => (
                                     <div key={web.id} className="sidebar__sites-tooltip-wrapper">
                                     <SidebarSites
                                     key={web.id}
@@ -296,7 +296,6 @@ export function Sidebar({
                                     >
                                     </SidebarSites>
                                     {!isSidebarOpen && window.innerWidth > 767 && (
-                                       /*  <span className="sidebar__sites-tooltip">{web.Name}</span> */
                                        <Tooltip 
                                        message={web.Name} 
                                        id={web.id}
