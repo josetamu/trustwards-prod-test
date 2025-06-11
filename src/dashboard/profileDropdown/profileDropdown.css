@@ -243,6 +243,11 @@
         margin-top: 5px;
 
       } 
+      .profileDropdown{
+        
+        margin-top: 5px;
+
+      } 
       .profileDropdown--open:hover{
         height: 40px;
       }

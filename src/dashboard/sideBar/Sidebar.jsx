@@ -140,7 +140,7 @@ export function Sidebar({
     
     }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
+    /* const [isAnimating, setIsAnimating] = useState(false); */
     const [isSearchOpen, setIsSearchOpen] = useState(false);    
 
 
@@ -151,7 +151,7 @@ export function Sidebar({
     };
 
     const handleToggleSidebar = () => {
-        setIsAnimating(true);
+        /* setIsAnimating(true); */
         toggleSidebar();
         handleDropdownClick();
         setIsSearchOpen(false);
@@ -206,7 +206,7 @@ export function Sidebar({
                 </a>
             </div>
             
-            <div className={`${isSidebarOpen ? 'sidebar__container--open' : 'sidebar__container'} ${isAnimating ? 'animating' : ''}`}>
+            <div className={`${isSidebarOpen ? 'sidebar__container--open' : 'sidebar__container'}`}> {/* ${isAnimating ? 'animating' : ''} */}
                 
                 <div className="sidebar__upper">
                     <div className="sidebar__home">
