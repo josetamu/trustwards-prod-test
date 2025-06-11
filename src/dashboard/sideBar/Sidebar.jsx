@@ -254,7 +254,7 @@ export function Sidebar({
                     <div className={`${isSidebarOpen ? 'sidebar__sites--open' : 'sidebar__sites'}`}>
                         <div className={`${isSidebarOpen ? 'sidebar__sites-header--open' : 'sidebar__sites-header'}`}>
                             <span className='sidebar__sites-title'>SITES</span>
-                            <div className={`sidebar__sites-searcher ${isSearchOpen ? 'sidebar__sites-searcher--open' : ''}`}>
+                            <div className={`${isSearchOpen ? 'sidebar__sites-searcher--open' : 'sidebar__sites-searcher'}`}>
                                 <span className='sidebar__sites-search' onClick={() => setIsSearchOpen(!isSearchOpen)}>
                                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8.99912 8.99912L7.07031 7.07031" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
@@ -262,7 +262,7 @@ export function Sidebar({
                                     </svg>
                                     
                                 </span>
-                                <input className={`sidebar__sites-input ${isSearchOpen ? 'sidebar__sites-input--open' : ''}`} type="text" placeholder='Example' />
+                                <input className={`${isSearchOpen ? 'sidebar__sites-input--open' : 'sidebar__sites-input'}`} type="text" placeholder='Example' />
                                 
                                 
                             </div>

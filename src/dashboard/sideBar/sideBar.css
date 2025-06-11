@@ -570,16 +570,20 @@
   justify-content: space-between;
 }
 .sidebar__sites-searcher{
-  max-width: 100%;
+  width: 100%;
   
 }
 .sidebar__sites-searcher--open{
-  max-width: 100%;
+  max-width: 530px;
+  width: 100%;
   
+}
+.sidebar__sites-search{
+  margin-left: 5px;
 }
 
 .sidebar__sites-input--open{
-  max-width: 100%;
+  width: 100%;
   
 }
 .sidebar__others{
