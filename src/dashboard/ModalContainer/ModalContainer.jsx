@@ -65,6 +65,18 @@ export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handl
     };
   }, [handleKeyDown]);
 
+  // Focus on first element
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      const focusableElements = modalRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElements.length) {
+        focusableElements[0].focus();
+      }
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (

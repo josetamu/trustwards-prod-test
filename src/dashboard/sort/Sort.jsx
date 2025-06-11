@@ -1,19 +1,22 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './Sort.css';
 import { Dropdown } from '../Dropdown/Dropdown';
 
 export const Sort = ({ onSortChange }) => {
-  const [setSortMode] = useState('alphabetical');
-  const [setAscending] = useState(true);
+  const [sortMode, setSortMode] = useState('alphabetical');
+  const [ascending, setAscending] = useState(true);
+  const [open, setOpen] = useState(false);
+  const buttonRef = useRef(null);
 
   const handleSortChange = (mode, direction) => {
     setSortMode(mode);
     setAscending(direction);
     onSortChange(mode, direction);
+    setOpen(false);
   };
 
-  const SortTrigger = () => (
-    <div className="sort__button">
+  const SortTrigger = (
+    <div className="sort__button" ref={buttonRef} onClick={() => setOpen(v => !v)}>
       Sort
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
         <path d="M7.75001 19.9999C7.75001 20.5522 7.30229 20.9999 6.75001 20.9999C6.19773 20.9999 5.75001 20.5522 5.75001 19.9999V7.99999L4.56829 8L4.53443 8.00003H4.53442C4.39798 8.00025 4.19919 8.00056 4.02998 7.9746C3.84511 7.94624 3.36011 7.83812 3.11374 7.32267C2.86919 6.81104 3.08093 6.36183 3.17545 6.19364C3.26004 6.04314 3.38325 5.88606 3.46679 5.77954L3.48764 5.75295C3.83845 5.3042 4.34774 4.67868 4.85106 4.15775C5.10066 3.89942 5.3718 3.64263 5.63789 3.44332C5.77108 3.34356 5.92353 3.24258 6.08808 3.16319C6.24265 3.08862 6.47491 3 6.74999 3C7.02506 3 7.25731 3.08862 7.41188 3.16319C7.57642 3.24258 7.72888 3.34356 7.86206 3.44332C8.12815 3.64263 8.3993 3.89941 8.6489 4.15774C9.15222 4.67866 9.66152 5.30417 10.0123 5.75291L10.0332 5.77951L10.0332 5.77952C10.1167 5.88603 10.24 6.04311 10.3245 6.19361C10.4191 6.36179 10.6308 6.811 10.3863 7.32264C10.1399 7.83809 9.65489 7.94621 9.47003 7.97458C9.30081 8.00054 9.10202 8.00023 8.96557 8.00002L8.93172 7.99998L7.75001 7.99998V19.9999Z" fill="currentColor" />
@@ -22,7 +25,7 @@ export const Sort = ({ onSortChange }) => {
     </div>
   );
 
-  const SortMenu = () => (
+  const SortMenu = (
     <>
       <button 
         className="dropdown__item" 
@@ -66,8 +69,11 @@ export const Sort = ({ onSortChange }) => {
   return (
     <Dropdown 
       position="bottom-left"
-      trigger={<SortTrigger />}
-      menu={<SortMenu />}
-    />
+      open={open}
+      menu={SortMenu}
+      onClose={() => setOpen(false)}
+    >
+      {SortTrigger}
+    </Dropdown>
   );
 };

@@ -7,20 +7,20 @@
   position: relative;
   padding: 6px 8px;
   border-radius: 6px;
-  box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.05);
-  color: #000;
-  border: 1px solid #E0E0E0;
-  backdrop-filter: blur(2.5px);
+  background-color: #494E58;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.30) inset;
+  color: #fff;
   white-space: nowrap;
   min-width: 50px;
   max-width: calc(100vw - 32px);
+  display: block;
   text-align: center;
   box-sizing: border-box;
   font-family: var(--font-family);
   letter-spacing: var(--letter-spacing);
   font-weight: 500;
-  font-size: 12px;
- 
+  font-size: 10px;
+  z-index: 2;
 }
 
 /* Right position */
@@ -37,10 +37,10 @@
   height: 10px;
   border-left-color: transparent;
   border-bottom-color: transparent;
-  background-color: #FFFFFFE5;
+  background-color: #494E58;
   transform: translateY(-50%) rotate(225deg);
   top: 50%;
-  left: -6px;
+  left: -5px;
   display: block;
   z-index: 1;
 }
@@ -59,10 +59,10 @@
   height: 10px;
   border-right-color: transparent;
   border-top-color: transparent;
-  background-color: #FFFFFFE5;
+  background-color: #494E58;
   transform: translateY(-50%) rotate(225deg);
   top: 50%;
-  right: -6px;
+  right: -5px;
   display: block;
   z-index: 1;
 }
@@ -81,10 +81,10 @@
   height: 10px;
   border-top-color: transparent;
   border-left-color: transparent;
-  background-color: #FFFFFFE5;
+  background-color: #494E58;
   transform: translateX(-50%) rotate(45deg);
   left: 50%;
-  bottom: -6px;
+  bottom: -5px;
   display: block;
   z-index: 1;
 }
@@ -103,10 +103,10 @@
   height: 10px;
   border-bottom-color: transparent;
   border-right-color: transparent;
-  background-color: #FFFFFFE5;
+  background-color: #494E58;
   transform: translateX(-50%) rotate(45deg);
   left: 50%;
-  top: -6px;
+  top: -5px;
   display: block;
   z-index: 1;
 }
@@ -165,11 +165,10 @@
 /* Mobile styles */
 @media (max-width: 480px) {
   .tooltip__mask {
-    white-space: normal;
+    white-space: wrap;
     text-align: center;
     padding: 8px;
     font-size: 11px;
-    max-width: 100%;
   }
 
   .tooltip--right,
@@ -181,45 +180,39 @@
     margin: 8px 0 0 0;
   }
 
-  /* Hide side arrows in mobile */
-  .tooltip--right::before,
-  .tooltip--right::after,
-  .tooltip--left::before,
-  .tooltip--left::after,
-  .tooltip--sidebar::before,
-  .tooltip--sidebar::after {
+  /* Hide all arrows in mobile excepto top y bottom */
+  .tooltip--right .tooltip__mask::after,
+  .tooltip--left .tooltip__mask::after,
+  .tooltip--sidebar .tooltip__mask::after {
     display: none;
   }
-
-  /* Keep top/bottom arrows in mobile */
-  .tooltip--top::before,
-  .tooltip--top::after,
-  .tooltip--bottom::before,
-  .tooltip--bottom::after {
+  .tooltip--top .tooltip__mask::after,
+  .tooltip--bottom .tooltip__mask::after {
     display: block;
   }
 
-/* Position-specific arrow styles */
-.tooltip--right .tooltip__mask::after {
-  border-left-color: transparent;
-  border-bottom-color: transparent;
-}
+  /* Position-specific arrow styles */
+  .tooltip--right .tooltip__mask::after {
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+  }
 
-.tooltip--left .tooltip__mask::after {
-  border-right-color: transparent;
-  border-top-color: transparent;
-}
+  .tooltip--left .tooltip__mask::after {
+    border-right-color: transparent;
+    border-top-color: transparent;
+  }
 
-.tooltip--top .tooltip__mask::after {
-  border-top-color: transparent;
-  border-left-color: transparent;
-}
+  .tooltip--top .tooltip__mask::after {
+    border-top-color: transparent;
+    border-left-color: transparent;
+  }
 
-.tooltip--bottom .tooltip__mask::after {
-  border-bottom-color: transparent;
-  border-right-color: transparent;
-} 
-.tooltip--sidebar .tooltip__mask::after {
-  border-left-color: transparent;
-  border-bottom-color: transparent;
+  .tooltip--bottom .tooltip__mask::after {
+    border-bottom-color: transparent;
+    border-right-color: transparent;
+  } 
+  .tooltip--sidebar .tooltip__mask::after {
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+  }
 }

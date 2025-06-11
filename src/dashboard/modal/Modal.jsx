@@ -192,7 +192,6 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create', i
                 <Tooltip
                   message={formErrors.name}
                   position="top"
-                  type="alert"
                 />
               )}
             </div>
@@ -217,7 +216,6 @@ export function Modal({ onSave, onCancel, initialData = null, type = 'create', i
                 <Tooltip
                   message={formErrors.domain}
                   position="right"
-                  type="alert"
                 />
               )}
             </div>

@@ -1,12 +1,16 @@
 .modal-delete__content {
-  background: #f8f8f8;
-  border-radius: 16px;
-  padding: 32px 28px 24px 28px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-  min-width: 320px;
-  max-width: 90vw;
-  text-align: center;
-  border: 2px solid #ededed;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+}
+
+.modal-delete__top-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .modal-delete__title {
@@ -18,7 +22,15 @@
   text-align: left;
 }
 
-.modal-delete__desc {
+.modal-delete__divider {
+  height: 0.8px;
+  background: #E0E0E0;
+  margin: 4px 0;
+  width: 100%;
+  border: none;
+}
+
+.modal-delete__paragraph {
   font-family: var(--font-family);
   letter-spacing: var(--letter-spacing);
   font-weight: 500;
@@ -28,9 +40,10 @@
 }
 
 .modal-delete__actions {
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 14px;
 }
 
@@ -43,28 +56,21 @@
   color: #686B74;
   border: none;
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 10px 25px;
   box-shadow: 0px -4px 4px 0px #E8E8E8 inset, 0px 0px 0px 1px #C8C8C8, 0px 0px 0px 1px #FFF inset;
   cursor: pointer;
-  transition: background 0.15s, border 0.15s;
-}
-.modal-delete__cancel:hover {
-  background: #f3f3f3;
-  border-color: #bdbdbd;
 }
 
 .modal-delete__confirm {
-  background: #111;
+  font-family: var(--font-family);
+  letter-spacing: var(--letter-spacing);
+  font-size: 12px;
+  font-weight: 500;
+  background: #232323;
   color: #fff;
   border: none;
-  border-radius: 12px;
-  padding: 14px 36px;
-  font-size: 1.4rem;
+  border-radius: 8px;
+  padding: 10px 25px;
   cursor: pointer;
-  font-weight: 400;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  transition: background 0.15s;
-}
-.modal-delete__confirm:hover {
-  background: #222;
+  box-shadow: 0px -4px 4px 0px #000 inset, 0px 0px 0px 1px #000, 0px 0px 0px 1px #444 inset;
 }

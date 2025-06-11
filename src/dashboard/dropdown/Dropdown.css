@@ -12,7 +12,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(2.5px);
-  z-index: 20;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
@@ -47,6 +47,14 @@
   border-radius: 6px;
 }
 
+.dropdown__item--delete {
+  color: #D00606;
+}
+.dropdown__item--delete:hover {
+  background: #F8DADA;
+  color: #D00606;
+}
+
 .dropdown__icon {
   width: 14px;
   display: flex;
@@ -56,7 +64,12 @@
   stroke: none;
   fill: none;
 }
-
+.dropdown__icon--delete {
+  color: #D00606;
+}
+.dropdown__item.dropdown__item--delete:hover .dropdown__icon--delete {
+  color: #D00606;
+}
 .dropdown__item:hover .dropdown__icon {
   color: #fff;
 }

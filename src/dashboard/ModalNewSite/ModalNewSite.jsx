@@ -13,13 +13,13 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
   // Validate inputs
   const validateName = (value) => {
     if (!value.trim()) {
-      return 'Please enter a domain name';
+      return 'Name is required';
     }
     return null;
   };
   const validateDomain = (value) => {
     if (!value.trim()) {
-      return 'Please enter a domain URL';
+      return 'Domain is required';
     }
     return null;
   };
@@ -99,20 +99,6 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
     setFormErrors({});
   }, [initialData]);
 
-  // Delete verification modal
-  if (type === 'delete') {
-    return (
-      <div className="modal__content">
-        <h2 className="modal__title" id="modal-title">Are you sure you want to delete this site?</h2>
-        <div className="modal__actions">
-          <button onClick={() => onSave()} className="modal__button modal__button--delete">
-            Delete
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="modal__header">
@@ -152,8 +138,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
               {formErrors.name && (
                 <Tooltip
                   message={formErrors.name}
-                  position="left"
-                  type="default"
+                  responsivePosition={{ desktop: 'left', mobile: 'top' }}
                 />
               )}
             </div>
@@ -182,8 +167,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
               {formErrors.domain && (
                 <Tooltip
                   message={formErrors.domain}
-                  position="right"
-                  type="alert"
+                  responsivePosition={{ desktop: 'right', mobile: 'bottom' }}
                 />
               )}
             </div>
