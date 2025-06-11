@@ -1,8 +1,9 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useId } from 'react';
 import './ModalContainer.css';
 
 export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handleCreate }) {
   const modalRef = useRef(null);
+  const modalId = useId();
 
 
   // Click outside modal
@@ -69,7 +70,7 @@ export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handl
 
   return (
     <div className={`modal__backdrop ${isSidebarOpen ? 'open' : ''}`} onClick={handleBackdropClick}>
-      <div className="modal" ref={modalRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+      <div className="modal" ref={modalRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" id={modalId}>
         {children}
       </div>
     </div>

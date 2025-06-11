@@ -1,8 +1,8 @@
 import './Site.css';
-import { Dropdown } from '../Dropdown/Dropdown';
+import { Dropdown } from '../dropdown/Dropdown';
 import { ModalNewSite } from '../ModalNewSite/ModalNewSite';
 import { ModalContainer } from '../ModalContainer/ModalContainer';
-import { useState } from 'react';
+import { useState, useId } from 'react';
 
 const ProButton = ({ onClick, isHovering }) => {
   return (
@@ -43,9 +43,9 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
   const handleDelete = () => {
     setDeleteModalOpen(true);
   };
-
+  const siteId = useId();
   return (
-    <div className="site">
+    <div className="site" id={siteId}>
       <div className="site__gradient-header">
         <div className="site__avatar">
             <img src="/logo test.png" alt="logo" />

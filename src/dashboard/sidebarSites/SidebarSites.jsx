@@ -1,10 +1,11 @@
 import "./SidebarSites.css";
-
+import { useId } from "react";
 
 export function SidebarSites ({avatar, name}) {
+    const sidebarSitesId = useId();
     
     return(
-        <div className="sidebarSites__site">
+        <div className="sidebarSites__site" id={sidebarSitesId}>
             <div className="sidebarSites__header">
             <span className="sidebarSites__header-avatar">
                 <img className="sidebarSites__header-avatar-img" src={avatar}/>

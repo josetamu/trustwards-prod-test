@@ -142,6 +142,7 @@ export function Sidebar({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     /* const [isAnimating, setIsAnimating] = useState(false); */
     const [isSearchOpen, setIsSearchOpen] = useState(false);    
+   
 
 
     const handleDropdownClick = () => {
