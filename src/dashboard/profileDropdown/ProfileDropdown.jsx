@@ -23,6 +23,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
     const toggleDropdown = () => {
         if(isMobile){
             setIsDropdownOpen(!isDropdownOpen);
+
         }
     };
 
@@ -39,10 +40,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
     
     return (
         <div className={`${isSidebarOpen ? 'profileDropdown--open' : 'profileDropdown'}`}>
-            <div className=
-                    {isMobile 
-                        ? `${isDropdownOpen ? "profileDropdown__dropdown--active" : "profileDropdown__dropdown--inactive"}`
-                        : `profileDropdown__dropdown`}
+            <div className='profileDropdown__dropdown'
             >
                         <div className="profileDropdown__upper">
                             {profilePages.map((profilePage) => (

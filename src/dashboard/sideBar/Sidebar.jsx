@@ -295,14 +295,14 @@ export function Sidebar({
                                     isSidebarOpen={isSidebarOpen}
                                     >
                                     </SidebarSites>
-                                    {!isSidebarOpen && window.innerWidth > 767 && (
+                                   {!isSidebarOpen && window.innerWidth > 767 && (
                                        <Tooltip 
                                        message={web.Name} 
                                        id={web.id}
                                        position="sidebar"
                                        type='default'>
                                        </Tooltip>
-                                    )}
+                                    )} 
                                     </div>
                                 ))
                             )} 
