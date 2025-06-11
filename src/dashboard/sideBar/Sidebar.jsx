@@ -5,9 +5,11 @@ import { Profile } from '../profile/Profile';
 import { Settings } from '../settings/Settings';
 import { PlanCard } from '../PlanCard/PlanCard';
 import { ProfileDropdown } from '../profileDropdown/ProfileDropdown';
-import { SidebarSites } from '../sidebarSites/SidebarSites';
+import { SidebarSites } from '../sidebarSite/SidebarSites';
 import "./Sidebar.css";
 import { Tooltip } from '../tooltip/Tooltip';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ANIM_TYPES } from '../dashboard_animations';
 
 // names and icons used in the sidebar
 export const homePages = [
@@ -30,37 +32,35 @@ export const homePages = [
         
     },
   ];
-export const docPages = [
+export const siteMenuPages = [
 
         {
-            name: 'Academy',
-            icon:   <svg className="sidebar__link__svg" width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fillRule="evenodd" clipRule="evenodd" d="M13.1963 4.85336C12.3109 2.71612 10.1004 1.00945 6.57165 1.30645C6.19661 1.33802 5.86513 1.07984 5.83131 0.729813C5.79748 0.379782 6.07411 0.0704336 6.44919 0.0388636C10.6101 -0.311337 13.373 1.75056 14.4683 4.39443C15.4305 6.71719 15.1106 9.52329 13.3134 11.4545H13.637C14.0136 11.4545 14.3189 11.7394 14.3189 12.0909C14.3189 12.4423 14.0136 12.7272 13.637 12.7272H11.5913C11.2148 12.7272 10.9094 12.4423 10.9094 12.0909V10.5C10.9094 10.1485 11.2148 9.86362 11.5913 9.86362C11.9679 9.86362 12.2732 10.1485 12.2732 10.5V10.63C13.7011 9.09985 14.0077 6.81232 13.1963 4.85336ZM0.681099 1.90911C0.681099 1.55766 0.986389 1.27274 1.36299 1.27274H3.40866C3.58951 1.27274 3.76295 1.33979 3.89083 1.45913C4.01871 1.57847 4.09055 1.74034 4.09055 1.90911V3.50001C4.09055 3.85147 3.78526 4.13637 3.40866 4.13637C3.03206 4.13637 2.72677 3.85147 2.72677 3.50001V3.36867C1.29388 4.89522 0.992335 7.17002 1.80854 9.12302C2.69858 11.2527 4.91275 12.9617 8.42722 12.7009C8.8026 12.673 9.13113 12.9344 9.161 13.2848C9.1908 13.6351 8.91068 13.9417 8.5353 13.9696C4.39702 14.2767 1.63779 12.2171 0.537977 9.58546C-0.430575 7.26796 -0.116546 4.47382 1.6854 2.54547H1.36299C0.986389 2.54547 0.681099 2.26056 0.681099 1.90911Z" fill="#686B74"/>
-                        <path d="M4 5H11V6.63636H4V5Z" fill="url(#paint0_linear_79_111)"/>
-                        <path d="M5.86667 11V7.72727H8.66667L5.86667 11Z" fill="url(#paint1_linear_79_111)"/>
-                        <path d="M7.73333 11V7.72727H10.0667L7.73333 11Z" fill="url(#paint2_linear_79_111)"/>
-                        <defs>
-                        <linearGradient id="paint0_linear_79_111" x1="7.5" y1="5" x2="7.5" y2="11" gradientUnits="userSpaceOnUse">
-                        <stop stopColor="#686B74"/>
-                        </linearGradient>
-                        <linearGradient id="paint1_linear_79_111" x1="7.5" y1="5" x2="7.5" y2="11" gradientUnits="userSpaceOnUse">
-                        <stop stopColor="#686B74"/>
-                        </linearGradient>
-                        <linearGradient id="paint2_linear_79_111" x1="7.5" y1="5" x2="7.5" y2="11" gradientUnits="userSpaceOnUse">
-                        <stop stopColor="#686B74"/>
-                        </linearGradient>
-                        </defs>
-                   </svg>
+            name: 'Builder',
+            icon:   <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 0H14V2.72727H0V0Z" fill="#686B74"/>
+                        <path d="M3.73333 10V4.54545H9.33333L3.73333 10Z" fill="#686B74"/>
+                        <path d="M7.46667 10V4.54545H12.1333L7.46667 10Z" fill="#686B74"/>
+                    </svg>
+            
             
         },
         {
-            name: 'Legal news',
-            icon: <svg className="sidebar__link__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#686B74" fill="none">
-                    <path opacity="0.4" d="M10.5 8H18.5M10.5 12H13M18.5 12H16M10.5 16H13M18.5 16H16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path opacity="0.4" d="M7 7.5H6C4.11438 7.5 3.17157 7.5 2.58579 8.08579C2 8.67157 2 9.61438 2 11.5V18C2 19.3807 3.11929 20.5 4.5 20.5C5.88071 20.5 7 19.3807 7 18V7.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M16 3.5H11C10.07 3.5 9.60504 3.5 9.22354 3.60222C8.18827 3.87962 7.37962 4.68827 7.10222 5.72354C7 6.10504 7 6.57003 7 7.5V18C7 19.3807 5.88071 20.5 4.5 20.5H16C18.8284 20.5 20.2426 20.5 21.1213 19.6213C22 18.7426 22 17.3284 22 14.5V9.5C22 6.67157 22 5.25736 21.1213 4.37868C20.2426 3.5 18.8284 3.5 16 3.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            name: 'Copy Script',
+            icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5.08398 8.58398C5.08398 6.93408 5.08398 6.10913 5.59655 5.59655C6.10913 5.08398 6.93408 5.08398 8.58398 5.08398H9.16732C10.8172 5.08398 11.6422 5.08398 12.1547 5.59655C12.6673 6.10913 12.6673 6.93408 12.6673 8.58398V9.16732C12.6673 10.8172 12.6673 11.6422 12.1547 12.1547C11.6422 12.6673 10.8172 12.6673 9.16732 12.6673H8.58398C6.93408 12.6673 6.10913 12.6673 5.59655 12.1547C5.08398 11.6422 5.08398 10.8172 5.08398 9.16732V8.58398Z" stroke="#686B74" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9.74994 5.08333C9.74854 3.35836 9.72247 2.46487 9.22033 1.85308C9.12338 1.73494 9.01506 1.6266 8.89693 1.52964C8.25153 1 7.29271 1 5.375 1C3.4573 1 2.49845 1 1.85308 1.52964C1.73494 1.6266 1.6266 1.73494 1.52964 1.85308C1 2.49845 1 3.4573 1 5.375C1 7.29271 1 8.25153 1.52964 8.89693C1.6266 9.01506 1.73494 9.12338 1.85308 9.22033C2.46487 9.72247 3.35836 9.74854 5.08333 9.74994" stroke="#686B74" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
+            
         },
+        {
+            name: 'Settings',
+            icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.29734 9.11365L1.75 12.25L4.88653 11.7025C5.12307 11.6613 5.34111 11.548 5.5109 11.3782L11.9937 4.89533C12.3354 4.55362 12.3354 3.99959 11.9936 3.65789L10.342 2.00627C10.0003 1.66457 9.44628 1.66458 9.10456 2.00628L2.62168 8.48931C2.45189 8.65906 2.33862 8.87711 2.29734 9.11365Z" stroke="#686B74" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M8.16602 3.5L10.4993 5.83333" stroke="#686B74" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+                 </svg>
+            
+        },
+
     
   ];
 export const profilePages = [
@@ -157,9 +157,9 @@ export function Sidebar({
         handleDropdownClick();
         setIsSearchOpen(false);
         // Remover la clase animating después de que termine la animación
-        setTimeout(() => {
+        /* setTimeout(() => {
             setIsAnimating(false);
-        }, 400); // 400ms es la duración de la animación
+        }, 400); */ // 400ms es la duración de la animación
     };
 
     return (
@@ -295,6 +295,9 @@ export function Sidebar({
                                     isSidebarOpen={isSidebarOpen}
                                     >
                                     </SidebarSites>
+                                    <AnimatePresence>
+                                        
+                                    </AnimatePresence>
                                    {!isSidebarOpen && window.innerWidth > 767 && (
                                        <Tooltip 
                                        message={web.Name} 
@@ -303,6 +306,7 @@ export function Sidebar({
                                        type='default'>
                                        </Tooltip>
                                     )} 
+                                    
                                     </div>
                                 ))
                             )} 

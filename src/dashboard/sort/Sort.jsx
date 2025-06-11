@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './Sort.css';
-import { Dropdown } from '../Dropdown/Dropdown';
+import { Dropdown } from '../dropdown/Dropdown';
 
 export const Sort = ({ onSortChange }) => {
   const [sortMode, setSortMode] = useState('alphabetical');

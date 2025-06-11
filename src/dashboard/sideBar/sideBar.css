@@ -57,7 +57,7 @@
     display: flex;
     flex-direction: column;
     white-space: nowrap;
-    overflow: visible;
+    
   }
    
 /*   @keyframes sidebarHide {
@@ -361,6 +361,7 @@
   width: 100%;
   max-height: calc(100vh / 2.8);
   overflow-y: auto;
+  overflow-x: visible;
 }
 
 
@@ -424,7 +425,7 @@
     font-family: var(--font-family);
     display: flex;
     overflow: hidden;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap;
     align-items: center;
     padding: 8px;
