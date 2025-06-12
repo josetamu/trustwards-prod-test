@@ -194,6 +194,8 @@ function App() {
               <ModalNewSite
                 onSave={() => {setIsModalOpen(false); fetchSites()}}
                 onCancel={() => setIsModalOpen(false)}
+                userSites={webs?.length || 0}
+                setIsModalOpen={setIsModalOpen}
               />
             
           );
