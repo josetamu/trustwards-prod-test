@@ -1,6 +1,4 @@
-.sidebar__sites-tooltip-wrapper{
-    overflow: visible;
-}
+
 
 
 .sidebarSites__site{
@@ -17,19 +15,43 @@
     letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
     display: flex;
-    overflow: visible;
+    overflow: hidden;
     white-space: nowrap;
     border: 1px solid transparent;
     gap: 10px;
     padding: 3.5px 3.5px 1.5px 3.5px;
     border-radius: 10px;
     transition: background-color 0.3s ease;
-
-    
-
 }
 
+.sidebarSites__site--open{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        background-color: transparent;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--background-color-black);
+        font-size: var(--font-size-medium);
+        font-weight: var(--font-weight);
+        letter-spacing: var(--letter-spacing-negative);
+        font-family: var(--font-family);
+        display: flex;
+        overflow: visible;
+        white-space: nowrap;
+        border: 1px solid transparent;
+        gap: 10px;
+        padding: 3.5px 3.5px 1.5px 3.5px;
+        border-radius: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    
 .sidebarSites__site:hover{
+    background-color: rgba(235, 235, 235, 1);
+}
+.sidebarSites__site--open:hover{
     background-color: rgba(235, 235, 235, 1);
 }
 .sidebarSites__header{
@@ -48,7 +70,7 @@
     margin-right: 10px;
     height: 15px;
 }   
-.sidebarSites__site:hover .sidebarSites__edit{
+.sidebarSites__site--open:hover .sidebarSites__edit{
     opacity: 1;
     transition: opacity 0.3s ease;
     height: 15px;
@@ -82,5 +104,6 @@
     letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
 }
+
 
 

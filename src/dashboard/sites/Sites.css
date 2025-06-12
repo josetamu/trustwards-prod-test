@@ -17,6 +17,7 @@
   margin: 0 auto;
   background-color: #ffffff;
   max-height: calc(100vh - 40px);
+  padding-top: 60px;
 }
 
 

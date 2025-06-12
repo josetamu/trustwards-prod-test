@@ -45,3 +45,8 @@
         width: 100vw;
     }
 }
+@media (max-width: 467px) {
+    .modal {
+        max-width: 300px;
+    }
+}
