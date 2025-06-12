@@ -276,6 +276,9 @@ export function Sidebar({
                                                 avatar={web["Avatar URL"]}
                                                 name={web.Name}
                                                 isSidebarOpen={isSidebarOpen}
+                                                setIsModalOpen={setIsModalOpen}
+                                                setModalType={setModalType}
+                                                isModalOpen={isModalOpen}
                                             />
                                             <AnimatePresence>
                                             </AnimatePresence>

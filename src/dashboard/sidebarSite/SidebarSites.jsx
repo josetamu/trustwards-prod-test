@@ -1,7 +1,7 @@
 import "./SidebarSites.css";
 import { useId } from "react";
 import { SiteMenuSB } from "../SiteMenuSB/SiteMenuSB";
-export function SidebarSites ({avatar, name, isSidebarOpen}) {
+export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen}) {
     const sidebarSitesId = useId();
     
     return(
@@ -14,7 +14,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen}) {
                 {name}
             </span>
             </div>
-            <SiteMenuSB />
+            <SiteMenuSB setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} />
         </div>
     );
 }

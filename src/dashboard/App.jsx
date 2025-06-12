@@ -197,6 +197,18 @@ function App() {
               />
             
           );
+        case 'EditSite':
+          return (
+            <ModalNewSite
+              onSave={() => {setIsModalOpen(false); fetchSites()}}
+              onCancel={() => setIsModalOpen(false)}
+              initialData={{
+                id: webs?.id,
+                text: webs.Name,
+                domain: webs?.Domain,
+              }}
+            />
+          );
         default:
           return null;
       }

@@ -8,7 +8,7 @@ import { Dropdown } from '../dropdown/Dropdown';
 import '../SidebarSite/SidebarSites.css';
 
 
-export const SiteMenuSB = () => {
+export const SiteMenuSB = ({setIsModalOpen, setModalType, isModalOpen}) => {
 
 
 const SiteMenuTrigger = () => {
@@ -31,6 +31,13 @@ const SiteMenuMenu = () => {
                                     key={siteMenuPage.name}
                                     icon={siteMenuPage.icon}
                                     text={siteMenuPage.name}
+                                    onClick={() => {
+                                        if(siteMenuPage.name === 'Settings'){
+                                            
+                                            setIsModalOpen(!isModalOpen);
+                                            setModalType('EditSite');
+                                        }
+                                    }}
                                     /* onClick={() => {
                                         
                                         setIsModalOpen(!isModalOpen);
@@ -68,7 +75,7 @@ return(
     <Dropdown
     position="bottom-right"
     trigger={<SiteMenuTrigger />}
-    menu={<SiteMenuMenu />}
+    menu={<SiteMenuMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} />}
     />
 )
 

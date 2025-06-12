@@ -217,6 +217,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
             onClick={handleCreate}
             type="button"
           >
+            
             Add Site
           </button>
         </div>
