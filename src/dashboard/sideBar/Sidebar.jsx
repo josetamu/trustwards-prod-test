@@ -106,7 +106,7 @@ export const otherpages = [
     }, 
     {
         name: 'Appearance',
-        icon: <svg className="profileDropdown__link__svg" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        icon: <svg className="profileDropdown__link__svg" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clipPath="url(#clip0_64_433)">
         <path className="profileDropdown__link__path" d="M11.3327 7.99935C11.3327 9.84028 9.84028 11.3327 7.99935 11.3327C6.1584 11.3327 4.66602 9.84028 4.66602 7.99935C4.66602 6.1584 6.1584 4.66602 7.99935 4.66602C9.84028 4.66602 11.3327 6.1584 11.3327 7.99935Z" stroke="#686B74" strokeWidth="1.5"/>
         <path className="profileDropdown__link__path" opacity="0.4" d="M8.00065 1.33398V2.33398M8.00065 13.6673V14.6673M12.7145 12.7149L12.0074 12.0077M3.99349 3.99349L3.28638 3.28638M14.6673 8.00065H13.6673M2.33398 8.00065H1.33398M12.7149 3.28646L12.0077 3.99356M3.99382 12.0078L3.28671 12.7149" stroke="#686B74" strokeWidth="1.5" strokeLinecap="round"/>
