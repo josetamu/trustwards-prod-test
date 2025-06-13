@@ -137,9 +137,10 @@ export function Sidebar({
     setIsModalOpen,
     setModalType,
     isModalOpen,
-    
+    isDropdownOpen,
+    setIsDropdownOpen,
+
     }) {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -279,6 +280,8 @@ export function Sidebar({
                                                 setIsModalOpen={setIsModalOpen}
                                                 setModalType={setModalType}
                                                 isModalOpen={isModalOpen}
+                                                isDropdownOpen={isDropdownOpen}
+                                                setIsDropdownOpen={setIsDropdownOpen}
                                             />
                                             <AnimatePresence>
                                             </AnimatePresence>

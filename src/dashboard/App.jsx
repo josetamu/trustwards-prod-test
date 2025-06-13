@@ -9,7 +9,7 @@ import { Settings } from './settings/Settings'
 import { Sidebar, homePages, siteMenuPages, otherpages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
-import { Profile } from './profile/Profile'
+import { Profile } from './Profile/Profile'
 import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
@@ -23,6 +23,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [webs, setwebs] = useState([]);
   const [modalType, setModalType] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -241,6 +243,8 @@ function App() {
       setIsModalOpen={setIsModalOpen}
       setModalType={setModalType}
       isModalOpen={isModalOpen}
+      isDropdownOpen={isDropdownOpen}
+      setIsDropdownOpen={setIsDropdownOpen}
       
       
       />

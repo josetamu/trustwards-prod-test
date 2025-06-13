@@ -4,7 +4,7 @@ import { Sort } from '../sort/Sort';
 import { View } from '../view/View';
 import './Sites.css'
 
-export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType}) => {
+export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen}) => {
   const [siteList, setSiteList] = useState(sites);
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
@@ -88,6 +88,11 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               setSiteList(prev => prev.filter(s => s.id !== site.id));
               if (typeof window.onDeleteSite === 'function') window.onDeleteSite(site.id);
             }}
+            setIsModalOpen={setIsModalOpen}
+            setModalType={setModalType}
+            isModalOpen={isModalOpen}
+            isDropdownOpen={isDropdownOpen}
+            setIsDropdownOpen={setIsDropdownOpen}
           />
         )}
       </div>
