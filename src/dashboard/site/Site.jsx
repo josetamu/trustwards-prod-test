@@ -28,7 +28,7 @@ const ProButton = ({ onClick, isHovering }) => {
   );
 };
 
-const SiteMenu = ({ onEdit, onDelete }) => {
+const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen }) => {
   return (
     <>
       <button className="dropdown__item">
@@ -50,7 +50,7 @@ const SiteMenu = ({ onEdit, onDelete }) => {
         </span>
         Copy script
       </button>
-      <button className="dropdown__item" onClick={onEdit}>
+      <button className="dropdown__item" onClick={() => {onEdit(); setIsModalOpen(true); setModalType('NewSite');}}>
         <span className="dropdown__icon">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M2.29734 9.11365L1.75 12.25L4.88653 11.7025C5.12307 11.6613 5.34111 11.548 5.5109 11.3782L11.9937 4.89533C12.3354 4.55362 12.3354 3.99959 11.9936 3.65789L10.342 2.00627C10.0003 1.66457 9.44628 1.66458 9.10456 2.00628L2.62168 8.48931C2.45189 8.65906 2.33862 8.87711 2.29734 9.11365Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -75,7 +75,7 @@ const SiteMenu = ({ onEdit, onDelete }) => {
   );
 };
 
-export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
+export const Site = ({ id, text, domain, onUpdate, onRemove, setIsModalOpen, setModalType, isModalOpen}) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -111,7 +111,7 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
             position="bottom-left"
             open={isDropdownOpen}
             onClose={() => setIsDropdownOpen(false)}
-            menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} />}
+            menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} />}
           >
             <ProButton
               isHovering={isDropdownOpen}
@@ -124,7 +124,7 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
           <button className="site__builder-btn">Builder</button>
         </div>
       </div>
-      {editModalOpen && (
+     {/*  {editModalOpen && (
         <ModalContainer isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
           <ModalNewSite
             type="edit"
@@ -135,7 +135,7 @@ export const Site = ({ id, text, domain, onUpdate, onRemove }) => {
             }}
           />
         </ModalContainer>
-      )}
+      )} */}
       {deleteModalOpen && (
         <ModalContainer isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
           <ModalDelete

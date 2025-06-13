@@ -23,6 +23,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [webs, setwebs] = useState([]);
   const [modalType, setModalType] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -56,7 +58,7 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'darezo.2809@gmail.com',
+      email: 'oscar.abad.brickscore@gmail.com',
       password: 'TW.141109'
     });
   };
@@ -154,6 +156,7 @@ function App() {
             webs={webs}
             isSidebarOpen={isSidebarOpen}
             setModalType={setModalType}
+          
             
           />
         );
@@ -241,6 +244,8 @@ function App() {
       setIsModalOpen={setIsModalOpen}
       setModalType={setModalType}
       isModalOpen={isModalOpen}
+      isDropdownOpen={isDropdownOpen}
+      setIsDropdownOpen={setIsDropdownOpen}
       
       
       />
