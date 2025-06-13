@@ -106,7 +106,7 @@ export const otherpages = [
     }, 
     {
         name: 'Appearance',
-        icon: <svg className="profileDropdown__link__svg" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        icon: <svg className="profileDropdown__link__svg" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clipPath="url(#clip0_64_433)">
         <path className="profileDropdown__link__path" d="M11.3327 7.99935C11.3327 9.84028 9.84028 11.3327 7.99935 11.3327C6.1584 11.3327 4.66602 9.84028 4.66602 7.99935C4.66602 6.1584 6.1584 4.66602 7.99935 4.66602C9.84028 4.66602 11.3327 6.1584 11.3327 7.99935Z" stroke="#686B74" strokeWidth="1.5"/>
         <path className="profileDropdown__link__path" opacity="0.4" d="M8.00065 1.33398V2.33398M8.00065 13.6673V14.6673M12.7145 12.7149L12.0074 12.0077M3.99349 3.99349L3.28638 3.28638M14.6673 8.00065H13.6673M2.33398 8.00065H1.33398M12.7149 3.28646L12.0077 3.99356M3.99382 12.0078L3.28671 12.7149" stroke="#686B74" strokeWidth="1.5" strokeLinecap="round"/>
@@ -140,10 +140,12 @@ export function Sidebar({
     
     }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    /* const [isAnimating, setIsAnimating] = useState(false); */
-    const [isSearchOpen, setIsSearchOpen] = useState(false);    
-   
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
+    const filteredWebs = webs.filter(web => 
+        web.Name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const handleDropdownClick = () => {
         if(window.innerWidth < 767){
@@ -152,14 +154,9 @@ export function Sidebar({
     };
 
     const handleToggleSidebar = () => {
-        /* setIsAnimating(true); */
         toggleSidebar();
         handleDropdownClick();
         setIsSearchOpen(false);
-        // Remover la clase animating después de que termine la animación
-        /* setTimeout(() => {
-            setIsAnimating(false);
-        }, 400); */ // 400ms es la duración de la animación
     };
 
     return (
@@ -207,7 +204,7 @@ export function Sidebar({
                 </a>
             </div>
             
-            <div className={`${isSidebarOpen ? 'sidebar__container--open' : 'sidebar__container'}`}> {/* ${isAnimating ? 'animating' : ''} */}
+            <div className={`${isSidebarOpen ? 'sidebar__container--open' : 'sidebar__container'}`}>
                 
                 <div className="sidebar__upper">
                     <div className="sidebar__home">
@@ -231,25 +228,6 @@ export function Sidebar({
                             </span>
                             <span className="sidebar__header__text">Dashboard</span>
                         </a>
-                        {/* {homePages.map((homePage) => (
-                            <SidebarLink
-                                key={homePage.name}
-                                icon={homePage.icon}
-                                text={homePage.name}
-                                onClick={() => {
-                                    
-                                    setIsSidebarOpen(false);
-                                    if(isSidebarOpen){
-                                        toggleSidebar();
-                                        
-                                    }
-                                    onPageChange(homePage.name);
-                                   
-                                    setUserSettings(null);
-                                    handleDropdownClick();
-                                }}
-                            />
-                        ))} */}
                     </div>
                     <div className={`${isSidebarOpen ? 'sidebar__sites--open' : 'sidebar__sites'}`}>
                         <div className={`${isSidebarOpen ? 'sidebar__sites-header--open' : 'sidebar__sites-header'}`}>
@@ -260,11 +238,14 @@ export function Sidebar({
                                         <path d="M8.99912 8.99912L7.07031 7.07031" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
                                         <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
                                     </svg>
-                                    
                                 </span>
-                                <input className={`${isSearchOpen ? 'sidebar__sites-input--open' : 'sidebar__sites-input'}`} type="text" placeholder='Example' />
-                                
-                                
+                                <input 
+                                    className={`${isSearchOpen ? 'sidebar__sites-input--open' : 'sidebar__sites-input'}`} 
+                                    type="text" 
+                                    placeholder='Search sites...'
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
                             </div>
                             <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(!isModalOpen);
                                 setModalType("NewSite");
@@ -283,67 +264,41 @@ export function Sidebar({
                         </div>
                         <div className="sidebar__sites-container">
                             <div className={`${isSidebarOpen ? 'sitesDisplay--open' : 'sitesDisplay'}`}>
-                             {webs.length === 0 ? (
-                                <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>You don't have any sites yet</span>
+                                {filteredWebs.length === 0 ? (
+                                    <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>
+                                        {searchQuery ? 'No sites found' : 'You don\'t have any sites yet'}
+                                    </span>
                                 ) : (
-                                (isSidebarOpen ? webs : webs.slice(0, 6)).map((web) => (
-                                    <div key={web.id} className="sidebar__sites-tooltip-wrapper">
-                                    <SidebarSites
-                                    key={web.id}
-                                    avatar={web["Avatar URL"]}
-                                    name={web.Name}
-                                    isSidebarOpen={isSidebarOpen}
-                                    >
-                                    </SidebarSites>
-                                    <AnimatePresence>
-                                        
-                                    </AnimatePresence>
-                                   {!isSidebarOpen && window.innerWidth > 767 && (
-                                       <Tooltip 
-                                       message={web.Name} 
-                                       id={web.id}
-                                       position="sidebar"
-                                       type='default'>
-                                       </Tooltip>
-                                    )} 
-                                    
-                                    </div>
-                                ))
-                            )} 
+                                    (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
+                                        <div key={web.id} className="sidebar__sites-tooltip-wrapper">
+                                            <SidebarSites
+                                                key={web.id}
+                                                avatar={web["Avatar URL"]}
+                                                name={web.Name}
+                                                isSidebarOpen={isSidebarOpen}
+                                                setIsModalOpen={setIsModalOpen}
+                                                setModalType={setModalType}
+                                                isModalOpen={isModalOpen}
+                                            />
+                                            <AnimatePresence>
+                                            </AnimatePresence>
+                                            {!isSidebarOpen && window.innerWidth > 767 && (
+                                                <Tooltip 
+                                                    message={web.Name} 
+                                                    id={web.id}
+                                                    position="sidebar"
+                                                    type='default'
+                                                />
+                                            )} 
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
-                        {/* <span className="sidebar__header">
-                            <span className="sidebar__sites__icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
-                                <path fillRule="evenodd" clipRule="evenodd" d="M20.4253 3.28231C19.6271 2.95101 18.5745 2.67059 17.2694 2.32287L16.2094 2.04043C14.9041 1.69265 13.8516 1.4122 12.9939 1.30229C12.1033 1.18818 11.3124 1.241 10.5821 1.66025C9.85117 2.07986 9.40864 2.73583 9.06207 3.5614C8.72864 4.35566 8.44647 5.40287 8.09691 6.70016L7.04517 10.6032L7.04517 10.6032C6.69559 11.9004 6.41338 12.9476 6.30275 13.8013C6.18777 14.6885 6.24094 15.4779 6.66391 16.2064C7.08651 16.9342 7.74618 17.3737 8.57474 17.7176C9.3729 18.0489 10.4255 18.3293 11.7306 18.677L12.7907 18.9595C14.0959 19.3073 15.1484 19.5877 16.0061 19.6976C16.8967 19.8117 17.6877 19.7589 18.4179 19.3396C19.1488 18.92 19.5914 18.2641 19.9379 17.4385C20.2714 16.6442 20.5535 15.597 20.9031 14.2997L21.9548 10.3967C22.3044 9.09953 22.5866 8.05231 22.6973 7.19861C22.8122 6.31139 22.7591 5.52199 22.3361 4.79352C21.9135 4.06567 21.2538 3.62623 20.4253 3.28231ZM15.5 8.5C16.3284 8.5 17 7.82843 17 7C17 6.17157 16.3284 5.5 15.5 5.5C14.6716 5.5 14 6.17157 14 7C14 7.82843 14.6716 8.5 15.5 8.5Z" fill="#ffffff"></path>
-                                <path fillRule="evenodd" clipRule="evenodd" d="M6.42476 5.96656C6.58145 6.49615 6.27914 7.05249 5.74955 7.20917C4.16184 7.67891 3.67122 7.99964 3.43 8.4151C3.27585 8.68059 3.19912 9.0304 3.28691 9.72268C3.37843 10.4444 3.62427 11.3754 3.9895 12.7462L5.00185 16.5459C5.36709 17.9168 5.61705 18.8466 5.89654 19.5175C6.16472 20.1613 6.40448 20.424 6.66771 20.5751C6.93178 20.7267 7.28263 20.8022 7.97972 20.7109C8.70497 20.616 9.64091 20.366 11.0171 19.9951L11.4898 19.8678C12.0231 19.7241 12.5719 20.0399 12.7155 20.5731C12.8592 21.1064 12.5434 21.6552 12.0102 21.7989L11.4697 21.9445C10.1785 22.2925 9.11292 22.5796 8.23931 22.694C7.32231 22.814 6.46842 22.7668 5.67196 22.3096C4.87467 21.8519 4.40521 21.1385 4.05034 20.2866C3.71275 19.4763 3.42985 18.4143 3.08748 17.1292L2.03873 13.1929C1.69626 11.9076 1.41331 10.8457 1.3028 9.97429C1.18661 9.05805 1.23879 8.20589 1.7004 7.41087C2.38641 6.22933 3.65434 5.74336 5.18215 5.29135C5.71174 5.13467 6.26808 5.43697 6.42476 5.96656Z" fill="#ffffff"></path>
-                            </svg>
-                            </span>
-                            <span className="sidebar__header__text">Docs</span>
-                        </span> */}
-                       {/*  {docPages.map((docPage) => (
-                            <SidebarLink
-                                key={docPage.name}
-                                icon={docPage.icon}
-                                text={docPage.name}
-                                onClick={() => {
-                                    
-                                    setIsSidebarOpen(false);
-                                    if(isSidebarOpen){
-                                        toggleSidebar();
-                                        
-                                    }
-                                    onPageChange(docPage.name);
-                                    setUserSettings(null);
-                                    handleDropdownClick();
-                                }}
-                            />
-                        ))} */}
                     </div>
                 </div>
                 <div className="sidebar__lower">
-                   {/*  <PlanCard currentPlan={"Free plan"} monthlyVisitors={20} totalVisitors={100} isSidebarOpen={isSidebarOpen} /> */}
-                    <div className="sidebar__others">
+                   <div className="sidebar__others">
                         {otherpages.map((otherPage) => (
                             <SidebarLink
                                 key={otherPage.name}

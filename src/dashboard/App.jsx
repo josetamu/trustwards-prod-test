@@ -194,8 +194,22 @@ function App() {
               <ModalNewSite
                 onSave={() => {setIsModalOpen(false); fetchSites()}}
                 onCancel={() => setIsModalOpen(false)}
+                userSites={webs?.length || 0}
+                setIsModalOpen={setIsModalOpen}
               />
             
+          );
+        case 'EditSite':
+          return (
+            <ModalNewSite
+              onSave={() => {setIsModalOpen(false); fetchSites()}}
+              onCancel={() => setIsModalOpen(false)}
+              initialData={{
+                id: webs?.id,
+                text: webs.Name,
+                domain: webs?.Domain,
+              }}
+            />
           );
         default:
           return null;

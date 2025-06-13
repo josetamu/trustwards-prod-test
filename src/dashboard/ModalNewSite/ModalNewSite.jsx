@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
+import { ModalEdit } from '../ModalEdit/ModalEdit';
 import './ModalNewSite.css'
 
-export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create', setIsModalOpen }) {
+export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create', setIsModalOpen, userSites = 0 }) {
 
   const modalNewSiteId = useId();
-
+  const [activePlan, setActivePlan] = useState('free');
+  const [showEdit, setShowEdit] = useState(false);
+  const FREE_PLAN_LIMIT = 3;
 
   const [formValues, setFormValues] = useState({
     name: initialData?.text?.trim() || '',
@@ -71,6 +74,12 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
         return;
       }
 
+      // Check if user has reached the free plan limit
+      if (activePlan === 'free' && userSites >= FREE_PLAN_LIMIT) {
+        setFormErrors(prev => ({ ...prev, general: 'You have reached the maximum number of sites for the free plan.' }));
+        return;
+      }
+
       try {
         const { data, error } = await supabase
           .from('Site')
@@ -103,16 +112,43 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
     setFormErrors({});
   }, [initialData]);
 
+  const handleEditSave = (editData) => {
+    // Aquí implementaremos la lógica para guardar los cambios del avatar
+    console.log('Edit data:', editData);
+    setShowEdit(false);
+  };
+
+  // Delete verification modal
+  if (type === 'delete') {
+    return (
+      <div className="modal__content">
+        <h2 className="modal__title" id="modal-title">Are you sure you want to delete this site?</h2>
+        <div className="modal__actions">
+          <button onClick={() => onSave()} className="modal__button modal__button--delete">
+            Delete
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (showEdit) {
+    return <ModalEdit onClose={() => setShowEdit(false)} onSave={handleEditSave} />;
+  }
+
   return (
     <>
       <div className="modal__header" id={modalNewSiteId}>
         <div className="modal__avatar">
           <img src="/logo test.png" alt="logo" />
-          <button className="modal__avatar-edit">
-          <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5.07202 1.99478L5.53925 1.52753C5.79732 1.26947 6.21572 1.26947 6.47378 1.52753C6.73182 1.78558 6.73182 2.20398 6.47378 2.46203L6.00652 2.92929M5.07202 1.99478L2.32739 4.73942C1.97896 5.08785 1.80474 5.26205 1.68611 5.47435C1.56747 5.68665 1.44812 6.18795 1.33398 6.66732C1.81335 6.55318 2.31465 6.43382 2.52695 6.31518C2.73925 6.19655 2.91346 6.02235 3.2619 5.67392L6.00652 2.92929M5.07202 1.99478L6.00652 2.92929" stroke="#696969" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path opacity="0.4" d="M3.66602 6.66602H5.66602" stroke="#696969" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+          <button 
+            className="modal__avatar-edit"
+            onClick={() => setShowEdit(true)}
+          >
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.07202 1.99478L5.53925 1.52753C5.79732 1.26947 6.21572 1.26947 6.47378 1.52753C6.73182 1.78558 6.73182 2.20398 6.47378 2.46203L6.00652 2.92929M5.07202 1.99478L2.32739 4.73942C1.97896 5.08785 1.80474 5.26205 1.68611 5.47435C1.56747 5.68665 1.44812 6.18795 1.33398 6.66732C1.81335 6.55318 2.31465 6.43382 2.52695 6.31518C2.73925 6.19655 2.91346 6.02235 3.2619 5.67392L6.00652 2.92929M5.07202 1.99478L6.00652 2.92929" stroke="#696969" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path opacity="0.4" d="M3.66602 6.66602H5.66602" stroke="#696969" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
           </button>
         </div>
       </div>
@@ -177,32 +213,135 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
             </div>
           </div>
         </div>
+        <div className="modal__divider"></div>
         <div className="modal__plan">
           <span className="modal__input-label">Jose Tamu's Plan</span>
           <div className="modal__plan-toggle">
-            <span className="modal__plan-option modal__plan-option--active">Free</span>
-            <span className="modal__plan-option">Pro</span>
+            <span 
+              className={`modal__plan-option ${activePlan === 'free' ? 'modal__plan-option--active' : ''}`}
+              onClick={() => setActivePlan('free')}
+            >
+              Free
+            </span>
+            <span 
+              className={`modal__plan-option ${activePlan === 'pro' ? 'modal__plan-option--active' : ''}`}
+              onClick={() => setActivePlan('pro')}
+            >
+              Pro
+            </span>
           </div>
-        </div>
-        <div className='modal__plan-wrapper'>
-            <div className="modal__plan-info">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99934 2.16536C6.71067 2.16536 5.66602 3.21004 5.66602 4.4987V5.5H10.3327V4.4987C10.3327 3.21004 9.288 2.16536 7.99934 2.16536ZM4.33268 4.4987V5.5H3.99935C2.98676 5.5 2.16592 6.32092 2.16602 7.33348L2.16657 13.3335C2.16666 14.346 2.98745 15.1667 3.9999 15.1667H11.9992C13.0117 15.1667 13.8325 14.3459 13.8325 13.3334V7.33335C13.8325 6.32081 13.0117 5.5 11.9992 5.5H11.666V4.4987C11.666 2.47366 10.0244 0.832031 7.99934 0.832031C5.97431 0.832031 4.33268 2.47366 4.33268 4.4987ZM11.3327 10.3268C11.3327 9.95862 11.0342 9.66015 10.666 9.66015C10.2978 9.66015 9.99934 9.95862 9.99934 10.3268V10.3335C9.99934 10.7017 10.2978 11.0002 10.666 11.0002C11.0342 11.0002 11.3327 10.7017 11.3327 10.3335V10.3268ZM7.99934 9.66015C8.36754 9.66015 8.666 9.95862 8.666 10.3268V10.3335C8.666 10.7017 8.36754 11.0002 7.99934 11.0002C7.63114 11.0002 7.33267 10.7017 7.33267 10.3335V10.3268C7.33267 9.95862 7.63114 9.66015 7.99934 9.66015ZM5.99935 10.3268C5.99935 9.95862 5.70088 9.66015 5.33268 9.66015C4.9645 9.66015 4.66602 9.95862 4.66602 10.3268V10.3335C4.66602 10.7017 4.9645 11.0002 5.33268 11.0002C5.70088 11.0002 5.99935 10.7017 5.99935 10.3335V10.3268Z" fill="#686B74"/>
-            </svg>
-              <span className="modal__plan-sites">0/3 free sites remaining</span>
+          {activePlan === 'free' ? (
+            <>
+            {userSites >= FREE_PLAN_LIMIT ? (
+              <>
+              <div className='modal__plan-lock-wrapper'>
+                <div className='modal__plan-lock'>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99934 2.16536C6.71067 2.16536 5.66602 3.21004 5.66602 4.4987V5.5H10.3327V4.4987C10.3327 3.21004 9.288 2.16536 7.99934 2.16536ZM4.33268 4.4987V5.5H3.99935C2.98676 5.5 2.16592 6.32092 2.16602 7.33348L2.16657 13.3335C2.16666 14.346 2.98745 15.1667 3.9999 15.1667H11.9992C13.0117 15.1667 13.8325 14.3459 13.8325 13.3334V7.33335C13.8325 6.32081 13.0117 5.5 11.9992 5.5H11.666V4.4987C11.666 2.47366 10.0244 0.832031 7.99934 0.832031C5.97431 0.832031 4.33268 2.47366 4.33268 4.4987ZM11.3327 10.3268C11.3327 9.95862 11.0342 9.66015 10.666 9.66015C10.2978 9.66015 9.99934 9.95862 9.99934 10.3268V10.3335C9.99934 10.7017 10.2978 11.0002 10.666 11.0002C11.0342 11.0002 11.3327 10.7017 11.3327 10.3335V10.3268ZM7.99934 9.66015C8.36754 9.66015 8.666 9.95862 8.666 10.3268V10.3335C8.666 10.7017 8.36754 11.0002 7.99934 11.0002C7.63114 11.0002 7.33267 10.7017 7.33267 10.3335V10.3268C7.33267 9.95862 7.63114 9.66015 7.99934 9.66015ZM5.99935 10.3268C5.99935 9.95862 5.70088 9.66015 5.33268 9.66015C4.9645 9.66015 4.66602 9.95862 4.66602 10.3268V10.3335C4.66602 10.7017 4.9645 11.0002 5.33268 11.0002C5.70088 11.0002 5.99935 10.7017 5.99935 10.3335V10.3268Z" fill="#686B74"/>
+                    </svg>
+                    <span className="modal__plan-stat-value">{FREE_PLAN_LIMIT}/{FREE_PLAN_LIMIT} free sites remaining</span>
+                </div>
+                <button
+                  className="modal__button modal__button--upgrade"
+                  type="button"
+                >
+                  Upgrade
+                </button>
+              </div>
+                <button
+                  className="modal__button modal__button--save"
+                  onClick={handleCreate}
+                  type="button"
+                  disabled={userSites >= FREE_PLAN_LIMIT}
+                >
+                  Add Site
+                </button>
+              </>
+            ) : (
+              <>
+                <div className='modal__plan-stats'>
+                  <div className="modal__plan-background">
+                  <svg width="164" height="120" viewBox="0 0 164 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                      <path d="M0 0H164V32.7273H0V0Z" fill="currentColor"/>
+                      <path d="M43.7333 120V54.5455H109.333L43.7333 120Z" fill="currentColor"/>
+                      <path d="M87.4667 120V54.5455H142.133L87.4667 120Z" fill="currentColor"/>
+                    </g>
+                  </svg>
+                  </div>
+                  <div className="modal__plan-stat">
+                    <span className="modal__plan-stat-label">Free sites remaining</span>
+                    <span className="modal__plan-stat-value">{userSites}/{FREE_PLAN_LIMIT}</span>
+                  </div>
+                  <div className="modal__plan-stat">
+                    <span className="modal__plan-stat-label">Pages per site</span>
+                    <span className="modal__plan-stat-value">12</span>
+                  </div>
+                  <div className="modal__plan-stat">
+                    <span className="modal__plan-stat-label">
+                      <span className="modal__plan-stat-label--underline">Scans</span> per site
+                      <span className="modal__plan-stat-monthly">monthly</span>
+                    </span>
+                    <span className="modal__plan-stat-value">3</span>
+                  </div>
+                  <div className="modal__plan-stat">
+                    <span className="modal__plan-stat-label">
+                      Visitors per site
+                      <span className="modal__plan-stat-monthly">monthly</span>
+                    </span>
+                    <span className="modal__plan-stat-value">1000</span>
+                  </div>
+                </div>
+                <button
+                  className="modal__button modal__button--save"
+                  onClick={handleCreate}
+                  type="button"
+                >
+                  Add Site
+                </button>
+              </>
+            )}
+            </>
+          ) : (
+            <>
+            <div className='modal__plan-stats'>
+              <div className="modal__plan-background">
+              <svg width="164" height="120" viewBox="0 0 164 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g>
+                  <path d="M0 0H164V32.7273H0V0Z" fill="currentColor"/>
+                  <path d="M43.7333 120V54.5455H109.333L43.7333 120Z" fill="currentColor"/>
+                  <path d="M87.4667 120V54.5455H142.133L87.4667 120Z" fill="currentColor"/>
+                </g>
+              </svg>
+              </div>
+              <div className="modal__plan-stat">
+                <span className="modal__plan-stat-label">Sites</span>
+                <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
+              </div>
+              <div className="modal__plan-stat">
+                <span className="modal__plan-stat-label">Pages per site</span>
+                <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
+              </div>
+              <div className="modal__plan-stat">
+                <span className="modal__plan-stat-label">
+                  <span className="modal__plan-stat-label--underline">Scans</span> per site
+                  <span className="modal__plan-stat-monthly">monthly</span>
+                </span>
+                <span className="modal__plan-stat-value">50</span>
+              </div>
+              <div className="modal__plan-stat">
+                <span className="modal__plan-stat-label">
+                  Visitors per site
+                  <span className="modal__plan-stat-monthly">monthly</span>
+                </span>
+                <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
+              </div>
             </div>
-            <button className="modal__plan-upgrade">
-              Upgrade
-            </button>
-          </div>
-        <div className="modal__actions-bar">
-          <button
-            className="modal__button modal__button--save"
-            onClick={handleCreate}
-            type="button"
-          >
-            Add Site
-          </button>
+              <button className="modal__button modal__button--save">
+                Upgrade to Pro
+              </button>
+            </>
+          )}
         </div>
       </div>
     </>

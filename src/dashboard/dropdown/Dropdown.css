@@ -112,3 +112,11 @@
   margin-top: 0;
   margin-bottom: 4px;
 }
+
+@media (max-width: 767px) {
+/*   .dropdown{
+    width: 100%;
+    justify-content: end;
+    display: flex;
+  } */
+}

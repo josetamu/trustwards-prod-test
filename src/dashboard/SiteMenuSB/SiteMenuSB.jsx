@@ -8,14 +8,14 @@ import { Dropdown } from '../dropdown/Dropdown';
 import '../SidebarSite/SidebarSites.css';
 
 
-export const SiteMenuSB = () => {
+export const SiteMenuSB = ({setIsModalOpen, setModalType, isModalOpen}) => {
 
 
 const SiteMenuTrigger = () => {
     return(
     <div className="sidebarSites__edit">
         <svg width="9" height="2" viewBox="0 0 9 2" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4.49563 1H4.50437M1 1H1.00874M7.99126 1H8" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4.49563 1H4.50437M1 1H1.00874M7.99126 1H8" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
     </div>
 )
@@ -31,6 +31,13 @@ const SiteMenuMenu = () => {
                                     key={siteMenuPage.name}
                                     icon={siteMenuPage.icon}
                                     text={siteMenuPage.name}
+                                    onClick={() => {
+                                        if(siteMenuPage.name === 'Settings'){
+                                            
+                                            setIsModalOpen(!isModalOpen);
+                                            setModalType('EditSite');
+                                        }
+                                    }}
                                     /* onClick={() => {
                                         
                                         setIsModalOpen(!isModalOpen);
@@ -68,7 +75,7 @@ return(
     <Dropdown
     position="bottom-right"
     trigger={<SiteMenuTrigger />}
-    menu={<SiteMenuMenu />}
+    menu={<SiteMenuMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} />}
     />
 )
 
