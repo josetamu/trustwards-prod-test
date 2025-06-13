@@ -10,6 +10,10 @@
   position: relative;
 }
 
+.modal__header-editSite {  /*editSite*/
+  margin-bottom: 25px;
+}
+
 .modal__avatar {
   width: 60px;
   height: 60px;
@@ -61,6 +65,10 @@
   gap: 12px;
   padding: 12px;
   box-sizing: border-box;
+}
+
+.modal__content:has(+ .modal__actions-edit) {  /*editSite*/
+  padding: 12px 12px 0px 12px;
 }
 
 .modal__title {
@@ -334,13 +342,19 @@
   border: none;
   border-radius: 7px;
   font-family: var(--font-family);
-  letter-spacing: var(--letter-spacing);
+  letter-spacing: var(--letter-spacing-negative);
   font-size: 12px;
   font-weight: 500;
   color: #FFF;
   cursor: pointer;
   box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
   margin-top: 10px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+
 }
 
 .modal__button--save:disabled {
@@ -382,6 +396,16 @@
   font-weight: 900;
   font-size: 96px;
   color: #FFFFFF80;
+}
+
+
+
+.modal__actions-edit{
+  display: flex;
+  justify-content: center;
+  padding: 0 10px 10px 10px;
+  width: 100%;
+  align-items: center;
 }
 
 /* >MODAL */

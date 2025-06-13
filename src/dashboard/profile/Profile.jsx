@@ -30,7 +30,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
     }
     if (!email?.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!email.includes('@') || !email.includes('.')) {
+    } else if (!email.includes('@') && !email.includes('.')) {
       newErrors.email = 'Please enter a valid email address';
     }
     setErrors(newErrors);
@@ -52,7 +52,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
       }
     } else if (field === 'email') {
       setEmail(value);
-      if (value.trim() && value.includes('@') && value.includes('.')) {
+      if (value.trim() /* && value.includes('@') && value.includes('.') */) {
         setErrors(prev => ({ ...prev, email: undefined }));
       }
     }
@@ -164,7 +164,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
                   <Tooltip 
                     message={errors.firstName} 
                     id="firstName-error"
-                    position="bottom"
+                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
                     type='alert'
                   />
                 )}
@@ -183,7 +183,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
                   <Tooltip 
                     message={errors.secondName} 
                     id="secondName-error"
-                    position="top"
+                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
                     type='alert'
                   />
                 )}
@@ -207,7 +207,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
                   <Tooltip 
                     message={errors.email} 
                     id="email-error"
-                    position="bottom"
+                    responsivePosition={{ desktop: 'bottom', mobile: 'bottom' }}
                     type='alert'
                   />
                 )}

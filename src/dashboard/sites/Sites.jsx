@@ -96,6 +96,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               setIsDropdownOpen={setIsDropdownOpen}
               setSiteData={setSiteData}
               siteData={site}
+
             />
           )
         ))}

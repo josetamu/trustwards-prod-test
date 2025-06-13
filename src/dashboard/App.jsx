@@ -58,8 +58,8 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'darezo.2809@gmail.com',
-    //email: 'oscar.abad.brickscore@gmail.com',
+      //email: 'darezo.2809@gmail.com',
+      email: 'oscar.abad.brickscore@gmail.com',
       password: 'TW.141109'
     });
   };
@@ -210,7 +210,7 @@ function App() {
         case 'EditSite':
           return (
             <ModalEditSite
-              onSave={() => {setIsModalOpen(false); fetchSites()}}
+              onSave={() => {setIsModalOpen(false); fetchSites(user?.id)}}
               onCancel={() => setIsModalOpen(false)}
               setIsModalOpen={setIsModalOpen}
               webs={webs}
