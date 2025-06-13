@@ -158,6 +158,7 @@ function App() {
             setModalType={setModalType}
             setSiteData={setSiteData}
             siteData={siteData}
+            setIsDropdownOpen={setIsDropdownOpen}
           />
         );
       case 'Support':
