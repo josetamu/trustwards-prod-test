@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../dashboard_animations';
 import './Dropdown.css';
@@ -13,8 +13,8 @@ export function Dropdown({
   const containerRef = useRef(null);
   const menuRef = useRef(null);
   const [currentPosition, setCurrentPosition] = useState(position);
-
-  // Close dropdown when clicking outside
+  const dropdownId = useId();
+  // Close dropdown when clicking outside (only if not openOnHover)
   useEffect(() => {
     if (!open) return;
     const handleClickOutside = (event) => {
@@ -64,6 +64,7 @@ export function Dropdown({
       className="dropdown"
       ref={containerRef}
       data-position={currentPosition}
+      id={dropdownId}
     >
       {children}
       <AnimatePresence>

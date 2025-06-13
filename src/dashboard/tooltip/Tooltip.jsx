@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Tooltip.css';
-
+import { useId } from 'react';
 export function Tooltip({ 
   message,
   className = '',
@@ -30,6 +30,7 @@ export function Tooltip({
       className={`tooltip tooltip--${finalPosition} ${className}`}
       role="tooltip"
       aria-live="polite"
+      id={tooltipId}
     >
       <div className="tooltip__mask">{message}</div>
     </div>

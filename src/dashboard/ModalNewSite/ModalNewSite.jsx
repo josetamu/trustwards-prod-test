@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
 import './ModalNewSite.css'
 
 export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create', setIsModalOpen }) {
+
+  const modalNewSiteId = useId();
+
+
   const [formValues, setFormValues] = useState({
     name: initialData?.text?.trim() || '',
     domain: initialData?.domain?.trim() || ''
@@ -101,7 +105,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
 
   return (
     <>
-      <div className="modal__header">
+      <div className="modal__header" id={modalNewSiteId}>
         <div className="modal__avatar">
           <img src="/logo test.png" alt="logo" />
           <button className="modal__avatar-edit">
