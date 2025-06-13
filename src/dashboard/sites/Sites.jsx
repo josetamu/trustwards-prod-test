@@ -4,7 +4,7 @@ import { Sort } from '../sort/Sort';
 import { View } from '../view/View';
 import './Sites.css'
 
-export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen}) => {
+export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData}) => {
   const [siteList, setSiteList] = useState(sites);
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
@@ -79,7 +79,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
           />
         ))} */}
         {webs.map(site => (
-          site.userid === user.id && (
+          user && site.userid === user.id && (
             <Site
               key={site.id}
               id={site.id}
@@ -94,6 +94,8 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               isModalOpen={isModalOpen}
               isDropdownOpen={isDropdownOpen}
               setIsDropdownOpen={setIsDropdownOpen}
+              setSiteData={setSiteData}
+              siteData={site}
             />
           )
         ))}

@@ -139,7 +139,8 @@ export function Sidebar({
     isModalOpen,
     isDropdownOpen,
     setIsDropdownOpen,
-
+    setSiteData,
+    siteData,
     }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -148,7 +149,7 @@ export function Sidebar({
     const filteredWebs = webs.filter(web => {
         return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
     });
-    console.log('Filtered webs:', filteredWebs);
+    
 
     const handleDropdownClick = () => {
         if(window.innerWidth < 767){
@@ -290,6 +291,8 @@ export function Sidebar({
                                                     isModalOpen={isModalOpen}
                                                     isDropdownOpen={isDropdownOpen}
                                                     setIsDropdownOpen={setIsDropdownOpen}
+                                                    siteData={web}
+                                                    setSiteData={setSiteData}
                                                 />
                                            
                                                {/*  {!isSidebarOpen && window.innerWidth > 767 && (

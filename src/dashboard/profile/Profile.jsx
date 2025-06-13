@@ -37,22 +37,6 @@ export function Profile({ user, setUser, setIsModalOpen }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle input blur
-/*   const handleInputBlur = (field) => {
-    if (field === 'firstName' && !firstName?.trim()) {
-      setErrors(prev => ({ ...prev, firstName: 'Name is required' }));
-    }
-    if (field === 'secondName' && !secondName?.trim()) {
-      setErrors(prev => ({ ...prev, secondName: 'Name is required' }));
-    }
-    if (field === 'email') {
-      if (!email?.trim()) {
-        setErrors(prev => ({ ...prev, email: 'Email is required' }));
-      } else if (!email.includes('@') || !email.includes('.')) {
-        setErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
-      }
-    }
-  }; */
 
   // Handle input editing and clear errors when input is valid
   const handleInputEdit = (field, value) => {
@@ -173,7 +157,6 @@ export function Profile({ user, setUser, setIsModalOpen }) {
                   /* placeholder={`${user?.["First Name"] || 'FirstName'}`}  */
                   value={firstName} 
                   onChange={(e) => handleInputEdit('firstName', e.target.value)}
-                  onBlur={() => handleInputBlur('firstName')}
                   aria-invalid={!!errors.firstName}
                   aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                 />
@@ -193,7 +176,6 @@ export function Profile({ user, setUser, setIsModalOpen }) {
                   /* placeholder={`${user?.["Second Name"] || 'Second Name'}`}  */
                   value={secondName} 
                   onChange={(e) => handleInputEdit('secondName', e.target.value)}
-                  onBlur={() => handleInputBlur('secondName')}
                   aria-invalid={!!errors.secondName}
                   aria-describedby={errors.secondName ? 'secondName-error' : undefined}
                 />
@@ -218,7 +200,6 @@ export function Profile({ user, setUser, setIsModalOpen }) {
                  /*  placeholder={`${user?.Email || 'example@email.com'}`} */ 
                   value={email} 
                   onChange={(e) => handleInputEdit('email', e.target.value)}
-                  onBlur={() => handleInputBlur('email')}
                   aria-invalid={!!errors.email}
                   aria-describedby={errors.email ? 'email-error' : undefined}
                 />

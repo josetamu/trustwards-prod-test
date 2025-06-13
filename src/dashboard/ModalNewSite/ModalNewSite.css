@@ -354,6 +354,12 @@
   margin-bottom: 8px;
 }
 
+.modal__actions-edit {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  width: 100%;
+}
 /* >MODAL */
 @media(max-width: 767px){
   .modal__backdrop{

@@ -13,7 +13,7 @@ import { Profile } from './Profile/Profile'
 import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
-
+import { ModalEditSite } from './ModalEditSite/ModalEditSite'
 function App() {
   const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +24,7 @@ function App() {
   const [webs, setwebs] = useState([]);
   const [modalType, setModalType] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
+  const [siteData, setSiteData] = useState(null);
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -156,8 +156,8 @@ function App() {
             webs={webs}
             isSidebarOpen={isSidebarOpen}
             setModalType={setModalType}
-          
-            
+            setSiteData={setSiteData}
+            siteData={siteData}
           />
         );
       case 'Support':
@@ -204,14 +204,13 @@ function App() {
           );
         case 'EditSite':
           return (
-            <ModalNewSite
+            <ModalEditSite
               onSave={() => {setIsModalOpen(false); fetchSites()}}
               onCancel={() => setIsModalOpen(false)}
-              initialData={{
-                id: webs?.id,
-                text: webs.Name,
-                domain: webs?.Domain,
-              }}
+              setIsModalOpen={setIsModalOpen}
+              webs={webs}
+              siteData={siteData}
+              setSiteData={setSiteData}
             />
           );
         default:
@@ -246,8 +245,8 @@ function App() {
       isModalOpen={isModalOpen}
       isDropdownOpen={isDropdownOpen}
       setIsDropdownOpen={setIsDropdownOpen}
-      
-      
+      setSiteData={setSiteData}
+      siteData={siteData}
       />
     <div className="content__container">
       {renderActivePage()}

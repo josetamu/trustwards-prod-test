@@ -81,14 +81,10 @@
   justify-content: start;
   align-items: start;
   position: relative;
-  cursor: pointer;
+  
 }
 
 .profile__avatar__svg{
-  display: none;
-}
-
-.profile__avatar:hover .profile__avatar__svg {
   display: block;
   position: absolute;
   bottom: -1px;
@@ -101,6 +97,8 @@
   border: 0.5px solid var(--border-color);
   cursor: pointer;
 }
+
+
 
 .profile__body{
   display: flex;

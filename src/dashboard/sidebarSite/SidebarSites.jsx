@@ -3,11 +3,11 @@ import { useId, useState } from "react";
 import { SiteMenuSB } from "../SiteMenuSB/SiteMenuSB";
 import { Dropdown } from "../dropdown/Dropdown";
 
-export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen}) {
+export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
-    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen }) => {
+    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData }) => {
         return (
           <>
             <button className="dropdown__item">
@@ -29,7 +29,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
               </span>
               Copy script
             </button>
-            <button className="dropdown__item" onClick={() => {onEdit(); setIsModalOpen(true); setModalType('NewSite');}}>
+            <button className="dropdown__item" onClick={() => {setIsModalOpen(true); setModalType('NewSite'); setIsDropdownOpen(false);}}>
               <span className="dropdown__icon">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2.29734 9.11365L1.75 12.25L4.88653 11.7025C5.12307 11.6613 5.34111 11.548 5.5109 11.3782L11.9937 4.89533C12.3354 4.55362 12.3354 3.99959 11.9936 3.65789L10.342 2.00627C10.0003 1.66457 9.44628 1.66458 9.10456 2.00628L2.62168 8.48931C2.45189 8.65906 2.33862 8.87711 2.29734 9.11365Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -68,7 +68,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 position="right"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
-                menu={<SiteMenuSB setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} />}
+                menu={<SiteMenuSB setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} />}
             >
                 <div className="sidebarSites__edit" onClick={() => setIsDropdownOpen(v => !v)}>
                     <svg width="9" height="2" viewBox="0 0 9 2" fill="none" xmlns="http://www.w3.org/2000/svg">

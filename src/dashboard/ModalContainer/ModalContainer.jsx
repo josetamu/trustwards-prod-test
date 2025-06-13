@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef, useId } from 'react';
 import './ModalContainer.css';
 
-export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handleCreate }) {
+export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handleCreate}) {
   const modalRef = useRef(null);
   const modalId = useId();
 
@@ -65,18 +65,6 @@ export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handl
       modalRef.current?.removeEventListener('keydown', handleTabKey);
     };
   }, [handleKeyDown]);
-
-  // Focus on first element
-  useEffect(() => {
-    if (isOpen && modalRef.current) {
-      const focusableElements = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusableElements.length) {
-        focusableElements[0].focus();
-      }
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
 

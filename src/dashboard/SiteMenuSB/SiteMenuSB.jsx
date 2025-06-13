@@ -4,7 +4,7 @@ import { siteMenuPages } from '../sideBar/Sidebar';
 import { SidebarLink } from '../sitebarLink/SitebarLink';
 import '../SidebarSite/SidebarSites.css';
 
-export const SiteMenuSB = ({setIsModalOpen, setModalType, isModalOpen}) => {
+export const SiteMenuSB = ({setIsModalOpen, setModalType, isModalOpen, setIsDropdownOpen, siteData, setSiteData}) => {
     return (
         <div className='profileDropdown__dropdown--active'>
             <div className="profileDropdown__upper">
@@ -18,6 +18,8 @@ export const SiteMenuSB = ({setIsModalOpen, setModalType, isModalOpen}) => {
                             if(siteMenuPage.name === 'Settings'){
                                 setIsModalOpen(!isModalOpen);
                                 setModalType('EditSite');
+                                setIsDropdownOpen(false);
+                                setSiteData(siteData);
                             }
                         }}
                     />
