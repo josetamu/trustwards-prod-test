@@ -117,9 +117,14 @@
 }
 
 @media (max-width: 767px) {
-/*   .dropdown{
+.sidebarSites__site--open .dropdown{
     width: 100%;
     justify-content: end;
     display: flex;
-  } */
+  } 
+
+  .sidebarSites__site--open .dropdown__menu{
+    width: 100%;
+    margin-top: 25px;
+  }
 }
