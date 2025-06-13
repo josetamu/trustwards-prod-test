@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './Tooltip.css';
 import { useId } from 'react';
+
 export function Tooltip({ 
   message,
   className = '',
   responsivePosition
 }) {
+  const tooltipId = useId();
   const defaultPosition = responsivePosition ? null : 'right';
   const [finalPosition, setFinalPosition] = useState(defaultPosition || (responsivePosition && responsivePosition.desktop));
 
