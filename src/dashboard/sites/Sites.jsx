@@ -78,7 +78,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
             }}
           />
         ))} */}
-        {webs.map(site => (
+        {webs?.filter(site => site && site.id).map(site => (
           site.userid === user.id && (
             <Site
               key={site.id}
