@@ -20,13 +20,13 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
   // Validate inputs
   const validateName = (value) => {
     if (!value.trim()) {
-      return 'Please enter a domain name';
+      return 'Name is required';
     }
     return null;
   };
   const validateDomain = (value) => {
     if (!value.trim()) {
-      return 'Please enter a domain URL';
+      return 'Domain is required';
     }
     return null;
   };
@@ -178,8 +178,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
               {formErrors.name && (
                 <Tooltip
                   message={formErrors.name}
-                  position="left"
-                  type="default"
+                  responsivePosition={{ desktop: 'left', mobile: 'top' }}
                 />
               )}
             </div>
@@ -208,8 +207,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
               {formErrors.domain && (
                 <Tooltip
                   message={formErrors.domain}
-                  position="right"
-                  type="alert"
+                  responsivePosition={{ desktop: 'right', mobile: 'bottom' }}
                 />
               )}
             </div>

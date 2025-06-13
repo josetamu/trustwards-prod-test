@@ -27,6 +27,7 @@
     width: 100%;
     max-width: 380px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.10);
+    backdrop-filter: blur(11px);
     display: flex;
     flex-direction: column;
     gap: 25px;
