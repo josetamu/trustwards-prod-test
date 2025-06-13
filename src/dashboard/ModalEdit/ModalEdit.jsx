@@ -44,26 +44,56 @@ export function ModalEdit({ onClose, onSave }) {
     switch (type) {
       case 'gradient':
         setSelectedGradient(item);
+        setSelectedAurora(null);
+        setSelectedAvatar(null);
         break;
       case 'aurora':
         setSelectedAurora(item);
+        setSelectedGradient(null);
+        setSelectedAvatar(null);
         break;
       case 'avatar':
         setSelectedAvatar(item);
+        setSelectedGradient(null);
+        setSelectedAurora(null);
         break;
       default:
         break;
     }
   };
 
-  // Gets the background style for the preview header
-  const getPreviewBackground = () => {
+  // Gets the logo for the preview header
+  const getPreviewLogo = () => {
+    if (selectedAvatar) {
+      return <img src={selectedAvatar.src} alt="Selected avatar" />;
+    }
     if (selectedGradient) {
-      return `linear-gradient(135deg, ${selectedGradient.colors[0]} 0%, ${selectedGradient.colors[1]} 100%)`;
+      return (
+        <span style={{
+          display: 'block',
+          width: '100%',
+          height: '100%',
+          borderRadius: '50%',
+          background: `linear-gradient(135deg, ${selectedGradient.colors[0]} 0%, ${selectedGradient.colors[1]} 100%)`
+        }} />
+      );
     }
     if (selectedAurora) {
-      return selectedAurora.color;
+      return (
+        <span style={{
+          display: 'block',
+          width: '100%',
+          height: '100%',
+          borderRadius: '50%',
+          background: selectedAurora.color
+        }} />
+      );
     }
+    return <img src="/logo test.png" alt="Default logo" />;
+  };
+
+  // The header background is always the same now
+  const getPreviewBackground = () => {
     return 'linear-gradient(135deg, #FF6B00 0%, #1E40AF 100%)';
   };
 
@@ -80,11 +110,7 @@ export function ModalEdit({ onClose, onSave }) {
     <div className="modal-edit">
       <div className="modal-edit__header" style={{ background: getPreviewBackground() }}>
         <div className="modal-edit__preview">
-          {selectedAvatar ? (
-            <img src={selectedAvatar.src} alt="Selected avatar" />
-          ) : (
-            <img src="/logo test.png" alt="Default logo" />
-          )}
+          {getPreviewLogo()}
         </div>
       </div>
 
@@ -104,7 +130,7 @@ export function ModalEdit({ onClose, onSave }) {
             ))}
           </div>
         </div>
-
+        <hr className="modal-edit__divider" />
         <div className="modal-edit__section">
           <h3>Aurora</h3>
           <div className="modal-edit__grid">
@@ -118,7 +144,7 @@ export function ModalEdit({ onClose, onSave }) {
             ))}
           </div>
         </div>
-
+        <hr className="modal-edit__divider" />
         <div className="modal-edit__section">
           <h3>Avatar</h3>
           <div className="modal-edit__grid">
@@ -135,7 +161,7 @@ export function ModalEdit({ onClose, onSave }) {
         </div>
       </div>
 
-      <div className="modal-edit__actions">
+      <div className="modal-edit__actions modal-edit__actions--horizontal">
         <button className="modal-edit__button modal-edit__button--save" onClick={handleSave}>
           Save Changes
         </button>

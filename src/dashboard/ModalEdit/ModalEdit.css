@@ -159,4 +159,24 @@
 
 .modal-edit__button--save:hover {
   background: #1D4ED8;
+}
+
+.modal-edit__divider {
+  height: 0.8px;
+  background: #E0E0E0;
+  margin: 4px 0;
+  width: 100%;
+  border: none;
+}
+
+.modal-edit__actions--horizontal {
+  flex-direction: row;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-edit__actions--horizontal .modal-edit__button {
+  width: auto;
+  min-width: 120px;
+  flex: 0 0 auto;
 } 

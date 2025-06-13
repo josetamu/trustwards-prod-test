@@ -2,7 +2,9 @@ import './Site.css';
 import { Dropdown } from '../dropdown/Dropdown';
 import { ModalNewSite } from '../ModalNewSite/ModalNewSite';
 import { ModalContainer } from '../ModalContainer/ModalContainer';
+import { ModalDelete } from '../ModalDelete/ModalDelete';
 import { useState, useId } from 'react';
+import { supabase } from '../../supabase/supabaseClient';
 
 const ProButton = ({ onClick, isHovering }) => {
   return (

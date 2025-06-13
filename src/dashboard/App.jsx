@@ -58,7 +58,8 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'oscar.abad.brickscore@gmail.com',
+      email: 'darezo.2809@gmail.com',
+    //email: 'oscar.abad.brickscore@gmail.com',
       password: 'TW.141109'
     });
   };
@@ -83,11 +84,16 @@ function App() {
   };
 
   // Function to fetch sites from Supabase
-  const fetchSites = async () => {
+  const fetchSites = async (userId) => {
+    if (!userId) {
+      setwebs([]);
+      return;
+    }
     const { data, error } = await supabase
       .from('Site')
-      .select('*');
-    
+      .select('*')
+      .eq('userid', userId);
+
     if (error) {
       console.error('Error fetching sites:', error);
     } else {
@@ -95,21 +101,20 @@ function App() {
     }
   };
 
-  // Elimina un sitio del estado webs
+  // Remove a site from the webs state
   const handleDeleteSite = (id) => {
     setwebs(prev => prev.filter(site => site.id !== id));
   };
 
-  // Expone la función globalmente para Sites.jsx
+  // Expose the function globally for Sites.jsx
   window.onDeleteSite = handleDeleteSite;
 
   useEffect(() => {
-    // Usar el listener onAuthStateChange
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session) {
           getUser(session.user.id);
-          fetchSites(); // Fetch sites when user is authenticated
+          fetchSites(session.user.id); // Fetch sites when user is authenticated
         } else {
           getUser(null);
           setwebs([]); // Clear sites when user logs out
@@ -117,13 +122,13 @@ function App() {
       }
     );
 
-    // Llamar a _loginDevUser solo una vez al montar el componente para forzar el inicio de sesión en desarrollo
+    // Call _loginDevUser only once on mount to force login in development
     _loginDevUser();
 
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, []); // Dependencia vacía para que se ejecute solo una vez
+  }, []);
 
   useEffect(() => {
     setIsSidebarOpen(false);
@@ -194,14 +199,13 @@ function App() {
           );
         case 'NewSite':
           return (
-            
-              <ModalNewSite
-                onSave={() => {setIsModalOpen(false); fetchSites()}}
-                onCancel={() => setIsModalOpen(false)}
-                userSites={webs?.length || 0}
-                setIsModalOpen={setIsModalOpen}
-              />
-            
+            <ModalNewSite
+              onSave={() => {setIsModalOpen(false); fetchSites(user?.id)}}
+              onCancel={() => setIsModalOpen(false)}
+              userSites={webs?.length || 0}
+              setIsModalOpen={setIsModalOpen}
+              userPlan={user?.Plan || 'free'}
+            />
           );
         case 'EditSite':
           return (
