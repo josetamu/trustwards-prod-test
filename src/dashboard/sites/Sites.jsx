@@ -78,23 +78,25 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
             }}
           />
         ))} */}
-        {webs.map(site =>
-          <Site
-            key={site.id}
-            id={site.id}
-            text={site.Name}
-            domain={site.Domain}
-            onRemove={() => {
-              setSiteList(prev => prev.filter(s => s.id !== site.id));
-              if (typeof window.onDeleteSite === 'function') window.onDeleteSite(site.id);
-            }}
-            setIsModalOpen={setIsModalOpen}
-            setModalType={setModalType}
-            isModalOpen={isModalOpen}
-            isDropdownOpen={isDropdownOpen}
-            setIsDropdownOpen={setIsDropdownOpen}
-          />
-        )}
+        {webs.map(site => (
+          site.userid === user.id && (
+            <Site
+              key={site.id}
+              id={site.id}
+              text={site.Name}
+              domain={site.Domain}
+              onRemove={() => {
+                setSiteList(prev => prev.filter(s => s.id !== site.id));
+                if (typeof window.onDeleteSite === 'function') window.onDeleteSite(site.id);
+              }}
+              setIsModalOpen={setIsModalOpen}
+              setModalType={setModalType}
+              isModalOpen={isModalOpen}
+              isDropdownOpen={isDropdownOpen}
+              setIsDropdownOpen={setIsDropdownOpen}
+            />
+          )
+        ))}
       </div>
     </div>
   );

@@ -12,7 +12,6 @@
     left: var(--sidebar-width-close);
     position: relative;
     overflow-x: hidden;
-    z-index: 1;
       
   }
   .open{

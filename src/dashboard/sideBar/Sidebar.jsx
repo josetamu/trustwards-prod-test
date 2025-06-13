@@ -144,9 +144,11 @@ export function Sidebar({
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filteredWebs = webs.filter(web => 
-        web.Name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+
+    const filteredWebs = webs.filter(web => {
+        return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+    console.log('Filtered webs:', filteredWebs);
 
     const handleDropdownClick = () => {
         if(window.innerWidth < 767){
@@ -234,7 +236,12 @@ export function Sidebar({
                         <div className={`${isSidebarOpen ? 'sidebar__sites-header--open' : 'sidebar__sites-header'}`}>
                             <span className='sidebar__sites-title'>SITES</span>
                             <div className={`${isSearchOpen ? 'sidebar__sites-searcher--open' : 'sidebar__sites-searcher'}`}>
-                                <span className='sidebar__sites-search' onClick={() => setIsSearchOpen(!isSearchOpen)}>
+                                <span className='sidebar__sites-search' onClick={() => {
+                                    setIsSearchOpen(!isSearchOpen);
+                                    if (isSearchOpen) {
+                                        setSearchQuery('');
+                                    }
+                                }}>
                                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8.99912 8.99912L7.07031 7.07031" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
                                         <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
@@ -271,29 +278,30 @@ export function Sidebar({
                                     </span>
                                 ) : (
                                     (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
-                                        <div key={web.id} className="sidebar__sites-tooltip-wrapper">
-                                            <SidebarSites
-                                                key={web.id}
-                                                avatar={web["Avatar URL"]}
-                                                name={web.Name}
-                                                isSidebarOpen={isSidebarOpen}
-                                                setIsModalOpen={setIsModalOpen}
-                                                setModalType={setModalType}
-                                                isModalOpen={isModalOpen}
-                                                isDropdownOpen={isDropdownOpen}
-                                                setIsDropdownOpen={setIsDropdownOpen}
-                                            />
-                                            <AnimatePresence>
-                                            </AnimatePresence>
-                                            {!isSidebarOpen && window.innerWidth > 767 && (
-                                                <Tooltip 
-                                                    message={web.Name} 
-                                                    id={web.id}
-                                                    position="sidebar"
-                                                    type='default'
+                                        web.userid === user.id && (
+                                            <div key={web.id} className="sidebar__sites-tooltip-wrapper">
+                                                <SidebarSites
+                                                    key={web.id}
+                                                    avatar={web["Avatar URL"]}
+                                                    name={web.Name}
+                                                    isSidebarOpen={isSidebarOpen}
+                                                    setIsModalOpen={setIsModalOpen}
+                                                    setModalType={setModalType}
+                                                    isModalOpen={isModalOpen}
+                                                    isDropdownOpen={isDropdownOpen}
+                                                    setIsDropdownOpen={setIsDropdownOpen}
                                                 />
-                                            )} 
-                                        </div>
+                                           
+                                               {/*  {!isSidebarOpen && window.innerWidth > 767 && (
+                                                    <Tooltip 
+                                                        message={web.Name} 
+                                                        id={web.id}
+                                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                                        type='default'
+                                                    />
+                                                )}  */}
+                                            </div>
+                                        )
                                     ))
                                 )}
                             </div>
