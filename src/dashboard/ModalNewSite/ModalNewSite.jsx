@@ -4,12 +4,19 @@ import { supabase } from '../../supabase/supabaseClient';
 import { ModalEdit } from '../ModalEdit/ModalEdit';
 import './ModalNewSite.css'
 
-export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create', setIsModalOpen, userSites = 0 }) {
+export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create', setIsModalOpen, userSites = 0, userPlan = 'free' }) {
 
   const modalNewSiteId = useId();
-  const [activePlan, setActivePlan] = useState('free');
+  const [activePlan, setActivePlan] = useState(userPlan === 'Pro' ? 'pro' : 'free');
   const [showEdit, setShowEdit] = useState(false);
   const FREE_PLAN_LIMIT = 3;
+
+  // Update activePlan when userPlan changes
+  useEffect(() => {
+    if (userPlan === 'Pro') {
+      setActivePlan('pro');
+    }
+  }, [userPlan]);
 
   const [formValues, setFormValues] = useState({
     name: initialData?.text?.trim() || '',
@@ -74,8 +81,8 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
         return;
       }
 
-      // Check if user has reached the free plan limit
-      if (activePlan === 'free' && userSites >= FREE_PLAN_LIMIT) {
+      // Check if user has reached the free plan limit (only for free users)
+      if (userPlan !== 'Pro' && activePlan === 'free' && userSites >= FREE_PLAN_LIMIT) {
         setFormErrors(prev => ({ ...prev, general: 'You have reached the maximum number of sites for the free plan.' }));
         return;
       }
@@ -112,8 +119,8 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
     setFormErrors({});
   }, [initialData]);
 
+  // Avatar changes logic
   const handleEditSave = (editData) => {
-    // Aquí implementaremos la lógica para guardar los cambios del avatar
     console.log('Edit data:', editData);
     setShowEdit(false);
   };
@@ -216,130 +223,152 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
         <div className="modal__divider"></div>
         <div className="modal__plan">
           <span className="modal__input-label">Jose Tamu's Plan</span>
-          <div className="modal__plan-toggle">
-            <span 
-              className={`modal__plan-option ${activePlan === 'free' ? 'modal__plan-option--active' : ''}`}
-              onClick={() => setActivePlan('free')}
-            >
-              Free
-            </span>
-            <span 
-              className={`modal__plan-option ${activePlan === 'pro' ? 'modal__plan-option--active' : ''}`}
-              onClick={() => setActivePlan('pro')}
-            >
-              Pro
-            </span>
-          </div>
-          {activePlan === 'free' ? (
+          {userPlan === 'Pro' ? (
             <>
-            {userSites >= FREE_PLAN_LIMIT ? (
-              <>
-              <div className='modal__plan-lock-wrapper'>
-                <div className='modal__plan-lock'>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99934 2.16536C6.71067 2.16536 5.66602 3.21004 5.66602 4.4987V5.5H10.3327V4.4987C10.3327 3.21004 9.288 2.16536 7.99934 2.16536ZM4.33268 4.4987V5.5H3.99935C2.98676 5.5 2.16592 6.32092 2.16602 7.33348L2.16657 13.3335C2.16666 14.346 2.98745 15.1667 3.9999 15.1667H11.9992C13.0117 15.1667 13.8325 14.3459 13.8325 13.3334V7.33335C13.8325 6.32081 13.0117 5.5 11.9992 5.5H11.666V4.4987C11.666 2.47366 10.0244 0.832031 7.99934 0.832031C5.97431 0.832031 4.33268 2.47366 4.33268 4.4987ZM11.3327 10.3268C11.3327 9.95862 11.0342 9.66015 10.666 9.66015C10.2978 9.66015 9.99934 9.95862 9.99934 10.3268V10.3335C9.99934 10.7017 10.2978 11.0002 10.666 11.0002C11.0342 11.0002 11.3327 10.7017 11.3327 10.3335V10.3268ZM7.99934 9.66015C8.36754 9.66015 8.666 9.95862 8.666 10.3268V10.3335C8.666 10.7017 8.36754 11.0002 7.99934 11.0002C7.63114 11.0002 7.33267 10.7017 7.33267 10.3335V10.3268C7.33267 9.95862 7.63114 9.66015 7.99934 9.66015ZM5.99935 10.3268C5.99935 9.95862 5.70088 9.66015 5.33268 9.66015C4.9645 9.66015 4.66602 9.95862 4.66602 10.3268V10.3335C4.66602 10.7017 4.9645 11.0002 5.33268 11.0002C5.70088 11.0002 5.99935 10.7017 5.99935 10.3335V10.3268Z" fill="#686B74"/>
-                    </svg>
-                    <span className="modal__plan-stat-value">{FREE_PLAN_LIMIT}/{FREE_PLAN_LIMIT} free sites remaining</span>
-                </div>
-                <button
-                  className="modal__button modal__button--upgrade"
-                  type="button"
-                >
-                  Upgrade
-                </button>
+              <div className="modal__pro-card">
+                <svg width="15" height="11" viewBox="0 0 15 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 0H15V3H0V0Z" fill="currentColor"/>
+                  <path d="M4 11V5H10L4 11Z" fill="currentColor"/>
+                  <path d="M8 11V5H13L8 11Z" fill="currentColor"/>
+                </svg>
+                <span className="modal__pro-card-text">PRO</span>
               </div>
-                <button
-                  className="modal__button modal__button--save"
-                  onClick={handleCreate}
-                  type="button"
-                  disabled={userSites >= FREE_PLAN_LIMIT}
-                >
-                  Add Site
-                </button>
-              </>
-            ) : (
-              <>
-                <div className='modal__plan-stats'>
-                  <div className="modal__plan-background">
-                  <svg width="164" height="120" viewBox="0 0 164 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g>
-                      <path d="M0 0H164V32.7273H0V0Z" fill="currentColor"/>
-                      <path d="M43.7333 120V54.5455H109.333L43.7333 120Z" fill="currentColor"/>
-                      <path d="M87.4667 120V54.5455H142.133L87.4667 120Z" fill="currentColor"/>
-                    </g>
-                  </svg>
-                  </div>
-                  <div className="modal__plan-stat">
-                    <span className="modal__plan-stat-label">Free sites remaining</span>
-                    <span className="modal__plan-stat-value">{userSites}/{FREE_PLAN_LIMIT}</span>
-                  </div>
-                  <div className="modal__plan-stat">
-                    <span className="modal__plan-stat-label">Pages per site</span>
-                    <span className="modal__plan-stat-value">12</span>
-                  </div>
-                  <div className="modal__plan-stat">
-                    <span className="modal__plan-stat-label">
-                      <span className="modal__plan-stat-label--underline">Scans</span> per site
-                      <span className="modal__plan-stat-monthly">monthly</span>
-                    </span>
-                    <span className="modal__plan-stat-value">3</span>
-                  </div>
-                  <div className="modal__plan-stat">
-                    <span className="modal__plan-stat-label">
-                      Visitors per site
-                      <span className="modal__plan-stat-monthly">monthly</span>
-                    </span>
-                    <span className="modal__plan-stat-value">1000</span>
-                  </div>
-                </div>
-                <button
-                  className="modal__button modal__button--save"
-                  onClick={handleCreate}
-                  type="button"
-                >
-                  Add Site
-                </button>
-              </>
-            )}
+              <button
+                className="modal__button"
+                onClick={handleCreate}
+                type="button"
+              >
+                Add Site
+              </button>
             </>
           ) : (
             <>
-            <div className='modal__plan-stats'>
-              <div className="modal__plan-background">
-              <svg width="164" height="120" viewBox="0 0 164 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g>
-                  <path d="M0 0H164V32.7273H0V0Z" fill="currentColor"/>
-                  <path d="M43.7333 120V54.5455H109.333L43.7333 120Z" fill="currentColor"/>
-                  <path d="M87.4667 120V54.5455H142.133L87.4667 120Z" fill="currentColor"/>
-                </g>
-              </svg>
-              </div>
-              <div className="modal__plan-stat">
-                <span className="modal__plan-stat-label">Sites</span>
-                <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
-              </div>
-              <div className="modal__plan-stat">
-                <span className="modal__plan-stat-label">Pages per site</span>
-                <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
-              </div>
-              <div className="modal__plan-stat">
-                <span className="modal__plan-stat-label">
-                  <span className="modal__plan-stat-label--underline">Scans</span> per site
-                  <span className="modal__plan-stat-monthly">monthly</span>
+              <div className="modal__plan-toggle">
+                <span 
+                  className={`modal__plan-option ${activePlan === 'free' ? 'modal__plan-option--active' : ''}`}
+                  onClick={() => setActivePlan('free')}
+                >
+                  Free
                 </span>
-                <span className="modal__plan-stat-value">50</span>
-              </div>
-              <div className="modal__plan-stat">
-                <span className="modal__plan-stat-label">
-                  Visitors per site
-                  <span className="modal__plan-stat-monthly">monthly</span>
+                <span 
+                  className={`modal__plan-option ${activePlan === 'pro' ? 'modal__plan-option--active' : ''}`}
+                  onClick={() => setActivePlan('pro')}
+                >
+                  Pro
                 </span>
-                <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
               </div>
-            </div>
-              <button className="modal__button modal__button--save">
-                Upgrade to Pro
-              </button>
+              {activePlan === 'free' ? (
+                <>
+                {userSites >= FREE_PLAN_LIMIT ? (
+                  <>
+                  <div className='modal__plan-lock-wrapper'>
+                    <div className='modal__plan-lock'>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99934 2.16536C6.71067 2.16536 5.66602 3.21004 5.66602 4.4987V5.5H10.3327V4.4987C10.3327 3.21004 9.288 2.16536 7.99934 2.16536ZM4.33268 4.4987V5.5H3.99935C2.98676 5.5 2.16592 6.32092 2.16602 7.33348L2.16657 13.3335C2.16666 14.346 2.98745 15.1667 3.9999 15.1667H11.9992C13.0117 15.1667 13.8325 14.3459 13.8325 13.3334V7.33335C13.8325 6.32081 13.0117 5.5 11.9992 5.5H11.666V4.4987C11.666 2.47366 10.0244 0.832031 7.99934 0.832031C5.97431 0.832031 4.33268 2.47366 4.33268 4.4987ZM11.3327 10.3268C11.3327 9.95862 11.0342 9.66015 10.666 9.66015C10.2978 9.66015 9.99934 9.95862 9.99934 10.3268V10.3335C9.99934 10.7017 10.2978 11.0002 10.666 11.0002C11.0342 11.0002 11.3327 10.7017 11.3327 10.3335V10.3268ZM7.99934 9.66015C8.36754 9.66015 8.666 9.95862 8.666 10.3268V10.3335C8.666 10.7017 8.36754 11.0002 7.99934 11.0002C7.63114 11.0002 7.33267 10.7017 7.33267 10.3335V10.3268C7.33267 9.95862 7.63114 9.66015 7.99934 9.66015ZM5.99935 10.3268C5.99935 9.95862 5.70088 9.66015 5.33268 9.66015C4.9645 9.66015 4.66602 9.95862 4.66602 10.3268V10.3335C4.66602 10.7017 4.9645 11.0002 5.33268 11.0002C5.70088 11.0002 5.99935 10.7017 5.99935 10.3335V10.3268Z" fill="#686B74"/>
+                        </svg>
+                        <span className="modal__plan-stat-value">{FREE_PLAN_LIMIT}/{FREE_PLAN_LIMIT} free sites remaining</span>
+                    </div>
+                    <button
+                      className="modal__button modal__button--upgrade"
+                      type="button"
+                    >
+                      Upgrade
+                    </button>
+                  </div>
+                    <button
+                      className="modal__button modal__button--save"
+                      onClick={handleCreate}
+                      type="button"
+                      disabled={userSites >= FREE_PLAN_LIMIT}
+                    >
+                      Add Site
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className='modal__plan-stats'>
+                      <div className="modal__plan-background">
+                      <svg width="164" height="120" viewBox="0 0 164 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                          <path d="M0 0H164V32.7273H0V0Z" fill="currentColor"/>
+                          <path d="M43.7333 120V54.5455H109.333L43.7333 120Z" fill="currentColor"/>
+                          <path d="M87.4667 120V54.5455H142.133L87.4667 120Z" fill="currentColor"/>
+                        </g>
+                      </svg>
+                      </div>
+                      <div className="modal__plan-stat">
+                        <span className="modal__plan-stat-label">Free sites remaining</span>
+                        <span className="modal__plan-stat-value">{userSites}/{FREE_PLAN_LIMIT}</span>
+                      </div>
+                      <div className="modal__plan-stat">
+                        <span className="modal__plan-stat-label">Pages per site</span>
+                        <span className="modal__plan-stat-value">12</span>
+                      </div>
+                      <div className="modal__plan-stat">
+                        <span className="modal__plan-stat-label">
+                          <span className="modal__plan-stat-label--underline">Scans</span> per site
+                          <span className="modal__plan-stat-monthly">monthly</span>
+                        </span>
+                        <span className="modal__plan-stat-value">3</span>
+                      </div>
+                      <div className="modal__plan-stat">
+                        <span className="modal__plan-stat-label">
+                          Visitors per site
+                          <span className="modal__plan-stat-monthly">monthly</span>
+                        </span>
+                        <span className="modal__plan-stat-value">1000</span>
+                      </div>
+                    </div>
+                    <button
+                      className="modal__button modal__button--save"
+                      onClick={handleCreate}
+                      type="button"
+                    >
+                      Add Site
+                    </button>
+                  </>
+                )}
+                </>
+              ) : (
+                <>
+                  <div className='modal__plan-stats'>
+                    <div className="modal__plan-background">
+                    <svg width="164" height="120" viewBox="0 0 164 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g>
+                        <path d="M0 0H164V32.7273H0V0Z" fill="currentColor"/>
+                        <path d="M43.7333 120V54.5455H109.333L43.7333 120Z" fill="currentColor"/>
+                        <path d="M87.4667 120V54.5455H142.133L87.4667 120Z" fill="currentColor"/>
+                      </g>
+                    </svg>
+                    </div>
+                    <div className="modal__plan-stat">
+                      <span className="modal__plan-stat-label">Sites</span>
+                      <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
+                    </div>
+                    <div className="modal__plan-stat">
+                      <span className="modal__plan-stat-label">Pages per site</span>
+                      <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
+                    </div>
+                    <div className="modal__plan-stat">
+                      <span className="modal__plan-stat-label">
+                        <span className="modal__plan-stat-label--underline">Scans</span> per site
+                        <span className="modal__plan-stat-monthly">monthly</span>
+                      </span>
+                      <span className="modal__plan-stat-value">50</span>
+                    </div>
+                    <div className="modal__plan-stat">
+                      <span className="modal__plan-stat-label">
+                        Visitors per site
+                        <span className="modal__plan-stat-monthly">monthly</span>
+                      </span>
+                      <span className="modal__plan-stat-value modal__plan-stat-value--unlimited">unlimited</span>
+                    </div>
+                  </div>
+                  <button className="modal__button modal__button--save">
+                    Upgrade to Pro
+                  </button>
+                </>
+              )}
             </>
           )}
         </div>

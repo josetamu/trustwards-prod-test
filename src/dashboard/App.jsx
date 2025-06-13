@@ -9,7 +9,7 @@ import { Settings } from './settings/Settings'
 import { Sidebar, homePages, siteMenuPages, otherpages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
-import { Profile } from './profile/Profile'
+import { Profile } from './Profile/Profile'
 import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
@@ -190,14 +190,13 @@ function App() {
           );
         case 'NewSite':
           return (
-            
-              <ModalNewSite
-                onSave={() => {setIsModalOpen(false); fetchSites()}}
-                onCancel={() => setIsModalOpen(false)}
-                userSites={webs?.length || 0}
-                setIsModalOpen={setIsModalOpen}
-              />
-            
+            <ModalNewSite
+              onSave={() => {setIsModalOpen(false); fetchSites()}}
+              onCancel={() => setIsModalOpen(false)}
+              userSites={webs?.length || 0}
+              setIsModalOpen={setIsModalOpen}
+              userPlan={user?.Plan || 'free'}
+            />
           );
         case 'EditSite':
           return (
@@ -209,6 +208,7 @@ function App() {
                 text: webs.Name,
                 domain: webs?.Domain,
               }}
+              userPlan={user?.Plan || 'free'}
             />
           );
         default:
