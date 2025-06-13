@@ -14,6 +14,8 @@ import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
 import { ModalEditSite } from './ModalEditSite/ModalEditSite'
+import { ModalEdit } from './ModalEdit/ModalEdit'
+
 function App() {
   const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -216,6 +218,13 @@ function App() {
               webs={webs}
               siteData={siteData}
               setSiteData={setSiteData}
+            />
+          );
+        case 'EditAvatar':
+          return (
+            <ModalEdit
+              onClose={() => setIsModalOpen(false)}
+              onSave={() => setIsModalOpen(false)}
             />
           );
         default:

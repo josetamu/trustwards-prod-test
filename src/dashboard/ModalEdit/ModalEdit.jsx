@@ -7,36 +7,36 @@ export function ModalEdit({ onClose, onSave }) {
   const [selectedAvatar, setSelectedAvatar] = useState(null);
 
   const gradients = [
-    { id: 1, colors: ['#FF6B00', '#1E40AF'] },
-    { id: 2, colors: ['#7E22CE', '#3730A3'] },
-    { id: 3, colors: ['#DC2626', '#7F1D1D'] },
-    { id: 4, colors: ['#2563EB', '#7C3AED'] },
-    { id: 5, colors: ['#4338CA', '#3730A3'] },
-    { id: 6, colors: ['#EA580C', '#9A3412'] },
-    { id: 7, colors: ['#DB2777', '#4338CA'] },
-    { id: 8, colors: ['#0D9488', '#0369A1'] },
-    { id: 9, colors: ['#4B5563', '#1F2937'] },
-    { id: 10, colors: ['#0EA5E9', '#F97316'] },
-    { id: 11, colors: ['#DC2626', '#1D4ED8'] }
+    { id: 1, src: '/gradient1.png' },
+    { id: 2, src: '/gradient2.png' },
+    { id: 3, src: '/gradient3.png' },
+    { id: 4, src: '/gradient4.png' },
+    { id: 5, src: '/gradient5.png' },
+    { id: 6, src: '/gradient6.png' },
+    { id: 7, src: '/gradient7.png' },
+    { id: 8, src: '/gradient8.png' },
+    { id: 9, src: '/gradient9.png' },
+    { id: 10, src: '/gradient10.png' },
+    { id: 11, src: '/gradient11.png' }
   ];
 
   const auroras = [
-    { id: 1, color: '#7E22CE' },
-    { id: 2, color: '#1F2937' },
-    { id: 3, color: '#1E40AF' },
-    { id: 4, color: '#0EA5E9' },
-    { id: 5, color: '#65A30D' },
-    { id: 6, color: '#EA580C' }
+    { id: 1, src: '/aurora1.png' },
+    { id: 2, src: '/aurora2.png' },
+    { id: 3, src: '/aurora3.png' },
+    { id: 4, src: '/aurora4.png' },
+    { id: 5, src: '/aurora5.png' },
+    { id: 6, src: '/aurora6.png' }
   ];
 
   const avatars = [
     { id: 1, src: '/avatar1.png' },
-    { id: 2, src: '/avatars/2.png' },
-    { id: 3, src: '/avatars/3.png' },
-    { id: 4, src: '/avatars/4.png' },
-    { id: 5, src: '/avatars/5.png' },
-    { id: 6, src: '/avatars/6.png' },
-    { id: 7, src: '/avatars/7.png' }
+    { id: 2, src: '/avatar2.png' },
+    { id: 3, src: '/avatar3.png' },
+    { id: 4, src: '/avatar2.png' },
+    { id: 5, src: '/avatar1.png' },
+    { id: 6, src: '/avatar1.png' },
+    { id: 7, src: '/avatar3.png' }
   ];
 
   // Handles the selection of customization options
@@ -68,26 +68,10 @@ export function ModalEdit({ onClose, onSave }) {
       return <img src={selectedAvatar.src} alt="Selected avatar" />;
     }
     if (selectedGradient) {
-      return (
-        <span style={{
-          display: 'block',
-          width: '100%',
-          height: '100%',
-          borderRadius: '50%',
-          background: `linear-gradient(135deg, ${selectedGradient.colors[0]} 0%, ${selectedGradient.colors[1]} 100%)`
-        }} />
-      );
+      return <img src={selectedGradient.src} alt="Selected gradient" />;
     }
     if (selectedAurora) {
-      return (
-        <span style={{
-          display: 'block',
-          width: '100%',
-          height: '100%',
-          borderRadius: '50%',
-          background: selectedAurora.color
-        }} />
-      );
+      return <img src={selectedAurora.src} alt="Selected aurora" />;
     }
     return <img src="/logo test.png" alt="Default logo" />;
   };
@@ -122,11 +106,12 @@ export function ModalEdit({ onClose, onSave }) {
               <button
                 key={gradient.id}
                 className={`modal-edit__option ${selectedGradient?.id === gradient.id ? 'modal-edit__option--selected' : ''}`}
-                style={{
-                  background: `linear-gradient(135deg, ${gradient.colors[0]} 0%, ${gradient.colors[1]} 100%)`
-                }}
                 onClick={() => handleSelect('gradient', gradient)}
-              />
+              >
+                <span className="modal-edit__option-img">
+                  <img src={gradient.src} alt={`Gradient option ${gradient.id}`} />
+                </span>
+              </button>
             ))}
           </div>
         </div>
@@ -138,9 +123,12 @@ export function ModalEdit({ onClose, onSave }) {
               <button
                 key={aurora.id}
                 className={`modal-edit__option ${selectedAurora?.id === aurora.id ? 'modal-edit__option--selected' : ''}`}
-                style={{ background: aurora.color }}
                 onClick={() => handleSelect('aurora', aurora)}
-              />
+              >
+                <span className="modal-edit__option-img">
+                  <img src={aurora.src} alt={`Aurora option ${aurora.id}`} />
+                </span>
+              </button>
             ))}
           </div>
         </div>
@@ -154,7 +142,9 @@ export function ModalEdit({ onClose, onSave }) {
                 className={`modal-edit__option modal-edit__option--avatar ${selectedAvatar?.id === avatar.id ? 'modal-edit__option--selected' : ''}`}
                 onClick={() => handleSelect('avatar', avatar)}
               >
-                <img src={avatar.src} alt={`Avatar option ${avatar.id}`} />
+                <span className="modal-edit__option-img">
+                  <img src={avatar.src} alt={`Avatar option ${avatar.id}`} />
+                </span>
               </button>
             ))}
           </div>
