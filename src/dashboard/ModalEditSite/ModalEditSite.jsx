@@ -79,7 +79,7 @@ const validateDomain = (value) => {
 
 return (
   <>
-    <div className="modal__header" id={modalEditSiteId}>
+    <div className="modal__header modal__header-editSite" id={modalEditSiteId}>
       <div className="modal__avatar">
         <img src="/logo test.png" alt="logo" />
         <button 

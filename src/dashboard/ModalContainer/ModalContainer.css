@@ -35,6 +35,12 @@
     position: relative;
   }
 
+.modal:has(.modal__actions-edit) {
+    gap: 0px;
+    
+}
+
+
 @media (max-width: 767px) {
     .modal__backdrop {
         left: 0;
