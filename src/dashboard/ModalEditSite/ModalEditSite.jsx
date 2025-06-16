@@ -16,11 +16,17 @@ const validateName = (value) => {
     if (!value.trim()) {
         return 'Name is required';
     }
+    if (value.trim().length > 12) {
+        return 'Name must be 12 characters or less';
+    }
     return null;
     };
 const validateDomain = (value) => {
     if (!value.trim()) {
         return 'Domain is required';
+    }
+    if (!value.includes('.')) {
+        return 'Domain must include a dot (.)';
     }
     return null;
     };
