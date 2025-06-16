@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
-import { ModalEdit } from '../ModalEdit/ModalEdit';
+import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
 import './ModalEditSite.css'
 
 export function ModalEditSite({ onSave, onCancel, setIsModalOpen, siteData, setSiteData }) {

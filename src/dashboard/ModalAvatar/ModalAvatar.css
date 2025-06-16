@@ -162,22 +162,14 @@
 
 .modal-edit__button--cancel {
   background: transparent;
-  border: 1px solid #E5E7EB;
+  border: var(--dashed-border);
   color: #4B5563;
 }
 
-.modal-edit__button--cancel:hover {
-  background: #F3F4F6;
-}
-
 .modal-edit__button--save {
-  background: #2563EB;
+  background: var(--background-color-blue);
   border: none;
   color: #FFFFFF;
-}
-
-.modal-edit__button--save:hover {
-  background: #1D4ED8;
 }
 
 .modal-edit__divider {

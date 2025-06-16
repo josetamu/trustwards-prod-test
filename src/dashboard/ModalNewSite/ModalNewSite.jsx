@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
-import { ModalEdit } from '../ModalEdit/ModalEdit';
+import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
 import './ModalNewSite.css'
 
 export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create', setIsModalOpen, userSites = 0, userPlan = 'free' }) {
@@ -121,9 +121,17 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
 
   // Avatar changes logic
   const handleEditSave = (editData) => {
-    console.log('Edit data:', editData);
+    setCustomHeader({
+      avatar: editData.avatar,
+      headerGradient: editData.headerGradient
+    });
     setShowEdit(false);
   };
+
+  const [customHeader, setCustomHeader] = useState({
+    avatar: null,
+    headerGradient: 'linear-gradient(135deg, #FF6B00 0%, #1E40AF 100%)'
+  });
 
   // Delete verification modal
   if (type === 'delete') {
@@ -140,14 +148,17 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
   }
 
   if (showEdit) {
-    return <ModalEdit onClose={() => setShowEdit(false)} onSave={handleEditSave} />;
+    return <ModalAvatar onClose={() => setShowEdit(false)} onSave={handleEditSave} />;
   }
 
   return (
     <>
-      <div className="modal__header" id={modalNewSiteId}>
+      <div className="modal__header" id={modalNewSiteId} style={{ background: customHeader.headerGradient }}>
         <div className="modal__avatar">
-          <img src="/logo test.png" alt="logo" />
+          {customHeader.avatar
+            ? <img src={customHeader.avatar.src} alt="avatar" />
+            : <img src="/logo test.png" alt="logo" />
+          }
           <button 
             className="modal__avatar-edit"
             onClick={() => setShowEdit(true)}
