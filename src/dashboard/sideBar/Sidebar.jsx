@@ -280,7 +280,7 @@ export function Sidebar({
                                 ) : (
                                     (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
                                         web.userid === user.id && (
-                                            <div key={web.id} className="sidebar__sites-tooltip-wrapper">
+                                            <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}>
                                                 <SidebarSites
                                                     key={web.id}
                                                     avatar={web["Avatar URL"]}
@@ -294,15 +294,6 @@ export function Sidebar({
                                                     siteData={web}
                                                     setSiteData={setSiteData}
                                                 />
-                                           
-                                               {/*  {!isSidebarOpen && window.innerWidth > 767 && (
-                                                    <Tooltip 
-                                                        message={web.Name} 
-                                                        id={web.id}
-                                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
-                                                        type='default'
-                                                    />
-                                                )}  */}
                                             </div>
                                         )
                                     ))

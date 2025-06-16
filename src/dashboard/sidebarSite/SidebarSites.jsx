@@ -2,6 +2,7 @@ import "./SidebarSites.css";
 import { useId, useState } from "react";
 import { SiteMenuSB } from "../SiteMenuSB/SiteMenuSB";
 import { Dropdown } from "../dropdown/Dropdown";
+import { Tooltip } from "../tooltip/Tooltip";
 
 export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData}) {
     const sidebarSitesId = useId();
@@ -62,8 +63,16 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 </span>
                 <span className="sidebarSites__header-name">
                     {name}
-                </span>
+                </span> 
             </div>
+            {!isSidebarOpen && window.innerWidth > 767 && (
+                    <Tooltip 
+                      message={name} 
+                      id={siteData.id}
+                      responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                      type='default'
+                    />
+                )} 
             <Dropdown
                 position="right"
                 open={isDropdownOpen}

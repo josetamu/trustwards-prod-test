@@ -1,4 +1,11 @@
+.sidebar__sites-tooltip-wrapper{
+    position: relative;
+    width: 100%;
+}
 
+.sidebar__sites-tooltip-wrapper--open{
+    position: static;
+}
 
 
 .sidebarSites__site{
