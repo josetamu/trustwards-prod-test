@@ -148,7 +148,7 @@ export function Sidebar({
 
     const filteredWebs = webs.filter(web => {
         return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
-    });
+    }).sort((a, b) => new Date(a.Date) - new Date(b.Date));
     
 
     const handleDropdownClick = () => {
@@ -285,6 +285,11 @@ export function Sidebar({
                                                 <button className="nosites__button" onClick={() => {
                                                     setIsModalOpen(!isModalOpen);
                                                     setModalType("NewSite");
+                                                    if(window.innerWidth < 767) {
+                                                        setIsSidebarOpen(false);
+                                                        toggleSidebar();
+                                                        toggleDropdown();
+                                                    }
                                                 }}>New
                                                     <svg className="nosites__button__svg" width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <g clip-path="url(#clip0_371_406)">
