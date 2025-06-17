@@ -56,7 +56,22 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
             Settings
           </button>
           <div className="dropdown__divider"></div>
-          <button className="dropdown__item dropdown__item--delete" onClick={onDelete}>
+          <button 
+            className="dropdown__item dropdown__item--delete" 
+            onClick={() => {
+              setIsModalOpen(true);
+              setModalType('DeleteSite');
+              setIsDropdownOpen(false);
+              setSiteData(siteData);
+              
+              // Check if we're on mobile and handle sidebar/dropdown state
+              if (window.innerWidth <= 767) {
+                setIsSidebarOpen(false);
+                toggleSidebar();
+                toggleDropdown();
+              }
+            }}
+          >
             <span className="dropdown__icon dropdown__icon--delete">
               <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10.625 3.20898L10.1081 11.7379C10.0708 12.3537 9.56047 12.834 8.94354 12.834H3.55644C2.93951 12.834 2.42922 12.3537 2.3919 11.7379L1.875 3.20898" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>

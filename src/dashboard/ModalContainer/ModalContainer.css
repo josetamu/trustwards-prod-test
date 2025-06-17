@@ -3,7 +3,7 @@
     left: var(--sidebar-width-close);
     top: 20px;
     min-height: calc(100vh - 40px);
-    width: calc(100vw - 100px);
+    width: calc(100vw - 90px);
     height: fit-content;
     background-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(var(--backdrop-blur));
@@ -39,6 +39,8 @@
     gap: 0px;
     
 }
+
+
 
 
 @media (max-width: 767px) {

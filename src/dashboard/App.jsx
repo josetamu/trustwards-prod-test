@@ -15,6 +15,9 @@ import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
 import { ModalEditSite } from './ModalEditSite/ModalEditSite'
 import { ModalAvatar } from './ModalAvatar/ModalAvatar'
+import { ModalDelete } from './ModalDelete/ModalDelete'
+import { ModalSupport } from './ModalSupport/ModalSupport'
+import { ModalAppearance } from './ModalAppearance/ModalAppearance'
 
 function App() {
   const [sites, setSites] = useState([]);
@@ -61,8 +64,8 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'darezo.2809@gmail.com',
-      //email: 'oscar.abad.brickscore@gmail.com',  
+      //email: 'darezo.2809@gmail.com',
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -169,12 +172,6 @@ function App() {
             setIsDropdownOpen={setIsDropdownOpen}
           />
         );
-      case 'Support':
-        return <Reports />;
-      case 'Appearance':
-        return <Academy />;
-      case 'Legal news':
-        return <LegalNews />;
       default:
         return <Sites />
     }
@@ -251,6 +248,29 @@ function App() {
               initialState={modalProps?.initialState}
             />
           );
+          case 'DeleteSite':
+            return (
+              <ModalDelete
+                onClose={() => setIsModalOpen(false)}
+                siteData={siteData}
+                setIsModalOpen={setIsModalOpen}
+                setSiteData={setSiteData}
+              />
+            );
+        case 'Support':
+          return ( <ModalSupport
+            onClose={() => setIsModalOpen(false)}
+            onSave={() => setIsModalOpen(false)}
+            user={user}
+            setUser={setUser}
+            setIsModalOpen={setIsModalOpen}
+          />)
+      case 'Appearance':
+        return ( <ModalAppearance
+            onClose={() => setIsModalOpen(false)}
+            onSave={() => setIsModalOpen(false)}
+          />)
+
         default:
           return null;
       }
@@ -285,6 +305,7 @@ function App() {
       setIsDropdownOpen={setIsDropdownOpen}
       setSiteData={setSiteData}
       siteData={siteData}
+      modalType={modalType}
       />
     <div className="content__container">
       {renderActivePage()}

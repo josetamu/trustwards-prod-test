@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../supabase/supabaseClient';
-import { SidebarLink } from '../sitebarLink/SitebarLink';
+import { SidebarLink } from '../sidebarLink/SidebarLink';
 import { Profile } from '../Profile/Profile';
 import { Settings } from '../settings/Settings';
 import { PlanCard } from '../PlanCard/PlanCard';
@@ -66,29 +66,29 @@ export const siteMenuPages = [
 export const profilePages = [
     {
         name: 'Profile',
-        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path className="profileDropdown__link__fill profileDropdown__link__path" fillRule="evenodd" clipRule="evenodd" d="M5.07556 1.17164C4.90966 1.14943 4.7698 1.19742 4.67459 1.23897C4.58706 1.27716 4.48831 1.33292 4.39251 1.38701L3.0805 2.13864C2.99544 2.19881 2.88051 2.2946 2.81454 2.4496C2.74252 2.61882 2.76576 2.78937 2.78287 2.88803C2.80138 2.99477 2.83979 3.14174 2.87654 3.28239C3.10768 4.16719 2.54306 5.11903 1.62906 5.36399L1.61296 5.3683C1.47467 5.40534 1.3451 5.44006 1.24376 5.47659C1.14895 5.51077 0.990505 5.57494 0.878855 5.7198C0.776246 5.8529 0.749045 5.99885 0.738341 6.1021C0.728471 6.19736 0.728495 6.31128 0.728518 6.42212V7.57665C0.728495 7.68748 0.728471 7.80141 0.738341 7.89667C0.749045 7.99992 0.77624 8.14581 0.878843 8.27892C0.990487 8.42377 1.14893 8.48793 1.24373 8.52212C1.34507 8.55869 1.62903 8.63476 1.62903 8.63476C2.5427 8.8797 3.10695 9.83135 2.87566 10.7163C2.87566 10.7163 2.80047 11.0038 2.78195 11.1106C2.76483 11.2092 2.74158 11.3798 2.81359 11.549C2.87955 11.7041 2.99449 11.7999 3.07956 11.8601L4.39157 12.6117C4.48734 12.6658 4.58617 12.7215 4.67369 12.7597C4.76891 12.8013 4.90879 12.8493 5.0747 12.8271C5.25505 12.8029 5.38873 12.7 5.4656 12.6357C5.54723 12.5674 5.75247 12.3638 5.75247 12.3638C6.09279 12.0263 6.54604 11.8574 6.99935 11.8573C7.45266 11.8574 7.90591 12.0263 8.24623 12.3638C8.24623 12.3638 8.4515 12.5674 8.53311 12.6357C8.60999 12.7 8.74363 12.8029 8.924 12.8271C9.0899 12.8493 9.22978 12.8013 9.32504 12.7597C9.41254 12.7215 9.5113 12.6658 9.60708 12.6117L10.9191 11.8601C11.0042 11.7999 11.1191 11.7041 11.1851 11.549C11.2571 11.3798 11.2339 11.2092 11.2167 11.1106C11.1982 11.0038 11.1231 10.7163 11.1231 10.7163C10.8918 9.83135 11.456 8.8797 12.3697 8.63476C12.3697 8.63476 12.6537 8.55869 12.755 8.52212C12.8498 8.48793 13.0082 8.42377 13.1199 8.27892C13.2225 8.14581 13.2497 7.99992 13.2604 7.89667C13.2702 7.80141 13.2702 7.68748 13.2702 7.57665V6.42212C13.2702 6.31128 13.2702 6.19736 13.2604 6.1021C13.2497 5.99885 13.2225 5.8529 13.1199 5.7198C13.0082 5.57494 12.8498 5.51077 12.7549 5.47659C12.6536 5.44006 12.524 5.40534 12.3857 5.3683L12.3696 5.36399C11.4556 5.11903 10.891 4.16719 11.1222 3.28239C11.1589 3.14174 11.1973 2.99477 11.2159 2.88803C11.233 2.78937 11.2562 2.61882 11.1842 2.4496C11.1182 2.2946 11.0032 2.19881 10.9182 2.13864L9.60621 1.38701C9.51037 1.33292 9.41167 1.27716 9.32411 1.23897C9.22891 1.19742 9.08903 1.14943 8.92313 1.17164C8.74282 1.19579 8.60912 1.29872 8.53223 1.36298C8.45063 1.43122 8.24535 1.63481 8.24535 1.63481C7.90521 1.97206 7.45231 2.14076 6.99935 2.14088C6.54639 2.14076 6.09349 1.97206 5.75338 1.63481C5.75338 1.63481 5.54809 1.43122 5.46647 1.36298C5.3896 1.29872 5.25591 1.19579 5.07556 1.17164ZM6.99935 9.04099C8.12693 9.04099 9.04102 8.12691 9.04102 6.99932C9.04102 5.87174 8.12693 4.95768 6.99935 4.95768C5.87177 4.95768 4.95768 5.87174 4.95768 6.99932C4.95768 8.12691 5.87177 9.04099 6.99935 9.04099Z" fill="#686B74"/>
+        icon: <svg className="profileDropdown__link__svg dropdown__icon" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path className="profileDropdown__link__fill profileDropdown__link__path" fillRule="evenodd" clipRule="evenodd" d="M5.07556 1.17164C4.90966 1.14943 4.7698 1.19742 4.67459 1.23897C4.58706 1.27716 4.48831 1.33292 4.39251 1.38701L3.0805 2.13864C2.99544 2.19881 2.88051 2.2946 2.81454 2.4496C2.74252 2.61882 2.76576 2.78937 2.78287 2.88803C2.80138 2.99477 2.83979 3.14174 2.87654 3.28239C3.10768 4.16719 2.54306 5.11903 1.62906 5.36399L1.61296 5.3683C1.47467 5.40534 1.3451 5.44006 1.24376 5.47659C1.14895 5.51077 0.990505 5.57494 0.878855 5.7198C0.776246 5.8529 0.749045 5.99885 0.738341 6.1021C0.728471 6.19736 0.728495 6.31128 0.728518 6.42212V7.57665C0.728495 7.68748 0.728471 7.80141 0.738341 7.89667C0.749045 7.99992 0.77624 8.14581 0.878843 8.27892C0.990487 8.42377 1.14893 8.48793 1.24373 8.52212C1.34507 8.55869 1.62903 8.63476 1.62903 8.63476C2.5427 8.8797 3.10695 9.83135 2.87566 10.7163C2.87566 10.7163 2.80047 11.0038 2.78195 11.1106C2.76483 11.2092 2.74158 11.3798 2.81359 11.549C2.87955 11.7041 2.99449 11.7999 3.07956 11.8601L4.39157 12.6117C4.48734 12.6658 4.58617 12.7215 4.67369 12.7597C4.76891 12.8013 4.90879 12.8493 5.0747 12.8271C5.25505 12.8029 5.38873 12.7 5.4656 12.6357C5.54723 12.5674 5.75247 12.3638 5.75247 12.3638C6.09279 12.0263 6.54604 11.8574 6.99935 11.8573C7.45266 11.8574 7.90591 12.0263 8.24623 12.3638C8.24623 12.3638 8.4515 12.5674 8.53311 12.6357C8.60999 12.7 8.74363 12.8029 8.924 12.8271C9.0899 12.8493 9.22978 12.8013 9.32504 12.7597C9.41254 12.7215 9.5113 12.6658 9.60708 12.6117L10.9191 11.8601C11.0042 11.7999 11.1191 11.7041 11.1851 11.549C11.2571 11.3798 11.2339 11.2092 11.2167 11.1106C11.1982 11.0038 11.1231 10.7163 11.1231 10.7163C10.8918 9.83135 11.456 8.8797 12.3697 8.63476C12.3697 8.63476 12.6537 8.55869 12.755 8.52212C12.8498 8.48793 13.0082 8.42377 13.1199 8.27892C13.2225 8.14581 13.2497 7.99992 13.2604 7.89667C13.2702 7.80141 13.2702 7.68748 13.2702 7.57665V6.42212C13.2702 6.31128 13.2702 6.19736 13.2604 6.1021C13.2497 5.99885 13.2225 5.8529 13.1199 5.7198C13.0082 5.57494 12.8498 5.51077 12.7549 5.47659C12.6536 5.44006 12.524 5.40534 12.3857 5.3683L12.3696 5.36399C11.4556 5.11903 10.891 4.16719 11.1222 3.28239C11.1589 3.14174 11.1973 2.99477 11.2159 2.88803C11.233 2.78937 11.2562 2.61882 11.1842 2.4496C11.1182 2.2946 11.0032 2.19881 10.9182 2.13864L9.60621 1.38701C9.51037 1.33292 9.41167 1.27716 9.32411 1.23897C9.22891 1.19742 9.08903 1.14943 8.92313 1.17164C8.74282 1.19579 8.60912 1.29872 8.53223 1.36298C8.45063 1.43122 8.24535 1.63481 8.24535 1.63481C7.90521 1.97206 7.45231 2.14076 6.99935 2.14088C6.54639 2.14076 6.09349 1.97206 5.75338 1.63481C5.75338 1.63481 5.54809 1.43122 5.46647 1.36298C5.3896 1.29872 5.25591 1.19579 5.07556 1.17164ZM6.99935 9.04099C8.12693 9.04099 9.04102 8.12691 9.04102 6.99932C9.04102 5.87174 8.12693 4.95768 6.99935 4.95768C5.87177 4.95768 4.95768 5.87174 4.95768 6.99932C4.95768 8.12691 5.87177 9.04099 6.99935 9.04099Z" fill="currentColor"/>
               </svg>
         
     },
 
     {
         name: 'Billing',
-        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path className="profileDropdown__link__path" d="M6.70898 6.41602H4.95898" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M8.45898 4.08398H4.95898" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M11.6673 12.541V2.33268C11.6673 1.68835 11.145 1.16602 10.5007 1.16602H3.50065C2.85632 1.16602 2.33398 1.68835 2.33398 2.33268V12.541L4.66732 11.3743L7.00065 12.8327L9.33398 11.3743L11.6673 12.541Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+        icon: <svg className="profileDropdown__link__svg dropdown__icon" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path className="profileDropdown__link__path" d="M6.70898 6.41602H4.95898" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M8.45898 4.08398H4.95898" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M11.6673 12.541V2.33268C11.6673 1.68835 11.145 1.16602 10.5007 1.16602H3.50065C2.85632 1.16602 2.33398 1.68835 2.33398 2.33268V12.541L4.66732 11.3743L7.00065 12.8327L9.33398 11.3743L11.6673 12.541Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
         </svg>
         
     },
 
     {
         name: 'Affiliate',
-        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path className="profileDropdown__link__path" d="M7.58268 4.08333C7.58268 5.372 6.53799 6.41667 5.24935 6.41667C3.96068 6.41667 2.91602 5.372 2.91602 4.08333C2.91602 2.79467 3.96068 1.75 5.24935 1.75C6.53799 1.75 7.58268 2.79467 7.58268 4.08333Z" stroke="#686B74" strokeWidth="1.3"/>
-        <path className="profileDropdown__link__path" d="M8.75 6.41667C10.0386 6.41667 11.0833 5.372 11.0833 4.08333C11.0833 2.79467 10.0386 1.75 8.75 1.75" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M6.41602 8.16602H4.08268C2.47185 8.16602 1.16602 9.47187 1.16602 11.0827C1.16602 11.727 1.68835 12.2493 2.33268 12.2493H8.16602C8.81037 12.2493 9.33268 11.727 9.33268 11.0827C9.33268 9.47187 8.02683 8.16602 6.41602 8.16602Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M9.91602 8.16602C11.5268 8.16602 12.8327 9.47187 12.8327 11.0827C12.8327 11.727 12.3104 12.2493 11.666 12.2493H10.791" stroke="#686B74" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        icon: <svg className="profileDropdown__link__svg dropdown__icon" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path className="profileDropdown__link__path" d="M7.58268 4.08333C7.58268 5.372 6.53799 6.41667 5.24935 6.41667C3.96068 6.41667 2.91602 5.372 2.91602 4.08333C2.91602 2.79467 3.96068 1.75 5.24935 1.75C6.53799 1.75 7.58268 2.79467 7.58268 4.08333Z" stroke="currentColor" strokeWidth="1.3"/>
+        <path className="profileDropdown__link__path" d="M8.75 6.41667C10.0386 6.41667 11.0833 5.372 11.0833 4.08333C11.0833 2.79467 10.0386 1.75 8.75 1.75" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M6.41602 8.16602H4.08268C2.47185 8.16602 1.16602 9.47187 1.16602 11.0827C1.16602 11.727 1.68835 12.2493 2.33268 12.2493H8.16602C8.81037 12.2493 9.33268 11.727 9.33268 11.0827C9.33268 9.47187 8.02683 8.16602 6.41602 8.16602Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+        <path className="profileDropdown__link__path" d="M9.91602 8.16602C11.5268 8.16602 12.8327 9.47187 12.8327 11.0827C12.8327 11.727 12.3104 12.2493 11.666 12.2493H10.791" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
         
     }
@@ -141,6 +141,7 @@ export function Sidebar({
     setIsDropdownOpen,
     setSiteData,
     siteData,
+    modalType
     }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -148,7 +149,7 @@ export function Sidebar({
 
     const filteredWebs = webs.filter(web => {
         return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
-    }).sort((a, b) => new Date(a.Date) - new Date(b.Date));
+    }).sort((a, b) => new Date(a.Date) - new Date(b.Date)); 
     
 
     const handleDropdownClick = () => {
@@ -256,7 +257,7 @@ export function Sidebar({
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
-                            <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(!isModalOpen);
+                            <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(true);
                                 setModalType("NewSite");
                                                                                      if(window.innerWidth < 767) {
                                                                                         setIsSidebarOpen(false);
@@ -283,7 +284,7 @@ export function Sidebar({
                                                     Start by creating a <span className="nosites__text__span">new site.</span>
                                                 </div>
                                                 <button className="nosites__button" onClick={() => {
-                                                    setIsModalOpen(!isModalOpen);
+                                                    setIsModalOpen(true);
                                                     setModalType("NewSite");
                                                     if(window.innerWidth < 767) {
                                                         setIsSidebarOpen(false);
@@ -341,14 +342,20 @@ export function Sidebar({
                                 key={otherPage.name}
                                 icon={otherPage.icon}
                                 text={otherPage.name}
+                                modalType={modalType}
                                 onClick={() => {
-                                    setIsSidebarOpen(false);
-                                    if(isSidebarOpen){
-                                        toggleSidebar();
+                                    if (modalType === otherPage.name && isModalOpen) {
+                                        setIsModalOpen(false);
+                                    } else {
+                                        setModalType(otherPage.name);
+                                        setIsModalOpen(true);
                                     }
-                                    onPageChange(otherPage.name);
-                                    setUserSettings(null);
-                                    handleDropdownClick();
+
+                                    if(window.innerWidth < 767) {
+                                        setIsSidebarOpen(false);
+                                        toggleSidebar();
+                                        /* toggleDropdown(); */
+                                    }
                                 }}
                             />
                         ))}

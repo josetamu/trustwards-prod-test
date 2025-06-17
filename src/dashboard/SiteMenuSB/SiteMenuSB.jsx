@@ -1,7 +1,7 @@
 import React from 'react';
 import '../profileDropdown/profileDropdown.css';
 import { siteMenuPages } from '../sideBar/Sidebar';
-import { SidebarLink } from '../sitebarLink/SitebarLink';
+import { SidebarLink } from '../sidebarLink/SidebarLink';
 import '../SidebarSite/SidebarSites.css';
 
 export const SiteMenuSB = ({setIsModalOpen, setModalType, isModalOpen, setIsDropdownOpen, siteData, setSiteData}) => {
