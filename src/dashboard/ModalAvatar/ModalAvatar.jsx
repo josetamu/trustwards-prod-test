@@ -1,10 +1,52 @@
-import React, { useState } from 'react';
-import './ModalEdit.css';
+import React, { useState, useEffect } from 'react';
+import './ModalAvatar.css';
 
-export function ModalEdit({ onClose, onSave }) {
+export function ModalAvatar({ onClose, onSave }) {
   const [selectedGradient, setSelectedGradient] = useState(null);
   const [selectedAurora, setSelectedAurora] = useState(null);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [headerGradient, setHeaderGradient] = useState('linear-gradient(135deg, #FF6B00 0%, #1E40AF 100%)');
+
+  const extractColorsFromImage = (imgSrc) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        // 5 colors from the image
+        const getPixelColor = (x, y) => {
+          const pixel = ctx.getImageData(x, y, 1, 1).data;
+          return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+        };
+
+        const colors = {
+          top: getPixelColor(img.width / 2, 5),
+          right: getPixelColor(img.width - 5, img.height / 2),
+          bottom: getPixelColor(img.width / 2, img.height - 5),
+          left: getPixelColor(5, img.height / 2),
+          center: getPixelColor(img.width / 2, img.height / 2)
+        };
+
+        resolve(colors);
+      };
+      img.src = imgSrc;
+    });
+  };
+
+  const createGradientFromColors = (colors) => {
+    return `linear-gradient(135deg, 
+      ${colors.top} 0%, 
+      ${colors.right} 25%, 
+      ${colors.center} 50%,
+      ${colors.left} 75%, 
+      ${colors.bottom} 100%
+    )`;
+  };
 
   const gradients = [
     { id: 1, src: '/gradient1.png' },
@@ -40,22 +82,44 @@ export function ModalEdit({ onClose, onSave }) {
   ];
 
   // Handles the selection of customization options
-  const handleSelect = (type, item) => {
+  const handleSelect = async (type, item) => {
     switch (type) {
       case 'gradient':
         setSelectedGradient(item);
         setSelectedAurora(null);
         setSelectedAvatar(null);
+        // Extract colors and create gradient
+        try {
+          const colors = await extractColorsFromImage(item.src);
+          const gradient = createGradientFromColors(colors);
+          setHeaderGradient(gradient);
+        } catch (error) {
+          console.error('Error extracting colors:', error);
+        }
         break;
       case 'aurora':
         setSelectedAurora(item);
         setSelectedGradient(null);
         setSelectedAvatar(null);
+        try {
+          const colors = await extractColorsFromImage(item.src);
+          const gradient = createGradientFromColors(colors);
+          setHeaderGradient(gradient);
+        } catch (error) {
+          console.error('Error extracting colors:', error);
+        }
         break;
       case 'avatar':
         setSelectedAvatar(item);
         setSelectedGradient(null);
         setSelectedAurora(null);
+        try {
+          const colors = await extractColorsFromImage(item.src);
+          const gradient = createGradientFromColors(colors);
+          setHeaderGradient(gradient);
+        } catch (error) {
+          console.error('Error extracting colors:', error);
+        }
         break;
       default:
         break;
@@ -76,23 +140,30 @@ export function ModalEdit({ onClose, onSave }) {
     return <img src="/logo test.png" alt="Default logo" />;
   };
 
-  // The header background is always the same now
-  const getPreviewBackground = () => {
-    return 'linear-gradient(135deg, #FF6B00 0%, #1E40AF 100%)';
-  };
-
   // Handles saving the customization changes
   const handleSave = () => {
     onSave({
       gradient: selectedGradient,
       aurora: selectedAurora,
-      avatar: selectedAvatar
+      avatar: selectedAvatar,
+      headerGradient: headerGradient
     });
   };
 
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation(); // Evita que llegue al padre
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEsc, true); // true = captura antes que el padre
+    return () => window.removeEventListener('keydown', handleEsc, true);
+  }, [onClose]);
+
   return (
     <div className="modal-edit">
-      <div className="modal-edit__header" style={{ background: getPreviewBackground() }}>
+      <div className="modal-edit__header" style={{ background: headerGradient }}>
         <div className="modal-edit__preview">
           {getPreviewLogo()}
         </div>
@@ -153,7 +224,7 @@ export function ModalEdit({ onClose, onSave }) {
 
       <div className="modal-edit__actions modal-edit__actions--horizontal">
         <button className="modal-edit__button modal-edit__button--save" onClick={handleSave}>
-          Save Changes
+          Save
         </button>
         <button className="modal-edit__button modal-edit__button--cancel" onClick={onClose}>
           Cancel

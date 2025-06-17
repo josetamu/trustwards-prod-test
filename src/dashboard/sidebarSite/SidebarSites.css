@@ -1,4 +1,11 @@
+.sidebar__sites-tooltip-wrapper{
+    position: relative;
+    width: 100%;
+}
 
+.sidebar__sites-tooltip-wrapper--open{
+    position: static;
+}
 
 
 .sidebarSites__site{
@@ -100,6 +107,7 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
+    padding-bottom: 4px;
 }
 
 

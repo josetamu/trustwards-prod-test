@@ -166,20 +166,20 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding-top: 10px;
+    padding-top: 5px;
   }
   .profileDropdown__lower{
     border-top: 1.5px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    padding-top: 10px;
+    padding-top: 3px;
     width: 100%;
     align-items: center;
     justify-content: center;
   }
   .profileDropdown__link {
-    padding: 0px 10px;
-    margin-bottom: 10px;
+    padding: 12px;
+    margin-bottom: 5px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -191,8 +191,18 @@
     font-family: var(--font-family);
     width: 100%;
     justify-items: center;
-   
+    height: 25px;
+    border-radius: 5px;
+   width: 95%;
   }
+  .profileDropdown__link:hover{
+    background-color: rgba(0, 153, 254, 1);
+    transition: all 0.2s ease;
+    color: #ffffff;
+    stroke: #ffffff;
+    
+  }
+
 
   .profileDropdown__link__svg {
     display: flex;
@@ -206,32 +216,56 @@
     align-items: center;
     justify-content: center;
   }
-  .profileDropdown__link__logout{
-    display: flex;
-    align-items: center;
-    
-  }
-  .profileDropdown__link:hover {
+
+  .profileDropdown__link{
     color: var(--background-color-black);
     stroke: var(--background-color-black);
   }
-  .profileDropdown__link:hover .profileDropdown__link__path{
+  .profileDropdown__link .profileDropdown__link__path{
     stroke: var(--background-color-black);
   }
-  .profileDropdown__link:hover .profileDropdown__link__fill{
+  .profileDropdown__link .profileDropdown__link__fill{
     fill: var(--background-color-black);
     stroke: none;
   }
-
-  .profileDropdown__link__logout:hover {
+  .profileDropdown__link:hover .profileDropdown__link__path{
+    stroke: #ffffff;
+    
+  }
+  .profileDropdown__link:hover .profileDropdown__link__fill{
+    fill: #ffffff;
+    stroke: none;
+    
+  }
+  .profileDropdown__link__logout {
+    display: flex;
+    align-items: center;
+    height: 25px;
+    width: 95%;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 12px;
     color: var(--color-logout);
   }
-  .profileDropdown__link__logout:hover .profileDropdown__link__path {
+  .profileDropdown__link__logout .profileDropdown__link__path {
     stroke: var(--color-logout);
   }
 
   .profileDropdown__dropdown--inactive{
     display: none;
+  }
+  .profileDropdown__link__logout:hover{
+    background-color: rgba(248, 218, 218, 1);
+    color: var(--color-logout);
+    stroke: var(--color-logout);
+   
+    
+  }
+  .profileDropdown__link__logout:hover .profileDropdown__link__path{
+    stroke: var(--color-logout);
+  }
+  .profileDropdown__link__logout:hover .profileDropdown__link__fill{
+    fill: var(--color-logout);
   }
 
   /* >PROFILE DROPDOWN */
@@ -300,7 +334,7 @@
     border-top: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: center;
     
     width: 100%;
   }
@@ -315,7 +349,7 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
-    width: 100%;
+    width: 98%;
    
   }
 
@@ -325,22 +359,23 @@
     justify-content: center;
   }
 
-  .profileDropdown__link:hover {
+  .profileDropdown__link {
     color: var(--background-color-black);
     stroke: var(--background-color-black);
   }
-  .profileDropdown__link:hover .profileDropdown__link__path{
+  .profileDropdown__link .profileDropdown__link__path{
     stroke: var(--background-color-black);
   }
-  .profileDropdown__link:hover .profileDropdown__link__fill{
+  .profileDropdown__link .profileDropdown__link__fill{
     fill: var(--background-color-black);
     stroke: none;
   }
 
-  .profileDropdown__link__logout:hover {
+  .profileDropdown__link__logout {
     color: var(--color-logout);
+    width: 98%;
   }
-  .profileDropdown__link__logout:hover .profileDropdown__link__path {
+  .profileDropdown__link__logout .profileDropdown__link__path {
     stroke: var(--color-logout);
   }
 

@@ -25,11 +25,15 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
     if (sortMode === 'alphabetical') {
       sorted.sort((a, b) => a.text.localeCompare(b.text)); // uses the first letter
     } else {
-      sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      sorted.sort((a, b) => new Date(a.Date) - new Date(b.Date));
     }
     return isAscending ? sorted : sorted.reverse();
   }, [siteList, sortMode, isAscending]);
   
+  // Sort webs by Date
+  const sortedWebs = useMemo(() => {
+    return [...webs].sort((a, b) => new Date(a.Date) - new Date(b.Date));
+  }, [webs]);
 
   return (
     <div className="sites__wrapper">
@@ -64,21 +68,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
       </div>
 
       <div className={`sites__grid ${isGridView ? 'grid' : 'list'}`}>
-      {/*   {sortedSites.map((site) => (
-          <Site
-            key={site.id}
-            id={site.id}
-            text={site.text}
-            domain={site.domain}
-            onUpdate={(updatedText, updatedDomain) => {
-              setSiteList(prev => prev.map(s => s.id === site.id ? { ...s, text: updatedText, domain: updatedDomain } : s));
-            }}
-            onRemove={() => {
-              setSiteList(prev => prev.filter(s => s.id !== site.id));
-            }}
-          />
-        ))} */}
-        {webs.map(site => (
+        {sortedWebs.map(site => (
           user && site.userid === user.id && (
             <Site
               key={site.id}
@@ -96,7 +86,6 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               setIsDropdownOpen={setIsDropdownOpen}
               setSiteData={setSiteData}
               siteData={site}
-
             />
           )
         ))}

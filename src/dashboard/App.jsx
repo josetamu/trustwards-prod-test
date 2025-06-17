@@ -14,7 +14,7 @@ import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
 import { ModalEditSite } from './ModalEditSite/ModalEditSite'
-import { ModalEdit } from './ModalEdit/ModalEdit'
+import { ModalAvatar } from './ModalAvatar/ModalAvatar'
 
 function App() {
   const [sites, setSites] = useState([]);
@@ -60,8 +60,8 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      //email: 'darezo.2809@gmail.com',
-      email: 'oscar.abad.brickscore@gmail.com',
+      email: 'darezo.2809@gmail.com',
+      //email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -222,7 +222,7 @@ function App() {
           );
         case 'EditAvatar':
           return (
-            <ModalAvatar  
+            <ModalAvatar
               onClose={() => setIsModalOpen(false)}
               onSave={() => setIsModalOpen(false)}
             />

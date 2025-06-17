@@ -148,7 +148,7 @@ export function Sidebar({
 
     const filteredWebs = webs.filter(web => {
         return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
-    });
+    }).sort((a, b) => new Date(a.Date) - new Date(b.Date));
     
 
     const handleDropdownClick = () => {
@@ -261,7 +261,7 @@ export function Sidebar({
                                                                                      if(window.innerWidth < 767) {
                                                                                         setIsSidebarOpen(false);
                                                                                         toggleSidebar();
-                                                                                        toggleDropdown();
+                                                                                        /* toggleDropdown(); */
                                                                                     }
                                                                                     }} >
                                     <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -275,12 +275,42 @@ export function Sidebar({
                             <div className={`${isSidebarOpen ? 'sitesDisplay--open' : 'sitesDisplay'}`}>
                                 {filteredWebs.length === 0 ? (
                                     <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>
-                                        {searchQuery ? 'No sites found' : 'You don\'t have any sites yet'}
+                                        {searchQuery ? 'No sites found' : (
+                                            <div className="nosites__container">
+                                                <div className="nosites__text">
+                                                    There aren't sites here yet.
+                                                    <br />
+                                                    Start by creating a <span className="nosites__text__span">new site.</span>
+                                                </div>
+                                                <button className="nosites__button" onClick={() => {
+                                                    setIsModalOpen(!isModalOpen);
+                                                    setModalType("NewSite");
+                                                    if(window.innerWidth < 767) {
+                                                        setIsSidebarOpen(false);
+                                                        toggleSidebar();
+                                                        toggleDropdown();
+                                                    }
+                                                }}>New
+                                                    <svg className="nosites__button__svg" width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <g clipPath="url(#clip0_371_406)">
+                                                        <path d="M0.75 4.5C0.75 6.57105 2.42893 8.25 4.5 8.25C6.57105 8.25 8.25 6.57105 8.25 4.5C8.25 2.42893 6.57105 0.75 4.5 0.75" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                        <path d="M4.5 3V6M6 4.5H3" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                        <path d="M0.9375 3.1875C1.0734 2.87646 1.24459 2.58437 1.446 2.31629M2.3163 1.44599C2.58438 1.24458 2.87647 1.0734 3.1875 0.9375" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                        </g>
+                                                        <defs>
+                                                        <clipPath id="clip0_371_406">
+                                                        <rect width="9" height="9" fill="white"/>
+                                                        </clipPath>
+                                                        </defs>
+                                                        </svg>
+                                                </button>
+                                            </div>
+                                        )}
                                     </span>
                                 ) : (
                                     (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
                                         web.userid === user.id && (
-                                            <div key={web.id} className="sidebar__sites-tooltip-wrapper">
+                                            <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}>
                                                 <SidebarSites
                                                     key={web.id}
                                                     avatar={web["Avatar URL"]}
@@ -293,16 +323,9 @@ export function Sidebar({
                                                     setIsDropdownOpen={setIsDropdownOpen}
                                                     siteData={web}
                                                     setSiteData={setSiteData}
+                                                    toggleSidebar={toggleSidebar}
+                                                    setIsSidebarOpen={setIsSidebarOpen}
                                                 />
-                                           
-                                               {/*  {!isSidebarOpen && window.innerWidth > 767 && (
-                                                    <Tooltip 
-                                                        message={web.Name} 
-                                                        id={web.id}
-                                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
-                                                        type='default'
-                                                    />
-                                                )}  */}
                                             </div>
                                         )
                                     ))

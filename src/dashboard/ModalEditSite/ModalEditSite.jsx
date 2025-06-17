@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
-import { ModalEdit } from '../ModalEdit/ModalEdit';
+import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
 import './ModalEditSite.css'
 
 export function ModalEditSite({ onSave, onCancel, setIsModalOpen, siteData, setSiteData }) {
@@ -16,11 +16,17 @@ const validateName = (value) => {
     if (!value.trim()) {
         return 'Name is required';
     }
+    if (value.trim().length > 12) {
+        return 'Name must be 12 characters or less';
+    }
     return null;
     };
 const validateDomain = (value) => {
     if (!value.trim()) {
         return 'Domain is required';
+    }
+    if (!value.includes('.')) {
+        return 'Domain must include a dot (.)';
     }
     return null;
     };
