@@ -1,6 +1,51 @@
 import React, { useEffect, useCallback, useRef, useId } from 'react';
 import './ModalContainer.css';
 
+// Constantes de imágenes que serán usadas por ModalAvatar
+export const gradients = [
+  { id: 1, src: '/gradient1.png' },
+  { id: 2, src: '/gradient2.png' },
+  { id: 3, src: '/gradient3.png' },
+  { id: 4, src: '/gradient4.png' },
+  { id: 5, src: '/gradient5.png' },
+  { id: 6, src: '/gradient6.png' },
+  { id: 7, src: '/gradient7.png' },
+  { id: 8, src: '/gradient8.png' },
+  { id: 9, src: '/gradient9.png' },
+  { id: 10, src: '/gradient10.png' },
+  { id: 11, src: '/gradient11.png' }
+];
+
+export const auroras = [
+  { id: 1, src: '/aurora1.png' },
+  { id: 2, src: '/aurora2.png' },
+  { id: 3, src: '/aurora3.png' },
+  { id: 4, src: '/aurora4.png' },
+  { id: 5, src: '/aurora5.png' },
+  { id: 6, src: '/aurora6.png' }
+];
+
+export const avatars = [
+  { id: 1, src: '/avatar1.png' },
+  { id: 2, src: '/avatar2.png' },
+  { id: 3, src: '/avatar3.png' },
+  { id: 4, src: '/avatar2.png' },
+  { id: 5, src: '/avatar1.png' },
+  { id: 6, src: '/avatar1.png' },
+  { id: 7, src: '/avatar3.png' }
+];
+
+// Función para precargar imágenes
+const preloadImages = (items) => {
+  items.forEach(item => {
+    const img = new Image();
+    img.src = item.src;
+  });
+};
+
+// Precargar todas las imágenes al cargar el módulo
+preloadImages([...gradients, ...auroras, ...avatars]);
+
 export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handleCreate}) {
   const modalRef = useRef(null);
   const modalId = useId();

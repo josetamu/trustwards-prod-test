@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { gradients, auroras, avatars } from '../ModalContainer/ModalContainer';
 import './ModalAvatar.css';
+
+// Función para precargar imágenes
+const preloadImages = (items) => {
+  items.forEach(item => {
+    const img = new Image();
+    img.src = item.src;
+  });
+};
+
+// Precargar todas las imágenes al cargar el módulo
+preloadImages([...gradients, ...auroras, ...avatars]);
 
 export function ModalAvatar({ onClose, onSave }) {
   const [selectedGradient, setSelectedGradient] = useState(null);
@@ -12,24 +24,30 @@ export function ModalAvatar({ onClose, onSave }) {
       const img = new Image();
       img.crossOrigin = "Anonymous";
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
+        const MAX_SIZE = 100;
+        const scale = Math.min(MAX_SIZE / img.width, MAX_SIZE / img.height);
+        const width = Math.round(img.width * scale);
+        const height = Math.round(img.height * scale);
 
-        // 5 colors from the image
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const imageData = ctx.getImageData(0, 0, width, height).data;
+        
         const getPixelColor = (x, y) => {
-          const pixel = ctx.getImageData(x, y, 1, 1).data;
-          return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+          const i = (Math.round(y) * width + Math.round(x)) * 4;
+          return `rgb(${imageData[i]}, ${imageData[i + 1]}, ${imageData[i + 2]})`;
         };
 
         const colors = {
-          top: getPixelColor(img.width / 2, 5),
-          right: getPixelColor(img.width - 5, img.height / 2),
-          bottom: getPixelColor(img.width / 2, img.height - 5),
-          left: getPixelColor(5, img.height / 2),
-          center: getPixelColor(img.width / 2, img.height / 2)
+          top: getPixelColor(width / 2, 2),
+          right: getPixelColor(width - 2, height / 2),
+          bottom: getPixelColor(width / 2, height - 2),
+          left: getPixelColor(2, height / 2),
+          center: getPixelColor(width / 2, height / 2)
         };
 
         resolve(colors);
@@ -48,47 +66,12 @@ export function ModalAvatar({ onClose, onSave }) {
     )`;
   };
 
-  const gradients = [
-    { id: 1, src: '/gradient1.png' },
-    { id: 2, src: '/gradient2.png' },
-    { id: 3, src: '/gradient3.png' },
-    { id: 4, src: '/gradient4.png' },
-    { id: 5, src: '/gradient5.png' },
-    { id: 6, src: '/gradient6.png' },
-    { id: 7, src: '/gradient7.png' },
-    { id: 8, src: '/gradient8.png' },
-    { id: 9, src: '/gradient9.png' },
-    { id: 10, src: '/gradient10.png' },
-    { id: 11, src: '/gradient11.png' }
-  ];
-
-  const auroras = [
-    { id: 1, src: '/aurora1.png' },
-    { id: 2, src: '/aurora2.png' },
-    { id: 3, src: '/aurora3.png' },
-    { id: 4, src: '/aurora4.png' },
-    { id: 5, src: '/aurora5.png' },
-    { id: 6, src: '/aurora6.png' }
-  ];
-
-  const avatars = [
-    { id: 1, src: '/avatar1.png' },
-    { id: 2, src: '/avatar2.png' },
-    { id: 3, src: '/avatar3.png' },
-    { id: 4, src: '/avatar2.png' },
-    { id: 5, src: '/avatar1.png' },
-    { id: 6, src: '/avatar1.png' },
-    { id: 7, src: '/avatar3.png' }
-  ];
-
-  // Handles the selection of customization options
   const handleSelect = async (type, item) => {
     switch (type) {
       case 'gradient':
         setSelectedGradient(item);
         setSelectedAurora(null);
         setSelectedAvatar(null);
-        // Extract colors and create gradient
         try {
           const colors = await extractColorsFromImage(item.src);
           const gradient = createGradientFromColors(colors);
@@ -126,7 +109,6 @@ export function ModalAvatar({ onClose, onSave }) {
     }
   };
 
-  // Gets the logo for the preview header
   const getPreviewLogo = () => {
     if (selectedAvatar) {
       return <img src={selectedAvatar.src} alt="Selected avatar" />;
@@ -140,12 +122,10 @@ export function ModalAvatar({ onClose, onSave }) {
     return <img src="/logo test.png" alt="Default logo" />;
   };
 
-  // Handles saving the customization changes
   const handleSave = () => {
+    const selectedImage = selectedAvatar || selectedGradient || selectedAurora;
     onSave({
-      gradient: selectedGradient,
-      aurora: selectedAurora,
-      avatar: selectedAvatar,
+      avatar: selectedImage || { src: '/logo test.png' },
       headerGradient: headerGradient
     });
   };
@@ -153,67 +133,72 @@ export function ModalAvatar({ onClose, onSave }) {
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === 'Escape') {
-        e.stopPropagation(); // Evita que llegue al padre
+        e.preventDefault();
+        e.stopPropagation();
         onClose();
       }
     };
-    window.addEventListener('keydown', handleEsc, true); // true = captura antes que el padre
-    return () => window.removeEventListener('keydown', handleEsc, true);
+
+    document.addEventListener('keydown', handleEsc, { capture: true });
+    return () => document.removeEventListener('keydown', handleEsc, { capture: true });
   }, [onClose]);
 
   return (
-    <div className="modal-edit">
-      <div className="modal-edit__header" style={{ background: headerGradient }}>
-        <div className="modal-edit__preview">
+    <div className="modal-avatar">
+      <div className="modal-avatar__header" style={{ background: headerGradient }}>
+        <div className="modal-avatar__preview">
           {getPreviewLogo()}
         </div>
       </div>
 
-      <div className="modal-edit__content">
-        <div className="modal-edit__section">
+      <div className="modal-avatar__content">
+        <div className="modal-avatar__section">
           <h3>Gradients</h3>
-          <div className="modal-edit__grid">
+          <div className="modal-avatar__divider"></div>
+          <div className="modal-avatar__grid">
             {gradients.map(gradient => (
               <button
                 key={gradient.id}
-                className={`modal-edit__option ${selectedGradient?.id === gradient.id ? 'modal-edit__option--selected' : ''}`}
+                className={`modal-avatar__option ${selectedGradient?.id === gradient.id ? 'modal-avatar__option--selected' : ''}`}
                 onClick={() => handleSelect('gradient', gradient)}
               >
-                <span className="modal-edit__option-img">
+                <span className="modal-avatar__option-img">
                   <img src={gradient.src} alt={`Gradient option ${gradient.id}`} />
                 </span>
               </button>
             ))}
           </div>
         </div>
-        <hr className="modal-edit__divider" />
-        <div className="modal-edit__section">
+        <hr className="modal-avatar__divider" />
+        <div className="modal-avatar__section">
           <h3>Aurora</h3>
-          <div className="modal-edit__grid">
+          <div className="modal-avatar__divider"></div>
+          <div className="modal-avatar__grid">
             {auroras.map(aurora => (
               <button
                 key={aurora.id}
-                className={`modal-edit__option ${selectedAurora?.id === aurora.id ? 'modal-edit__option--selected' : ''}`}
+                className={`modal-avatar__option ${selectedAurora?.id === aurora.id ? 'modal-avatar__option--selected' : ''}`}
                 onClick={() => handleSelect('aurora', aurora)}
               >
-                <span className="modal-edit__option-img">
+                <span className="modal-avatar__option-img">
                   <img src={aurora.src} alt={`Aurora option ${aurora.id}`} />
                 </span>
               </button>
             ))}
           </div>
         </div>
-        <hr className="modal-edit__divider" />
-        <div className="modal-edit__section">
+        <hr className="modal-avatar__divider" />
+        <div className="modal-avatar__section">
           <h3>Avatar</h3>
-          <div className="modal-edit__grid">
+          <div className="modal-avatar__divider"></div>
+          <div className="modal-avatar__grid">
             {avatars.map(avatar => (
               <button
                 key={avatar.id}
-                className={`modal-edit__option modal-edit__option--avatar ${selectedAvatar?.id === avatar.id ? 'modal-edit__option--selected' : ''}`}
+                className={`modal-avatar__option modal-avatar__option--avatar ${selectedAvatar?.id === avatar.id ? 'modal-avatar__option--selected' : ''}`}
                 onClick={() => handleSelect('avatar', avatar)}
               >
-                <span className="modal-edit__option-img">
+                <span className="modal-avatar__option-img">
                   <img src={avatar.src} alt={`Avatar option ${avatar.id}`} />
                 </span>
               </button>
@@ -222,12 +207,12 @@ export function ModalAvatar({ onClose, onSave }) {
         </div>
       </div>
 
-      <div className="modal-edit__actions modal-edit__actions--horizontal">
-        <button className="modal-edit__button modal-edit__button--save" onClick={handleSave}>
-          Save
-        </button>
-        <button className="modal-edit__button modal-edit__button--cancel" onClick={onClose}>
+      <div className="modal-avatar__actions modal-avatar__actions--horizontal">
+      <button className="modal-avatar__button modal-avatar__button--cancel" onClick={onClose}>
           Cancel
+        </button>
+        <button className="modal-avatar__button modal-avatar__button--save" onClick={handleSave}>
+          Save
         </button>
       </div>
     </div>

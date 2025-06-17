@@ -5,12 +5,12 @@
   padding: 0;
   box-sizing: border-box;
   line-height: normal;
+  font-family: 'Inter', sans-serif;
 }
 
 :root {
   --root-backgroundcolor: rgba(245, 245, 245, 1);
   --content-backgroundcolor: #fff;
-  --font-family: 'Inter', sans-serif;
   --font-weight: 500;
   --letter-spacing-negative: -0.03em;
   --letter-spacing-positive: 0.03em;

@@ -27,6 +27,7 @@ function App() {
   const [modalType, setModalType] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [siteData, setSiteData] = useState(null);
+  const [modalProps, setModalProps] = useState(null);
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -189,15 +190,30 @@ function App() {
         return;
     }
   } */
+    const openModal = (type, props = null) => {
+      setModalType(type);
+      setModalProps(props);
+      setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+      setIsModalOpen(false);
+      setModalType(null);
+      setModalProps(null);
+    };
+
     const renderModal = () => {
       if (!isModalOpen) return null;
   
       switch (modalType) {
         case 'Profile':
           return (
-           
-              <Profile user={user} setUser={setUser} setIsModalOpen={setIsModalOpen} />
-           
+            <Profile 
+              user={user} 
+              setUser={setUser} 
+              setIsModalOpen={setIsModalOpen}
+              openModal={openModal}
+            />
           );
         case 'NewSite':
           return (
@@ -207,6 +223,7 @@ function App() {
               userSites={webs?.length || 0}
               setIsModalOpen={setIsModalOpen}
               userPlan={user?.Plan || 'free'}
+              openModal={openModal}
             />
           );
         case 'EditSite':
@@ -218,19 +235,26 @@ function App() {
               webs={webs}
               siteData={siteData}
               setSiteData={setSiteData}
+              openModal={openModal}
             />
           );
         case 'EditAvatar':
           return (
             <ModalAvatar
-              onClose={() => setIsModalOpen(false)}
-              onSave={() => setIsModalOpen(false)}
+              onClose={closeModal}
+              onSave={(data) => {
+                if (modalProps?.onSave) {
+                  modalProps.onSave(data);
+                }
+                closeModal();
+              }}
+              initialState={modalProps?.initialState}
             />
           );
         default:
           return null;
       }
-  }
+    }
 
 /*   // Add a new site
   const handleAddSite = (newText, newDomain) => {
