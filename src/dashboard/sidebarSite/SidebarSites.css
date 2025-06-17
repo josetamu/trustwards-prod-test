@@ -67,6 +67,12 @@
     align-items: center;
     gap: 10px;
 }
+.sidebarSites__header-name{
+    text-overflow: ellipsis;
+    max-width: 94px;
+    overflow: hidden;
+    white-space: nowrap;
+}
 .sidebarSites__edit{
     opacity: 0;
     display: flex;
@@ -110,5 +116,9 @@
     padding-bottom: 4px;
 }
 
-
+@media (max-width: 767px) {
+    .sidebarSites__header-name{
+        max-width: 487px;
+    }
+}
 

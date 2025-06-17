@@ -6,6 +6,10 @@
   padding: 15px;
 }
 
+.modal:has(.modal-delete__content){
+  max-width: 220px;
+}
+
 .modal-delete__top-wrapper {
   width: 100%;
   display: flex;
