@@ -32,7 +32,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
     }
     if (!email?.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!email.includes('@') && !email.includes('.')) {
+    } else if (!email.includes('@') || !email.includes('.') || email.indexOf('@') > email.lastIndexOf('.')) {
       newErrors.email = 'Please enter a valid email address';
     }
     setErrors(newErrors);

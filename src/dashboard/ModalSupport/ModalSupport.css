@@ -156,7 +156,7 @@
     padding: 10px;
     justify-content: center;
     flex-direction: column;
-    
+    cursor: pointer;
 }
 .modalSupport__dropZone__span{
     font-size: 10px;

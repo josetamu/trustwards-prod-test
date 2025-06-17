@@ -14,6 +14,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
     const [files, setFiles] = useState([]);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
         if(user){
@@ -105,37 +106,40 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
     }
   };
 
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     const handleFileChange = (event) => {
         const uploadedFiles = Array.from(event.target.files);
         setFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
     };
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };  
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+        
+        const droppedFiles = Array.from(e.dataTransfer.files);
+        setFiles(prevFiles => [...prevFiles, ...droppedFiles]);
+    };
+    const removeFile = (indexToRemove) => {
+        setFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+    };
 
-
+    const handleDropzoneClick = (e) => {
+        e.stopPropagation();
+        document.getElementById('fileInput').click();
+    };
 
     return (
         <div className="modalSupport__content">
@@ -286,14 +290,51 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                         </div>
                     </div>
                 </div>
-                <div className="modalSupport__dropZone">
+                <div 
+                className="modalSupport__dropZone"
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onClick={handleDropzoneClick}
+                style={{ 
+                    borderColor: isDragging ? 'rgba(0, 153, 254, 1)' : 'rgba(224, 224, 224, 1)',
+                    backgroundColor: isDragging ? 'rgba(0, 153, 254, 0.1)' : 'transparent'
+                }}
+                >
+                    <input
+                        type="file"
+                        multiple
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                        id="fileInput"
+                        onClick={(e) => e.stopPropagation()}
+                    />
                     <span className="modalSupport__dropZone__icon">
                         <svg width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M3 1C2.17155 1 1.5 1.67158 1.5 2.5V3H0.5V2.5C0.5 1.11929 1.61929 0 3 0C4.3807 0 5.5 1.11929 5.5 2.5V8C5.5 9.3807 4.3807 10.5 3 10.5C1.61929 10.5 0.5 9.3807 0.5 8V5.75C0.5 4.7835 1.2835 4 2.25 4C3.2165 4 4 4.7835 4 5.75V7H3V5.75C3 5.3358 2.6642 5 2.25 5C1.83579 5 1.5 5.3358 1.5 5.75V8C1.5 8.82845 2.17155 9.5 3 9.5C3.82845 9.5 4.5 8.82845 4.5 8V2.5C4.5 1.67158 3.82845 1 3 1Z" fill="#666666"/>
                         </svg>
                     </span>
                     <span className="modalSupport__dropZone__span">Select or drop files from your device</span>
-                   
+                    {files.length > 0 && (
+                        <div className="modalSupport__files" onClick={(e) => e.stopPropagation()}>
+                            {files.map((file, index) => (
+                                <div key={index} className="modalSupport__file">
+                                    <span className="modalSupport__file__name">{file.name}</span>
+                                    <button 
+                                        className="modalSupport__file__remove"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            removeFile(index);
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
                 <div className="modalSupport__bottom">
                     <button className="modalSupport__button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Send'}</button>
