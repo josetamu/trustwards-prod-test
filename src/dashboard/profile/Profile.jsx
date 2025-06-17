@@ -13,10 +13,12 @@ export function Profile({ user, setUser, setIsModalOpen }) {
 
   //useEffect to set user data
   useEffect(() => {
-    setFirstName(user?.["First Name"]);
-    setSecondName(user?.["Second Name"]);
-    setEmail(user?.Email);
-    setErrors({});
+    if(user){
+      setFirstName(user?.["First Name"]);
+      setSecondName(user?.["Second Name"]);
+      setEmail(user?.Email);
+      setErrors({});
+    }
   }, [user]);
 
   // Validate inputs
@@ -117,18 +119,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
       
   }
 
-  /* function to close profile modal with escape key */
-  useEffect(() => {
-    const handelEscape = (e) => {
-      if(e.key === 'Escape'){
-        setUserSettings(null);
-      }
-    }
-    window.addEventListener('keydown', handelEscape);
-    return () => {
-      window.removeEventListener('keydown', handelEscape);
-    }
-  }, []);
+ 
 
   return (
       <>

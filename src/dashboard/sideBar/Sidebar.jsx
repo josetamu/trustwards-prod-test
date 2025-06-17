@@ -141,6 +141,7 @@ export function Sidebar({
     setIsDropdownOpen,
     setSiteData,
     siteData,
+    modalType
     }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -256,7 +257,7 @@ export function Sidebar({
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
-                            <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(!isModalOpen);
+                            <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(true);
                                 setModalType("NewSite");
                                                                                      if(window.innerWidth < 767) {
                                                                                         setIsSidebarOpen(false);
@@ -283,7 +284,7 @@ export function Sidebar({
                                                     Start by creating a <span className="nosites__text__span">new site.</span>
                                                 </div>
                                                 <button className="nosites__button" onClick={() => {
-                                                    setIsModalOpen(!isModalOpen);
+                                                    setIsModalOpen(true);
                                                     setModalType("NewSite");
                                                     if(window.innerWidth < 767) {
                                                         setIsSidebarOpen(false);
@@ -341,15 +342,20 @@ export function Sidebar({
                                 key={otherPage.name}
                                 icon={otherPage.icon}
                                 text={otherPage.name}
+                                modalType={modalType}
                                 onClick={() => {
-                                    /* setIsSidebarOpen(false); */
-                                   /*  if(isSidebarOpen){
+                                    if (modalType === otherPage.name && isModalOpen) {
+                                        setIsModalOpen(false);
+                                    } else {
+                                        setModalType(otherPage.name);
+                                        setIsModalOpen(true);
+                                    }
+
+                                    if(window.innerWidth < 767) {
+                                        setIsSidebarOpen(false);
                                         toggleSidebar();
-                                    } */
-                                    setModalType(otherPage.name);
-                                    setIsModalOpen(true);
-                                    
-                                    
+                                        /* toggleDropdown(); */
+                                    }
                                 }}
                             />
                         ))}

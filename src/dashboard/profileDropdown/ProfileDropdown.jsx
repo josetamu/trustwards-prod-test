@@ -38,7 +38,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                                     text={profilePage.name}
                                     onClick={() => {
                                         /* setUserSettings(profilePage.name); */
-                                        setIsModalOpen(!isModalOpen);
+                                        setIsModalOpen(true);
                                         setModalType(profilePage.name);
 
                                         if(window.innerWidth < 767) {
@@ -105,7 +105,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                                     icon={profilePage.icon}
                                     text={profilePage.name}
                                     onClick={() => {
-                                        setIsModalOpen(!isModalOpen);
+                                        setIsModalOpen(true);
                                         setModalType(profilePage.name);
 
                                         if(window.innerWidth < 767) {

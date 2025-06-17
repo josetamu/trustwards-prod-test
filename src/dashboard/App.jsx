@@ -237,6 +237,9 @@ function App() {
           return ( <ModalSupport
             onClose={() => setIsModalOpen(false)}
             onSave={() => setIsModalOpen(false)}
+            user={user}
+            setUser={setUser}
+            setIsModalOpen={setIsModalOpen}
           />)
       case 'Appearance':
         return ( <ModalAppearance
@@ -278,6 +281,7 @@ function App() {
       setIsDropdownOpen={setIsDropdownOpen}
       setSiteData={setSiteData}
       siteData={siteData}
+      modalType={modalType}
       />
     <div className="content__container">
       {renderActivePage()}

@@ -118,7 +118,14 @@
 
 @media (max-width: 767px) {
     .sidebarSites__header-name{
-        max-width: 487px;
+        max-width: 320px;
+        
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebarSites__header-name{
+        max-width: 160px;
     }
 }
 
