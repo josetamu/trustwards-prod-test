@@ -115,7 +115,10 @@
   margin-top: 0;
   margin-bottom: 4px;
 }
-
+.profileDropdown--open .dropdown__menu{
+ width: 165px;
+ bottom: 50px;
+}
 @media (max-width: 767px) {
 .sidebarSites__site--open .dropdown{
     width: 100%;
@@ -127,4 +130,7 @@
     width: 100%;
     margin-top: 25px;
   }
+  .profileDropdown--open .dropdown__menu{
+    width: 100%;
+   }
 }
