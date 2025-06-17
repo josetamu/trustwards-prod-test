@@ -310,12 +310,12 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                         id="fileInput"
                         onClick={(e) => e.stopPropagation()}
                     />
-                    <span className="modalSupport__dropZone__icon">
+                    <span className={`modalSupport__dropZone__icon ${files.length > 0 ? 'modalSupport__dropZone__icon--none' : ''}`}>
                         <svg width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M3 1C2.17155 1 1.5 1.67158 1.5 2.5V3H0.5V2.5C0.5 1.11929 1.61929 0 3 0C4.3807 0 5.5 1.11929 5.5 2.5V8C5.5 9.3807 4.3807 10.5 3 10.5C1.61929 10.5 0.5 9.3807 0.5 8V5.75C0.5 4.7835 1.2835 4 2.25 4C3.2165 4 4 4.7835 4 5.75V7H3V5.75C3 5.3358 2.6642 5 2.25 5C1.83579 5 1.5 5.3358 1.5 5.75V8C1.5 8.82845 2.17155 9.5 3 9.5C3.82845 9.5 4.5 8.82845 4.5 8V2.5C4.5 1.67158 3.82845 1 3 1Z" fill="#666666"/>
                         </svg>
                     </span>
-                    <span className="modalSupport__dropZone__span">Select or drop files from your device</span>
+                    <span className={`modalSupport__dropZone__span ${files.length > 0 ? 'modalSupport__dropZone__span--none' : ''}`}>Select or drop files from your device</span>
                     {files.length > 0 && (
                         <div className="modalSupport__files" onClick={(e) => e.stopPropagation()}>
                             {files.map((file, index) => (
