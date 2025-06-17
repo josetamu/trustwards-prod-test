@@ -222,7 +222,7 @@ function App() {
           );
         case 'EditAvatar':
           return (
-            <ModalEdit
+            <ModalAvatar  
               onClose={() => setIsModalOpen(false)}
               onSave={() => setIsModalOpen(false)}
             />
