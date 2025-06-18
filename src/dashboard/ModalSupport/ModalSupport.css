@@ -154,10 +154,12 @@
     border: 2px dashed rgba(224, 224, 224, 1);
     border-radius: 8px;
     padding: 10px;
-    justify-content: center;
     flex-direction: column;
+    justify-content: center;
     cursor: pointer;
     overflow-y: auto;
+    overflow-x: hidden;
+    
     
 }
 .modalSupport__dropZone__span{
@@ -191,25 +193,62 @@
     display: none;
 }
 .modalSupport__files{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
-    padding: 10px;
+    display: flex;
+    gap: 5px;
+    padding: 5px;
     max-height: 69px;
-    overflow-y: auto;
+    cursor: pointer;
+    width: 100px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+        
+
 }
-.modalSupport__dropZone__file{
+.modalSupport__file{
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 12px;
+    gap: 5px;
+    font-size: 10px;
     font-weight: 500;
     letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
     color: rgba(104, 107, 116, 1);
+    max-width: 80px;
+    justify-content: center;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid rgba(224, 224, 224, 1);
+
+
+    
+}
+.modalSupport__file__name{
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.modalSupport__file__remove{
+    cursor: pointer;
+    padding: 0px 0px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    color: rgba(255, 0, 0, 0.5);
+    transition: color 0.3s ease;
+    height: 10px;
+    width: 10px;
+    align-items: center;
+    
+}
+.modalSupport__file__remove:hover{
+    color: rgba(255, 0, 0, 1);
+    transition: color 0.3s ease;
 }

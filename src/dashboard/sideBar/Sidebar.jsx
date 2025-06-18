@@ -257,14 +257,15 @@ export function Sidebar({
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
-                            <span className='sidebar__sites-add' onClick={() => {setIsModalOpen(true);
+                            <span className='sidebar__sites-add' onClick={() => {if(modalType === 'NewSite' && isModalOpen) {setIsModalOpen(false);} else {setIsModalOpen(true);
                                 setModalType("NewSite");
-                                                                                     if(window.innerWidth < 767) {
-                                                                                        setIsSidebarOpen(false);
-                                                                                        toggleSidebar();
-                                                                                        /* toggleDropdown(); */
-                                                                                    }
-                                                                                    }} >
+                                if(window.innerWidth < 767) {
+                                    setIsSidebarOpen(false);
+                                    toggleSidebar();
+                                    /* toggleDropdown(); */
+                                }
+                            }
+                            }} >
                                     <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="black"/>
                                     </svg>
@@ -326,6 +327,7 @@ export function Sidebar({
                                                     setSiteData={setSiteData}
                                                     toggleSidebar={toggleSidebar}
                                                     setIsSidebarOpen={setIsSidebarOpen}
+                                                    modalType={modalType}
                                                 />
                                             </div>
                                         )

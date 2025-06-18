@@ -47,7 +47,7 @@
     .modal__backdrop {
         left: 0;
         width: 100vw;
-        top: 0;
+        top: 30px;
     }
     .open {
         left: 0;

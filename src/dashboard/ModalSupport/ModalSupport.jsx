@@ -24,6 +24,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
         }
     }, [user]);
 
+
     // Validate inputs
   const validateInputs = () => {
     const newErrors = {};
@@ -32,7 +33,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
     }
     if (!email?.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!email.includes('@') && !email.includes('.')) {
+    } else if (!email.includes('@') || !email.includes('.') || email.indexOf('@') > email.lastIndexOf('.')) {
       newErrors.email = 'Please enter a valid email address';
     }
     if (!message?.trim()) {
@@ -113,16 +114,26 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsDragging(true);
+        const dt = e.dataTransfer;
+        if (dt.types && dt.types.indexOf('Files') >= 0) {
+            setIsDragging(true);
+        }
     };
     const handleDragLeave = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsDragging(false);
+        // Only set isDragging to false if we're leaving the main dropzone
+        if (e.currentTarget === e.target) {
+            setIsDragging(false);
+        }
     };
     const handleDragOver = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        const dt = e.dataTransfer;
+        if (dt.types && dt.types.indexOf('Files') >= 0) {
+            setIsDragging(true);
+        }
     };  
     const handleDrop = (e) => {
         e.preventDefault();
@@ -317,7 +328,12 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                     </span>
                     <span className={`modalSupport__dropZone__span ${files.length > 0 ? 'modalSupport__dropZone__span--none' : ''}`}>Select or drop files from your device</span>
                     {files.length > 0 && (
-                        <div className="modalSupport__files" onClick={(e) => e.stopPropagation()}>
+                        <div className="modalSupport__files" 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDropzoneClick(e);
+                            }}
+                        >
                             {files.map((file, index) => (
                                 <div key={index} className="modalSupport__file">
                                     <span className="modalSupport__file__name">{file.name}</span>
@@ -329,7 +345,9 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                                             removeFile(index);
                                         }}
                                     >
-                                        X
+                                            <svg width="6" height="6" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M10 1L9 0L5 4L1 0L0 1L4 5L0 9L1 10L5 6L9 10L10 9L6 5L10 1Z" fill="currentColor"/>
+                                            </svg>
                                     </button>
                                 </div>
                             ))}
