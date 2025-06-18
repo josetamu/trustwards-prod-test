@@ -1,0 +1,263 @@
+.modalAppearance__content{
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    width: 100%;
+    gap: 15px;
+    
+}
+.modal:has(.modalAppearance__content){
+    max-width: 400px;
+}
+.modalAppearance__top{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    
+}
+.modalAppearance__header{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.modalAppearance__title{
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 1);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.modalAppearance__description{
+    font-size: 11px;
+    color: rgba(104, 107, 116, 1);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.modalAppearance__divider{
+    width: 100%;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+.modalAppearance__mid{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.modalAppearance__mid__title{
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 1);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.modalAppearance__choices{
+    display: flex;
+    
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+.modalAppearance__choice{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.modalAppearance__imgWrapper{
+    height: 80px;
+    width: 111px;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+}
+.modalAppearance__choice__title{
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(104, 107, 116, 1);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.modalAppearance__imgWrapper--light{
+    background-color: rgba(244, 244, 246, 1);
+    border: 2px solid rgba(255, 255, 255, 1);
+    
+}
+.modalAppearance__img{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 10px;
+    left: 15px;
+
+
+}
+.modalAppearence__choice__icon{
+    display: none;
+}
+.modalAppearance__choice--active .modalAppearence__choice__icon{
+    display: block;
+    position: absolute;
+    top: 55px;
+    left: 5px;
+}
+
+
+.modalAppearance__imgWrapper--dark{
+    background-color: rgba(39, 39, 39, 1);
+    border: 2px solid rgba(85, 85, 85, 1);
+    
+}
+
+.modalAppearance__imgWrapper--system{
+    height: 80px;
+    width: 111px;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+   
+    
+    
+
+}
+.modalAppearance__imgWrapper--system .modalAppearance__imgWrapper--dark {
+    width: 50%;
+    
+ 
+    
+}
+.modalAppearance__imgWrapper--system .modalAppearance__imgWrapper--dark .modalAppearance__img{
+    width: 200%;
+}
+
+
+
+
+.modalAppearance__imgWrapper--system .modalAppearance__imgWrapper--dark{
+    position: absolute;
+    left: 50%;
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+   
+}
+
+.modalAppearance__choice--active{
+    border: 2px solid rgba(0, 153, 254, 1);
+}
+
+.modalAppearance__choice > .modalAppearance__choice--active + .modalAppearance__choice__title{
+    color: rgba(0, 153, 254, 1);
+}
+
+.modalAppearance__imgWrapper--system:has(.modalAppearance__choice--active) ~ .modalAppearance__choice__title {
+    color: rgba(0, 153, 254, 1);
+}
+
+
+
+
+
+.modalAppearance__bottom{
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+.modalAppearance__ancentColor{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: space-between;
+}
+.modalAppearance__ancentColor__choices{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+.modalAppearance__ancentColor__choice{
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    
+}
+.modalAppearance__ancentColor__title{
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 1);
+    letter-spacing: var(--letter-spacing-negative);
+    border: none;
+}
+.modalAppearance__ancentColor__choice--green{
+    background-color: rgba(60, 184, 44, 1);
+    box-shadow:
+    0  1px 1px rgba(123, 216, 111, 1) inset, 
+    0 0 0 1px rgba(47, 177, 31, 1),         
+    0 -7px 4px 0 rgba(60, 184, 44, 1) inset;  
+  
+}
+.modalAppearance__ancentColor__choice--purple{
+    background-color: rgba(99, 91, 255, 1);
+    box-shadow:
+    0 1px 1px rgba(136, 130, 255, 1) inset, 
+    0 0 0 1px rgba(85, 77, 253, 1),         
+    0 -7px 4px 0 rgba(89, 81, 235, 1) inset;  
+  
+}
+.modalAppearance__ancentColor__choice--red{
+    background-color: rgba(243, 61, 61, 1);
+    box-shadow:
+    0 1px 1px rgba(249, 116, 116, 1) inset, 
+    0 0 0 1px rgba(249, 18, 18, 1),         
+    0 -7px 4px 0 rgba(227, 27, 27, 1) inset;  
+  
+}
+.modalAppearance__ancentColor__choice--orange{
+    background-color: rgba(253, 128, 63, 1);
+    box-shadow:
+    0 1px 1px rgba(255, 161, 112, 1) inset, 
+    0 0 0 1px rgba(255, 106, 29, 1),         
+    0 -7px 4px 0 rgba(248, 114, 44, 1) inset;  
+  
+}
+.modalAppearance__ancentColor__choice--blue{
+    background-color: rgba(0, 153, 254, 1);
+    box-shadow:
+    0 1px 1px rgba(87, 166, 254, 1) inset, 
+    0 0 0 1px rgba(29, 120, 235, 1),         
+    0 -7px 4px 0 rgba(4, 141, 232, 1) inset;   
+  
+}
+.modalAppearance__ancentColor__save{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.modalAppearance__ancentColor__button{
+    width: 45px;
+    padding: 10px;
+    background: var(--background-color-blue);
+    border: none;
+    border-radius: 7px;
+    font-family: var(--font-family);
+    letter-spacing: var(--letter-spacing-negative);
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFF;
+    cursor: pointer;
+    box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+    margin-top: 10px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}  
+
+.modalAppearance__ancentColor__choice--active{
+    box-shadow:
+    0 0 4px rgba(0, 0, 0, 0.1),    /* Sombra paralela negra suave */
+    0 0 0 2px white,               /* Borde externo blanco */
+    0 0 0 4px #0094ff;             /* Borde externo azul */
+
+}
+
+
+

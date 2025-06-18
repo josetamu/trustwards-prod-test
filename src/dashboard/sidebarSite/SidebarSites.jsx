@@ -5,11 +5,11 @@ import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../tooltip/Tooltip";
 import "../Dropdown/Dropdown.css";
 
-export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen}) {
+export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
-    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen}) => {
+    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType}) => {
       return (
         <>
           <button className="dropdown__item">
@@ -59,11 +59,15 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
           <button 
             className="dropdown__item dropdown__item--delete" 
             onClick={() => {
-              setIsModalOpen(true);
-              setModalType('DeleteSite');
-              setIsDropdownOpen(false);
-              setSiteData(siteData);
-              
+              if(modalType === 'DeleteSite' && isModalOpen) {
+                setIsModalOpen(false);
+              } else {
+                setIsModalOpen(true);
+                setModalType('DeleteSite');
+                setIsDropdownOpen(false);
+                setSiteData(siteData);
+              }
+                
               // Check if we're on mobile and handle sidebar/dropdown state
               if (window.innerWidth <= 767) {
                 setIsSidebarOpen(false);
@@ -108,7 +112,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 position="right"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
-                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} />}
+                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} />}
             >
                 <div className="sidebarSites__edit" onClick={() => setIsDropdownOpen(v => !v)}>
                     <svg width="9" height="2" viewBox="0 0 9 2" fill="none" xmlns="http://www.w3.org/2000/svg">

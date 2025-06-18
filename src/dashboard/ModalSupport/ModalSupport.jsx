@@ -24,6 +24,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
         }
     }, [user]);
 
+
     // Validate inputs
   const validateInputs = () => {
     const newErrors = {};
@@ -32,7 +33,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
     }
     if (!email?.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!email.includes('@') && !email.includes('.')) {
+    } else if (!email.includes('@') || !email.includes('.') || email.indexOf('@') > email.lastIndexOf('.')) {
       newErrors.email = 'Please enter a valid email address';
     }
     if (!message?.trim()) {
