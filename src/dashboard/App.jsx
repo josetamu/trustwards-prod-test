@@ -14,7 +14,6 @@ import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
 import { ModalEditSite } from './ModalEditSite/ModalEditSite'
-import { ModalAvatar } from './ModalAvatar/ModalAvatar'
 import { ModalDelete } from './ModalDelete/ModalDelete'
 import { ModalSupport } from './ModalSupport/ModalSupport'
 import { ModalAppearance } from './ModalAppearance/ModalAppearance'
@@ -64,8 +63,8 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      //email: 'darezo.2809@gmail.com',
-      email: 'oscar.abad.brickscore@gmail.com',  
+      email: 'darezo.2809@gmail.com',
+      //email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -221,6 +220,7 @@ function App() {
               setIsModalOpen={setIsModalOpen}
               userPlan={user?.Plan || 'free'}
               openModal={openModal}
+              webs={webs}
             />
           );
         case 'EditSite':
@@ -235,28 +235,15 @@ function App() {
               openModal={openModal}
             />
           );
-        case 'EditAvatar':
+        case 'DeleteSite':
           return (
-            <ModalAvatar
-              onClose={closeModal}
-              onSave={(data) => {
-                if (modalProps?.onSave) {
-                  modalProps.onSave(data);
-                }
-                closeModal();
-              }}
-              initialState={modalProps?.initialState}
+            <ModalDelete
+              onClose={() => setIsModalOpen(false)}
+              siteData={siteData}
+              setIsModalOpen={setIsModalOpen}
+              setSiteData={setSiteData}
             />
           );
-          case 'DeleteSite':
-            return (
-              <ModalDelete
-                onClose={() => setIsModalOpen(false)}
-                siteData={siteData}
-                setIsModalOpen={setIsModalOpen}
-                setSiteData={setSiteData}
-              />
-            );
         case 'Support':
           return ( <ModalSupport
             onClose={() => setIsModalOpen(false)}

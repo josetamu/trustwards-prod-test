@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { gradients, auroras, avatars } from '../ModalContainer/ModalContainer';
+import { gradients, auroras, avatars, defaultGradient } from '../ModalContainer/ModalContainer';
+import logoDefault from '../../assets/logo default.png';
 import './ModalAvatar.css';
 
 // Función para precargar imágenes
@@ -13,11 +14,11 @@ const preloadImages = (items) => {
 // Precargar todas las imágenes al cargar el módulo
 preloadImages([...gradients, ...auroras, ...avatars]);
 
-export function ModalAvatar({ onClose, onSave }) {
-  const [selectedGradient, setSelectedGradient] = useState(null);
-  const [selectedAurora, setSelectedAurora] = useState(null);
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
-  const [headerGradient, setHeaderGradient] = useState('linear-gradient(135deg, #FF6B00 0%, #1E40AF 100%)');
+export function ModalAvatar({ onClose, onSave, initialState = null }) {
+  const [selectedGradient, setSelectedGradient] = useState(initialState?.gradient || null);
+  const [selectedAurora, setSelectedAurora] = useState(initialState?.aurora || null);
+  const [selectedAvatar, setSelectedAvatar] = useState(initialState?.avatar || null);
+  const [headerGradient, setHeaderGradient] = useState(initialState?.headerGradient || defaultGradient);
 
   const extractColorsFromImage = (imgSrc) => {
     return new Promise((resolve) => {
@@ -119,15 +120,16 @@ export function ModalAvatar({ onClose, onSave }) {
     if (selectedAurora) {
       return <img src={selectedAurora.src} alt="Selected aurora" />;
     }
-    return <img src="/logo test.png" alt="Default logo" />;
+    return <img src={logoDefault} alt="Default logo" />;
   };
 
   const handleSave = () => {
     const selectedImage = selectedAvatar || selectedGradient || selectedAurora;
-    onSave({
-      avatar: selectedImage || { src: '/logo test.png' },
+    const data = {
+      avatar: selectedImage || { src: logoDefault },
       headerGradient: headerGradient
-    });
+    };
+    onSave(data);
   };
 
   useEffect(() => {
@@ -145,15 +147,24 @@ export function ModalAvatar({ onClose, onSave }) {
 
   return (
     <div className="modal-avatar">
+      <button 
+        data-close-modal 
+        onClick={onClose} 
+        style={{ display: 'none' }}
+        aria-hidden="true"
+      />
+      
       <div className="modal-avatar__header" style={{ background: headerGradient }}>
-        <div className="modal-avatar__preview">
+        <div className="modal-avatar__avatar">
           {getPreviewLogo()}
         </div>
       </div>
 
+      <div className="modal-avatar__backdrop"></div>
+
       <div className="modal-avatar__content">
         <div className="modal-avatar__section">
-          <h3>Gradients</h3>
+          <h3 className="modal-avatar__section-title">Gradients</h3>
           <div className="modal-avatar__divider"></div>
           <div className="modal-avatar__grid">
             {gradients.map(gradient => (
@@ -169,9 +180,8 @@ export function ModalAvatar({ onClose, onSave }) {
             ))}
           </div>
         </div>
-        <hr className="modal-avatar__divider" />
         <div className="modal-avatar__section">
-          <h3>Aurora</h3>
+          <h3 className="modal-avatar__section-title">Aurora</h3>
           <div className="modal-avatar__divider"></div>
           <div className="modal-avatar__grid">
             {auroras.map(aurora => (
@@ -187,9 +197,8 @@ export function ModalAvatar({ onClose, onSave }) {
             ))}
           </div>
         </div>
-        <hr className="modal-avatar__divider" />
         <div className="modal-avatar__section">
-          <h3>Avatar</h3>
+          <h3 className="modal-avatar__section-title">Avatar</h3>
           <div className="modal-avatar__divider"></div>
           <div className="modal-avatar__grid">
             {avatars.map(avatar => (
@@ -207,11 +216,10 @@ export function ModalAvatar({ onClose, onSave }) {
         </div>
       </div>
 
-      <div className="modal-avatar__actions modal-avatar__actions--horizontal">
-      <button className="modal-avatar__button modal-avatar__button--cancel" onClick={onClose}>
-          Cancel
-        </button>
-        <button className="modal-avatar__button modal-avatar__button--save" onClick={handleSave}>
+      <div className="modal-avatar__backdrop-footer"></div>
+
+      <div className="modal-avatar__footer">
+        <button className="modal-avatar__button-save" onClick={handleSave}>
           Save
         </button>
       </div>

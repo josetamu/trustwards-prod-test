@@ -2,6 +2,8 @@ import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
 import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
+import logoDefault from '../../assets/logo default.png';
+import { defaultGradient } from '../ModalContainer/ModalContainer';
 import './ModalEditSite.css'
 
 export function ModalEditSite({ onSave, onCancel, setIsModalOpen, siteData, setSiteData }) {
@@ -11,6 +13,96 @@ const [formValues, setFormValues] = useState({
     domain: siteData?.Domain?.trim() || ''
       });
 const [formErrors, setFormErrors] = useState({});
+const [showEdit, setShowEdit] = useState(false);
+
+// Avatar and header state
+const [customHeader, setCustomHeader] = useState({
+  avatar: null,
+  headerGradient: defaultGradient
+});
+
+// Initialize customHeader with site data
+useEffect(() => {
+  if (siteData) {
+    const initializeHeader = async () => {
+      let headerGradient = defaultGradient;
+      
+      if (siteData["Avatar URL"]) {
+        try {
+          // Extract colors from the existing avatar to generate the gradient
+          const extractColorsFromImage = (imgSrc) => {
+            return new Promise((resolve) => {
+              const img = new Image();
+              img.crossOrigin = "Anonymous";
+              img.onload = () => {
+                const MAX_SIZE = 100;
+                const scale = Math.min(MAX_SIZE / img.width, MAX_SIZE / img.height);
+                const width = Math.round(img.width * scale);
+                const height = Math.round(img.height * scale);
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const imageData = ctx.getImageData(0, 0, width, height).data;
+                
+                const getPixelColor = (x, y) => {
+                  const i = (Math.round(y) * width + Math.round(x)) * 4;
+                  return `rgb(${imageData[i]}, ${imageData[i + 1]}, ${imageData[i + 2]})`;
+                };
+
+                const colors = {
+                  top: getPixelColor(width / 2, 2),
+                  right: getPixelColor(width - 2, height / 2),
+                  bottom: getPixelColor(width / 2, height - 2),
+                  left: getPixelColor(2, height / 2),
+                  center: getPixelColor(width / 2, height / 2)
+                };
+
+                resolve(colors);
+              };
+              img.src = imgSrc;
+            });
+          };
+
+          const createGradientFromColors = (colors) => {
+            return `linear-gradient(135deg, 
+              ${colors.top} 0%, 
+              ${colors.right} 25%, 
+              ${colors.center} 50%,
+              ${colors.left} 75%, 
+              ${colors.bottom} 100%
+            )`;
+          };
+
+          const colors = await extractColorsFromImage(siteData["Avatar URL"]);
+          headerGradient = createGradientFromColors(colors);
+        } catch (error) {
+          console.error('Error extracting colors from avatar:', error);
+        }
+      }
+
+      setCustomHeader({
+        avatar: siteData["Avatar URL"] ? { src: siteData["Avatar URL"] } : null,
+        headerGradient: headerGradient
+      });
+    };
+
+    initializeHeader();
+  }
+}, [siteData]);
+
+// Avatar changes logic
+const handleEditSave = (editData) => {
+  setCustomHeader({
+    avatar: editData.avatar,
+    headerGradient: editData.headerGradient
+  });
+  setShowEdit(false);
+};
+
 // Validate inputs
 const validateName = (value) => {
     if (!value.trim()) {
@@ -52,26 +144,25 @@ const validateDomain = (value) => {
       const handleSave = async () => {
         if (validateForm()) {
           try {
-            // Actualizar la base de datos
+            // Update the database
             const { error } = await supabase
               .from('Site')
               .update({
                 Name: formValues.name,
-                Domain: formValues.domain
+                Domain: formValues.domain,
+                "Avatar URL": customHeader.avatar?.src || siteData?.["Avatar URL"] || null
               })
-              .eq('id', siteData.id); // Usar el ID del sitio que se está editando
+              .eq('id', siteData.id); // Use the ID of the site that is being edited
 
             if (error) {
               throw error;
             }
-
-            // Si la actualización fue exitosa, cerrar el modal y limpiar los datos
+            // If the update was successful, close the modal and clear the data
             onSave(formValues);
             setIsModalOpen(false);
             setSiteData(null);
           } catch (error) {
             console.error('Error updating site:', error);
-            // Aquí podrías mostrar un mensaje de error al usuario
             setFormErrors(prev => ({
               ...prev,
               submit: 'Error updating site. Please try again.'
@@ -80,11 +171,26 @@ const validateDomain = (value) => {
         }
       };
 
+      // Conditional render of the modal avatar
+    if (showEdit) {
+      return <ModalAvatar 
+        onClose={() => setShowEdit(false)} 
+        onSave={handleEditSave}
+        initialState={{
+          avatar: customHeader.avatar,
+          headerGradient: customHeader.headerGradient
+        }}
+      />;
+    }
+
 return (
   <>
-    <div className="modal__header modal__header-editSite" id={modalEditSiteId}>
+    <div className="modal__header modal__header-editSite" id={modalEditSiteId} style={{ background: customHeader.headerGradient }}>
       <div className="modal__avatar">
-        <img src="/logo test.png" alt="logo" />
+        {customHeader.avatar
+          ? <img src={customHeader.avatar.src} alt="avatar" />
+          : <img src={siteData?.["Avatar URL"] || logoDefault} alt="logo" />
+        }
         <button 
           className="modal__avatar-edit"
           onClick={() => setShowEdit(true)}

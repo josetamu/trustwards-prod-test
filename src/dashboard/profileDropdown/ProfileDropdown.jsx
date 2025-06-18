@@ -5,6 +5,7 @@ import { profilePages } from '../sideBar/Sidebar';
 import "./ProfileDropdown.css";
 import { Dropdown } from '../dropdown/Dropdown';
 import { span } from 'framer-motion/client';
+import logoDefault from '../../assets/logo default.png';
 
 
 
@@ -183,7 +184,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
               toggleDropdown(); 
             }}>
             <div className="profileDropdown__header">
-                <img className="profileDropdown__header__avatar" src="logo test.png" alt="avatar" /> 
+                <img className="profileDropdown__header__avatar" src={user?.["Avatar URL"] || logoDefault} alt="avatar" /> 
                     
                 <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.["First Name"]} {user?.["Second Name"] || "User"}</span> 
             </div>

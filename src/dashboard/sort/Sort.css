@@ -4,19 +4,18 @@
     justify-content: center;
     gap: 3px;
     padding: 6px;
-    background-color: var(--dashed-btn-background);
+    background-color: fff;
     color: var(--dashed-btn-color);
-    font-family: var(--font-family);
     letter-spacing: var(--letter-spacing);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
-    border: var(--dashed-border);
+    border: 1px solid #E6E6E6;
     border-radius: 8px;
     cursor: pointer;
 }
 .sort__button svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     color: var(--dashed-btn-color);
 }
 

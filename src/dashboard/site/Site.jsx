@@ -98,7 +98,7 @@ export const Site = ({ id, text, domain, onUpdate, onRemove, setIsModalOpen, set
     <div className="site" id={siteId}>
       <div className="site__gradient-header">
         <div className="site__avatar">
-            <img src="/logo test.png" alt="logo" />
+            <img src={siteData?.["Avatar URL"]} alt="logo" />
         </div>
       </div>
       <div className="site__content">

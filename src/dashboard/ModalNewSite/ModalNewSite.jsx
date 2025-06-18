@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
+import logoDefault from '../../assets/logo default.png';
 import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
+import { defaultGradient } from '../ModalContainer/ModalContainer';
 import './ModalNewSite.css'
 
-export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'create', setIsModalOpen, userSites = 0, userPlan = 'free' }) {
-
+export function ModalNewSite({ onSave, setIsModalOpen, userSites = 0, userPlan = 'free' }) {
   const modalNewSiteId = useId();
   const [activePlan, setActivePlan] = useState(userPlan === 'Pro' ? 'pro' : 'free');
   const [showEdit, setShowEdit] = useState(false);
@@ -19,8 +20,8 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
   }, [userPlan]);
 
   const [formValues, setFormValues] = useState({
-    name: initialData?.text?.trim() || '',
-    domain: initialData?.domain?.trim() || ''
+    name: '',
+    domain: ''
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -96,7 +97,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
           .insert([{ 
             Name: formValues.name.trim(), 
             Domain: formValues.domain.trim(), 
-            "Avatar URL": 'src/assets/image 571.png', 
+            "Avatar URL": customHeader.avatar?.src || logoDefault, 
             userid: authenticatedUser.id 
           }]);
 
@@ -112,15 +113,12 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
       }
     }
   };
-  
-  // Update values when editing
-  useEffect(() => {
-    setFormValues({
-      name: initialData?.text?.trim() || '',
-      domain: initialData?.domain?.trim() || ''
-    });
-    setFormErrors({});
-  }, [initialData]);
+
+  // Avatar and header state
+  const [customHeader, setCustomHeader] = useState({
+    avatar: null,
+    headerGradient: defaultGradient
+  });
 
   // Avatar changes logic
   const handleEditSave = (editData) => {
@@ -131,27 +129,16 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
     setShowEdit(false);
   };
 
-  const [customHeader, setCustomHeader] = useState({
-    avatar: null,
-    headerGradient: 'linear-gradient(135deg, #FF6B00 0%, #1E40AF 100%)'
-  });
-
-  // Delete verification modal
-  if (type === 'delete') {
-    return (
-      <div className="modal__content">
-        <h2 className="modal__title" id="modal-title">Are you sure you want to delete this site?</h2>
-        <div className="modal__actions">
-          <button onClick={() => onSave()} className="modal__button modal__button--delete">
-            Delete
-          </button>
-        </div>
-      </div>
-    );
-  }
-
+  // Conditional render of the modal avatar
   if (showEdit) {
-    return <ModalAvatar onClose={() => setShowEdit(false)} onSave={handleEditSave} />;
+    return <ModalAvatar 
+      onClose={() => setShowEdit(false)} 
+      onSave={handleEditSave}
+      initialState={{
+        avatar: customHeader.avatar,
+        headerGradient: customHeader.headerGradient
+      }}
+    />;
   }
 
   return (
@@ -160,7 +147,7 @@ export function ModalNewSite({ onSave, onCancel, initialData = null, type = 'cre
         <div className="modal__avatar">
           {customHeader.avatar
             ? <img src={customHeader.avatar.src} alt="avatar" />
-            : <img src="/logo test.png" alt="logo" />
+            : <img src={logoDefault} alt="logo" />
           }
           <button 
             className="modal__avatar-edit"
