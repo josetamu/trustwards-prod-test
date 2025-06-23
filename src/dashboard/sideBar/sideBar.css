@@ -297,7 +297,13 @@
   color: var(--color-black);
   letter-spacing: var(--letter-spacing-positive);
   margin-right: 10px; 
-
+  text-transform: uppercase;
+}
+.sidebar__sites-title--site{
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .sidebar__sites-search{
   cursor: pointer;
@@ -557,8 +563,12 @@
     justify-content: start;
     align-items: center;
 }
+
+.sidebar__sites-title{
+  max-width: 100%;
 }
 
 
 
 
+}

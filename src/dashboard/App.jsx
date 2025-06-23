@@ -30,7 +30,8 @@ function App() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [siteData, setSiteData] = useState(null);
   const [modalProps, setModalProps] = useState(null);
-  const [isSiteOpen, setIsSiteOpen] = useState('');
+  const [selectedSite, setSelectedSite] = useState(null);
+  const [isSiteOpen, setIsSiteOpen] = useState(false);
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -294,6 +295,8 @@ function App() {
       setSiteData={setSiteData}
       siteData={siteData}
       modalType={modalType}
+      selectedSite={selectedSite}
+      setSelectedSite={setSelectedSite}
       isSiteOpen={isSiteOpen}
       setIsSiteOpen={setIsSiteOpen}
       />

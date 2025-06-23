@@ -140,7 +140,11 @@ export function Sidebar({
     setIsDropdownOpen,
     setSiteData,
     siteData,
-    modalType
+    modalType,
+    selectedSite,
+    setSelectedSite,
+    setIsSiteOpen,
+    isSiteOpen
     
     }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -151,7 +155,7 @@ export function Sidebar({
     const overviewPages = [
         {
             name:'Overview',
-            icon: <img src={siteData?.["Avatar URL"]} alt="" />
+            icon: <img src={selectedSite?.["Avatar URL"]} alt="" style={{ width: '14px', height: '14px', borderRadius: '2px', objectFit: 'cover' }} />
         },
         {
             name:'Scanner',
@@ -163,15 +167,26 @@ export function Sidebar({
         {
             name:'Comply Map',
             icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.728516 6.99624C0.728516 3.23765 4.15007 0.381093 7.73715 0.762745C8.06726 0.797874 8.46993 0.886272 8.63653 1.27772C8.70607 1.44123 8.70951 1.60997 8.70321 1.73974C8.69755 1.85688 8.67392 2.03939 8.65701 2.1702C8.59722 2.63583 8.76171 3.06457 9.02252 3.26742C9.07963 3.31189 9.14817 3.36616 9.2047 3.42516C9.26519 3.48824 9.3412 3.58596 9.37299 3.72509C9.40455 3.86302 9.37917 3.98304 9.35409 4.06366C9.33041 4.13973 9.29453 4.21803 9.26455 4.28237C9.17886 4.46656 9.20715 4.70298 9.37048 4.92683C9.53422 5.15122 9.79725 5.30569 10.0714 5.31709C10.1691 5.32115 10.2739 5.32588 10.3665 5.34027C10.4637 5.35536 10.585 5.38599 10.7005 5.46627C10.819 5.54861 10.8911 5.65484 10.9396 5.75107C10.9849 5.84078 11.0202 5.94362 11.0517 6.04104C11.1795 6.43607 11.5274 6.69974 11.9224 6.76892C12.0268 6.78572 12.3359 6.83624 12.4174 6.85234C12.5616 6.88086 12.7413 6.9249 12.8969 7.02524C13.0779 7.1419 13.1986 7.31527 13.2463 7.53641C13.2884 7.73154 13.2699 7.94615 13.2285 8.1649C12.6777 11.073 10.1125 13.2701 7.03312 13.2701C3.55336 13.2701 0.728516 10.4634 0.728516 6.99624ZM7.0039 6.99928C7.0039 7.32145 6.74274 7.58261 6.42057 7.58261H6.41532C6.09314 7.58261 5.832 7.32145 5.832 6.99928C5.832 6.6771 6.09314 6.41595 6.41532 6.41595H6.42057C6.74274 6.41595 7.0039 6.6771 7.0039 6.99928ZM3.5039 6.41595C3.82607 6.41595 4.08724 6.15479 4.08724 5.83261C4.08724 5.51044 3.82607 5.24928 3.5039 5.24928H3.49867C3.1765 5.24928 2.91533 5.51044 2.91533 5.83261C2.91533 6.15479 3.1765 6.41595 3.49867 6.41595H3.5039ZM7.58723 10.4993C7.58723 10.8215 7.32607 11.0826 7.0039 11.0826H6.99865C6.67647 11.0826 6.41532 10.8215 6.41532 10.4993C6.41532 10.1771 6.67647 9.91595 6.99865 9.91595H7.0039C7.32607 9.91595 7.58723 10.1771 7.58723 10.4993ZM6.14202 3.80864C6.31288 3.63779 6.31288 3.36077 6.14202 3.18992C5.97117 3.01907 5.69418 3.01907 5.52332 3.18992L4.93999 3.77325C4.76914 3.94411 4.76914 4.22112 4.93999 4.39197C5.11084 4.56282 5.38786 4.56282 5.55871 4.39197L6.14202 3.80864ZM10.2254 7.8566C10.3962 8.02746 10.3962 8.30443 10.2254 8.47529L9.64202 9.05862C9.47117 9.22948 9.1942 9.22948 9.02334 9.05862C8.85248 8.88776 8.85248 8.6108 9.02334 8.43994L9.60667 7.8566C9.77753 7.68575 10.0545 7.68575 10.2254 7.8566ZM3.77332 9.05862C3.60247 8.88776 3.60247 8.6108 3.77332 8.43994C3.94418 8.26908 4.22119 8.26908 4.39204 8.43994L4.97537 9.02327C5.14623 9.19413 5.14623 9.4711 4.97537 9.64195C4.80452 9.81281 4.52751 9.81281 4.35666 9.64195L3.77332 9.05862Z" fill="#686B74"/>
+            <g clip-path="url(#clip0_391_681)">
+            <path d="M6.01865 1.85738C6.32717 1.79475 6.52656 1.49384 6.46391 1.18529C6.40126 0.876743 6.10037 0.677389 5.79182 0.740021C2.90301 1.32642 0.728516 3.87954 0.728516 6.94179C0.728516 10.4369 3.56182 13.2702 7.05687 13.2702C10.1191 13.2702 12.6723 11.0957 13.2587 8.20686C13.3213 7.89834 13.122 7.59745 12.8134 7.5348C12.5048 7.47215 12.204 7.67154 12.1413 7.98006C11.9959 8.6964 11.7028 9.35906 11.2952 9.93505C11.2763 9.96182 11.2502 9.98259 11.2195 9.99408C11.1368 10.0252 11.0495 10.0509 10.9577 10.071C10.4277 10.1737 9.87512 10.0847 9.68589 10.0323C9.39586 9.96497 9.04737 9.84825 8.72164 9.70556C8.27918 9.53855 7.61902 9.11208 7.33477 8.91001L7.33173 8.90785C7.2132 8.82514 6.95274 8.63135 6.95006 8.62937C6.83094 8.54059 6.7071 8.44836 6.58641 8.36349C6.03936 7.96297 5.33055 7.61145 5.04431 7.48475C4.60132 7.29838 4.19919 7.1932 3.82994 7.15015C3.51156 7.08902 3.17317 7.12087 2.89965 7.17209C2.61656 7.22511 2.36331 7.3066 2.20633 7.37048C2.17956 7.3811 2.15142 7.3927 2.12237 7.40501C2.01187 7.45203 1.88562 7.38121 1.87834 7.2614C1.87191 7.1557 1.86866 7.04912 1.86866 6.94179C1.86866 4.43245 3.65071 2.33804 6.01865 1.85738Z" fill="#686B74"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.6247 0.728516C8.20114 0.728516 6.83474 1.55454 6.2598 2.87416C5.72223 4.10811 6.01883 5.16316 6.61406 6.04649C7.09543 6.76084 7.79759 7.39813 8.41347 7.95708C8.5299 8.06272 8.64325 8.16557 8.7514 8.26561L8.75233 8.26654C8.9898 8.48483 9.30288 8.60353 9.6247 8.60353C9.94647 8.60353 10.2596 8.48482 10.4971 8.26648C10.5995 8.17233 10.7064 8.07562 10.8162 7.97633C11.4384 7.41365 12.1501 6.77017 12.6365 6.04678C13.2309 5.16262 13.5265 4.10659 12.9895 2.87416C12.4147 1.55454 11.0483 0.728516 9.6247 0.728516ZM9.62435 2.91602C10.3492 2.91602 10.9369 3.50364 10.9369 4.22852C10.9369 4.95339 10.3492 5.54102 9.62435 5.54102C8.8995 5.54102 8.31185 4.95339 8.31185 4.22852C8.31185 3.50364 8.8995 2.91602 9.62435 2.91602Z" fill="#686B74"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_391_681">
+            <rect width="14" height="14" fill="white"/>
+            </clipPath>
+            </defs>
             </svg>
-            
         },
         {
             name:'Integrations',
             icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.728516 6.99624C0.728516 3.23765 4.15007 0.381093 7.73715 0.762745C8.06726 0.797874 8.46993 0.886272 8.63653 1.27772C8.70607 1.44123 8.70951 1.60997 8.70321 1.73974C8.69755 1.85688 8.67392 2.03939 8.65701 2.1702C8.59722 2.63583 8.76171 3.06457 9.02252 3.26742C9.07963 3.31189 9.14817 3.36616 9.2047 3.42516C9.26519 3.48824 9.3412 3.58596 9.37299 3.72509C9.40455 3.86302 9.37917 3.98304 9.35409 4.06366C9.33041 4.13973 9.29453 4.21803 9.26455 4.28237C9.17886 4.46656 9.20715 4.70298 9.37048 4.92683C9.53422 5.15122 9.79725 5.30569 10.0714 5.31709C10.1691 5.32115 10.2739 5.32588 10.3665 5.34027C10.4637 5.35536 10.585 5.38599 10.7005 5.46627C10.819 5.54861 10.8911 5.65484 10.9396 5.75107C10.9849 5.84078 11.0202 5.94362 11.0517 6.04104C11.1795 6.43607 11.5274 6.69974 11.9224 6.76892C12.0268 6.78572 12.3359 6.83624 12.4174 6.85234C12.5616 6.88086 12.7413 6.9249 12.8969 7.02524C13.0779 7.1419 13.1986 7.31527 13.2463 7.53641C13.2884 7.73154 13.2699 7.94615 13.2285 8.1649C12.6777 11.073 10.1125 13.2701 7.03312 13.2701C3.55336 13.2701 0.728516 10.4634 0.728516 6.99624ZM7.0039 6.99928C7.0039 7.32145 6.74274 7.58261 6.42057 7.58261H6.41532C6.09314 7.58261 5.832 7.32145 5.832 6.99928C5.832 6.6771 6.09314 6.41595 6.41532 6.41595H6.42057C6.74274 6.41595 7.0039 6.6771 7.0039 6.99928ZM3.5039 6.41595C3.82607 6.41595 4.08724 6.15479 4.08724 5.83261C4.08724 5.51044 3.82607 5.24928 3.5039 5.24928H3.49867C3.1765 5.24928 2.91533 5.51044 2.91533 5.83261C2.91533 6.15479 3.1765 6.41595 3.49867 6.41595H3.5039ZM7.58723 10.4993C7.58723 10.8215 7.32607 11.0826 7.0039 11.0826H6.99865C6.67647 11.0826 6.41532 10.8215 6.41532 10.4993C6.41532 10.1771 6.67647 9.91595 6.99865 9.91595H7.0039C7.32607 9.91595 7.58723 10.1771 7.58723 10.4993ZM6.14202 3.80864C6.31288 3.63779 6.31288 3.36077 6.14202 3.18992C5.97117 3.01907 5.69418 3.01907 5.52332 3.18992L4.93999 3.77325C4.76914 3.94411 4.76914 4.22112 4.93999 4.39197C5.11084 4.56282 5.38786 4.56282 5.55871 4.39197L6.14202 3.80864ZM10.2254 7.8566C10.3962 8.02746 10.3962 8.30443 10.2254 8.47529L9.64202 9.05862C9.47117 9.22948 9.1942 9.22948 9.02334 9.05862C8.85248 8.88776 8.85248 8.6108 9.02334 8.43994L9.60667 7.8566C9.77753 7.68575 10.0545 7.68575 10.2254 7.8566ZM3.77332 9.05862C3.60247 8.88776 3.60247 8.6108 3.77332 8.43994C3.94418 8.26908 4.22119 8.26908 4.39204 8.43994L4.97537 9.02327C5.14623 9.19413 5.14623 9.4711 4.97537 9.64195C4.80452 9.81281 4.52751 9.81281 4.35666 9.64195L3.77332 9.05862Z" fill="#686B74"/>
+            <path d="M12.25 3.79102C12.25 4.75751 11.4665 5.54102 10.5 5.54102C9.53347 5.54102 8.75 4.75751 8.75 3.79102C8.75 2.82452 9.53347 2.04102 10.5 2.04102C11.4665 2.04102 12.25 2.82452 12.25 3.79102Z" stroke="#686B74" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M5.25 7C5.25 7.96652 4.4665 8.75 3.5 8.75C2.5335 8.75 1.75 7.96652 1.75 7C1.75 6.03347 2.5335 5.25 3.5 5.25C4.4665 5.25 5.25 6.03347 5.25 7Z" stroke="#686B74" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M12.25 10.209C12.25 11.1755 11.4665 11.959 10.5 11.959C9.53347 11.959 8.75 11.1755 8.75 10.209C8.75 9.24246 9.53347 8.45898 10.5 8.45898C11.4665 8.45898 12.25 9.24246 12.25 10.209Z" stroke="#686B74" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M4.95898 6.12471L8.75065 4.375M4.95898 7.58333L8.75065 9.33304" stroke="#686B74" stroke-width="1.2" stroke-linejoin="round"/>
             </svg>
+            
             
         },
 
@@ -243,128 +258,156 @@ export function Sidebar({
                 
                 <div className="sidebar__upper">
                     <div className="sidebar__home">
-                        <a className="sidebar__header">
-                        <span className="sidebar__header__icon">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g clipPath="url(#clip0_209_250)">
-                            <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
-                            <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
-                            <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
-                            <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
-                            </g>
-                            <defs>
-                            <clipPath id="clip0_209_250">
-                            <rect width="12" height="12" fill="white"/>
-                            </clipPath>
-                            </defs>
-                        </svg>
-
-
-                            </span>
-                            <span className="sidebar__header__text">Dashboard</span>
-                        </a>
+                            <a className="sidebar__header" onClick={() => {
+                                setIsSiteOpen(false);
+                                setSelectedSite(null);
+                            }}>
+                                <span className="sidebar__header__icon">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g clipPath="url(#clip0_209_250)">
+                                        <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+                                        <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+                                        <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+                                        <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="#686B74" strokeWidth="1.3" strokeLinejoin="round"/>
+                                        </g>
+                                        <defs>
+                                        <clipPath id="clip0_209_250">
+                                        <rect width="12" height="12" fill="white"/>
+                                        </clipPath>
+                                        </defs>
+                                    </svg>
+                                </span>
+                                <span className="sidebar__header__text">Dashboard</span>
+                            </a>
+                       
                     </div>
                     <div className={`sidebar__sites ${isSidebarOpen ? 'sidebar__sites--open' : ''}`}>
                         <div className={`sidebar__sites-header ${isSidebarOpen ? 'sidebar__sites-header--open' : ''}`}>
-                            <span className='sidebar__sites-title'>SITES</span>
-                            <div className={`sidebar__sites-searcher ${isSearchOpen ? 'sidebar__sites-searcher--open' : ''}`}>
-                                <span className='sidebar__sites-search' onClick={() => {
-                                    setIsSearchOpen(!isSearchOpen);
-                                    if (isSearchOpen) {
-                                        setSearchQuery('');
+                            {isSiteOpen ? (
+                                <>
+                                    <span className='sidebar__sites-title sidebar__sites-title--site'>{selectedSite?.Name || 'SITE'}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className='sidebar__sites-title'>SITES</span>
+                                    <div className={`sidebar__sites-searcher ${isSearchOpen ? 'sidebar__sites-searcher--open' : ''}`}>
+                                        <span className='sidebar__sites-search' onClick={() => {
+                                            setIsSearchOpen(!isSearchOpen);
+                                            if (isSearchOpen) {
+                                                setSearchQuery('');
+                                            }
+                                        }}>
+                                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M8.99912 8.99912L7.07031 7.07031" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
+                                                <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
+                                            </svg>
+                                        </span>
+                                        <input 
+                                            className={`sidebar__sites-input ${isSearchOpen ? 'sidebar__sites-input--open' : ''}`} 
+                                            type="text" 
+                                            placeholder='Search sites...'
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                        />
+                                    </div>
+                                    <span className='sidebar__sites-add' onClick={() => {if(modalType === 'NewSite' && isModalOpen) {setIsModalOpen(false);} else {setIsModalOpen(true);
+                                        setModalType("NewSite");
+                                        if(window.innerWidth < 767) {
+                                            setIsSidebarOpen(false);
+                                            toggleSidebar();
+                                            /* toggleDropdown(); */
+                                        }
                                     }
-                                }}>
-                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M8.99912 8.99912L7.07031 7.07031" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
-                                        <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="#191919" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
-                                    </svg>
-                                </span>
-                                <input 
-                                    className={`sidebar__sites-input ${isSearchOpen ? 'sidebar__sites-input--open' : ''}`} 
-                                    type="text" 
-                                    placeholder='Search sites...'
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-                            <span className='sidebar__sites-add' onClick={() => {if(modalType === 'NewSite' && isModalOpen) {setIsModalOpen(false);} else {setIsModalOpen(true);
-                                setModalType("NewSite");
-                                if(window.innerWidth < 767) {
-                                    setIsSidebarOpen(false);
-                                    toggleSidebar();
-                                    /* toggleDropdown(); */
-                                }
-                            }
-                            }} >
-                                    <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="black"/>
-                                    </svg>
-
-                                </span>
-                            
+                                    }} >
+                                            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="black"/>
+                                            </svg>
+                                    </span>
+                                </>
+                            )}
                         </div>
                         <div className="sidebar__sites-container">
-                            <div className={`sitesDisplay ${isSidebarOpen ? 'sitesDisplay--open' : ''}`}>
-                                {filteredWebs.length === 0 ? (
-                                    <span className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
-                                        {searchQuery ? 'No sites found' : (
-                                            <div className="nosites__container">
-                                                <div className="nosites__text">
-                                                    There aren't sites here yet.
-                                                    <br />
-                                                    Start by creating a <span className="nosites__text__span">new site.</span>
+                            {isSiteOpen ? (
+                                // Vista específica del sitio - mostrar overviewPages como SidebarLink
+                                <div className={`sitesDisplay ${isSidebarOpen ? 'sitesDisplay--open' : ''}`}>
+                                    {overviewPages.map((page) => (
+                                        <SidebarLink
+                                            key={page.name}
+                                            icon={page.icon}
+                                            text={page.name}
+                                            onClick={() => {
+                                                //  agregar la lógica para navegar 
+                                                console.log(`Navegando a ${page.name} del sitio ${selectedSite?.Name}`);
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                // Vista normal - mostrar lista de sitios
+                                <div className={`sitesDisplay ${isSidebarOpen ? 'sitesDisplay--open' : ''}`}>
+                                    {filteredWebs.length === 0 ? (
+                                        <span className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
+                                            {searchQuery ? 'No sites found' : (
+                                                <div className="nosites__container">
+                                                    <div className="nosites__text">
+                                                        There aren't sites here yet.
+                                                        <br />
+                                                        Start by creating a <span className="nosites__text__span">new site.</span>
+                                                    </div>
+                                                    <button className="nosites__button" onClick={() => {
+                                                        setIsModalOpen(true);
+                                                        setModalType("NewSite");
+                                                        if(window.innerWidth < 767) {
+                                                            setIsSidebarOpen(false);
+                                                            toggleSidebar();
+                                                            toggleDropdown();
+                                                        }
+                                                    }}>New
+                                                        <svg className="nosites__button__svg" width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <g clipPath="url(#clip0_371_406)">
+                                                            <path d="M0.75 4.5C0.75 6.57105 2.42893 8.25 4.5 8.25C6.57105 8.25 8.25 6.57105 8.25 4.5C8.25 2.42893 6.57105 0.75 4.5 0.75" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                            <path d="M4.5 3V6M6 4.5H3" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                            <path d="M0.9375 3.1875C1.0734 2.87646 1.24459 2.58437 1.446 2.31629M2.3163 1.44599C2.58438 1.24458 2.87647 1.0734 3.1875 0.9375" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                                            </g>
+                                                            <defs>
+                                                            <clipPath id="clip0_371_406">
+                                                            <rect width="9" height="9" fill="white"/>
+                                                            </clipPath>
+                                                            </defs>
+                                                            </svg>
+                                                    </button>
                                                 </div>
-                                                <button className="nosites__button" onClick={() => {
-                                                    setIsModalOpen(true);
-                                                    setModalType("NewSite");
-                                                    if(window.innerWidth < 767) {
-                                                        setIsSidebarOpen(false);
-                                                        toggleSidebar();
-                                                        toggleDropdown();
-                                                    }
-                                                }}>New
-                                                    <svg className="nosites__button__svg" width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <g clipPath="url(#clip0_371_406)">
-                                                        <path d="M0.75 4.5C0.75 6.57105 2.42893 8.25 4.5 8.25C6.57105 8.25 8.25 6.57105 8.25 4.5C8.25 2.42893 6.57105 0.75 4.5 0.75" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
-                                                        <path d="M4.5 3V6M6 4.5H3" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
-                                                        <path d="M0.9375 3.1875C1.0734 2.87646 1.24459 2.58437 1.446 2.31629M2.3163 1.44599C2.58438 1.24458 2.87647 1.0734 3.1875 0.9375" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
-                                                        </g>
-                                                        <defs>
-                                                        <clipPath id="clip0_371_406">
-                                                        <rect width="9" height="9" fill="white"/>
-                                                        </clipPath>
-                                                        </defs>
-                                                        </svg>
-                                                </button>
-                                            </div>
-                                        )}
-                                    </span>
-                                ) : (
-                                    (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
-                                        web.userid === user.id && (
-                                            <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}>
-                                                <SidebarSites
-                                                    key={web.id}
-                                                    avatar={web["Avatar URL"]}
-                                                    name={web.Name}
-                                                    isSidebarOpen={isSidebarOpen}
-                                                    setIsModalOpen={setIsModalOpen}
-                                                    setModalType={setModalType}
-                                                    isModalOpen={isModalOpen}
-                                                    isDropdownOpen={isDropdownOpen}
-                                                    setIsDropdownOpen={setIsDropdownOpen}
-                                                    siteData={web}
-                                                    setSiteData={setSiteData}
-                                                    toggleSidebar={toggleSidebar}
-                                                    setIsSidebarOpen={setIsSidebarOpen}
-                                                    modalType={modalType}
-                                                    globalSiteData={siteData}
-                                                />
-                                            </div>
-                                        )
-                                    ))
-                                )}
-                            </div>
+                                            )}
+                                        </span>
+                                    ) : (
+                                        (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
+                                            web.userid === user.id && (
+                                                <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}>
+                                                    <SidebarSites
+                                                        key={web.id}
+                                                        avatar={web["Avatar URL"]}
+                                                        name={web.Name}
+                                                        isSidebarOpen={isSidebarOpen}
+                                                        setIsModalOpen={setIsModalOpen}
+                                                        setModalType={setModalType}
+                                                        isModalOpen={isModalOpen}
+                                                        isDropdownOpen={isDropdownOpen}
+                                                        setIsDropdownOpen={setIsDropdownOpen}
+                                                        siteData={web}
+                                                        setSiteData={setSiteData}
+                                                        toggleSidebar={toggleSidebar}
+                                                        setIsSidebarOpen={setIsSidebarOpen}
+                                                        modalType={modalType}
+                                                        globalSiteData={siteData}
+                                                        setSelectedSite={setSelectedSite}
+                                                        setIsSiteOpen={setIsSiteOpen}
+                                                    />
+                                                </div>
+                                            )
+                                        ))
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

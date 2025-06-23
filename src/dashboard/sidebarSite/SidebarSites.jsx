@@ -5,14 +5,14 @@ import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../Tooltip/Tooltip";
 import "../Dropdown/Dropdown.css";
 
-export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData}) {
+export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
-    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData}) => {
+    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen}) => {
       return (
         <>
-          <button className="dropdown__item">
+          <button className="dropdown__item" onClick={(e) => e.stopPropagation()}>
             <span className="dropdown__icon">
               <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0H14V2.72727H0V0Z" fill="currentColor"/>
@@ -22,7 +22,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
     </span>
             Builder
           </button>
-          <button className="dropdown__item">
+          <button className="dropdown__item" onClick={(e) => e.stopPropagation()}>
             <span className="dropdown__icon">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5.08398 8.58398C5.08398 6.93408 5.08398 6.10913 5.59655 5.59655C6.10913 5.08398 6.93408 5.08398 8.58398 5.08398H9.16732C10.8172 5.08398 11.6422 5.08398 12.1547 5.59655C12.6673 6.10913 12.6673 6.93408 12.6673 8.58398V9.16732C12.6673 10.8172 12.6673 11.6422 12.1547 12.1547C11.6422 12.6673 10.8172 12.6673 9.16732 12.6673H8.58398C6.93408 12.6673 6.10913 12.6673 5.59655 12.1547C5.08398 11.6422 5.08398 10.8172 5.08398 9.16732V8.58398Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
@@ -33,7 +33,8 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
           </button>
           <button 
             className="dropdown__item" 
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if(modalType === 'EditSite' && isModalOpen && siteData.id === globalSiteData?.id) {
                 setIsModalOpen(false);
                 setModalType(null);
@@ -64,7 +65,8 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
           <div className="dropdown__divider"></div>
           <button 
             className="dropdown__item dropdown__item--delete" 
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if(modalType === 'DeleteSite' && isModalOpen) {
                 setIsModalOpen(false);
               } else {
@@ -97,7 +99,15 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
     };
     
     return(
-        <div className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`} id={sidebarSitesId}>
+        <div 
+            className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`} 
+            id={sidebarSitesId}
+            onClick={() => {
+                setSelectedSite(siteData);
+                setIsSiteOpen(true);
+            }}
+            style={{ cursor: 'pointer' }}
+        >
             <div className="sidebarSites__header">
                 <span className="sidebarSites__header-avatar">
                     <img className="sidebarSites__header-avatar-img" src={avatar}/>
@@ -120,7 +130,10 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 onClose={() => setIsDropdownOpen(false)}
                 menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} />}
             >
-                <div className="sidebarSites__edit" onClick={() => setIsDropdownOpen(v => !v)}>
+                <div className="sidebarSites__edit" onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDropdownOpen(v => !v);
+                }}>
                     <svg width="9" height="2" viewBox="0 0 9 2" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4.49563 1H4.50437M1 1H1.00874M7.99126 1H8" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
