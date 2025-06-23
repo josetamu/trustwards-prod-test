@@ -11,8 +11,8 @@ export const SidebarLink = ({ icon, text, onClick, className, children}) => {
             style={{ cursor: 'pointer' }}
             id={sidebarLinkId}
         >
-            {icon && <span>{icon}</span>}
-            {text && <span>{text}</span>}
+            {icon && <span className={`${className}__icon`}>{icon}</span>}
+            {text && <span className={`${className}__text`}>{text}</span>}
             {children}
         </a>
     );

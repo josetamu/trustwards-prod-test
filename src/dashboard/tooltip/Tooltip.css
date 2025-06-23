@@ -3,6 +3,7 @@
   z-index: 10;
 }
 
+/* Start of Selection */
 .tooltip__mask {
   position: relative;
   padding: 6px 8px;
@@ -12,7 +13,7 @@
   color: #fff;
   white-space: nowrap;
   min-width: 50px;
-  max-width: calc(100vw - 32px);
+  max-width: 100px;
   display: block;
   text-align: center;
   box-sizing: border-box;
@@ -22,6 +23,15 @@
   font-size: 10px;
   z-index: 2;
 }
+.tooltip__message {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%; 
+  display: block;
+  text-align: center;
+}
+/* End of Selection */
 
 /* Right position */
 .tooltip--right {
@@ -150,9 +160,7 @@
   filter: drop-shadow(-1px 0 1px rgba(0,0,0,0.1));
 }
 
-.tooltip__message {
-  flex: 1;
-}
+
 
 @keyframes slideIn {
   from {

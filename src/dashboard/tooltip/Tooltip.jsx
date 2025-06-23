@@ -34,7 +34,7 @@ export function Tooltip({
       aria-live="polite"
       id={tooltipId}
     >
-      <div className="tooltip__mask">{message}</div>
+      <div className="tooltip__mask"><span className="tooltip__message">{message}</span></div>
     </div>
   );
 } 

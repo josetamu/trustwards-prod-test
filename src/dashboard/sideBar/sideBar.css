@@ -412,6 +412,47 @@
     border-radius: 12px;
     border: var(--border);
   }
+  .site__link{
+    display: flex;
+    overflow: hidden;
+    gap: 11px;
+    white-space: nowrap;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid transparent;
+  }
+  .site__link__icon{
+    background-color: #fff;
+    padding: 3px;
+    border-radius: 6px;
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+  .sidebar__link__icon{
+    background-color: #fff;
+    padding: 3px;
+    border-radius: 6px;
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+  .site__link__text{
+    text-decoration: none;
+    color: var(--color-black);
+    font-size: 14px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+  }
+  .site__link:hover {
+    background-color: var(--sidebar-background-hover);
+    border-radius: 12px;
+    border: 1px solid transparent;
+  }
   
  
   .sidebar__link__svg{

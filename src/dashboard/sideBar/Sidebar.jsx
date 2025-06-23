@@ -335,6 +335,7 @@ export function Sidebar({
                                             key={page.name}
                                             icon={page.icon}
                                             text={page.name}
+                                            className={`site__link`}
                                             onClick={() => {
                                                 //  agregar la lógica para navegar 
                                                 console.log(`Navegando a ${page.name} del sitio ${selectedSite?.Name}`);
