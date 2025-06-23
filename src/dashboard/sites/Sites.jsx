@@ -5,7 +5,6 @@ import { View } from '../view/View';
 import './Sites.css'
 
 export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData}) => {
-  const [siteList, setSiteList] = useState(sites);
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
   const [isGridView, setIsGridView] = useState(() => {
@@ -21,14 +20,15 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
 
   // Sort the sites
   const sortedSites = useMemo(() => {
-    const sorted = [...siteList];
+    const sorted = [...webs];
     if (sortMode === 'alphabetical') {
-      sorted.sort((a, b) => a.text.localeCompare(b.text)); // uses the first letter
+      sorted.sort((a, b) => a.Name.localeCompare(b.Name));
+      return isAscending ? sorted : sorted.reverse();
     } else {
-      sorted.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+      sorted.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+      return isAscending ? sorted.reverse() : sorted;
     }
-    return isAscending ? sorted : sorted.reverse();
-  }, [siteList, sortMode, isAscending]);
+  }, [webs, sortMode, isAscending]);
   
   // Sort webs by Date
   const sortedWebs = useMemo(() => {
@@ -68,7 +68,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
       </div>
 
       <div className={`sites__grid ${isGridView ? 'grid' : 'list'}`}>
-        {sortedWebs.map(site => (
+        {sortedSites.map(site => (
           user && site.userid === user.id && (
             <Site
               key={site.id}
@@ -76,8 +76,6 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               text={site.Name}
               domain={site.Domain}
               onRemove={() => {
-                setSiteList(prev => prev.filter(s => s.id !== site.id));
-                if (typeof window.onDeleteSite === 'function') window.onDeleteSite(site.id);
               }}
               setIsModalOpen={setIsModalOpen}
               setModalType={setModalType}
@@ -86,6 +84,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               setIsDropdownOpen={setIsDropdownOpen}
               setSiteData={setSiteData}
               siteData={site}
+              isGridView={isGridView}
             />
           )
         ))}

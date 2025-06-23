@@ -19,6 +19,24 @@
     color: var(--dashed-btn-color);
 }
 
+.sort__title {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: var(--letter-spacing);
+  color: #686B74;
+  padding: 6px 12px 2px 12px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dropdown__tick {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  color: #0099FE;
+  min-width: 16px;
+}
+
 /* Mobile */
 @media (max-width: 480px) {
     .sort__button {

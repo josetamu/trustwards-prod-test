@@ -75,7 +75,10 @@ const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen,
   );
 };
 
-export const Site = ({ id, text, domain, onUpdate, onRemove, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData}) => {
+export const Site = ({
+  id, text, domain, onUpdate, onRemove, setIsModalOpen, setModalType,
+  isModalOpen, setSiteData, siteData, isGridView
+}) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -94,37 +97,34 @@ export const Site = ({ id, text, domain, onUpdate, onRemove, setIsModalOpen, set
     setDeleteModalOpen(false);
   };
   const siteId = useId();
-  return (
-    <div className="site" id={siteId}>
-      <div className="site__gradient-header">
-        <div className="site__avatar">
+
+  if (isGridView) {
+    // CARD (como ya tienes)
+    return (
+      <div className="site">
+        <div className="site__visual">
+          {/* Espacio para imagen de fondo o preview si lo necesitas */}
+        </div>
+        <div className="site__footer">
+          <div className="site__avatar">
             <img src={siteData?.["Avatar URL"]} alt="logo" />
+          </div>
+          <span className="site__name">{text}</span>
+          <div className="site__footer-right">
+            <Dropdown
+              position="bottom-left"
+              open={isDropdownOpen}
+              onClose={() => setIsDropdownOpen(false)}
+              menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
+            >
+              <ProButton
+                isHovering={isDropdownOpen}
+                onClick={() => setIsDropdownOpen(v => !v)}
+              />
+            </Dropdown>
+          </div>
         </div>
-      </div>
-      <div className="site__content">
-        <div className="site__name">{text}</div>
-        <div className="site__domain">{domain}</div>
-      </div>
-      <div className="site__actions">
-        <div className="site__button-wrapper">
-          <Dropdown
-            position="bottom-left"
-            open={isDropdownOpen}
-            onClose={() => setIsDropdownOpen(false)}
-            menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
-          >
-            <ProButton
-              isHovering={isDropdownOpen}
-              onClick={() => setIsDropdownOpen(v => !v)}
-            />
-          </Dropdown>
-        </div>
-        <div className="site__button-wrapper">
-          <button className="site__cdn-btn" aria-label="CDN">CDN</button>
-          <button className="site__builder-btn">Builder</button>
-        </div>
-      </div>
-     {/*  {editModalOpen && (
+    {/*  {editModalOpen && (
         <ModalContainer isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
           <ModalNewSite
             type="edit"
@@ -136,6 +136,40 @@ export const Site = ({ id, text, domain, onUpdate, onRemove, setIsModalOpen, set
           />
         </ModalContainer>
       )} */}
+        {deleteModalOpen && (
+          <ModalContainer isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
+            <ModalDelete
+              onClose={() => setDeleteModalOpen(false)}
+              onDelete={handleDeleteSite}
+            />
+          </ModalContainer>
+        )}
+      </div>
+    );
+  }
+
+  // LIST
+  return (
+    <div className="site site--list">
+      <div className="site__list-left">
+        <div className="site__list-avatar">
+          <img src={siteData?.["Avatar URL"]} alt="logo" />
+        </div>
+        <span className="site__list-name">{text}</span>
+      </div>
+      <div className="site__list-right">
+        <Dropdown
+          position="bottom-left"
+          open={isDropdownOpen}
+          onClose={() => setIsDropdownOpen(false)}
+          menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
+        >
+          <ProButton
+            isHovering={isDropdownOpen}
+            onClick={() => setIsDropdownOpen(v => !v)}
+          />
+        </Dropdown>
+      </div>
       {deleteModalOpen && (
         <ModalContainer isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
           <ModalDelete

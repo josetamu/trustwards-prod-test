@@ -26,44 +26,54 @@ export const Sort = ({ onSortChange }) => {
   );
 
   const SortMenu = (
-    <>
+    <div>
+      <div className="sort__title">Date</div>
       <button 
-        className="dropdown__item" 
-        onClick={(e) => {
-          e.stopPropagation();
-          handleSortChange('date', true);
-        }}
+        className="dropdown__item"
+        onClick={(e) => { e.stopPropagation(); handleSortChange('date', false); }}
       >
-        ↓ Date (newer)
+        {sortMode === 'date' && !ascending && (
+          <span className="dropdown__tick">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7.5L6 9.5L10 5.5" stroke="#0099FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </span>
+        )}
+        Newer
       </button>
       <button 
-        className="dropdown__item" 
-        onClick={(e) => {
-          e.stopPropagation();
-          handleSortChange('date', false);
-        }}
+        className="dropdown__item"
+        onClick={(e) => { e.stopPropagation(); handleSortChange('date', true); }}
       >
-        ↑ Date (older)
+        {sortMode === 'date' && ascending && (
+          <span className="dropdown__tick">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7.5L6 9.5L10 5.5" stroke="#0099FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </span>
+        )}
+        Older
+      </button>
+      <div className="sort__title">Alphabetical</div>
+      <button 
+        className="dropdown__item"
+        onClick={(e) => { e.stopPropagation(); handleSortChange('alphabetical', true); }}
+      >
+        A-Z
+        {sortMode === 'alphabetical' && ascending && (
+          <span className="dropdown__tick">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7.5L6 9.5L10 5.5" stroke="#0099FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </span>
+        )}
       </button>
       <button 
-        className="dropdown__item" 
-        onClick={(e) => {
-          e.stopPropagation();
-          handleSortChange('alphabetical', false);
-        }}
+        className="dropdown__item"
+        onClick={(e) => { e.stopPropagation(); handleSortChange('alphabetical', false); }}
       >
-        ↓ A-Z (desc)
+        Z-A
+        {sortMode === 'alphabetical' && !ascending && (
+          <span className="dropdown__tick">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7.5L6 9.5L10 5.5" stroke="#0099FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </span>
+        )}
       </button>
-      <button 
-        className="dropdown__item" 
-        onClick={(e) => {
-          e.stopPropagation();
-          handleSortChange('alphabetical', true);
-        }}
-      >
-        ↑ Z-A (asc)
-      </button>
-    </>
+    </div>
   );
 
   return (
