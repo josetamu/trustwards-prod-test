@@ -1,6 +1,6 @@
 import './ModalSupport.css';
 import { useState, useEffect } from 'react';
-import { Tooltip } from '../tooltip/Tooltip';
+import { Tooltip } from '../Tooltip/Tooltip';
 
 
 

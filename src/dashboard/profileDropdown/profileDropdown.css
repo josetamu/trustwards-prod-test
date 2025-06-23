@@ -1,6 +1,5 @@
-:root{
-  --color-logout: #db1515;
-}
+
+
   
   /* <PROFILE DROPDOWN */
   .profileDropdown{
@@ -13,10 +12,7 @@
   .profileDropdown--open{
     display: flex;
     height: 40px;
-    justify-content: space-between;
     width: 100%;
-    align-items: center;
-    transition: all 0.8s ease;
     position: relative;
   } 
   .profileDropdown__profile{
@@ -35,15 +31,6 @@
   }
 
   .profileDropdown__profile--open{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    height: 40px;
-    background-color: transparent;
-    border-radius: 10px;
-    width: 100%;
-    transition: var(--sidebar-transition);
     padding-right: 3.5px;
     
   }
@@ -80,12 +67,18 @@
    
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
-    color: var(--background-color-black);
+    color: var(--color-black);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
     transition: var(--sidebar-transition);
     display: flex;
     opacity: 1;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
   }
   .profileDropdown__icons{
     display: flex;
@@ -122,19 +115,11 @@
     transition: all 0.6s ease;
   }
   .profileDropdown--open:hover .profileDropdown__profile--open{
-    background-color: rgba(235, 235, 235, 1);
+    background-color: var(--sidebar-background-hover);
     transition: all 0.2s ease;
 
   }
-  .profileDropdown__header__name--open{
-    max-width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-  }
+
   
   /* Dropdonw */
   .profileDropdown__dropdown{
@@ -204,7 +189,7 @@
    width: 95%;
   }
   .profileDropdown__link:hover{
-    background-color: rgba(0, 153, 254, 1);
+    background-color: var(--background-color-blue);
     transition: all 0.2s ease;
     color: #ffffff;
     stroke: #ffffff;
@@ -284,7 +269,7 @@
         height: 40px;
         justify-content: center;
         width: 100%;
-        margin-top: 5px;
+       
 
       } 
       .profileDropdown{

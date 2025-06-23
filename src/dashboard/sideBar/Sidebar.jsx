@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../supabase/supabaseClient';
-import { SidebarLink } from '../sidebarLink/SidebarLink';
+import { SidebarLink } from '../SidebarLink/SidebarLink';
 import { Profile } from '../Profile/Profile';
-import { Settings } from '../settings/Settings';
+import { Settings } from '../Settings/Settings';
 import { PlanCard } from '../PlanCard/PlanCard';
-import { ProfileDropdown } from '../profileDropdown/ProfileDropdown';
-import { SidebarSites } from '../sidebarSite/SidebarSites';
+import { ProfileDropdown } from '../ProfileDropdown/ProfileDropdown';
+import { SidebarSites } from '../SidebarSite/SidebarSites';
 import "./Sidebar.css";
-import { Tooltip } from '../tooltip/Tooltip';
+import { Tooltip } from '../Tooltip/Tooltip';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../dashboard_animations';
+
 
 // names and icons used in the sidebar
 export const homePages = [
@@ -123,8 +124,6 @@ export const otherpages = [
     
 ]
 
-
-
 // Sidebar component
 export function Sidebar({ 
     onPageChange, 
@@ -142,10 +141,41 @@ export function Sidebar({
     setSiteData,
     siteData,
     modalType
+    
     }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+ 
 
+    // Define overviewPages inside the component to access siteData
+    const overviewPages = [
+        {
+            name:'Overview',
+            icon: <img src={siteData?.["Avatar URL"]} alt="" />
+        },
+        {
+            name:'Scanner',
+            icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.728516 6.99624C0.728516 3.23765 4.15007 0.381093 7.73715 0.762745C8.06726 0.797874 8.46993 0.886272 8.63653 1.27772C8.70607 1.44123 8.70951 1.60997 8.70321 1.73974C8.69755 1.85688 8.67392 2.03939 8.65701 2.1702C8.59722 2.63583 8.76171 3.06457 9.02252 3.26742C9.07963 3.31189 9.14817 3.36616 9.2047 3.42516C9.26519 3.48824 9.3412 3.58596 9.37299 3.72509C9.40455 3.86302 9.37917 3.98304 9.35409 4.06366C9.33041 4.13973 9.29453 4.21803 9.26455 4.28237C9.17886 4.46656 9.20715 4.70298 9.37048 4.92683C9.53422 5.15122 9.79725 5.30569 10.0714 5.31709C10.1691 5.32115 10.2739 5.32588 10.3665 5.34027C10.4637 5.35536 10.585 5.38599 10.7005 5.46627C10.819 5.54861 10.8911 5.65484 10.9396 5.75107C10.9849 5.84078 11.0202 5.94362 11.0517 6.04104C11.1795 6.43607 11.5274 6.69974 11.9224 6.76892C12.0268 6.78572 12.3359 6.83624 12.4174 6.85234C12.5616 6.88086 12.7413 6.9249 12.8969 7.02524C13.0779 7.1419 13.1986 7.31527 13.2463 7.53641C13.2884 7.73154 13.2699 7.94615 13.2285 8.1649C12.6777 11.073 10.1125 13.2701 7.03312 13.2701C3.55336 13.2701 0.728516 10.4634 0.728516 6.99624ZM7.0039 6.99928C7.0039 7.32145 6.74274 7.58261 6.42057 7.58261H6.41532C6.09314 7.58261 5.832 7.32145 5.832 6.99928C5.832 6.6771 6.09314 6.41595 6.41532 6.41595H6.42057C6.74274 6.41595 7.0039 6.6771 7.0039 6.99928ZM3.5039 6.41595C3.82607 6.41595 4.08724 6.15479 4.08724 5.83261C4.08724 5.51044 3.82607 5.24928 3.5039 5.24928H3.49867C3.1765 5.24928 2.91533 5.51044 2.91533 5.83261C2.91533 6.15479 3.1765 6.41595 3.49867 6.41595H3.5039ZM7.58723 10.4993C7.58723 10.8215 7.32607 11.0826 7.0039 11.0826H6.99865C6.67647 11.0826 6.41532 10.8215 6.41532 10.4993C6.41532 10.1771 6.67647 9.91595 6.99865 9.91595H7.0039C7.32607 9.91595 7.58723 10.1771 7.58723 10.4993ZM6.14202 3.80864C6.31288 3.63779 6.31288 3.36077 6.14202 3.18992C5.97117 3.01907 5.69418 3.01907 5.52332 3.18992L4.93999 3.77325C4.76914 3.94411 4.76914 4.22112 4.93999 4.39197C5.11084 4.56282 5.38786 4.56282 5.55871 4.39197L6.14202 3.80864ZM10.2254 7.8566C10.3962 8.02746 10.3962 8.30443 10.2254 8.47529L9.64202 9.05862C9.47117 9.22948 9.1942 9.22948 9.02334 9.05862C8.85248 8.88776 8.85248 8.6108 9.02334 8.43994L9.60667 7.8566C9.77753 7.68575 10.0545 7.68575 10.2254 7.8566ZM3.77332 9.05862C3.60247 8.88776 3.60247 8.6108 3.77332 8.43994C3.94418 8.26908 4.22119 8.26908 4.39204 8.43994L4.97537 9.02327C5.14623 9.19413 5.14623 9.4711 4.97537 9.64195C4.80452 9.81281 4.52751 9.81281 4.35666 9.64195L3.77332 9.05862Z" fill="#686B74"/>
+            </svg>
+            
+        },
+        {
+            name:'Comply Map',
+            icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.728516 6.99624C0.728516 3.23765 4.15007 0.381093 7.73715 0.762745C8.06726 0.797874 8.46993 0.886272 8.63653 1.27772C8.70607 1.44123 8.70951 1.60997 8.70321 1.73974C8.69755 1.85688 8.67392 2.03939 8.65701 2.1702C8.59722 2.63583 8.76171 3.06457 9.02252 3.26742C9.07963 3.31189 9.14817 3.36616 9.2047 3.42516C9.26519 3.48824 9.3412 3.58596 9.37299 3.72509C9.40455 3.86302 9.37917 3.98304 9.35409 4.06366C9.33041 4.13973 9.29453 4.21803 9.26455 4.28237C9.17886 4.46656 9.20715 4.70298 9.37048 4.92683C9.53422 5.15122 9.79725 5.30569 10.0714 5.31709C10.1691 5.32115 10.2739 5.32588 10.3665 5.34027C10.4637 5.35536 10.585 5.38599 10.7005 5.46627C10.819 5.54861 10.8911 5.65484 10.9396 5.75107C10.9849 5.84078 11.0202 5.94362 11.0517 6.04104C11.1795 6.43607 11.5274 6.69974 11.9224 6.76892C12.0268 6.78572 12.3359 6.83624 12.4174 6.85234C12.5616 6.88086 12.7413 6.9249 12.8969 7.02524C13.0779 7.1419 13.1986 7.31527 13.2463 7.53641C13.2884 7.73154 13.2699 7.94615 13.2285 8.1649C12.6777 11.073 10.1125 13.2701 7.03312 13.2701C3.55336 13.2701 0.728516 10.4634 0.728516 6.99624ZM7.0039 6.99928C7.0039 7.32145 6.74274 7.58261 6.42057 7.58261H6.41532C6.09314 7.58261 5.832 7.32145 5.832 6.99928C5.832 6.6771 6.09314 6.41595 6.41532 6.41595H6.42057C6.74274 6.41595 7.0039 6.6771 7.0039 6.99928ZM3.5039 6.41595C3.82607 6.41595 4.08724 6.15479 4.08724 5.83261C4.08724 5.51044 3.82607 5.24928 3.5039 5.24928H3.49867C3.1765 5.24928 2.91533 5.51044 2.91533 5.83261C2.91533 6.15479 3.1765 6.41595 3.49867 6.41595H3.5039ZM7.58723 10.4993C7.58723 10.8215 7.32607 11.0826 7.0039 11.0826H6.99865C6.67647 11.0826 6.41532 10.8215 6.41532 10.4993C6.41532 10.1771 6.67647 9.91595 6.99865 9.91595H7.0039C7.32607 9.91595 7.58723 10.1771 7.58723 10.4993ZM6.14202 3.80864C6.31288 3.63779 6.31288 3.36077 6.14202 3.18992C5.97117 3.01907 5.69418 3.01907 5.52332 3.18992L4.93999 3.77325C4.76914 3.94411 4.76914 4.22112 4.93999 4.39197C5.11084 4.56282 5.38786 4.56282 5.55871 4.39197L6.14202 3.80864ZM10.2254 7.8566C10.3962 8.02746 10.3962 8.30443 10.2254 8.47529L9.64202 9.05862C9.47117 9.22948 9.1942 9.22948 9.02334 9.05862C8.85248 8.88776 8.85248 8.6108 9.02334 8.43994L9.60667 7.8566C9.77753 7.68575 10.0545 7.68575 10.2254 7.8566ZM3.77332 9.05862C3.60247 8.88776 3.60247 8.6108 3.77332 8.43994C3.94418 8.26908 4.22119 8.26908 4.39204 8.43994L4.97537 9.02327C5.14623 9.19413 5.14623 9.4711 4.97537 9.64195C4.80452 9.81281 4.52751 9.81281 4.35666 9.64195L3.77332 9.05862Z" fill="#686B74"/>
+            </svg>
+            
+        },
+        {
+            name:'Integrations',
+            icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.728516 6.99624C0.728516 3.23765 4.15007 0.381093 7.73715 0.762745C8.06726 0.797874 8.46993 0.886272 8.63653 1.27772C8.70607 1.44123 8.70951 1.60997 8.70321 1.73974C8.69755 1.85688 8.67392 2.03939 8.65701 2.1702C8.59722 2.63583 8.76171 3.06457 9.02252 3.26742C9.07963 3.31189 9.14817 3.36616 9.2047 3.42516C9.26519 3.48824 9.3412 3.58596 9.37299 3.72509C9.40455 3.86302 9.37917 3.98304 9.35409 4.06366C9.33041 4.13973 9.29453 4.21803 9.26455 4.28237C9.17886 4.46656 9.20715 4.70298 9.37048 4.92683C9.53422 5.15122 9.79725 5.30569 10.0714 5.31709C10.1691 5.32115 10.2739 5.32588 10.3665 5.34027C10.4637 5.35536 10.585 5.38599 10.7005 5.46627C10.819 5.54861 10.8911 5.65484 10.9396 5.75107C10.9849 5.84078 11.0202 5.94362 11.0517 6.04104C11.1795 6.43607 11.5274 6.69974 11.9224 6.76892C12.0268 6.78572 12.3359 6.83624 12.4174 6.85234C12.5616 6.88086 12.7413 6.9249 12.8969 7.02524C13.0779 7.1419 13.1986 7.31527 13.2463 7.53641C13.2884 7.73154 13.2699 7.94615 13.2285 8.1649C12.6777 11.073 10.1125 13.2701 7.03312 13.2701C3.55336 13.2701 0.728516 10.4634 0.728516 6.99624ZM7.0039 6.99928C7.0039 7.32145 6.74274 7.58261 6.42057 7.58261H6.41532C6.09314 7.58261 5.832 7.32145 5.832 6.99928C5.832 6.6771 6.09314 6.41595 6.41532 6.41595H6.42057C6.74274 6.41595 7.0039 6.6771 7.0039 6.99928ZM3.5039 6.41595C3.82607 6.41595 4.08724 6.15479 4.08724 5.83261C4.08724 5.51044 3.82607 5.24928 3.5039 5.24928H3.49867C3.1765 5.24928 2.91533 5.51044 2.91533 5.83261C2.91533 6.15479 3.1765 6.41595 3.49867 6.41595H3.5039ZM7.58723 10.4993C7.58723 10.8215 7.32607 11.0826 7.0039 11.0826H6.99865C6.67647 11.0826 6.41532 10.8215 6.41532 10.4993C6.41532 10.1771 6.67647 9.91595 6.99865 9.91595H7.0039C7.32607 9.91595 7.58723 10.1771 7.58723 10.4993ZM6.14202 3.80864C6.31288 3.63779 6.31288 3.36077 6.14202 3.18992C5.97117 3.01907 5.69418 3.01907 5.52332 3.18992L4.93999 3.77325C4.76914 3.94411 4.76914 4.22112 4.93999 4.39197C5.11084 4.56282 5.38786 4.56282 5.55871 4.39197L6.14202 3.80864ZM10.2254 7.8566C10.3962 8.02746 10.3962 8.30443 10.2254 8.47529L9.64202 9.05862C9.47117 9.22948 9.1942 9.22948 9.02334 9.05862C8.85248 8.88776 8.85248 8.6108 9.02334 8.43994L9.60667 7.8566C9.77753 7.68575 10.0545 7.68575 10.2254 7.8566ZM3.77332 9.05862C3.60247 8.88776 3.60247 8.6108 3.77332 8.43994C3.94418 8.26908 4.22119 8.26908 4.39204 8.43994L4.97537 9.02327C5.14623 9.19413 5.14623 9.4711 4.97537 9.64195C4.80452 9.81281 4.52751 9.81281 4.35666 9.64195L3.77332 9.05862Z" fill="#686B74"/>
+            </svg>
+            
+        },
+
+    ];
 
     const filteredWebs = webs.filter(web => {
         return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -165,9 +195,9 @@ export function Sidebar({
     };
 
     return (
-        <div className={`${isSidebarOpen ? 'sidebar--open' : 'sidebar'}`}>
-            <div className={`${isSidebarOpen ? 'sidebar__logos--open' : 'sidebar__logos'}`}>
-                <div className={`${isSidebarOpen ? 'sidebar__logo--open' : 'sidebar__logo'}`}>
+        <div className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
+            <div className={`sidebar__logos ${isSidebarOpen ? 'sidebar__logos--open' : ''}`}>
+                <div className={`sidebar__logo ${isSidebarOpen ? 'sidebar__logo--open' : ''}`}>
                 
                     <svg width="21" height="15" viewBox="0 0 21 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                         
@@ -209,7 +239,7 @@ export function Sidebar({
                 </a>
             </div>
             
-            <div className={`${isSidebarOpen ? 'sidebar__container--open' : 'sidebar__container'}`}>
+            <div className={`sidebar__container ${isSidebarOpen ? 'sidebar__container--open' : ''}`}>
                 
                 <div className="sidebar__upper">
                     <div className="sidebar__home">
@@ -234,10 +264,10 @@ export function Sidebar({
                             <span className="sidebar__header__text">Dashboard</span>
                         </a>
                     </div>
-                    <div className={`${isSidebarOpen ? 'sidebar__sites--open' : 'sidebar__sites'}`}>
-                        <div className={`${isSidebarOpen ? 'sidebar__sites-header--open' : 'sidebar__sites-header'}`}>
+                    <div className={`sidebar__sites ${isSidebarOpen ? 'sidebar__sites--open' : ''}`}>
+                        <div className={`sidebar__sites-header ${isSidebarOpen ? 'sidebar__sites-header--open' : ''}`}>
                             <span className='sidebar__sites-title'>SITES</span>
-                            <div className={`${isSearchOpen ? 'sidebar__sites-searcher--open' : 'sidebar__sites-searcher'}`}>
+                            <div className={`sidebar__sites-searcher ${isSearchOpen ? 'sidebar__sites-searcher--open' : ''}`}>
                                 <span className='sidebar__sites-search' onClick={() => {
                                     setIsSearchOpen(!isSearchOpen);
                                     if (isSearchOpen) {
@@ -250,7 +280,7 @@ export function Sidebar({
                                     </svg>
                                 </span>
                                 <input 
-                                    className={`${isSearchOpen ? 'sidebar__sites-input--open' : 'sidebar__sites-input'}`} 
+                                    className={`sidebar__sites-input ${isSearchOpen ? 'sidebar__sites-input--open' : ''}`} 
                                     type="text" 
                                     placeholder='Search sites...'
                                     value={searchQuery}
@@ -274,9 +304,9 @@ export function Sidebar({
                             
                         </div>
                         <div className="sidebar__sites-container">
-                            <div className={`${isSidebarOpen ? 'sitesDisplay--open' : 'sitesDisplay'}`}>
+                            <div className={`sitesDisplay ${isSidebarOpen ? 'sitesDisplay--open' : ''}`}>
                                 {filteredWebs.length === 0 ? (
-                                    <span className={`${isSidebarOpen ? 'sitesDisplay__nosites--open' : 'sitesDisplay__nosites'}`}>
+                                    <span className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
                                         {searchQuery ? 'No sites found' : (
                                             <div className="nosites__container">
                                                 <div className="nosites__text">
@@ -328,6 +358,7 @@ export function Sidebar({
                                                     toggleSidebar={toggleSidebar}
                                                     setIsSidebarOpen={setIsSidebarOpen}
                                                     modalType={modalType}
+                                                    globalSiteData={siteData}
                                                 />
                                             </div>
                                         )
@@ -374,6 +405,7 @@ export function Sidebar({
                     setModalType={setModalType}
                     setIsModalOpen={setIsModalOpen}
                     isModalOpen={isModalOpen}
+                    modalType={modalType}
                     /> 
 
                 </div>

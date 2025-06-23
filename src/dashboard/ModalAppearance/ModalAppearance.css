@@ -22,13 +22,13 @@
 }
 .modalAppearance__title{
     font-size: 14px;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 1);
+    font-weight: var(--font-weight);
+    color: var(--color-black);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__description{
     font-size: 11px;
-    color: rgba(104, 107, 116, 1);
+    color: var(--color-gray);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__divider{
@@ -42,14 +42,13 @@
     gap: 15px;
 }
 .modalAppearance__mid__title{
-    font-size: 12px;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 1);
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
+    color: var(--color-black);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__choices{
     display: flex;
-    
     width: 100%;
     justify-content: space-between;
     align-items: center;
@@ -70,9 +69,9 @@
     overflow: hidden;
 }
 .modalAppearance__choice__title{
-    font-size: 12px;
-    font-weight: 500;
-    color: rgba(104, 107, 116, 1);
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
+    color: var(--color-gray);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__imgWrapper--light{
@@ -141,15 +140,15 @@
 }
 
 .modalAppearance__choice--active{
-    border: 2px solid rgba(0, 153, 254, 1);
+    border: 2px solid var(--background-color-blue);
 }
 
 .modalAppearance__choice > .modalAppearance__choice--active + .modalAppearance__choice__title{
-    color: rgba(0, 153, 254, 1);
+    color: var(--background-color-blue);
 }
 
 .modalAppearance__imgWrapper--system:has(.modalAppearance__choice--active) ~ .modalAppearance__choice__title {
-    color: rgba(0, 153, 254, 1);
+    color: var(--background-color-blue);
 }
 
 
@@ -180,9 +179,9 @@
     
 }
 .modalAppearance__ancentColor__title{
-    font-size: 12px;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 1);
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
+    color: var(--color-black);
     letter-spacing: var(--letter-spacing-negative);
     border: none;
 }
@@ -237,10 +236,9 @@
     background: var(--background-color-blue);
     border: none;
     border-radius: 7px;
-    font-family: var(--font-family);
     letter-spacing: var(--letter-spacing-negative);
-    font-size: 12px;
-    font-weight: 500;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     color: #FFF;
     cursor: pointer;
     box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;

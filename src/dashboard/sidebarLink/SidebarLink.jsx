@@ -2,7 +2,7 @@ import { useId } from 'react';
 
 
 // SidebarLink component
-export const SidebarLink = ({ icon, text, onClick, className, children, modalType}) => {
+export const SidebarLink = ({ icon, text, onClick, className, children}) => {
     const sidebarLinkId = useId();      
     return (
         <a 

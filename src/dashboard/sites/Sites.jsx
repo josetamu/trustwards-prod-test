@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Site } from '../site/Site';
-import { Sort } from '../sort/Sort';
-import { View } from '../view/View';
+import { Site } from '../Site/Site';
+import { Sort } from '../Sort/Sort';
+import { View } from '../View/View';
 import './Sites.css'
 
 export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData}) => {

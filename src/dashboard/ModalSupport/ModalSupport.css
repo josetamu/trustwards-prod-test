@@ -40,11 +40,10 @@
 
 }
 .modalSupport__description{
-    font-size: 10px;
-    font-weight: 500;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     color: rgba(102, 102, 102, 1);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
 }
 
 .modalSupport__choices {
@@ -76,16 +75,15 @@
 }
 
 .modalSupport__choice__text{
-    font-size: 12px;
-    font-weight: 500;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
-    color: rgba(104, 107, 116, 1);
+    color: var(--color-gray);
 }
 
 .modalSupport__choice--active{
-    color: rgba(0, 153, 254, 1);
-    border: 1.5px solid rgba(0, 153, 254, 1);
+    color: var(--background-color-blue);
+    border: 1.5px solid var(--background-color-blue);
 }
 
 .modalSupport__choice--active .modalSupport__choice__icon{
@@ -96,7 +94,7 @@
 }
 
 .modalSupport__choice--active .modalSupport__choice__text{
-    color: rgba(0, 153, 254, 1);
+    color: var(--background-color-blue);
 }
 .modalSupport__mid{
     width: 100%;
@@ -115,11 +113,10 @@
     position: relative;
 }   
 .modalSupport__input__title{
-    font-size: 12px;
-    font-weight: 500;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
-    color: rgba(0, 0, 0, 1);
+    color: var(--color-black);
 }
 
 .modalSupport__input__field{
@@ -128,11 +125,10 @@
     border: 1px solid rgba(224, 224, 224, 1);
     border-radius: 8px;
     padding: 10px;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
-    color: rgba(104, 107, 116, 1);
+    color: var(--color-gray);
  
   
 }
@@ -163,10 +159,9 @@
     
 }
 .modalSupport__dropZone__span{
-    font-size: 10px;
-    font-weight: 500;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
     color: rgba(102, 102, 102, 1);
 }
 
@@ -174,11 +169,10 @@
     width: 100%;
     height: 25px;
     border-radius: 8px;
-    background-color: rgba(0, 153, 254, 1);
-    font-size: 12px;
-    font-weight: 500;
+    background-color: var(--background-color-blue);
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
     color: rgba(255, 255, 255, 1);
     cursor: pointer;
     border: none;
@@ -209,11 +203,10 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 10px;
-    font-weight: 500;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
-    color: rgba(104, 107, 116, 1);
+    color: var(--color-gray);
     max-width: 80px;
     justify-content: center;
     width: 100%;

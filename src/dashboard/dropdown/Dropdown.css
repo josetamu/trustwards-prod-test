@@ -11,7 +11,7 @@
   min-width: 140px;
   max-width: 90vw;
   background: rgba(255, 255, 255, 0.90);
-  border: 1px solid #E0E0E0;
+  border: var(--border);
   border-radius: 8px;
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(2.5px);
@@ -32,11 +32,10 @@
   background: none;
   border: none;
   border-radius: 6px;
-  color: #000000;
-  font-family: var(--font-family);
+  color: var(--color-black);
   letter-spacing: var(--letter-spacing);
-  font-weight: 500;
-  font-size: 12px;
+  font-weight: var(--font-weight);
+  font-size: var(--font-size-medium);
   padding: 8px 12px;
   text-align: left;
   cursor: pointer;
@@ -68,10 +67,10 @@
   fill: none;
 }
 .dropdown__icon--delete {
-  color: #D00606;
+  color: var(--color-logout);
 }
 .dropdown__item.dropdown__item--delete:hover .dropdown__icon--delete {
-  color: #D00606;
+  color: var(--color-logout);
 }
 .dropdown__item:hover .dropdown__icon {
   color: #fff;

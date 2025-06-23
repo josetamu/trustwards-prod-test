@@ -22,6 +22,15 @@
   --sidebar-icon-size: 16px;
   --sidebar-width-open: 200px;
   --sidebar-width-close: 70px;
+  --sidebar-font-size: 14px;
+  --color-black: rgba(0, 0, 0, 1);
+  --sidebar-background: transparent;
+  --border: 1px solid var(--border-color);
+  --sidebar-background-hover: rgba(235, 235, 235, 1);
+  --color-logout: #D00606;
+  --color-gray: rgba(104, 107, 116, 1);
+  --color-paragraph-delete: rgba(94, 94, 94, 1);
+  
   
 
 

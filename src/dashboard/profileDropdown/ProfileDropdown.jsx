@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../supabase/supabaseClient';
-import { SidebarLink } from '../sidebarLink/SidebarLink';
+import { SidebarLink } from '../SidebarLink/SidebarLink';
 import { profilePages } from '../sideBar/Sidebar';
 import "./ProfileDropdown.css";
 import { Dropdown } from '../dropdown/Dropdown';
@@ -10,7 +10,7 @@ import logoDefault from '../../assets/logo default.png';
 
 
 
-export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen}) => {
+export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 767);
 
     useEffect(() => {
@@ -38,14 +38,17 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                                     icon={profilePage.icon}
                                     text={profilePage.name}
                                     onClick={() => {
-                                        /* setUserSettings(profilePage.name); */
-                                        setIsModalOpen(true);
-                                        setModalType(profilePage.name);
+                                        if(modalType === profilePage.name && isModalOpen){
+                                            setIsModalOpen(false);
+                                        } else {
+                                            setIsModalOpen(true);
+                                            setModalType(profilePage.name);
 
                                         if(window.innerWidth < 767) {
-                                            setIsSidebarOpen(false);
-                                            toggleSidebar();
-                                            toggleDropdown();
+                                                setIsSidebarOpen(false);
+                                                toggleSidebar();
+                                                toggleDropdown();
+                                            }
                                         }
                                         
                                     }}
@@ -89,7 +92,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
     
     
     return (
-        <div className={`${isSidebarOpen ? 'profileDropdown--open' : 'profileDropdown'}`} 
+        <div className={`profileDropdown ${isSidebarOpen ? 'profileDropdown--open' : ''}`} 
           onMouseEnter={() => isSidebarOpen && setIsDropdownOpen(true)} 
           onMouseLeave={() => isSidebarOpen && setIsDropdownOpen(false)}>
              <Dropdown
@@ -180,7 +183,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
             </div> */}
             
             
-           <div className={`${isSidebarOpen ? 'profileDropdown__profile--open' : 'profileDropdown__profile'}`} onClick={() => {
+           <div className={`profileDropdown__profile ${isSidebarOpen ? 'profileDropdown__profile--open' : ''}`} onClick={() => {
               toggleDropdown(); 
             }}>
             <div className="profileDropdown__header">

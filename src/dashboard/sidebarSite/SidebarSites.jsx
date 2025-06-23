@@ -2,14 +2,14 @@ import "./SidebarSites.css";
 import { useId, useState } from "react";
 import { SiteMenuSB } from "../SiteMenuSB/SiteMenuSB";
 import { Dropdown } from "../dropdown/Dropdown";
-import { Tooltip } from "../tooltip/Tooltip";
+import { Tooltip } from "../Tooltip/Tooltip";
 import "../Dropdown/Dropdown.css";
 
-export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType}) {
+export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
-    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType}) => {
+    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData}) => {
       return (
         <>
           <button className="dropdown__item">
@@ -34,10 +34,16 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
           <button 
             className="dropdown__item" 
             onClick={() => {
-              setIsModalOpen(true);
-              setModalType('EditSite');
-              setIsDropdownOpen(false);
-              setSiteData(siteData);
+              if(modalType === 'EditSite' && isModalOpen && siteData.id === globalSiteData?.id) {
+                setIsModalOpen(false);
+                setModalType(null);
+                setIsDropdownOpen(false);
+              } else {
+                setIsModalOpen(true);
+                setModalType('EditSite');
+                setIsDropdownOpen(false);
+                setSiteData(siteData);
+              }
               
               // Check if we're on mobile and handle sidebar/dropdown state
               if (window.innerWidth <= 767) {
@@ -91,7 +97,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
     };
     
     return(
-        <div className={`${isSidebarOpen ? 'sidebarSites__site--open' : 'sidebarSites__site'}`} id={sidebarSitesId}>
+        <div className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`} id={sidebarSitesId}>
             <div className="sidebarSites__header">
                 <span className="sidebarSites__header-avatar">
                     <img className="sidebarSites__header-avatar-img" src={avatar}/>
@@ -112,7 +118,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 position="right"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
-                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} />}
+                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} />}
             >
                 <div className="sidebarSites__edit" onClick={() => setIsDropdownOpen(v => !v)}>
                     <svg width="9" height="2" viewBox="0 0 9 2" fill="none" xmlns="http://www.w3.org/2000/svg">

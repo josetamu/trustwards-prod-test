@@ -72,11 +72,10 @@
 }
 
 .modal__title {
-  font-family: var(--font-family);
-  letter-spacing: var(--letter-spacing);
-  font-weight: 500;
+  font-weight: var(--font-weight);
   font-size: var(--heading-font-size);
-  color: #000;
+  color: var(--color-black);
+  letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal__inputs {
@@ -98,29 +97,28 @@
 }
 
 .modal__input-label {
-  font-family: var(--font-family);
-  letter-spacing: var(--letter-spacing);
-  font-size: 12px;
-  font-weight: 500;
-  color: #686B74;
+
+  letter-spacing: var(--letter-spacing-negative);
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight);
+  color: var(--color-black);
 }
 
 .modal__input {
   width: 100%;
   padding: var(--input-padding);
-  border: 1px solid #E0E0E0;
+  border: var(--border);
   border-radius: 8px;
   background: var(--input-background);
-  font-family: var(--font-family);
-  letter-spacing: var(--letter-spacing);
-  font-size: 12px;
-  font-weight: 500;
+  letter-spacing: var(--letter-spacing-negative);
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight);
   color: var(--input-color);
 }
 
 .modal__divider {
   height: 0.8px;
-  background: #E0E0E0;
+  background: var(--border-color);
   margin: 4px 0;
   width: 100%;
   border: none;
@@ -341,10 +339,9 @@
   background: var(--background-color-blue);
   border: none;
   border-radius: 7px;
-  font-family: var(--font-family);
   letter-spacing: var(--letter-spacing-negative);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight);
   color: #FFF;
   cursor: pointer;
   box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;

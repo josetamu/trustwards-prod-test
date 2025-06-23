@@ -3,9 +3,9 @@ import { supabase } from '../supabase/supabaseClient';
 import './Global.css'
 
 import Academy from './Academy'
-import Home from './home/Home'
-import { LegalNews } from './legalNews/LegalNews'
-import { Settings } from './settings/Settings'
+import Home from './Home/Home'
+import { LegalNews } from './LegalNews/LegalNews'
+import { Settings } from './Settings/Settings'
 import { Sidebar, homePages, siteMenuPages, otherpages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
@@ -30,6 +30,7 @@ function App() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [siteData, setSiteData] = useState(null);
   const [modalProps, setModalProps] = useState(null);
+  const [isSiteOpen, setIsSiteOpen] = useState('');
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -63,8 +64,8 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'darezo.2809@gmail.com',
-      //email: 'oscar.abad.brickscore@gmail.com',  
+      /* email: 'darezo.2809@gmail.com', */
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -293,6 +294,8 @@ function App() {
       setSiteData={setSiteData}
       siteData={siteData}
       modalType={modalType}
+      isSiteOpen={isSiteOpen}
+      setIsSiteOpen={setIsSiteOpen}
       />
     <div className="content__container">
       {renderActivePage()}
