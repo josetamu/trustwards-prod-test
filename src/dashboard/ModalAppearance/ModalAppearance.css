@@ -4,6 +4,7 @@
     padding: 15px;
     width: 100%;
     gap: 15px;
+    padding-bottom: 80px;
     
 }
 .modal:has(.modalAppearance__content){
@@ -158,7 +159,7 @@
 .modalAppearance__bottom{
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 15px;
 }
 .modalAppearance__ancentColor{
     display: flex;
@@ -251,11 +252,73 @@
 
 .modalAppearance__ancentColor__choice--active{
     box-shadow:
-    0 0 4px rgba(0, 0, 0, 0.1),    /* Sombra paralela negra suave */
+    0 0 4px rgba(0, 0, 0, 0.1),    
     0 0 0 2px white,               /* Borde externo blanco */
-    0 0 0 4px #0094ff;             /* Borde externo azul */
+    0 0 0 3px #0094ff;             /* Borde externo azul */
 
+}
+.modalAppearance__ReducedMotion{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.modalAppearance__ReducedMotion__title{
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
+    color: var(--color-black);
+    letter-spacing: var(--letter-spacing-negative);
 }
 
 
 
+
+
+
+
+.modalAppearance__ReducedMotion__label {
+    position: relative;
+    display: inline-block;
+    width: 26px;
+    height: 16px;
+  }
+  
+  .modalAppearance__ReducedMotion__input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .modalAppearance__ReducedMotion__slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(227, 227, 227, 1);
+    border-radius: 34px;
+    transition: .4s;
+    overflow: hidden;
+    
+  }
+  
+  .modalAppearance__ReducedMotion__slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 3px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider {
+    background-color: var(--background-color-blue);
+  }
+  
+.modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider:before {
+    transform: translateX(8px);
+}

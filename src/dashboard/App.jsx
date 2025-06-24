@@ -280,7 +280,6 @@ function App() {
             onClose={() => setIsModalOpen(false)}
             onSave={() => {
               // Refresh user data after saving appearance settings
-                setIsModalOpen(false);
                 getAppearanceSettings(user.id); // Refresh appearance settings after saving
               
             }}
