@@ -33,7 +33,13 @@ export default function SiteView({selectedSite, siteTab, setSiteTab}) {
 return (
     <div className='siteView'>
         <div className='siteView__header'>
+            <div className='siteView__header__avatar'>
+                <img src={selectedSite["Avatar URL"]} alt={selectedSite.Name} />
+            </div>
             <span className='siteView__header__title'>{selectedSite.Name}</span>
+            <span className='siteView__header__plan'>{selectedSite.Plan}</span>
+            
+
         </div>
         <div className='siteView__content'>
             {renderTabSite()}
