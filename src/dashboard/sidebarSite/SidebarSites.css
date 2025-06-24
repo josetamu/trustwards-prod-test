@@ -21,7 +21,7 @@
     white-space: nowrap;
     border: 1px solid transparent;
     gap: 10px;
-    padding: 4.5px 3.5px 1.5px 3.5px;
+    padding: 4.5px;
     border-radius: 10px;
     transition: background-color 0.3s ease;
 }
@@ -62,9 +62,15 @@
     width: 22px;
     height: 22px;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 10px;
     background-color: #fff;
-    padding: 4px;
+    padding: 2px;
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+    
 }
 
 
@@ -86,7 +92,6 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     font-family: var(--font-family);
-    padding-bottom: 4px;
     color: var(--color-black);
 }
 

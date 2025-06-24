@@ -9,7 +9,7 @@ import { Settings } from './Settings/Settings'
 import { Sidebar, homePages, siteMenuPages, otherpages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
-import { Profile } from './Profile/Profile'
+import { Profile } from './ModalAccount/ModalAccount'
 import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
@@ -17,6 +17,7 @@ import { ModalEditSite } from './ModalEditSite/ModalEditSite'
 import { ModalDelete } from './ModalDelete/ModalDelete'
 import { ModalSupport } from './ModalSupport/ModalSupport'
 import { ModalAppearance } from './ModalAppearance/ModalAppearance'
+import SiteView from './SiteView/SiteView'
 
 function App() {
   const [sites, setSites] = useState([]);
@@ -32,6 +33,8 @@ function App() {
   const [modalProps, setModalProps] = useState(null);
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
+  const [siteTab, setSiteTab] = useState('Overview');
+  const [appearanceSettings, setAppearanceSettings] = useState(null);
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -90,6 +93,20 @@ function App() {
     }
   };
 
+
+
+  const getAppearanceSettings = async (userId) => {
+    const { data, error } = await supabase
+      .from('Appearance')
+      .select('*')
+      .eq('userid', userId)
+      .single();
+    setAppearanceSettings(data);
+  };
+
+
+
+
   // Function to fetch sites from Supabase
   const fetchSites = async (userId) => {
     if (!userId) {
@@ -122,9 +139,11 @@ function App() {
         if (session) {
           getUser(session.user.id);
           fetchSites(session.user.id); // Fetch sites when user is authenticated
+          getAppearanceSettings(session.user.id); // Fetch appearance settings when user is authenticated
         } else {
           getUser(null);
           setwebs([]); // Clear sites when user logs out
+          setAppearanceSettings(null); // Clear appearance settings when user logs out
         }
       }
     );
@@ -155,9 +174,10 @@ function App() {
   // Render the appropriate view based on active page
   const renderActivePage = () => {
     switch (activePage) {
-      case 'Home':
-        return <Home />;
       case 'Websites':
+        if(isSiteOpen){
+          return <SiteView selectedSite={selectedSite} siteTab={siteTab} setSiteTab={setSiteTab} />
+        }
         return (
           <Sites 
             sites={sites}
@@ -256,8 +276,15 @@ function App() {
           />)
       case 'Appearance':
         return ( <ModalAppearance
+            user={user}
             onClose={() => setIsModalOpen(false)}
-            onSave={() => setIsModalOpen(false)}
+            onSave={() => {
+              // Refresh user data after saving appearance settings
+                getAppearanceSettings(user.id); // Refresh appearance settings after saving
+              
+            }}
+            appearanceSettings={appearanceSettings}
+            setAppearanceSettings={setAppearanceSettings}
           />)
 
         default:
@@ -299,6 +326,8 @@ function App() {
       setSelectedSite={setSelectedSite}
       isSiteOpen={isSiteOpen}
       setIsSiteOpen={setIsSiteOpen}
+      siteTab={siteTab}
+      setSiteTab={setSiteTab}
       />
     <div className="content__container">
       {renderActivePage()}

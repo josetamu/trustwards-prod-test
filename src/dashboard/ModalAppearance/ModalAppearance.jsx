@@ -1,27 +1,78 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../../supabase/supabaseClient';
 import './ModalAppearance.css';
 
 
-export const ModalAppearance = () => {
+export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, setAppearanceSettings }) => {
     const [selected, setSelected] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
+    const [reducedMotion, setReducedMotion] = useState(false);
+
+    // Load user's current appearance settings
+    useEffect(() => {
+        // Always set the values, even if appearanceSettings is null/undefined
+        setSelected(appearanceSettings?.Theme || '');
+        setSelectedColor(appearanceSettings?.['Accent Color'] || '');
+        setReducedMotion(appearanceSettings?.['Reduced Motion'] || false);
+    }, [appearanceSettings]);
+
+    // Save appearance settings to database
+    const handleSave = async (newTheme = null, newColor = null, newReducedMotion = null) => {
+        const themeToSave = newTheme !== null ? newTheme : selected;
+        const colorToSave = newColor !== null ? newColor : selectedColor;
+        const motionToSave = newReducedMotion !== null ? newReducedMotion : reducedMotion;
+        
+        try {
+            const { error } = await supabase
+                .from('Appearance')
+                .update({
+                    Theme: themeToSave,
+                    'Accent Color': colorToSave,
+                    'Reduced Motion': motionToSave
+                })
+                .eq('userid', user.id);
+
+            if (error) {
+                console.error('Error saving appearance settings:', error);
+            } else {
+                // Update local state
+                if (newTheme !== null) setSelected(newTheme);
+                if (newColor !== null) setSelectedColor(newColor);
+                if (newReducedMotion !== null) setReducedMotion(newReducedMotion);
+                
+                // Call the onSave prop to refresh user data in parent component
+                if (onSave) {
+                    onSave();
+                }
+            }
+        } catch (error) {
+            console.error('Error saving appearance settings:', error);
+        }
+    };
+
+    // Handle theme selection
+    const handleThemeSelect = (theme) => {
+        handleSave(theme, null, null);
+    };
+
+    // Handle color selection
+    const handleColorSelect = (color) => {
+        handleSave(null, color, null);
+    };
+
+    // Handle reduced motion toggle
+    const handleReducedMotionToggle = (checked) => {
+        handleSave(null, null, checked);
+    };
+
     return (
         <div className="modalAppearance__content">
-            <div className="modalAppearance__top">
-                <div className="modalAppearance__header">
-                    <span className="modalAppearance__title">Appearance</span>
-                    <span className="modalAppearance__description">
-                        Customize your interface preferences.
-                    </span>
-                </div>
-                <div className="modalAppearance__divider"></div>
-            </div>
             <div className="modalAppearance__mid">
                     <span className="modalAppearance__mid__title">
                         Interface theme
                     </span>
                     <div className="modalAppearance__choices">
-                        <div className="modalAppearance__choice" onClick={() => setSelected('light')}>
+                        <div className="modalAppearance__choice" onClick={() => handleThemeSelect('light')}>
                             <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--light ${selected === 'light' ? 'modalAppearance__choice--active' : ''}`}>
                                 <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_350)">
@@ -73,7 +124,7 @@ export const ModalAppearance = () => {
                                 Light
                             </span>
                         </div>
-                        <div className="modalAppearance__choice" onClick={() => setSelected('dark')}>
+                        <div className="modalAppearance__choice" onClick={() => handleThemeSelect('dark')}>
                         <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--dark ${selected === 'dark' ? 'modalAppearance__choice--active' : ''}`}>
                             <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g filter="url(#filter0_d_410_351)">
@@ -125,7 +176,7 @@ export const ModalAppearance = () => {
                                 Dark
                             </span>
                         </div>
-                        <div className="modalAppearance__choice" onClick={() => setSelected('system')}>
+                        <div className="modalAppearance__choice" onClick={() => handleThemeSelect('system')}>
                             <div className="modalAppearance__imgWrapper modalAppearance__imgWrapper--system">
                                 <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--light ${selected === 'system' ? 'modalAppearance__choice--active' : ''}`}>
                                     <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -222,22 +273,33 @@ export const ModalAppearance = () => {
                         Accent color
                     </span>
                     <div className="modalAppearance__ancentColor__choices">
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--green ${selectedColor === 'green' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => setSelectedColor('green')}></div>
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--purple ${selectedColor === 'purple' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => setSelectedColor('purple')}></div>
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--red ${selectedColor === 'red' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => setSelectedColor('red')}></div>
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--orange ${selectedColor === 'orange' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => setSelectedColor('orange')}></div>
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--blue ${selectedColor === 'blue' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => setSelectedColor('blue')}></div>    
+                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--green ${selectedColor === 'green' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('green')}></div>
+                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--purple ${selectedColor === 'purple' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('purple')}></div>
+                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--red ${selectedColor === 'red' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('red')}></div>
+                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--orange ${selectedColor === 'orange' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('orange')}></div>
+                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--blue ${selectedColor === 'blue' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('blue')}></div>    
                     </div>
                     
                 </div>
-                <div className="modalAppearance__ancentColor__save">
-                        <button className="modalAppearance__ancentColor__button">
-                            Save
-                        </button>
-                    </div>
+                <div className="modalAppearance__divider"></div>
+                <div className="modalAppearance__ReducedMotion">
+                    <span className="modalAppearance__ReducedMotion__title">
+                        Reduced motion
+                    </span>
+                    <label className="modalAppearance__ReducedMotion__label">
+                        <input 
+                            className="modalAppearance__ReducedMotion__input"
+                            type="checkbox" 
+                            checked={reducedMotion}
+                            onChange={(e) => handleReducedMotionToggle(e.target.checked)}
+                        />
+                        <span className="modalAppearance__ReducedMotion__slider"></span>
+                    </label>
+                </div>
             </div>
     
         </div>
     )
+
 }
 

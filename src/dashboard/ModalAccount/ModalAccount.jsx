@@ -1,4 +1,4 @@
-import './Profile.css';
+import './ModalAccount.css';
 import { supabase } from '../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
 import { Tooltip } from '../Tooltip/Tooltip';
@@ -227,123 +227,30 @@ export function Profile({ user, setUser, setIsModalOpen }) {
 
   return (
       <>
-        <div className="profile__banner" style={{ background: customHeader.headerGradient }}>
-
-        </div>
-        <div className="profile__header">
-          <div className="profile__avatar">
-            {customHeader.avatar
-              ? <img className="profile__avatar__img" src={customHeader.avatar.src} alt="User" />
-              : <img className="profile__avatar__img" src={user?.["Avatar URL"] || logoDefault} alt="User" />
-            }
-            <svg 
-              className="profile__avatar__svg" 
-              width="8" 
-              height="8" 
-              viewBox="0 0 8 8" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-              onClick={() => setShowEdit(true)}
-            >
-              <path d="M5.07202 1.99478L5.53925 1.52753C5.79732 1.26947 6.21572 1.26947 6.47378 1.52753C6.73182 1.78558 6.73182 2.20398 6.47378 2.46203L6.00652 2.92929M5.07202 1.99478L2.32739 4.73942C1.97896 5.08785 1.80474 5.26205 1.68611 5.47435C1.56747 5.68665 1.44812 6.18795 1.33398 6.66732C1.81335 6.55318 2.31465 6.43382 2.52695 6.31518C2.73925 6.19655 2.91346 6.02235 3.2619 5.67392L6.00652 2.92929M5.07202 1.99478L6.00652 2.92929" stroke="#696969" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path opacity="0.4" d="M3.66602 6.66602H5.66602" stroke="#696969" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </div> 
-          <span className="profile__header__name">{user?.["First Name"]} {user?.["Second Name"] || 'User'}</span>
-          <span className="profile__header__email">{user?.Email || 'Email'}</span>
-        </div>
-        <div className="profile__body" onKeyDown={handleKeyPress}>
-          <div className="profile__row">
-            <span className="profile__row__span">Name</span>
-            <div className="profile__input">
-              <div className="profile__input-wrapper">
-                <input 
-                  className="profile__label profile__label__name" 
-                  type="text" 
-                  /* placeholder={`${user?.["First Name"] || 'FirstName'}`}  */
-                  value={firstName} 
-                  onChange={(e) => handleInputEdit('firstName', e.target.value)}
-                  aria-invalid={!!errors.firstName}
-                  aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-                />
-                {errors.firstName && (
-                  <Tooltip 
-                    message={errors.firstName} 
-                    id="firstName-error"
-                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                    type='alert'
-                  />
-                )}
-              </div>
-              <div className="profile__input-wrapper">
-                <input 
-                  className="profile__label profile__label__name" 
-                  type="text" 
-                  /* placeholder={`${user?.["Second Name"] || 'Second Name'}`}  */
-                  value={secondName} 
-                  onChange={(e) => handleInputEdit('secondName', e.target.value)}
-                  aria-invalid={!!errors.secondName}
-                  aria-describedby={errors.secondName ? 'secondName-error' : undefined}
-                />
-                {errors.secondName && (
-                  <Tooltip 
-                    message={errors.secondName} 
-                    id="secondName-error"
-                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                    type='alert'
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="profile__row">
-            <span className="profile__row__span">Email</span>
-            <div className="profile__input">
-              <div className="profile__input-wrapper">
-                <input 
-                  className="profile__label" 
-                  type="text" 
-                 /*  placeholder={`${user?.Email || 'example@email.com'}`} */ 
-                  value={email} 
-                  onChange={(e) => handleInputEdit('email', e.target.value)}
-                  aria-invalid={!!errors.email}
-                  aria-describedby={errors.email ? 'email-error' : undefined}
-                />
-                {errors.email && (
-                  <Tooltip 
-                    message={errors.email} 
-                    id="email-error"
-                    responsivePosition={{ desktop: 'bottom', mobile: 'bottom' }}
-                    type='alert'
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="profile__row profile__row--last">
-            <span className="profile__row__span">Password</span>
-            <div className="profile__input">
-              <button className="profile__input__button">Send link</button>
-            </div>    
+       <div className="modalAccount">
+        <div className="modalAccount__aside">
+          <div className="modalAccount__header">
+            <img className='modalAccount__avatar' src={user?.["Avatar URL"]} alt="logo" />
+            <span className='modalAccount__edit'>Edit</span>
           </div>
         </div>
-        <div className="profile__footer">
-         {/*  <button className="profile__footer__logout" onClick={userLogout}>Log out</button> */}
-          <button className="profile__footer__save" onClick={async () => {
-            try {
-              const success = await updateUser();
-              if (success) {
-                setIsModalOpen(false);
-              }
-            } catch (error) {
-              console.error('Error updating user:', error);
-              setErrors(prev => ({
-                ...prev,
-                general: 'Error updating user. Please try again.'
-              }));
-            }
-          }}>Save</button>
+        <div className="modalAccount__main">
+          <div className="modalAccount__section">
+            <span className='modalAccount__title'>Name</span>  
+            <span className='modalAccount__field'>{user?.Name}</span>
+            <span className='modalAccount__change'>Change name</span>
+          </div>
+          <div className="modalAccount__section">
+            <span className='modalAccount__title'>Name</span>  
+            <span className='modalAccount__field'>{user?.Email}</span>
+            <span className='modalAccount__change'>Change name</span>
+          </div>
+          <div className="modalAccount__section">
+            <span className='modalAccount__title'>Name</span>  
+            <span className='modalAccount__change'>Change name</span>
+          </div>
         </div>
+       </div>
       </>
   )
 }
