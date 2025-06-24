@@ -55,9 +55,9 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                                 />
                             ))}
                             <div className="dropdown__divider"></div>
-                            <SidebarLink
+                            <button
                                 className="dropdown__item dropdown__item--delete"
-                                icon={
+                                >
                                     <span className="dropdown__icon dropdown__icon--delete">
                                         <svg  width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clipPath="url(#clip0_64_417)">
@@ -71,9 +71,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                                             </defs>
                                         </svg>
                                     </span>
-                                    }
-                                text="Logout"
-                            />
+                                    Log out</button>
             </>
             
         )
@@ -189,7 +187,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
             <div className="profileDropdown__header">
                 <img className="profileDropdown__header__avatar" src={user?.["Avatar URL"] || logoDefault} alt="avatar" /> 
                     
-                <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.["First Name"]} {user?.["Second Name"] || "User"}</span> 
+                <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.Name || "User"}</span> 
             </div>
             <div className={`${isSidebarOpen ? 'profileDropdown__icons--open' : 'profileDropdown__icons'}`}>
                 <span className="profileDropdown__icons--down">

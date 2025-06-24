@@ -408,7 +408,7 @@
   }
   
   .sidebar__link:hover {
-    background-color: var(--sidebar-background-hover);
+    background-color: #fff;
     border-radius: 12px;
     border: var(--border);
   }
@@ -449,9 +449,10 @@
     letter-spacing: var(--letter-spacing-negative);
   }
   .site__link:hover {
-    background-color: var(--sidebar-background-hover);
+    background-color: #fff;
+    border: var(--border);
     border-radius: 12px;
-    border: 1px solid transparent;
+    
   }
   
  
