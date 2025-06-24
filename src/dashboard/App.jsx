@@ -32,6 +32,7 @@ function App() {
   const [modalProps, setModalProps] = useState(null);
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
+  const [appearanceSettings, setAppearanceSettings] = useState(null);
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -90,6 +91,20 @@ function App() {
     }
   };
 
+
+
+  const getAppearanceSettings = async (userId) => {
+    const { data, error } = await supabase
+      .from('Appearance')
+      .select('*')
+      .eq('userid', userId)
+      .single();
+    setAppearanceSettings(data);
+  };
+
+
+
+
   // Function to fetch sites from Supabase
   const fetchSites = async (userId) => {
     if (!userId) {
@@ -122,9 +137,11 @@ function App() {
         if (session) {
           getUser(session.user.id);
           fetchSites(session.user.id); // Fetch sites when user is authenticated
+          getAppearanceSettings(session.user.id); // Fetch appearance settings when user is authenticated
         } else {
           getUser(null);
           setwebs([]); // Clear sites when user logs out
+          setAppearanceSettings(null); // Clear appearance settings when user logs out
         }
       }
     );
@@ -256,8 +273,16 @@ function App() {
           />)
       case 'Appearance':
         return ( <ModalAppearance
+            user={user}
             onClose={() => setIsModalOpen(false)}
-            onSave={() => setIsModalOpen(false)}
+            onSave={() => {
+              // Refresh user data after saving appearance settings
+                setIsModalOpen(false);
+                getAppearanceSettings(user.id); // Refresh appearance settings after saving
+              
+            }}
+            appearanceSettings={appearanceSettings}
+            setAppearanceSettings={setAppearanceSettings}
           />)
 
         default:

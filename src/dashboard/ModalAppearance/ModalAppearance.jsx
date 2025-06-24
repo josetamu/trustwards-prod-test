@@ -1,10 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../../supabase/supabaseClient';
 import './ModalAppearance.css';
 
 
-export const ModalAppearance = () => {
+export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, setAppearanceSettings }) => {
     const [selected, setSelected] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
+
+
+    // Load user's current appearance settings
+    useEffect(() => {
+        // Always set the values, even if appearanceSettings is null/undefined
+        setSelected(appearanceSettings?.Theme || '');
+        setSelectedColor(appearanceSettings?.['Accent Color'] || '');
+    }, [appearanceSettings]);
+
+    // Save appearance settings to database
+    const handleSave = async () => {
+        
+        try {
+            const { error } = await supabase
+                .from('Appearance')
+                .update({
+                    Theme: selected,
+                    'Accent Color': selectedColor
+                })
+                .eq('userid', user.id);
+
+            if (error) {
+                console.error('Error saving appearance settings:', error);
+            } else {
+                // Call the onSave prop to refresh user data in parent component
+                if (onSave) {
+                    onSave();
+                }
+                // Close modal after a short delay
+                setTimeout(() => {
+                    if (onClose) {
+                        onClose();
+                    }
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Error saving appearance settings:', error);
+           
+        }
+    };
+
     return (
         <div className="modalAppearance__content">
             <div className="modalAppearance__top">
@@ -231,7 +273,11 @@ export const ModalAppearance = () => {
                     
                 </div>
                 <div className="modalAppearance__ancentColor__save">
-                        <button className="modalAppearance__ancentColor__button">
+                        <button 
+                            className="modalAppearance__ancentColor__button"
+                            onClick={handleSave}
+                            
+                        >
                             Save
                         </button>
                     </div>
