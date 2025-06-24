@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../supabase/supabaseClient';
 import { SidebarLink } from '../SidebarLink/SidebarLink';
-import { Profile } from '../Profile/Profile';
+import { Profile } from '../ModalAccount/ModalAccount';
 import { Settings } from '../Settings/Settings';
 import { PlanCard } from '../PlanCard/PlanCard';
 import { ProfileDropdown } from '../ProfileDropdown/ProfileDropdown';
