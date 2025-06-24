@@ -1,16 +1,27 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './Sort.css';
 import { Dropdown } from '../dropdown/Dropdown';
 
 export const Sort = ({ onSortChange }) => {
-  const [sortMode, setSortMode] = useState('alphabetical');
-  const [ascending, setAscending] = useState(true);
+  const getInitialSortMode = () => localStorage.getItem('sortMode') || 'alphabetical';
+  const getInitialAscending = () => {
+    const stored = localStorage.getItem('sortAscending');
+    return stored === null ? true : stored === 'true';
+  };
+  const [sortMode, setSortMode] = useState(getInitialSortMode);
+  const [ascending, setAscending] = useState(getInitialAscending);
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
+
+  useEffect(() => {
+    onSortChange(sortMode, ascending);
+  }, []);
 
   const handleSortChange = (mode, direction) => {
     setSortMode(mode);
     setAscending(direction);
+    localStorage.setItem('sortMode', mode);
+    localStorage.setItem('sortAscending', direction);
     onSortChange(mode, direction);
     setOpen(false);
   };
@@ -26,29 +37,33 @@ export const Sort = ({ onSortChange }) => {
   );
 
   const SortMenu = (
-    <div>
+    <>
       <div className="sort__title">Date</div>
       <button 
         className="dropdown__item"
         onClick={(e) => { e.stopPropagation(); handleSortChange('date', false); }}
       >
+        Newer
         {sortMode === 'date' && !ascending && (
-          <span className="dropdown__tick">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7.5L6 9.5L10 5.5" stroke="#0099FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <span className="dropdown__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M19.9378 5.65241C20.1299 6.1702 19.8659 6.7457 19.3481 6.93782C18.2893 7.33068 17.1276 8.14841 15.9516 9.22885C14.7868 10.299 13.6643 11.574 12.6796 12.8107C11.6968 14.0449 10.8633 15.2254 10.2753 16.0981C9.98166 16.5339 9.75008 16.8917 9.59261 17.1394C9.51389 17.2632 9.45374 17.3594 9.41368 17.424L9.36885 17.4966L9.35809 17.5142L9.35569 17.5182C9.16686 17.8294 8.82329 18.0143 8.45951 17.9994C8.09567 17.9846 7.76866 17.7732 7.60581 17.4475C6.92848 16.0928 6.15935 15.3411 5.59956 14.934C5.31727 14.7287 5.08223 14.6067 4.93004 14.5391C4.85386 14.5052 4.79837 14.485 4.76806 14.4747C4.75528 14.4703 4.74701 14.4678 4.74357 14.4668C4.2162 14.3269 3.89733 13.7888 4.03009 13.2577C4.16404 12.7219 4.70698 12.3962 5.24277 12.5301C5.26751 12.5366 5.24397 12.5304 5.24397 12.5304L5.24521 12.5307L5.24783 12.5314L5.25365 12.5329L5.26751 12.5366C5.27773 12.5394 5.28991 12.5428 5.30396 12.5469C5.33206 12.5551 5.36767 12.5662 5.41014 12.5805C5.49507 12.6093 5.60755 12.6516 5.74231 12.7115C6.01199 12.8313 6.37071 13.0218 6.77591 13.3165C7.31867 13.7113 7.93487 14.2857 8.52893 15.1112C8.55757 15.0684 8.58683 15.0249 8.6167 14.9805C9.22537 14.0772 10.0905 12.8515 11.115 11.5648C12.1376 10.2807 13.3313 8.92028 14.5985 7.75607C15.8545 6.60213 17.2406 5.58653 18.6524 5.06272C19.1702 4.87061 19.7457 5.13462 19.9378 5.65241Z" fill="currentColor" />
+            </svg>
           </span>
         )}
-        Newer
       </button>
       <button 
         className="dropdown__item"
         onClick={(e) => { e.stopPropagation(); handleSortChange('date', true); }}
       >
+        Older
         {sortMode === 'date' && ascending && (
-          <span className="dropdown__tick">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7.5L6 9.5L10 5.5" stroke="#0099FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <span className="dropdown__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M19.9378 5.65241C20.1299 6.1702 19.8659 6.7457 19.3481 6.93782C18.2893 7.33068 17.1276 8.14841 15.9516 9.22885C14.7868 10.299 13.6643 11.574 12.6796 12.8107C11.6968 14.0449 10.8633 15.2254 10.2753 16.0981C9.98166 16.5339 9.75008 16.8917 9.59261 17.1394C9.51389 17.2632 9.45374 17.3594 9.41368 17.424L9.36885 17.4966L9.35809 17.5142L9.35569 17.5182C9.16686 17.8294 8.82329 18.0143 8.45951 17.9994C8.09567 17.9846 7.76866 17.7732 7.60581 17.4475C6.92848 16.0928 6.15935 15.3411 5.59956 14.934C5.31727 14.7287 5.08223 14.6067 4.93004 14.5391C4.85386 14.5052 4.79837 14.485 4.76806 14.4747C4.75528 14.4703 4.74701 14.4678 4.74357 14.4668C4.2162 14.3269 3.89733 13.7888 4.03009 13.2577C4.16404 12.7219 4.70698 12.3962 5.24277 12.5301C5.26751 12.5366 5.24397 12.5304 5.24397 12.5304L5.24521 12.5307L5.24783 12.5314L5.25365 12.5329L5.26751 12.5366C5.27773 12.5394 5.28991 12.5428 5.30396 12.5469C5.33206 12.5551 5.36767 12.5662 5.41014 12.5805C5.49507 12.6093 5.60755 12.6516 5.74231 12.7115C6.01199 12.8313 6.37071 13.0218 6.77591 13.3165C7.31867 13.7113 7.93487 14.2857 8.52893 15.1112C8.55757 15.0684 8.58683 15.0249 8.6167 14.9805C9.22537 14.0772 10.0905 12.8515 11.115 11.5648C12.1376 10.2807 13.3313 8.92028 14.5985 7.75607C15.8545 6.60213 17.2406 5.58653 18.6524 5.06272C19.1702 4.87061 19.7457 5.13462 19.9378 5.65241Z" fill="currentColor" />
+            </svg>
           </span>
         )}
-        Older
       </button>
       <div className="sort__title">Alphabetical</div>
       <button 
@@ -57,8 +72,10 @@ export const Sort = ({ onSortChange }) => {
       >
         A-Z
         {sortMode === 'alphabetical' && ascending && (
-          <span className="dropdown__tick">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7.5L6 9.5L10 5.5" stroke="#0099FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <span className="dropdown__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M19.9378 5.65241C20.1299 6.1702 19.8659 6.7457 19.3481 6.93782C18.2893 7.33068 17.1276 8.14841 15.9516 9.22885C14.7868 10.299 13.6643 11.574 12.6796 12.8107C11.6968 14.0449 10.8633 15.2254 10.2753 16.0981C9.98166 16.5339 9.75008 16.8917 9.59261 17.1394C9.51389 17.2632 9.45374 17.3594 9.41368 17.424L9.36885 17.4966L9.35809 17.5142L9.35569 17.5182C9.16686 17.8294 8.82329 18.0143 8.45951 17.9994C8.09567 17.9846 7.76866 17.7732 7.60581 17.4475C6.92848 16.0928 6.15935 15.3411 5.59956 14.934C5.31727 14.7287 5.08223 14.6067 4.93004 14.5391C4.85386 14.5052 4.79837 14.485 4.76806 14.4747C4.75528 14.4703 4.74701 14.4678 4.74357 14.4668C4.2162 14.3269 3.89733 13.7888 4.03009 13.2577C4.16404 12.7219 4.70698 12.3962 5.24277 12.5301C5.26751 12.5366 5.24397 12.5304 5.24397 12.5304L5.24521 12.5307L5.24783 12.5314L5.25365 12.5329L5.26751 12.5366C5.27773 12.5394 5.28991 12.5428 5.30396 12.5469C5.33206 12.5551 5.36767 12.5662 5.41014 12.5805C5.49507 12.6093 5.60755 12.6516 5.74231 12.7115C6.01199 12.8313 6.37071 13.0218 6.77591 13.3165C7.31867 13.7113 7.93487 14.2857 8.52893 15.1112C8.55757 15.0684 8.58683 15.0249 8.6167 14.9805C9.22537 14.0772 10.0905 12.8515 11.115 11.5648C12.1376 10.2807 13.3313 8.92028 14.5985 7.75607C15.8545 6.60213 17.2406 5.58653 18.6524 5.06272C19.1702 4.87061 19.7457 5.13462 19.9378 5.65241Z" fill="currentColor" />
+            </svg>
           </span>
         )}
       </button>
@@ -68,20 +85,23 @@ export const Sort = ({ onSortChange }) => {
       >
         Z-A
         {sortMode === 'alphabetical' && !ascending && (
-          <span className="dropdown__tick">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 7.5L6 9.5L10 5.5" stroke="#0099FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <span className="dropdown__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M19.9378 5.65241C20.1299 6.1702 19.8659 6.7457 19.3481 6.93782C18.2893 7.33068 17.1276 8.14841 15.9516 9.22885C14.7868 10.299 13.6643 11.574 12.6796 12.8107C11.6968 14.0449 10.8633 15.2254 10.2753 16.0981C9.98166 16.5339 9.75008 16.8917 9.59261 17.1394C9.51389 17.2632 9.45374 17.3594 9.41368 17.424L9.36885 17.4966L9.35809 17.5142L9.35569 17.5182C9.16686 17.8294 8.82329 18.0143 8.45951 17.9994C8.09567 17.9846 7.76866 17.7732 7.60581 17.4475C6.92848 16.0928 6.15935 15.3411 5.59956 14.934C5.31727 14.7287 5.08223 14.6067 4.93004 14.5391C4.85386 14.5052 4.79837 14.485 4.76806 14.4747C4.75528 14.4703 4.74701 14.4678 4.74357 14.4668C4.2162 14.3269 3.89733 13.7888 4.03009 13.2577C4.16404 12.7219 4.70698 12.3962 5.24277 12.5301C5.26751 12.5366 5.24397 12.5304 5.24397 12.5304L5.24521 12.5307L5.24783 12.5314L5.25365 12.5329L5.26751 12.5366C5.27773 12.5394 5.28991 12.5428 5.30396 12.5469C5.33206 12.5551 5.36767 12.5662 5.41014 12.5805C5.49507 12.6093 5.60755 12.6516 5.74231 12.7115C6.01199 12.8313 6.37071 13.0218 6.77591 13.3165C7.31867 13.7113 7.93487 14.2857 8.52893 15.1112C8.55757 15.0684 8.58683 15.0249 8.6167 14.9805C9.22537 14.0772 10.0905 12.8515 11.115 11.5648C12.1376 10.2807 13.3313 8.92028 14.5985 7.75607C15.8545 6.60213 17.2406 5.58653 18.6524 5.06272C19.1702 4.87061 19.7457 5.13462 19.9378 5.65241Z" fill="currentColor" />
+            </svg>
           </span>
         )}
       </button>
-    </div>
+    </>
   );
 
   return (
     <Dropdown 
-      position="bottom-left"
+      verticalPosition="bottom"
+      horizontalPosition="left"
       open={open}
-      menu={SortMenu}
       onClose={() => setOpen(false)}
+      menu={SortMenu}
     >
       {SortTrigger}
     </Dropdown>

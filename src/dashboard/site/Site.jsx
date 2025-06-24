@@ -99,11 +99,9 @@ export const Site = ({
   const siteId = useId();
 
   if (isGridView) {
-    // CARD (como ya tienes)
     return (
       <div className="site">
         <div className="site__visual">
-          {/* Espacio para imagen de fondo o preview si lo necesitas */}
         </div>
         <div className="site__footer">
           <div className="site__avatar">
@@ -112,7 +110,8 @@ export const Site = ({
           <span className="site__name">{text}</span>
           <div className="site__footer-right">
             <Dropdown
-              position="bottom-left"
+              verticalPosition="bottom"
+              horizontalPosition="right"
               open={isDropdownOpen}
               onClose={() => setIsDropdownOpen(false)}
               menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
@@ -159,7 +158,8 @@ export const Site = ({
       </div>
       <div className="site__list-right">
         <Dropdown
-          position="bottom-left"
+          verticalPosition="bottom"
+          horizontalPosition="right"
           open={isDropdownOpen}
           onClose={() => setIsDropdownOpen(false)}
           menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}

@@ -125,7 +125,8 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                     />
                 )} 
             <Dropdown
-                position="right"
+                verticalPosition="bottom"
+                horizontalPosition="right"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
                 menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} />}

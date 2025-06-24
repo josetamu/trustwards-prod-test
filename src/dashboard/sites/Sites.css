@@ -31,7 +31,6 @@
 .sites__grid.list {
   display: flex;
   flex-direction: column;
-  gap: 17px;
 }
 
 

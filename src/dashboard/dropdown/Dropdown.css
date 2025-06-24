@@ -21,11 +21,11 @@
   transition: transform 0.2s ease;
   margin-top: 4px;
   overflow: hidden;
-  padding-bottom: 4px;
-  padding-top: 4px;
+  padding: 4px;
 }
 
 .dropdown__item {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -37,11 +37,9 @@
   font-weight: var(--font-weight);
   font-size: var(--font-size-medium);
   padding: 8px 12px;
-  text-align: left;
   cursor: pointer;
   white-space: nowrap;
-  margin-left: 4px;
-  margin-right: 4px;
+
 }
 .dropdown__item:hover {
   background: var(--background-color-blue);
@@ -58,7 +56,8 @@
 }
 
 .dropdown__icon {
-  width: 14px;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;

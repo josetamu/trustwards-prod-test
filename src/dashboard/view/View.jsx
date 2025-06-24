@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './View.css';
 
-export const View = ({ onViewChange }) => {
+export const View = ({ isGridView, onViewChange }) => {
   const [isGrid, setIsGrid] = useState(true); // true = grid (horizontal), false = list (vertical)
 
   // Toggle between grid and list view
@@ -13,7 +13,7 @@ export const View = ({ onViewChange }) => {
   return (
     <div className="view__toggle">
       <button
-        className={`view__option${isGrid ? ' active' : ''}`}
+        className={`view__option${isGridView ? ' active' : ''}`}
         onClick={() => handleView(true)}
         aria-label="Grid view"
         type="button"
@@ -27,7 +27,7 @@ export const View = ({ onViewChange }) => {
         </svg>
       </button>
       <button
-        className={`view__option${!isGrid ? ' active' : ''}`}
+        className={`view__option${!isGridView ? ' active' : ''}`}
         onClick={() => handleView(false)}
         aria-label="List view"
         type="button"

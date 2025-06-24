@@ -35,15 +35,17 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
     return [...webs].sort((a, b) => new Date(a.Date) - new Date(b.Date));
   }, [webs]);
 
+  const handleViewChange = (newView) => {
+    setIsGridView(newView);
+    localStorage.setItem('viewMode', JSON.stringify(newView));
+  };
+
   return (
     <div className="sites__wrapper">
       <div className="sites__header">
         <h2 className="sites__title">Sites</h2>
         <div className="sites__header-actions">
-        <View onViewChange={(newView) => {
-          localStorage.setItem('viewMode', JSON.stringify(newView));
-          setIsGridView(newView);
-        }} />
+        <View isGridView={isGridView} onViewChange={handleViewChange} />
           <Sort onSortChange={handleSortChange} />
           <button 
             className="sites__new-button"
