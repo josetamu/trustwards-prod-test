@@ -10,7 +10,7 @@ import logoDefault from '../../assets/logo default.png';
 
 
 
-export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType }) => {
+export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 767);
 
     useEffect(() => {
@@ -44,6 +44,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                                             setIsModalOpen(true);
                                             setModalType(profilePage.name);
                                             setIsDropdownOpen(false);
+                                            setUserSettings(profilePage.name);
 
                                         if(window.innerWidth < 767) {
                                                 setIsSidebarOpen(false);

@@ -19,6 +19,7 @@ import { ModalSupport } from './ModalSupport/ModalSupport'
 import { ModalAppearance } from './ModalAppearance/ModalAppearance'
 import SiteView from './SiteView/SiteView'
 import { ModalChange } from './ModalChange/ModalChange'
+import { ModalUser } from './ModalUser/ModalUser'
 function App() {
   const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,6 +39,8 @@ function App() {
   // ModalChange state
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [changeType, setChangeType] = useState('');
+ 
+
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -240,13 +243,19 @@ function App() {
       switch (modalType) {
         case 'Account':
           return (
-            <ModalAccount 
-              user={user} 
-              setUser={setUser} 
-              setIsModalOpen={setIsModalOpen}
-              openModal={openModal}
-              setModalType={setModalType}
-              openChangeModal={openChangeModal}
+            <ModalUser
+              onClose={() => setIsModalOpen(false)}
+              onSave={() => {
+                // Refresh user data after saving appearance settings
+                  getAppearanceSettings(user.id); // Refresh appearance settings after saving
+                  setIsModalOpen(false);
+              
+            }}
+            user={user}
+            setUser={setUser}
+            setIsModalOpen={setIsModalOpen}
+            userSettings={userSettings}
+            setUserSettings={setUserSettings}
             />
           );
         case 'NewSite':
@@ -291,17 +300,38 @@ function App() {
             setIsModalOpen={setIsModalOpen}
           />)
       case 'Appearance':
-        return ( <ModalAppearance
-            user={user}
+        return ( 
+          <ModalUser
             onClose={() => setIsModalOpen(false)}
             onSave={() => {
               // Refresh user data after saving appearance settings
                 getAppearanceSettings(user.id); // Refresh appearance settings after saving
+                setIsModalOpen(false);
               
             }}
+            user={user}
+            setUser={setUser}
+            setIsModalOpen={setIsModalOpen}
             appearanceSettings={appearanceSettings}
             setAppearanceSettings={setAppearanceSettings}
+            userSettings={userSettings}
+            setUserSettings={setUserSettings}
           />)
+        case 'Upgrade':
+          return (
+            <ModalUser
+              onClose={() => setIsModalOpen(false)}
+              onSave={() => {
+                setIsModalOpen(false);
+              }}
+              user={user}
+              setUser={setUser}
+              setIsModalOpen={setIsModalOpen}
+              userSettings={userSettings}
+              setUserSettings={setUserSettings}
+            />
+          )
+        
         default:
           return null;
       }
@@ -343,6 +373,8 @@ function App() {
       setIsSiteOpen={setIsSiteOpen}
       siteTab={siteTab}
       setSiteTab={setSiteTab}
+      userSettings={userSettings}
+      setUserSettings={setUserSettings}
       />
     <div className="content__container">
       {renderActivePage()}

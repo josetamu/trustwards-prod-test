@@ -69,7 +69,7 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
         <div className="modalAppearance__content">
             <div className="modalAppearance__mid">
                     <span className="modalAppearance__mid__title">
-                        Interface theme
+                        Theme
                     </span>
                     <div className="modalAppearance__choices">
                         <div className="modalAppearance__choice" onClick={() => handleThemeSelect('light')}>

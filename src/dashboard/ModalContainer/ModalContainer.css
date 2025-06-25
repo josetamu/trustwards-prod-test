@@ -20,18 +20,15 @@
 }
 .modal {
     background: var(--modal-background);
-    padding: 3px;
-    /* border: 1px solid rgba(219, 219, 219, 0.85); */
     border-radius: 16px;
-    width: 100%;
-    max-width: 380px;
+    max-width: 800px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.10);
-    backdrop-filter: blur(11px);
     display: flex;
     flex-direction: column;
     gap: 25px;
     align-items: center;
     position: relative;
+    max-height: 400px;
   }
 
 .modal:has(.modal__actions-edit) {
@@ -52,9 +49,10 @@
         left: 0;
         width: 100vw;
     }
+    .modal{
+        max-height: 550px;
+    }
 }
 @media (max-width: 467px) {
-    .modal {
-        max-width: 300px;
-    }
+
 }

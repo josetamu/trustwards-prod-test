@@ -146,7 +146,10 @@ export function Sidebar({
     setIsSiteOpen,
     isSiteOpen,
     siteTab,
-    setSiteTab
+    setSiteTab,
+   
+    
+
     
     }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -439,6 +442,8 @@ export function Sidebar({
                                     } else {
                                         setModalType(otherPage.name);
                                         setIsModalOpen(true);
+                                        setUserSettings(otherPage.name);
+
                                     }
 
                                     if(window.innerWidth < 767) {
@@ -463,6 +468,8 @@ export function Sidebar({
                     setIsModalOpen={setIsModalOpen}
                     isModalOpen={isModalOpen}
                     modalType={modalType}
+               
+                    
                     /> 
 
                 </div>

@@ -3,13 +3,11 @@
     flex-direction: column;
     padding: 15px;
     width: 100%;
-    gap: 15px;
-    padding-bottom: 80px;
+    gap: 20px;
+    
     
 }
-.modal:has(.modalAppearance__content){
-    max-width: 400px;
-}
+
 .modalAppearance__top{
     display: flex;
     flex-direction: column;
@@ -53,6 +51,8 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 .modalAppearance__choice{
     display: flex;
@@ -321,4 +321,11 @@
   
 .modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider:before {
     transform: translateX(8px);
+}
+
+@media (max-width: 768px) {
+    .modalAppearance__choices{
+        flex-direction: column;
+    }
+    
 }
