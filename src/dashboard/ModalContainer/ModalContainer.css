@@ -1,18 +1,17 @@
 .modal__backdrop {
     position: fixed;
-    left: var(--sidebar-width-close);
-    top: 20px;
-    min-height: calc(100vh - 40px);
-    width: calc(100vw - 90px);
+    left: 0;
+    top: 0;
+    min-height: 100vh;
+    width: 100vw;
     height: fit-content;
-    background-color: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(var(--backdrop-blur));
-    -webkit-backdrop-filter: blur(var(--backdrop-blur));
+    background-color: rgba(0, 0, 0, 0.2);
+
     display: flex;
     justify-content: center;
     align-items: center;
     transition: var(--sidebar-transition);
-    z-index: 1;
+    z-index: 1000;
 }
 .open {
     left: var(--sidebar-width-open);
@@ -21,18 +20,15 @@
 }
 .modal {
     background: var(--modal-background);
-    padding: 3px;
-    /* border: 1px solid rgba(219, 219, 219, 0.85); */
     border-radius: 16px;
-    width: 100%;
-    max-width: 380px;
+    max-width: 800px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.10);
-    backdrop-filter: blur(11px);
     display: flex;
     flex-direction: column;
     gap: 25px;
     align-items: center;
     position: relative;
+    max-height: 400px;
   }
 
 .modal:has(.modal__actions-edit) {
@@ -53,9 +49,10 @@
         left: 0;
         width: 100vw;
     }
+    .modal{
+        max-height: 550px;
+    }
 }
 @media (max-width: 467px) {
-    .modal {
-        max-width: 300px;
-    }
+
 }

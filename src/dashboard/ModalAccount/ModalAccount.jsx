@@ -5,22 +5,18 @@ import { Tooltip } from '../Tooltip/Tooltip';
 import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
 import logoDefault from '../../assets/logo default.png';
 import { defaultGradient } from '../ModalContainer/ModalContainer';
+import { useRef } from 'react';
 
 // Modal profile
-export function Profile({ user, setUser, setIsModalOpen }) {
+export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, openChangeModal }) {
   //states to save user data
-  const [firstName, setFirstName] = useState(user?.["First Name"]);
-  const [secondName, setSecondName] = useState(user?.["Second Name"]);
+  const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
   const [errors, setErrors] = useState({});
-  const [showEdit, setShowEdit] = useState(false);
+  // const [openChangeModal, setOpenChangeModal] = useState(false);
+  // const [changeType, setChangeType] = useState('');
 
-  // Avatar and header state
-  const [customHeader, setCustomHeader] = useState({
-    avatar: null,
-    headerGradient: defaultGradient
-  });
-  
+
   // Avatar changes logic
   const handleEditSave = (editData) => {
     setCustomHeader({
@@ -30,97 +26,42 @@ export function Profile({ user, setUser, setIsModalOpen }) {
     setShowEdit(false);
   };
 
+  //Function to open files
+  const fileInputRef = useRef(null);
+
+  const handleEditClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Abrir selector de archivos
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Handle file upload logic here
+      console.log('File selected:', file);
+    }
+  };
+
+  //Function to open change modal
+  const handleChangeType = (type) => {
+    openChangeModal(type);
+  };
+
   //useEffect to set user data
   useEffect(() => {
     if(user){
-      setFirstName(user?.["First Name"]);
-      setSecondName(user?.["Second Name"]);
+      setName(user?.Name);
       setEmail(user?.Email);
       setErrors({});
-    }
-  }, [user]);
-
-  // Initialize customHeader with user avatar
-  useEffect(() => {
-    if (user) {
-      const initializeHeader = async () => {
-        let headerGradient = defaultGradient;
-        
-        if (user["Avatar URL"]) {
-          try {
-            // Extract colors from the existing avatar to generate the gradient
-            const extractColorsFromImage = (imgSrc) => {
-              return new Promise((resolve) => {
-                const img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.onload = () => {
-                  const MAX_SIZE = 100;
-                  const scale = Math.min(MAX_SIZE / img.width, MAX_SIZE / img.height);
-                  const width = Math.round(img.width * scale);
-                  const height = Math.round(img.height * scale);
-
-                  const canvas = document.createElement('canvas');
-                  const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                  canvas.width = width;
-                  canvas.height = height;
-                  ctx.drawImage(img, 0, 0, width, height);
-
-                  const imageData = ctx.getImageData(0, 0, width, height).data;
-                  
-                  const getPixelColor = (x, y) => {
-                    const i = (Math.round(y) * width + Math.round(x)) * 4;
-                    return `rgb(${imageData[i]}, ${imageData[i + 1]}, ${imageData[i + 2]})`;
-                  };
-
-                  const colors = {
-                    top: getPixelColor(width / 2, 2),
-                    right: getPixelColor(width - 2, height / 2),
-                    bottom: getPixelColor(width / 2, height - 2),
-                    left: getPixelColor(2, height / 2),
-                    center: getPixelColor(width / 2, height / 2)
-                  };
-
-                  resolve(colors);
-                };
-                img.src = imgSrc;
-              });
-            };
-
-            const createGradientFromColors = (colors) => {
-              return `linear-gradient(135deg, 
-                ${colors.top} 0%, 
-                ${colors.right} 25%, 
-                ${colors.center} 50%,
-                ${colors.left} 75%, 
-                ${colors.bottom} 100%
-              )`;
-            };
-
-            const colors = await extractColorsFromImage(user["Avatar URL"]);
-            headerGradient = createGradientFromColors(colors);
-          } catch (error) {
-            console.error('Error extracting colors from avatar:', error);
-          }
-        }
-
-        setCustomHeader({
-          avatar: user["Avatar URL"] ? { src: user["Avatar URL"] } : null,
-          headerGradient: headerGradient
-        });
-      };
-
-      initializeHeader();
     }
   }, [user]);
 
   // Validate inputs
   const validateInputs = () => {
     const newErrors = {};
-    if (!firstName?.trim()) {
-      newErrors.firstName = 'Name is required';
-    }
-    if (!secondName?.trim()) {
-      newErrors.secondName = 'Name is required';
+    if (!Name?.trim()) {
+      newErrors.Name = 'Name is required';
     }
     if (!email?.trim()) {
       newErrors.email = 'Email is required';
@@ -131,18 +72,12 @@ export function Profile({ user, setUser, setIsModalOpen }) {
     return Object.keys(newErrors).length === 0;
   };
 
-
   // Handle input editing and clear errors when input is valid
   const handleInputEdit = (field, value) => {
-    if (field === 'firstName') {
-      setFirstName(value);
+    if (field === 'Name') {
+      setName(value);
       if (value.trim()) {
-        setErrors(prev => ({ ...prev, firstName: undefined }));
-      }
-    } else if (field === 'secondName') {
-      setSecondName(value);
-      if (value.trim()) {
-        setErrors(prev => ({ ...prev, secondName: undefined }));
+        setErrors(prev => ({ ...prev, Name: undefined }));
       }
     } else if (field === 'email') {
       setEmail(value);
@@ -161,8 +96,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
     const { data, error } = await supabase
       .from('User')
       .update({
-        "First Name": firstName.trim(),
-        "Second Name": secondName.trim(),
+        Name: Name.trim(),
         Email: email.trim(),
         "Avatar URL": customHeader.avatar?.src || user?.["Avatar URL"] || null
       }).eq('id', user?.id);
@@ -171,8 +105,7 @@ export function Profile({ user, setUser, setIsModalOpen }) {
 
     setUser({
       ...user,
-      "First Name": firstName.trim(),
-      "Second Name": secondName.trim(),
+      Name: Name.trim(),
       Email: email.trim(),
       "Avatar URL": customHeader.avatar?.src || user?.["Avatar URL"] || null
     });
@@ -213,43 +146,40 @@ export function Profile({ user, setUser, setIsModalOpen }) {
       
   }
 
-  // Conditional render of the modal avatar
-  if (showEdit) {
-    return <ModalAvatar 
-      onClose={() => setShowEdit(false)} 
-      onSave={handleEditSave}
-      initialState={{
-        avatar: customHeader.avatar,
-        headerGradient: customHeader.headerGradient
-      }}
-    />;
-  }
-
   return (
       <>
        <div className="modalAccount">
         <div className="modalAccount__aside">
           <div className="modalAccount__header">
             <img className='modalAccount__avatar' src={user?.["Avatar URL"]} alt="logo" />
-            <span className='modalAccount__edit'>Edit</span>
+            <span className='modalAccount__edit' onClick={handleEditClick}>Edit</span>
           </div>
         </div>
         <div className="modalAccount__main">
           <div className="modalAccount__section">
             <span className='modalAccount__title'>Name</span>  
             <span className='modalAccount__field'>{user?.Name}</span>
-            <span className='modalAccount__change'>Change name</span>
+            <span className='modalAccount__change' onClick={() => handleChangeType('name')}>Change name</span>
           </div>
+          <div className="modalAccount__divider"></div>
           <div className="modalAccount__section">
-            <span className='modalAccount__title'>Name</span>  
+            <span className='modalAccount__title'>Email</span>  
             <span className='modalAccount__field'>{user?.Email}</span>
-            <span className='modalAccount__change'>Change name</span>
+            <span className='modalAccount__change' onClick={() => handleChangeType('email')}>Change email</span>
           </div>
+          <div className="modalAccount__divider"></div>
           <div className="modalAccount__section">
-            <span className='modalAccount__title'>Name</span>  
-            <span className='modalAccount__change'>Change name</span>
+            <span className='modalAccount__title'>Password</span>  
+            <span className='modalAccount__change' onClick={() => handleChangeType('password')}>Change password</span>
           </div>
         </div>
+        {/* Hidden input to open file selector */}
+        <input className='modalAccount__fileInput'
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+        />
        </div>
       </>
   )

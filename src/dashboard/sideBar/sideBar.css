@@ -200,7 +200,7 @@
     align-items: center;
     justify-content: center;
     gap: 15px;
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(237, 237, 237, 1);
     padding: 10px;
     border-radius: 8px;
     height: 93px;
@@ -210,11 +210,14 @@
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
+    color: rgba(94, 94, 94, 1);
   }
   .nosites__text__span{
     color: rgba(0, 153, 254, 1);
   }
   .nosites__button{
+    width: 49px;
+    height: 25px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -225,20 +228,30 @@
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
-    font-size: 12px;
-    font-weight: var(--font-weight);
-    letter-spacing: var(--letter-spacing-negative);
+    font-size: 11px;
     border: none;
     border-radius: 8px;
-    padding: 7.5px 10px;
     box-shadow:
     inset 0 0 0 1px rgba(87, 166, 254, 1),   
     0 0 0 1px rgba(29, 120, 235, 1),        
     inset 0 -4px 4px 0 rgba(4, 141, 232, 1);
+    gap: 3px;
+  }
+  .nosites__button__text{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
   }
   .nosites__button__svg{
     width: 9px;
     height: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: .5px;
   }
   .nosites__container{
     display: flex;
@@ -320,7 +333,7 @@
   align-items: center;
   position: relative;
   z-index: 1;
-  margin-left: 2px;
+  margin-left: 5px;
   
 
   

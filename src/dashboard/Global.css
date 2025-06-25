@@ -14,7 +14,7 @@
   --font-weight: 500;
   --letter-spacing-negative: -0.03em;
   --letter-spacing-positive: 0.03em;
-  --background-color-blue: #0099FE;
+  --background-color-blue: rgba(0, 153, 254, 1);
   --background-color-black: #191919;
   --border-color: #E0E0E0;
   --font-size-small: 10px;

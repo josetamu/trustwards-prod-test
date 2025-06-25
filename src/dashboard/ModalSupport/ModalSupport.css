@@ -8,6 +8,7 @@
 
 .modal:has(.modalSupport__content){
     max-width: 344px;
+    max-height: 550px;
 }
 .modalSupport__header{
     height: 49px;

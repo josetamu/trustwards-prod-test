@@ -9,7 +9,7 @@ import { Settings } from './Settings/Settings'
 import { Sidebar, homePages, siteMenuPages, otherpages } from './SideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
-import { Profile } from './ModalAccount/ModalAccount'
+import { ModalAccount } from './ModalAccount/ModalAccount'
 import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
@@ -18,7 +18,8 @@ import { ModalDelete } from './ModalDelete/ModalDelete'
 import { ModalSupport } from './ModalSupport/ModalSupport'
 import { ModalAppearance } from './ModalAppearance/ModalAppearance'
 import SiteView from './SiteView/SiteView'
-
+import { ModalChange } from './ModalChange/ModalChange'
+import { ModalUser } from './ModalUser/ModalUser'
 function App() {
   const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,6 +36,11 @@ function App() {
   const [isSiteOpen, setIsSiteOpen] = useState(false);
   const [siteTab, setSiteTab] = useState('Overview');
   const [appearanceSettings, setAppearanceSettings] = useState(null);
+  // ModalChange state
+  const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
+  const [changeType, setChangeType] = useState('');
+ 
+
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -68,8 +74,8 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      email: 'darezo.2809@gmail.com',
-      //email: 'oscar.abad.brickscore@gmail.com',  
+      /* email: 'darezo.2809@gmail.com', */
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -220,17 +226,36 @@ function App() {
       setModalProps(null);
     };
 
+    // ModalChange functions
+    const openChangeModal = (type) => {
+      setChangeType(type);
+      setIsChangeModalOpen(true);
+    };
+
+    const closeChangeModal = () => {
+      setIsChangeModalOpen(false);
+      setChangeType('');
+    };
+
     const renderModal = () => {
       if (!isModalOpen) return null;
   
       switch (modalType) {
-        case 'Profile':
+        case 'Account':
           return (
-            <Profile 
-              user={user} 
-              setUser={setUser} 
-              setIsModalOpen={setIsModalOpen}
-              openModal={openModal}
+            <ModalUser
+              onClose={() => setIsModalOpen(false)}
+              onSave={() => {
+                // Refresh user data after saving appearance settings
+                  getAppearanceSettings(user.id); // Refresh appearance settings after saving
+                  setIsModalOpen(false);
+              
+            }}
+            user={user}
+            setUser={setUser}
+            setIsModalOpen={setIsModalOpen}
+            userSettings={userSettings}
+            setUserSettings={setUserSettings}
             />
           );
         case 'NewSite':
@@ -275,18 +300,38 @@ function App() {
             setIsModalOpen={setIsModalOpen}
           />)
       case 'Appearance':
-        return ( <ModalAppearance
-            user={user}
+        return ( 
+          <ModalUser
             onClose={() => setIsModalOpen(false)}
             onSave={() => {
               // Refresh user data after saving appearance settings
                 getAppearanceSettings(user.id); // Refresh appearance settings after saving
+                setIsModalOpen(false);
               
             }}
+            user={user}
+            setUser={setUser}
+            setIsModalOpen={setIsModalOpen}
             appearanceSettings={appearanceSettings}
             setAppearanceSettings={setAppearanceSettings}
+            userSettings={userSettings}
+            setUserSettings={setUserSettings}
           />)
-
+        case 'Upgrade':
+          return (
+            <ModalUser
+              onClose={() => setIsModalOpen(false)}
+              onSave={() => {
+                setIsModalOpen(false);
+              }}
+              user={user}
+              setUser={setUser}
+              setIsModalOpen={setIsModalOpen}
+              userSettings={userSettings}
+              setUserSettings={setUserSettings}
+            />
+          )
+        
         default:
           return null;
       }
@@ -328,6 +373,8 @@ function App() {
       setIsSiteOpen={setIsSiteOpen}
       siteTab={siteTab}
       setSiteTab={setSiteTab}
+      userSettings={userSettings}
+      setUserSettings={setUserSettings}
       />
     <div className="content__container">
       {renderActivePage()}
@@ -335,6 +382,19 @@ function App() {
       {isModalOpen && (
       <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isSidebarOpen={isSidebarOpen}>
        {renderModal()}
+      </ModalContainer>
+    )}
+     
+    {/* ModalChange as independent modal */}
+    {isChangeModalOpen && (
+      <ModalContainer isOpen={isChangeModalOpen} onClose={closeChangeModal} isSidebarOpen={isSidebarOpen}>
+        <ModalChange
+          changeType={changeType}
+          onClose={closeChangeModal}
+          user={user}
+          setUser={setUser}
+          setIsModalOpen={setIsModalOpen}
+        />
       </ModalContainer>
     )}
      
