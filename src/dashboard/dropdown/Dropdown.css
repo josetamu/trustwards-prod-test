@@ -4,6 +4,7 @@
 }
 .sidebar--open .dropdown {
   position: static;
+  
 }
 
 .dropdown__menu {

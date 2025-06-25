@@ -43,6 +43,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                                         } else {
                                             setIsModalOpen(true);
                                             setModalType(profilePage.name);
+                                            setIsDropdownOpen(false);
 
                                         if(window.innerWidth < 767) {
                                                 setIsSidebarOpen(false);
