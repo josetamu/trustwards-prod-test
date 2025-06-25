@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../supabase/supabaseClient';
 import { SidebarLink } from '../SidebarLink/SidebarLink';
-import { profilePages } from '../sideBar/Sidebar';
+import { profilePages } from '../SideBar/Sidebar';
 import "./ProfileDropdown.css";
 import { Dropdown } from '../dropdown/Dropdown';
 import { span } from 'framer-motion/client';

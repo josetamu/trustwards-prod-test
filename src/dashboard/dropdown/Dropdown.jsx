@@ -9,15 +9,16 @@ export function Dropdown({
   onClose,
   children,
   verticalPosition = "bottom", // "top" / "bottom"
-  horizontalBreakpoint = 300, // px
   horizontalPosition = "left", // "left" / "right"
-  animationOrigin, // "top", "bottom", "left", "right" (optional)
+  horizontalBreakpoint = 1200, // px
+  horizontalAnimBreakpoint = 1200, // px
+  animationOrigin // "top", "bottom", "left", "right" (optional)
 }) {
   const containerRef = useRef(null);
   const menuRef = useRef(null);
-  const [currentPosition, setCurrentPosition] = useState(`${verticalPosition}-${horizontalPosition}`);
-  const [inlineStyle, setInlineStyle] = useState({});
-  const [currentAnim, setCurrentAnim] = useState('SCALE_TOP');
+  const [currentVertical, setCurrentVertical] = useState(verticalPosition);
+  const [currentHorizontal, setCurrentHorizontal] = useState(horizontalPosition);
+  const [transformOrigin, setTransformOrigin] = useState('top left');
   const dropdownId = useId();
 
   // Close dropdown when clicking outside (only if not openOnHover)
@@ -37,7 +38,7 @@ export function Dropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, onClose]);
 
-  // Menu alignment and breakpoints/overflow logic
+  // Menu alignment + transformOrigin
   useEffect(() => {
     if (open && containerRef.current && menuRef.current) {
       const anchorRect = containerRef.current.getBoundingClientRect();
@@ -46,9 +47,6 @@ export function Dropdown({
       const vh = window.innerHeight;
       let newVertical = verticalPosition;
       let newHorizontal = horizontalPosition;
-      let newAnim = animationOrigin;
-      let style = {};
-
       // Vertical overflow
       const overflowsBottom = anchorRect.bottom + menuRect.height > vh;
       const overflowsTop = anchorRect.top - menuRect.height < 0;
@@ -57,64 +55,58 @@ export function Dropdown({
       } else if (verticalPosition === 'top' && overflowsTop) {
         newVertical = 'bottom';
       }
-
-      // Horizontal breakpoint y overflow
+      // Horizontal overflow y breakpoint
       if (anchorRect.left < horizontalBreakpoint) {
         newHorizontal = 'left';
       } else if (anchorRect.right + menuRect.width > vw - horizontalBreakpoint) {
         newHorizontal = 'right';
       }
-
-      // Origin
-      if (!animationOrigin) {
-        if (newVertical === 'top') {
-          newAnim = newHorizontal === 'left' ? 'SCALE_TOP' : 'SCALE_TOP';
-        } else {
-          newAnim = newHorizontal === 'left' ? 'SCALE_BOTTOM' : 'SCALE_BOTTOM';
+      setCurrentVertical(newVertical);
+      setCurrentHorizontal(newHorizontal);
+      let origin = '';
+      if (animationOrigin) {
+        origin = animationOrigin;
+      } else {
+        // Horizontal animation breakpoint
+        let animHorizontal = newHorizontal;
+        if (anchorRect.left < horizontalAnimBreakpoint) {
+          animHorizontal = 'left';
+        } else if (anchorRect.right + menuRect.width > vw - horizontalAnimBreakpoint) {
+          animHorizontal = 'right';
         }
-        if (newHorizontal === 'left') {
-          style.left = 0;
-          style.right = 'auto';
-        } else {
-          style.right = 0;
-          style.left = 'auto';
-        }
-        if (newVertical === 'top') {
-          style.bottom = `calc(100% + 4px)`;
-          style.top = 'auto';
-          style.marginTop = 0;
-          style.marginBottom = 4;
-        } else {
-          style.top = `calc(100% + 4px)`;
-          style.bottom = 'auto';
-          style.marginTop = 4;
-          style.marginBottom = 0;
-        }
+        if (newVertical === 'top' && animHorizontal === 'left') origin = 'bottom left';
+        if (newVertical === 'top' && animHorizontal === 'right') origin = 'bottom right';
+        if (newVertical === 'bottom' && animHorizontal === 'left') origin = 'top left';
+        if (newVertical === 'bottom' && animHorizontal === 'right') origin = 'top right';
       }
-      setCurrentPosition(`${newVertical}-${newHorizontal}`);
-      setCurrentAnim(newAnim);
-      setInlineStyle(style);
+      setTransformOrigin(origin);
     }
-  }, [open, verticalPosition, horizontalBreakpoint, horizontalPosition, animationOrigin]);
+  }, [open, verticalPosition, horizontalPosition, horizontalBreakpoint, horizontalAnimBreakpoint, animationOrigin]);
 
-  // Animation selection
-  const animObj = ANIM_TYPES.find(anim => anim.name === currentAnim) || ANIM_TYPES[0];
+  // Inline style for the menu
+  const menuStyle = {
+    transformOrigin,
+    left: currentHorizontal === 'right' ? 0 : 'auto',
+    right: currentHorizontal === 'left' ? 0 : 'auto',
+    top: currentVertical === 'bottom' ? 'calc(100% + 4px)' : 'auto',
+    bottom: currentVertical === 'top' ? 'calc(100% + 4px)' : 'auto',
+  };
 
   return (
     <div
       className="dropdown"
       ref={containerRef}
-      data-position={currentPosition}
+      data-position={`${currentVertical}-${currentHorizontal}`}
       id={dropdownId}
     >
       {children}
       <AnimatePresence>
         {open && (
           <motion.div
-            {...animObj}
-            className={`dropdown__menu dropdown__menu--${currentPosition}`}
+            {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+            className={`dropdown__menu dropdown__menu--${currentVertical}-${currentHorizontal}`}
             ref={menuRef}
-            style={inlineStyle}
+            style={menuStyle}
           >
             {menu}
           </motion.div>

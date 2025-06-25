@@ -2,9 +2,6 @@
   position: relative;
   display: inline-block;
 }
-.sidebar--open .dropdown {
-  position: static;
-}
 
 .dropdown__menu {
   position: absolute;
@@ -86,19 +83,19 @@
 
   /* Positioning */
 /* Bottom-right (default) */
-.dropdown[data-position="bottom-right"] .dropdown__menu {
+/* .dropdown[data-position="bottom-right"] .dropdown__menu {
   top: calc(100% + 4px);
   right: 0;
 }
 
 /* Bottom-left */
-.dropdown[data-position="bottom-left"] .dropdown__menu {
+/* .dropdown[data-position="bottom-left"] .dropdown__menu {
   top: calc(100% + 4px);
   left: 0;
 }
 
 /* Top-left */
-.dropdown__menu--top-left {
+/* .dropdown__menu--top-left {
   bottom: calc(100% + 4px);
   left: 0;
   top: auto;
@@ -107,13 +104,14 @@
 }
 
 /* Top-right */
-.dropdown__menu--top-right {
+/* .dropdown__menu--top-right {
   bottom: calc(100% + 4px);
   right: 0;
   top: auto;
   margin-top: 0;
   margin-bottom: 4px;
 }
+*/
 .profileDropdown--open .dropdown__menu{
  width: 165px;
  bottom: 50px;
