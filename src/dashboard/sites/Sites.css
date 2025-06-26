@@ -54,14 +54,16 @@
   position: relative;
   display: flex;
   justify-content: flex-end;
+  overflow: hidden;
 }
 .sites__top-card--legacy .sites__legacy-svg {
   position: absolute;
-  bottom: 0;
+  bottom: -20px;
   right: 0;
   width: 100%;
   height: auto;
   pointer-events: none;
+  object-fit: contain;
 }
 
 /* Trustwards */
@@ -89,17 +91,28 @@
   position: relative;
   display: flex;
   grid-row: span 2;
+  overflow: hidden;
 }
-.sites__top-card--news .sites__news-svg {
+.sites__top-card--news .sites__news-bg {
   position: absolute;
-  bottom: 0;
-  right: 20px;
-  width: 125px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.sites__top-card--news .sites__news-img {
+  position: absolute;
+  bottom: -25px;
+  right: 0;
+  width: 100%;
   height: auto;
+  pointer-events: none;
 }
 .sites__top-card--news .sites__top-card-text {
   color: var(--dashboard-hello-grid-text-strong-color);
-  max-width: 100%;
+  max-width: 80%;
 }
 
 /* Changelog */
@@ -114,6 +127,7 @@
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+  width: 70%;
   height: auto;
   pointer-events: none;
 }
@@ -131,7 +145,8 @@
 .sites__top-card--builder .sites__builder-svg {
   position: absolute;
   bottom: 0;
-  right: 0;
+  right: 0px;
+  width: 90%;
   height: auto;
   pointer-events: none;
 }
@@ -222,45 +237,69 @@
   height: 12px;
 }
 
-/* SITES */
-@media (max-width: 767px){
-  .open{
-    left: 0px;
-    width: 100%;
- } 
+/* Responsive */
 
-}
-/* Mobile */
-@media (max-width: 480px) {
+/* Tablet */
+@media (max-width: 767px) {
   .sites__title {
     font-size: 22px;
   }
   .sites__new-button {
     font-size: 12px;
   }
-
-}
-
-@media (max-width: 900px) {
-  .sites__top-grid {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto;
-    grid-template-areas:
-      "legacy legacy"
-      "trustwards news"
-      "changelog builder";
-  }
-}
-
-@media (max-width: 600px) {
   .sites__top-grid {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto auto;
-    grid-template-areas:
-      "legacy"
-      "trustwards"
-      "news"
-      "changelog"
-      "builder";
+    gap: 17px;
   }
+  .sites__top-left {
+    flex-direction: column;
+    gap: 17px;
+  }
+  .sites__top-right-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 17px;
+  }
+  .sites__grid.grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 17px;
+  }
+  .sites__top-card--legacy .sites__legacy-svg {
+    width: 80%;
+  }
+  .sites__top-card--changelog .sites__changelog-svg {
+    bottom: -30px;
+  }
+
+}
+
+/* Mobile */
+@media (max-width: 467px) {
+  .sites__title {
+    font-size: 22px;
+  }
+  .sites__new-button {
+    font-size: 12px;
+  }
+  .sites__top-grid {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .sites__top-left {
+    flex-direction: column;
+    gap: 17px;
+  }
+  .sites__top-right-grid {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .sites__grid.grid {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .sites__top-card--legacy .sites__legacy-svg {
+    width: 120%;
+    height: auto;
+    top: 0;
+  }
+
 }

@@ -102,3 +102,11 @@
 .modalChange__input__wrapper {
   position: relative;
 }
+
+
+@media (max-width: 767px) {
+    .modalChange__content {
+        min-width: 300px;
+        max-width: 400px;
+    }
+}

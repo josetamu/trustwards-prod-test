@@ -7,19 +7,33 @@ export function Dropdown({
   open,
   menu,
   onClose,
+  onResize,
   children,
   verticalPosition = "bottom", // "top" / "bottom"
-  horizontalPosition = "left", // "left" / "right"
-  horizontalBreakpoint = 1200, // px
-  horizontalAnimBreakpoint = 1200, // px
-  animationOrigin // "top", "bottom", "left", "right" (optional)
+  horizontalPosition = "right", // "left" / "right"
+  horizontalBreakpoint = 1425, // px
+  horizontalBreakpointPosition = "left", // "left" / "right"
 }) {
   const containerRef = useRef(null);
   const menuRef = useRef(null);
-  const [currentVertical, setCurrentVertical] = useState(verticalPosition);
-  const [currentHorizontal, setCurrentHorizontal] = useState(horizontalPosition);
-  const [transformOrigin, setTransformOrigin] = useState('top left');
   const dropdownId = useId();
+  const [currentHorizontal, setCurrentHorizontal] = useState(horizontalPosition);
+
+  // horizontalPosition -> horizontalBreakpointPosition
+  useEffect(() => {
+    if (!open) return;
+    const handleResize = () => {
+      if (window.innerWidth < horizontalBreakpoint) {
+        setCurrentHorizontal(horizontalBreakpointPosition);
+      } else {
+        setCurrentHorizontal(horizontalPosition);
+      }
+      if (onResize) onResize();
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [open, horizontalBreakpoint, horizontalBreakpointPosition, horizontalPosition, onResize]);
 
   // Close dropdown when clicking outside (only if not openOnHover)
   useEffect(() => {
@@ -38,65 +52,10 @@ export function Dropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, onClose]);
 
-  // Menu alignment + transformOrigin
-  useEffect(() => {
-    if (open && containerRef.current && menuRef.current) {
-      const anchorRect = containerRef.current.getBoundingClientRect();
-      const menuRect = menuRef.current.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      let newVertical = verticalPosition;
-      let newHorizontal = horizontalPosition;
-      // Vertical overflow
-      const overflowsBottom = anchorRect.bottom + menuRect.height > vh;
-      const overflowsTop = anchorRect.top - menuRect.height < 0;
-      if (verticalPosition === 'bottom' && overflowsBottom) {
-        newVertical = 'top';
-      } else if (verticalPosition === 'top' && overflowsTop) {
-        newVertical = 'bottom';
-      }
-      // Horizontal overflow y breakpoint
-      if (anchorRect.left < horizontalBreakpoint) {
-        newHorizontal = 'left';
-      } else if (anchorRect.right + menuRect.width > vw - horizontalBreakpoint) {
-        newHorizontal = 'right';
-      }
-      setCurrentVertical(newVertical);
-      setCurrentHorizontal(newHorizontal);
-      let origin = '';
-      if (animationOrigin) {
-        origin = animationOrigin;
-      } else {
-        // Horizontal animation breakpoint
-        let animHorizontal = newHorizontal;
-        if (anchorRect.left < horizontalAnimBreakpoint) {
-          animHorizontal = 'left';
-        } else if (anchorRect.right + menuRect.width > vw - horizontalAnimBreakpoint) {
-          animHorizontal = 'right';
-        }
-        if (newVertical === 'top' && animHorizontal === 'left') origin = 'bottom left';
-        if (newVertical === 'top' && animHorizontal === 'right') origin = 'bottom right';
-        if (newVertical === 'bottom' && animHorizontal === 'left') origin = 'top left';
-        if (newVertical === 'bottom' && animHorizontal === 'right') origin = 'top right';
-      }
-      setTransformOrigin(origin);
-    }
-  }, [open, verticalPosition, horizontalPosition, horizontalBreakpoint, horizontalAnimBreakpoint, animationOrigin]);
-
-  // Inline style for the menu
-  const menuStyle = {
-    transformOrigin,
-    left: currentHorizontal === 'right' ? 0 : 'auto',
-    right: currentHorizontal === 'left' ? 0 : 'auto',
-    top: currentVertical === 'bottom' ? 'calc(100% + 4px)' : 'auto',
-    bottom: currentVertical === 'top' ? 'calc(100% + 4px)' : 'auto',
-  };
-
   return (
     <div
       className="dropdown"
       ref={containerRef}
-      data-position={`${currentVertical}-${currentHorizontal}`}
       id={dropdownId}
     >
       {children}
@@ -104,9 +63,8 @@ export function Dropdown({
         {open && (
           <motion.div
             {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
-            className={`dropdown__menu dropdown__menu--${currentVertical}-${currentHorizontal}`}
+            className={`dropdown__menu dropdown__menu--${verticalPosition}-${currentHorizontal}`}
             ref={menuRef}
-            style={menuStyle}
           >
             {menu}
           </motion.div>

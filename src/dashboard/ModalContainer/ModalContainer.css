@@ -28,7 +28,7 @@
     gap: 25px;
     align-items: center;
     position: relative;
-    max-height: 400px;
+    max-height: 493px;
   }
 
 .modal:has(.modal__actions-edit) {
@@ -43,7 +43,7 @@
     .modal__backdrop {
         left: 0;
         width: 100vw;
-        top: 30px;
+        top: 0;
     }
     .open {
         left: 0;
@@ -51,6 +51,7 @@
     }
     .modal{
         max-height: 550px;
+        width: fit-content;
     }
 }
 @media (max-width: 467px) {

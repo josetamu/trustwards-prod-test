@@ -31,6 +31,9 @@
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__divider{
+    height: 0.8px;
+    background: rgba(224, 224, 224, 1);
+    margin: 4px 0;
     width: 100%;
     height: 1px;
     background-color: var(--border-strong-color);
@@ -314,6 +317,12 @@
     border-radius: 50%;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
   }
+
+  /* Disable transitions during initial load */
+  .modalAppearance__content:not(.modalAppearance__content--initialized) .modalAppearance__ReducedMotion__slider,
+  .modalAppearance__content:not(.modalAppearance__content--initialized) .modalAppearance__ReducedMotion__slider:before {
+    transition: none;
+  }
   
   .modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider {
     background-color: var(--accent-bg-color);
@@ -325,7 +334,10 @@
 
 @media (max-width: 768px) {
     .modalAppearance__choices{
-        flex-direction: column;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+        
     }
     
 }

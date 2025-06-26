@@ -3,6 +3,8 @@ import { Site } from '../site/Site';
 import { Sort } from '../Sort/Sort';
 import { View } from '../View/View';
 import './Sites.css'
+import NewsCard from '../../assets/News-card.png';
+import NewsImg from '../../assets/News-img.png';
 
 export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData}) => {
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
@@ -68,56 +70,6 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               <p className="sites__top-card-text">How Trustwards make your sites comply with all current and upcoming regulations.</p>
             </div>
           </div>
-          <div className="sites__top-card sites__top-card--trustwards">
-            <svg className='sites__trustwards-svg'
-              width="111" height="78" viewBox="0 0 111 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 33C0 30.2386 2.23858 28 5 28H30C32.7614 28 35 30.2386 35 33V47C35 49.7614 32.7614 52 30 52H5C2.23858 52 0 49.7614 0 47V33Z" fill="white" fill-opacity="0.15"/>
-              <path d="M76 33C76 30.2386 78.2386 28 81 28H106C108.761 28 111 30.2386 111 33V47C111 49.7614 108.761 52 106 52H81C78.2386 52 76 49.7614 76 47V33Z" fill="white" fill-opacity="0.15"/>
-              <path d="M0 5C0 2.23858 2.23858 0 5 0H30C32.7614 0 35 2.23858 35 5V19C35 21.7614 32.7614 24 30 24H5C2.23858 24 0 21.7614 0 19V5Z" fill="url(#paint0_linear_460_1591)"/>
-              <path d="M111 5C111 2.23858 108.761 0 106 0H81C78.2386 0 76 2.23858 76 5V19C76 21.7614 78.2386 24 81 24H106C108.761 24 111 21.7614 111 19V5Z" fill="url(#paint1_linear_460_1591)"/>
-              <path d="M111 75C111 77.7614 108.761 80 106 80H81C78.2386 80 76 77.7614 76 75V61C76 58.2386 78.2386 56 81 56H106C108.761 56 111 58.2386 111 61V75Z" fill="url(#paint2_linear_460_1591)"/>
-              <path d="M0 75C0 77.7614 2.23858 80 5 80H30C32.7614 80 35 77.7614 35 75V61C35 58.2386 32.7614 56 30 56H5C2.23858 56 0 58.2386 0 61V75Z" fill="url(#paint3_linear_460_1591)"/>
-              <path d="M38 61C38 58.2386 40.2386 56 43 56H68C70.7614 56 73 58.2386 73 61V75C73 77.7614 70.7614 80 68 80H43C40.2386 80 38 77.7614 38 75V61Z" fill="white" fill-opacity="0.15"/>
-              <path d="M38 5C38 2.23858 40.2386 0 43 0H68C70.7614 0 73 2.23858 73 5V19C73 21.7614 70.7614 24 68 24H43C40.2386 24 38 21.7614 38 19V5Z" fill="white" fill-opacity="0.15"/>
-              <path d="M46 34H66V38.0909H46V34Z" fill="white"/>
-              <path d="M51.3333 49V40.8182H59.3333L51.3333 49Z" fill="white"/>
-              <path d="M56.6667 49V40.8182H63.3333L56.6667 49Z" fill="white"/>
-              <rect x="38" y="28" width="35" height="24" rx="5" fill="white" fill-opacity="0.4"/>
-              <defs>
-              <linearGradient id="paint0_linear_460_1591" x1="-3.88889" y1="6.98662e-07" x2="36.1532" y2="26.3831" gradientUnits="userSpaceOnUse">
-              <stop stop-color="white" stop-opacity="0"/>
-              <stop offset="1" stop-color="white" stop-opacity="0.05"/>
-              </linearGradient>
-              <linearGradient id="paint1_linear_460_1591" x1="114.889" y1="6.98662e-07" x2="74.8468" y2="26.3831" gradientUnits="userSpaceOnUse">
-              <stop stop-color="white" stop-opacity="0"/>
-              <stop offset="1" stop-color="white" stop-opacity="0.05"/>
-              </linearGradient>
-              <linearGradient id="paint2_linear_460_1591" x1="114.889" y1="80" x2="74.8468" y2="53.6169" gradientUnits="userSpaceOnUse">
-              <stop stop-color="white" stop-opacity="0"/>
-              <stop offset="1" stop-color="white" stop-opacity="0.05"/>
-              </linearGradient>
-              <linearGradient id="paint3_linear_460_1591" x1="-3.88889" y1="80" x2="36.1532" y2="53.6169" gradientUnits="userSpaceOnUse">
-              <stop stop-color="white" stop-opacity="0"/>
-              <stop offset="1" stop-color="white" stop-opacity="0.05"/>
-              </linearGradient>
-              </defs>
-            </svg>
-            <div className="sites__top-card-content">
-              <h3 className="sites__top-card-title">This is Trustwards</h3>
-              <p className="sites__top-card-text">The ultimate legacy hub</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="sites__top-right-grid">
-          <div className="sites__top-card sites__top-card--news">
-
-          <div className="sites__top-card-content">
-            <h3 className="sites__top-card-title">News</h3>
-            <p className="sites__top-card-text">Learn about new regulations across the world.</p>
-          </div>
-          </div>
-
           <div className="sites__top-card sites__top-card--changelog">
             <svg className='sites__changelog-svg' 
             width="344" height="93" viewBox="0 0 344 93" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,22 +88,72 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
               <p className="sites__top-card-text">Learn about the latest Trustwards updates.</p>
             </div>
           </div>
+        </div>
 
-          <div className="sites__top-card sites__top-card--builder">
-            <svg className='sites__builder-svg'
-              width="194" height="89" viewBox="0 0 194 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.314 83.8719C4.61772 80.4844 4.68728 75.1126 10.4693 71.8737L120.354 10.3201C126.136 7.08122 135.441 7.20169 141.137 10.5892L239.045 68.8139L108.222 142.097L10.314 83.8719Z" fill="white" fill-opacity="0.2"/>
-              <path d="M17.9385 81.4877C14.0574 79.1796 14.1048 75.5196 18.0443 73.3128L122.617 14.7346C126.557 12.5278 132.897 12.6098 136.778 14.9179C138.33 15.8411 138.311 17.3051 136.735 18.1879L23.6027 81.561C22.0269 82.4438 19.4909 82.4109 17.9385 81.4877Z" fill="white" fill-opacity="0.15"/>
-              <path d="M29.1069 88.1285C27.2082 86.9994 27.2314 85.2088 29.1587 84.1291L57.1319 68.4595C59.0592 67.3799 62.1609 67.42 64.0597 68.5492L116.7 99.854L81.7474 119.433L29.1069 88.1285Z" fill="white" fill-opacity="0.15"/>
-              <path d="M112.995 41.1363C111.096 40.0072 111.119 38.2166 113.046 37.1369L141.02 21.4673C142.947 20.3877 146.049 20.4278 147.947 21.557L206.131 56.1585C208.03 57.2877 208.007 59.0783 206.08 60.1579L178.106 75.8276C176.179 76.9072 173.077 76.867 171.179 75.7379L112.995 41.1363Z" fill="white" fill-opacity="0.15"/>
-              <path d="M117.438 29.6246C115.539 28.4955 115.562 26.7049 117.49 25.6252L145.463 9.95558C147.39 8.87594 150.492 8.9161 152.391 10.0453L156.257 12.3447C158.156 13.4738 158.133 15.2644 156.205 16.3441L128.232 32.0137C126.305 33.0933 123.203 33.0532 121.305 31.924L117.438 29.6246Z" fill="#F4B3D5"/>
-              <path d="M134.438 39.6246C132.539 38.4955 132.562 36.7049 134.49 35.6252L162.463 19.9556C164.39 18.8759 167.492 18.9161 169.391 20.0453L173.258 22.3454C175.157 23.4746 175.134 25.2652 173.207 26.3448L145.234 42.0144C143.306 43.0941 140.204 43.0539 138.306 41.9247L134.438 39.6246Z" fill="#F4B3D5"/>
-            </svg>
-          <div className="sites__top-card-content">
-            <h3 className="sites__top-card-title">Builder walkthrough</h3>
-            <p className="sites__top-card-text">12+ lessons</p>
-          </div>
-          </div>
+        <div className="sites__top-right-grid">
+          <div className="sites__top-card sites__top-card--trustwards">
+              <svg className='sites__trustwards-svg'
+                width="111" height="78" viewBox="0 0 111 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 33C0 30.2386 2.23858 28 5 28H30C32.7614 28 35 30.2386 35 33V47C35 49.7614 32.7614 52 30 52H5C2.23858 52 0 49.7614 0 47V33Z" fill="white" fill-opacity="0.15"/>
+                <path d="M76 33C76 30.2386 78.2386 28 81 28H106C108.761 28 111 30.2386 111 33V47C111 49.7614 108.761 52 106 52H81C78.2386 52 76 49.7614 76 47V33Z" fill="white" fill-opacity="0.15"/>
+                <path d="M0 5C0 2.23858 2.23858 0 5 0H30C32.7614 0 35 2.23858 35 5V19C35 21.7614 32.7614 24 30 24H5C2.23858 24 0 21.7614 0 19V5Z" fill="url(#paint0_linear_460_1591)"/>
+                <path d="M111 5C111 2.23858 108.761 0 106 0H81C78.2386 0 76 2.23858 76 5V19C76 21.7614 78.2386 24 81 24H106C108.761 24 111 21.7614 111 19V5Z" fill="url(#paint1_linear_460_1591)"/>
+                <path d="M111 75C111 77.7614 108.761 80 106 80H81C78.2386 80 76 77.7614 76 75V61C76 58.2386 78.2386 56 81 56H106C108.761 56 111 58.2386 111 61V75Z" fill="url(#paint2_linear_460_1591)"/>
+                <path d="M0 75C0 77.7614 2.23858 80 5 80H30C32.7614 80 35 77.7614 35 75V61C35 58.2386 32.7614 56 30 56H5C2.23858 56 0 58.2386 0 61V75Z" fill="url(#paint3_linear_460_1591)"/>
+                <path d="M38 61C38 58.2386 40.2386 56 43 56H68C70.7614 56 73 58.2386 73 61V75C73 77.7614 70.7614 80 68 80H43C40.2386 80 38 77.7614 38 75V61Z" fill="white" fill-opacity="0.15"/>
+                <path d="M38 5C38 2.23858 40.2386 0 43 0H68C70.7614 0 73 2.23858 73 5V19C73 21.7614 70.7614 24 68 24H43C40.2386 24 38 21.7614 38 19V5Z" fill="white" fill-opacity="0.15"/>
+                <path d="M46 34H66V38.0909H46V34Z" fill="white"/>
+                <path d="M51.3333 49V40.8182H59.3333L51.3333 49Z" fill="white"/>
+                <path d="M56.6667 49V40.8182H63.3333L56.6667 49Z" fill="white"/>
+                <rect x="38" y="28" width="35" height="24" rx="5" fill="white" fill-opacity="0.4"/>
+                <defs>
+                <linearGradient id="paint0_linear_460_1591" x1="-3.88889" y1="6.98662e-07" x2="36.1532" y2="26.3831" gradientUnits="userSpaceOnUse">
+                <stop stop-color="white" stop-opacity="0"/>
+                <stop offset="1" stop-color="white" stop-opacity="0.05"/>
+                </linearGradient>
+                <linearGradient id="paint1_linear_460_1591" x1="114.889" y1="6.98662e-07" x2="74.8468" y2="26.3831" gradientUnits="userSpaceOnUse">
+                <stop stop-color="white" stop-opacity="0"/>
+                <stop offset="1" stop-color="white" stop-opacity="0.05"/>
+                </linearGradient>
+                <linearGradient id="paint2_linear_460_1591" x1="114.889" y1="80" x2="74.8468" y2="53.6169" gradientUnits="userSpaceOnUse">
+                <stop stop-color="white" stop-opacity="0"/>
+                <stop offset="1" stop-color="white" stop-opacity="0.05"/>
+                </linearGradient>
+                <linearGradient id="paint3_linear_460_1591" x1="-3.88889" y1="80" x2="36.1532" y2="53.6169" gradientUnits="userSpaceOnUse">
+                <stop stop-color="white" stop-opacity="0"/>
+                <stop offset="1" stop-color="white" stop-opacity="0.05"/>
+                </linearGradient>
+                </defs>
+              </svg>
+              <div className="sites__top-card-content">
+                <h3 className="sites__top-card-title">This is Trustwards</h3>
+                <p className="sites__top-card-text">The ultimate legacy hub</p>
+              </div>
+            </div>
+            <div className="sites__top-card sites__top-card--news">
+              <img src={NewsCard} alt="News background" className="sites__news-bg" />
+              <img src={NewsImg} alt="News" className="sites__news-img" />
+            <div className="sites__top-card-content">
+              <h3 className="sites__top-card-title">News</h3>
+              <p className="sites__top-card-text">Learn about new regulations across the world.</p>
+            </div>
+            </div>
+
+            <div className="sites__top-card sites__top-card--builder">
+              <svg className='sites__builder-svg'
+                width="194" height="89" viewBox="0 0 194 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.314 83.8719C4.61772 80.4844 4.68728 75.1126 10.4693 71.8737L120.354 10.3201C126.136 7.08122 135.441 7.20169 141.137 10.5892L239.045 68.8139L108.222 142.097L10.314 83.8719Z" fill="white" fill-opacity="0.2"/>
+                <path d="M17.9385 81.4877C14.0574 79.1796 14.1048 75.5196 18.0443 73.3128L122.617 14.7346C126.557 12.5278 132.897 12.6098 136.778 14.9179C138.33 15.8411 138.311 17.3051 136.735 18.1879L23.6027 81.561C22.0269 82.4438 19.4909 82.4109 17.9385 81.4877Z" fill="white" fill-opacity="0.15"/>
+                <path d="M29.1069 88.1285C27.2082 86.9994 27.2314 85.2088 29.1587 84.1291L57.1319 68.4595C59.0592 67.3799 62.1609 67.42 64.0597 68.5492L116.7 99.854L81.7474 119.433L29.1069 88.1285Z" fill="white" fill-opacity="0.15"/>
+                <path d="M112.995 41.1363C111.096 40.0072 111.119 38.2166 113.046 37.1369L141.02 21.4673C142.947 20.3877 146.049 20.4278 147.947 21.557L206.131 56.1585C208.03 57.2877 208.007 59.0783 206.08 60.1579L178.106 75.8276C176.179 76.9072 173.077 76.867 171.179 75.7379L112.995 41.1363Z" fill="white" fill-opacity="0.15"/>
+                <path d="M117.438 29.6246C115.539 28.4955 115.562 26.7049 117.49 25.6252L145.463 9.95558C147.39 8.87594 150.492 8.9161 152.391 10.0453L156.257 12.3447C158.156 13.4738 158.133 15.2644 156.205 16.3441L128.232 32.0137C126.305 33.0933 123.203 33.0532 121.305 31.924L117.438 29.6246Z" fill="#F4B3D5"/>
+                <path d="M134.438 39.6246C132.539 38.4955 132.562 36.7049 134.49 35.6252L162.463 19.9556C164.39 18.8759 167.492 18.9161 169.391 20.0453L173.258 22.3454C175.157 23.4746 175.134 25.2652 173.207 26.3448L145.234 42.0144C143.306 43.0941 140.204 43.0539 138.306 41.9247L134.438 39.6246Z" fill="#F4B3D5"/>
+              </svg>
+            <div className="sites__top-card-content">
+              <h3 className="sites__top-card-title">Builder walkthrough</h3>
+              <p className="sites__top-card-text">12+ lessons</p>
+            </div>
+            </div>
         </div>
       </div>
 

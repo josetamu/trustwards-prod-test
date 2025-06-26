@@ -7,6 +7,7 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
     const [selected, setSelected] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [reducedMotion, setReducedMotion] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     // Load user's current appearance settings
     useEffect(() => {
@@ -14,6 +15,13 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
         setSelected(localStorage.getItem('appearanceTheme') || 'system');
         setSelectedColor(appearanceSettings?.['Accent Color'] || '');
         setReducedMotion(appearanceSettings?.['Reduced Motion'] || false);
+        
+        // Mark as initialized after a short delay to prevent initial animation
+        const timer = setTimeout(() => {
+            setIsInitialized(true);
+        }, 100);
+        
+        return () => clearTimeout(timer);
     }, [appearanceSettings]);
 
     // Save appearance settings to database
@@ -70,7 +78,7 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
     };
 
     return (
-        <div className="modalAppearance__content">
+        <div className={`modalAppearance__content ${isInitialized ? 'modalAppearance__content--initialized' : ''}`}>
             <div className="modalAppearance__mid">
                     <span className="modalAppearance__mid__title">
                         Theme
