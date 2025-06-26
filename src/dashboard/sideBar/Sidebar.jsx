@@ -456,7 +456,6 @@ export function Sidebar({
                         ))}
                     </div>
                     <ProfileDropdown 
-                    avatar="avatar" 
                     user={user}
                     toggleSidebar={toggleSidebar}
                     isSidebarOpen={isSidebarOpen} 
@@ -468,6 +467,7 @@ export function Sidebar({
                     setIsModalOpen={setIsModalOpen}
                     isModalOpen={isModalOpen}
                     modalType={modalType}
+                    avatar={user?.["Avatar URL"]}
                
                     
                     /> 

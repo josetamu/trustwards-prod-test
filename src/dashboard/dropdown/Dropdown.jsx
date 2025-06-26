@@ -83,15 +83,6 @@ export function Dropdown({
     }
   }, [open, verticalPosition, horizontalPosition, horizontalBreakpoint, horizontalAnimBreakpoint, animationOrigin]);
 
-  // Inline style for the menu
-  const menuStyle = {
-    transformOrigin,
-    left: currentHorizontal === 'right' ? 0 : 'auto',
-    right: currentHorizontal === 'left' ? 0 : 'auto',
-    top: currentVertical === 'bottom' ? 'calc(100% + 4px)' : 'auto',
-    bottom: currentVertical === 'top' ? 'calc(100% + 4px)' : 'auto',
-  };
-
   return (
     <div
       className="dropdown"
@@ -106,7 +97,6 @@ export function Dropdown({
             {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
             className={`dropdown__menu dropdown__menu--${currentVertical}-${currentHorizontal}`}
             ref={menuRef}
-            style={menuStyle}
           >
             {menu}
           </motion.div>

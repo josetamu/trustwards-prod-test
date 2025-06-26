@@ -3,7 +3,7 @@ import { ModalAccount } from '../ModalAccount/ModalAccount';
 import { ModalAppearance } from '../ModalAppearance/ModalAppearance';
 import './ModalUser.css';
 import ModalUpgradePlan from '../ModalUpgradePlan/ModalUpgradePlan';
-export function ModalUser({ onClose, onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings}) {
+export function ModalUser({ onClose, onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings, getAppearanceSettings, openChangeModal }) {
 
 
     const renderContent = () => {
@@ -15,6 +15,7 @@ export function ModalUser({ onClose, onSave, user, setUser, setIsModalOpen, appe
                     onSave={onSave}
                     setUser={setUser}
                     userSettings={userSettings}
+                    openChangeModal={openChangeModal}
                     
                 />
             case 'Appearance':
