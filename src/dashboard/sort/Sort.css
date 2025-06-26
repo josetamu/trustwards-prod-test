@@ -5,25 +5,25 @@
     gap: 3px;
     padding: 6px;
     background-color: fff;
-    color: var(--dashed-btn-color);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing);
     font-size: 12px;
     font-weight: 500;
-    border: 1px solid #E6E6E6;
+    border: 1px solid var(--border-fresco-color);
     border-radius: 8px;
     cursor: pointer;
 }
 .sort__button svg {
     width: 12px;
     height: 12px;
-    color: var(--dashed-btn-color);
+    color: var(--body-fresco-color);
 }
 
 .sort__title {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: var(--letter-spacing);
-  color: #686B74;
+  color: var(--body-fresco-color);
   padding: 6px 12px;
   pointer-events: none;
   user-select: none;

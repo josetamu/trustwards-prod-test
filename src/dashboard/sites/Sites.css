@@ -12,7 +12,6 @@
   flex-direction: column;
   gap: 35px;
   margin: 0 auto;
-  background-color: #ffffff;
   max-height: calc(100vh - 40px);
   padding-top: 60px;
 }
@@ -25,11 +24,11 @@
 .sites__top-card {
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px var(--shadow-fresco-color);
   display: flex;
   flex-direction: column;
   min-height: 160px;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.10);
+  box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
 }
 
 .sites__top-grid {
@@ -80,7 +79,7 @@
   height: auto;
 }
 .sites__top-card--trustwards .sites__top-card-text {
-  color: #FFFFFFB2;
+  color: var(--dashboard-hello-grid-text-strong-color);
   max-width: 100%;
 }
 
@@ -99,7 +98,7 @@
   height: auto;
 }
 .sites__top-card--news .sites__top-card-text {
-  color: #FFFFFFB2;
+  color: var(--dashboard-hello-grid-text-strong-color);
   max-width: 100%;
 }
 
@@ -119,7 +118,7 @@
   pointer-events: none;
 }
 .sites__top-card--changelog .sites__top-card-text {
-  color: #FFFFFFB2;
+  color: var(--dashboard-hello-grid-text-strong-color);
 }
 
 /* Builder */
@@ -137,7 +136,7 @@
   pointer-events: none;
 }
 .sites__top-card--builder .sites__top-card-text {
-  color: #FFFFFFB2;
+  color: var(--dashboard-hello-grid-text-strong-color);
 }
 
 /* Card Content */
@@ -150,14 +149,14 @@
 }
 
 .sites__top-card-title {
-  color: #fff;
+  color: var(--dashboard-hello-grid-heading-color);
   letter-spacing: var(--letter-spacing-negative);
   font-weight: 600;
   font-size: 16px;
 }
 
 .sites__top-card-text {
-  color: #FFFFFFD9;
+  color: var(--dashboard-hello-grid-text-strong-color);
   letter-spacing: var(--letter-spacing-negative);
   font-size: 14px;
   font-weight: 500;
@@ -189,7 +188,7 @@
 .sites__title {
   font-size: 24px;
   font-weight: 600;
-  color: #111827;
+  color: var(--body-strong-color);
   margin: 0;
 }
 
@@ -207,9 +206,9 @@
   justify-content: center;
   gap: 4px;
   padding: 7px;
-  background-color: var(--background-color-blue);
-  box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
-  color: #ffffff;
+  background-color: var(--accent-bg-color);
+  box-shadow: var(--blue-button-shadow);
+  color: var(--accent-color);
   font-size: 14px;
   font-weight: 500;
   border: none;
@@ -218,7 +217,7 @@
   transition: background-color 0.2s;
 }
 .sites__new-button svg {
-  color: #ffffff;
+  color: var(--accent-color);
   width: 12px;
   height: 12px;
 }

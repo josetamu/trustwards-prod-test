@@ -22,18 +22,18 @@
 .modalAppearance__title{
     font-size: 14px;
     font-weight: var(--font-weight);
-    color: var(--color-black);
+    color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__description{
     font-size: 11px;
-    color: var(--color-gray);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__divider{
     width: 100%;
     height: 1px;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--border-strong-color);
 }
 .modalAppearance__mid{
     display: flex;
@@ -43,7 +43,7 @@
 .modalAppearance__mid__title{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
-    color: var(--color-black);
+    color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__choices{
@@ -72,12 +72,12 @@
 .modalAppearance__choice__title{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
-    color: var(--color-gray);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalAppearance__imgWrapper--light{
-    background-color: rgba(244, 244, 246, 1);
-    border: 2px solid rgba(255, 255, 255, 1);
+    background-color: var(--appearance-light-theme);
+    border: 2px solid var(--appearance-light-theme-border);
     
 }
 .modalAppearance__img{
@@ -101,8 +101,8 @@
 
 
 .modalAppearance__imgWrapper--dark{
-    background-color: rgba(39, 39, 39, 1);
-    border: 2px solid rgba(85, 85, 85, 1);
+    background-color: var(--appearance-dark-theme);
+    border: 2px solid var(--appearance-dark-theme-border);
     
 }
 
@@ -141,15 +141,15 @@
 }
 
 .modalAppearance__choice--active{
-    border: 2px solid var(--background-color-blue);
+    border: 2px solid var(--accent-bg-color);
 }
 
 .modalAppearance__choice > .modalAppearance__choice--active + .modalAppearance__choice__title{
-    color: var(--background-color-blue);
+    color: var(--accent-bg-color);
 }
 
 .modalAppearance__imgWrapper--system:has(.modalAppearance__choice--active) ~ .modalAppearance__choice__title {
-    color: var(--background-color-blue);
+    color: var(--accent-bg-color);
 }
 
 
@@ -182,7 +182,7 @@
 .modalAppearance__ancentColor__title{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
-    color: var(--color-black);
+    color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
     border: none;
 }
@@ -234,15 +234,15 @@
 .modalAppearance__ancentColor__button{
     width: 45px;
     padding: 10px;
-    background: var(--background-color-blue);
+    background: var(--accent-bg-color);
     border: none;
     border-radius: 7px;
     letter-spacing: var(--letter-spacing-negative);
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
-    color: #FFF;
+    color: var(--accent-color);
     cursor: pointer;
-    box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+    box-shadow: var(--blue-button-shadow);
     margin-top: 10px;
     height: 25px;
     display: flex;
@@ -252,7 +252,7 @@
 
 .modalAppearance__ancentColor__choice--active{
     box-shadow:
-    0 0 4px rgba(0, 0, 0, 0.1),    
+    0 0 4px var(--shadow-strong-color),    
     0 0 0 2px white,               /* Borde externo blanco */
     0 0 0 3px #0094ff;             /* Borde externo azul */
 
@@ -265,7 +265,7 @@
 .modalAppearance__ReducedMotion__title{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
-    color: var(--color-black);
+    color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -316,7 +316,7 @@
   }
   
   .modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider {
-    background-color: var(--background-color-blue);
+    background-color: var(--accent-bg-color);
   }
   
 .modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider:before {

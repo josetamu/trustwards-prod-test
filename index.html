@@ -8,6 +8,14 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      const theme = localStorage.getItem('appearanceTheme');
+      if (theme === 'dark' || theme === 'light') {
+        document.documentElement.setAttribute('data-theme', theme);
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    </script>
     <script type="module" src="/src/dashboard/main.jsx"></script>
   </body>
 </html>

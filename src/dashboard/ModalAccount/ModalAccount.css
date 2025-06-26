@@ -13,7 +13,6 @@
 .modalAccount__aside{
   width: 15%;
   height: 100%;
-  background-color: var(--modal-background);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -38,14 +37,14 @@
 
 .modalAccount__edit{
   font-size: var(--font-size-medium);
-  color: rgba(160, 160, 160, 1);
+  color: var(--body-light-color);
   font-weight: 500;
   letter-spacing: var(--letter-spacing-negative);
   cursor: pointer;
 }
 
 .modalAccount__edit:hover{
-  color: var(--color-black);
+  color: var(--body-strong-color);
   transition: all 0.3s ease;
 }
 .modalAccount__main{
@@ -71,33 +70,32 @@
 
 .modalAccount__title{
   font-size: var(--font-size-medium);
-  color: rgba(72, 72, 72, 1);
+  color: var(--body-fresco-color);
   font-weight: 600;
   letter-spacing: var(--letter-spacing-negative);
 }
 
 .modalAccount__field{
   font-size: var(--font-size-medium);
-  color: var(--color-gray);
+  color: var(--body-fresco-color);
   font-weight: var(--font-weight);
 }
 
 .modalAccount__change{
   font-size: var(--font-size-medium);
-  color: var(--background-color-blue);
+  color: var(--accent-bg-color);
   font-weight: var(--font-weight);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .modalAccount__change:hover{
-  color: rgb(2, 124, 206);
-  transition: all 0.3s ease;
+  opacity: 0.8;
 }
 
 .modalAccount__divider{
-  
   height: 0.8px;
-  background: rgba(224, 224, 224, 1);
+  background: var(--border-strong-color);
   margin: 4px 0;
   width: 100%;
   border: none;

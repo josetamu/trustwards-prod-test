@@ -16,7 +16,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(217, 217, 217, 1);
+    background-color: var(--support-header-background);
     border-radius: 14px 14px 0 0;
 
 }
@@ -43,7 +43,7 @@
 .modalSupport__description{
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
-    color: rgba(102, 102, 102, 1);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -56,8 +56,8 @@
 }
 
 .modalSupport__choice{
-    background-color: rgba(255, 255, 255, 1);
-    border: 1.5px solid rgba(224, 224, 224, 1);
+    background-color: var(--support-choice-background);
+    border: 1.5px solid var(--border-strong-color);
     border-radius: 8px;
     padding: 10px;
     display: flex;
@@ -79,12 +79,12 @@
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--color-gray);
+    color: var(--body-fresco-color);
 }
 
 .modalSupport__choice--active{
-    color: var(--background-color-blue);
-    border: 1.5px solid var(--background-color-blue);
+    color: var(--accent-bg-color);
+    border: 1.5px solid var(--accent-bg-color);
 }
 
 .modalSupport__choice--active .modalSupport__choice__icon{
@@ -95,7 +95,7 @@
 }
 
 .modalSupport__choice--active .modalSupport__choice__text{
-    color: var(--background-color-blue);
+    color: var(--accent-bg-color);
 }
 .modalSupport__mid{
     width: 100%;
@@ -117,19 +117,19 @@
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--color-black);
+    color: var(--body-strong-color);
 }
 
 .modalSupport__input__field{
     width: 100%;
     height: 34px;
-    border: 1px solid rgba(224, 224, 224, 1);
+    border: 1px solid var(--border-strong-color);
     border-radius: 8px;
     padding: 10px;
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--color-gray);
+    color: var(--body-fresco-color);
  
   
 }
@@ -148,7 +148,7 @@
     gap: 5px;
     width: 100%;
     height: 69px;
-    border: 2px dashed rgba(224, 224, 224, 1);
+    border: 2px dashed var(--border-strong-color);
     border-radius: 8px;
     padding: 10px;
     flex-direction: column;
@@ -163,21 +163,21 @@
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: rgba(102, 102, 102, 1);
+    color: var(--body-fresco-color);
 }
 
 .modalSupport__button{
     width: 100%;
     height: 25px;
     border-radius: 8px;
-    background-color: var(--background-color-blue);
+    background-color: var(--accent-bg-color);
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: rgba(255, 255, 255, 1);
+    color: var(--accent-color);
     cursor: pointer;
     border: none;
-    box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;;
+    box-shadow: var(--blue-button-shadow);;
 }
 
 .modalSupport__dropZone__icon--none{
@@ -207,17 +207,13 @@
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--color-gray);
+    color: var(--body-fresco-color);
     max-width: 80px;
     justify-content: center;
     width: 100%;
-    background-color: rgba(255, 255, 255, 1);
     padding: 5px;
     border-radius: 8px;
-    border: 1px solid rgba(224, 224, 224, 1);
-
-
-    
+    border: 1px solid var(--border-strong-color);
 }
 .modalSupport__file__name{
 
@@ -235,14 +231,8 @@
     outline: none;
     cursor: pointer;
     display: flex;
-    color: rgba(255, 0, 0, 0.5);
-    transition: color 0.3s ease;
+    color: var(--warning-color);
     height: 10px;
     width: 10px;
     align-items: center;
-    
-}
-.modalSupport__file__remove:hover{
-    color: rgba(255, 0, 0, 1);
-    transition: color 0.3s ease;
 }

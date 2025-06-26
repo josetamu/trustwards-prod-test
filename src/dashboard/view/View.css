@@ -1,7 +1,7 @@
 .view__toggle {
   display: flex;
   align-items: center;
-  background: #F2F2F2;
+  background: var(--view-toggle-background);
   border-radius: 9px;
   padding: 3px;
   position: relative;
@@ -14,7 +14,7 @@
   left: 3px;
   width: calc(50% - 3px);
   height: calc(100% - 6px);
-  background: #fff;
+  background: var(--view-toggle-color);
   border-radius: 7px;
   transition: transform 0.32s cubic-bezier(.4, 1.2, .6, 1);
   z-index: 0;
@@ -35,7 +35,7 @@
   justify-content: center;
   padding: 4px;
   background: none;
-  color: var(--dashed-btn-color);
+  color: var(--body-fresco-color);
   font-family: var(--font-family);
   font-size: 14px;
   font-weight: 500;
@@ -49,7 +49,7 @@
 .view__option svg {
   width: 14px;
   height: 14px;
-  color: var(--dashed-btn-color);
+  color: var(--body-fresco-color);
 }
 
 /* Mobile */

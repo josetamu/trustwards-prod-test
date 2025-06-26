@@ -8,9 +8,9 @@
   position: relative;
   padding: 6px 8px;
   border-radius: 6px;
-  background-color: #494E58;
-  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.30) inset;
-  color: #fff;
+  background-color: var(--tooltip-background);
+  box-shadow: 0px 1px 3px 0px var(--shadow-strong-color) inset;
+  color: var(--tooltip-color);
   white-space: nowrap;
   min-width: 50px;
   max-width: 200px;
@@ -47,7 +47,7 @@
   height: 10px;
   border-left-color: transparent;
   border-bottom-color: transparent;
-  background-color: #494E58;
+  background-color: var(--tooltip-background);
   transform: translateY(-50%) rotate(225deg);
   top: 50%;
   left: -5px;
@@ -69,7 +69,7 @@
   height: 10px;
   border-right-color: transparent;
   border-top-color: transparent;
-  background-color: #494E58;
+  background-color: var(--tooltip-background);
   transform: translateY(-50%) rotate(225deg);
   top: 50%;
   right: -5px;
@@ -91,7 +91,7 @@
   height: 10px;
   border-top-color: transparent;
   border-left-color: transparent;
-  background-color: #494E58;
+  background-color: var(--tooltip-background);
   transform: translateX(-50%) rotate(45deg);
   left: 50%;
   bottom: -5px;
@@ -113,7 +113,7 @@
   height: 10px;
   border-bottom-color: transparent;
   border-right-color: transparent;
-  background-color: #494E58;
+  background-color: var(--tooltip-background);
   transform: translateX(-50%) rotate(45deg);
   left: 50%;
   top: -5px;
@@ -132,12 +132,11 @@
 }
 .tooltip--sidebar .tooltip__mask {
   display: inline-block;
-  background-color: white;
+  background-color: var(--sidebar-tooltip-background);
   border-radius: 8px;
   padding: 6px 12px;
-  border: 1px solid #ccc;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  font-family: sans-serif;
+  border: 1px solid var(--border-strong-color);
+  box-shadow: 0 1px 2px var(--shadow-strong-color);
   position: relative;
   color: var(--color-text);
   font-size: var(--font-size-small);
@@ -156,8 +155,8 @@
   height: 0;
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
-  border-right: 6px solid white;
-  filter: drop-shadow(-1px 0 1px rgba(0,0,0,0.1));
+  border-right: 6px solid var(--sidebar-tooltip-background);
+  filter: drop-shadow(-1px 0 1px var(--shadow-strong-color));
 }
 
 

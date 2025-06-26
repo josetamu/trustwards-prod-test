@@ -309,8 +309,8 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                 onDrop={handleDrop}
                 onClick={handleDropzoneClick}
                 style={{ 
-                    borderColor: isDragging ? 'rgba(0, 153, 254, 1)' : 'rgba(224, 224, 224, 1)',
-                    backgroundColor: isDragging ? 'rgba(0, 153, 254, 0.1)' : 'transparent'
+                    borderColor: isDragging ? 'var(--accent-bg-color)' : 'var(--border-strong-color)',
+                    backgroundColor: isDragging ? 'var(--support-dropzone-background)' : 'transparent'
                 }}
                 >
                     <input

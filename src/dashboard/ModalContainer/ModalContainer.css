@@ -5,7 +5,7 @@
     min-height: 100vh;
     width: 100vw;
     height: fit-content;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--modal-backdrop-color);
 
     display: flex;
     justify-content: center;
@@ -22,7 +22,7 @@
     background: var(--modal-background);
     border-radius: 16px;
     max-width: 800px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.10);
+    box-shadow: 0 2px 4px 0 var(--shadow-strong-color);
     display: flex;
     flex-direction: column;
     gap: 25px;

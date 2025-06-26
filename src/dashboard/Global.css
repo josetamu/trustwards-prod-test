@@ -8,84 +8,107 @@
   font-family: 'Inter', sans-serif;
 }
 
+/*
+Light selected: use html[data-theme="light"]
+Dark selected: use html[data-theme="dark"]
+System selected: use prefers-color-scheme in CSS (data-themes will override it)
+*/
+
 :root {
-  --root-backgroundcolor: rgba(245, 245, 245, 1);
-  --content-backgroundcolor: #fff;
+  --input-padding: 12px;
+  --letter-spacing: -0.03em;
+  --font-size-btn: 14px;
+  --font-size-name: 20px;
+  --font-size-domain: 12px;
+  --backdrop-blur: 20px;
+  --heading-font-size: 18px;
   --font-weight: 500;
   --letter-spacing-negative: -0.03em;
   --letter-spacing-positive: 0.03em;
-  --background-color-blue: rgba(0, 153, 254, 1);
-  --background-color-black: #191919;
-  --border-color: #E0E0E0;
   --font-size-small: 10px;
   --font-size-medium: 12px;
   --sidebar-icon-size: 16px;
   --sidebar-width-open: 200px;
   --sidebar-width-close: 70px;
   --sidebar-font-size: 14px;
-  --color-black: rgba(0, 0, 0, 1);
-  --sidebar-background: transparent;
-  --border: 1px solid var(--border-color);
-  --sidebar-background-hover: rgba(235, 235, 235, 1);
-  --color-logout: #D00606;
-  --color-gray: rgba(104, 107, 116, 1);
-  --color-paragraph-delete: rgba(94, 94, 94, 1);
-  
-  
 
+  /*App*/
+  --sidebar-background: #F5F5F5;
+  --content-background: #FFFFFF;
 
+  /*General*/
+  --body-light-color: #A0A0A0;
+  --body-fresco-color: #5E5E5E;
+  --body-semistrong-color: #333333;
+  --body-strong-color: #000000;
+  --border-fresco-color: #E6E6E6;
+  --border-strong-color: #E0E0E0;
+  --icons-fresco-color: #5E5E5E;
+  --icons-strong-color: #000000;
+  --hover-light-color: #FFFFFF;
+  --hover-fresco-color: #EBEBEB;
+  --hover-strong-color: #E3E3E3;
+  --shadow-fresco-color: rgba(0, 0, 0, 0.05);
+  --shadow-strong-color: rgba(0, 0, 0, 0.1);
+  --warning-color: #D00606;
+  --hover-warning-color: rgba(248, 218, 218, 1);
+  --wrappers-fresco-color: #F2F2F2;
+  --wrappers-strong-color: #EDEDED;
+  --logo-background: #FFFFFF;
 
-  --letter-spacing: -0.03em;
+  /*Dashboard Hello Grid*/
+  --dashboard-hello-grid-heading-color: #FFFFFF;
+  --dashboard-hello-grid-text-fresco-color: #FFFFFF85;
+  --dashboard-hello-grid-text-strong-color: #FFFFFFB2;
 
+  /*Sites List*/
+  --site-background: #FFFFFF;
+  --site-pro-toggle-background: #F2F2F2;
+  --site-pro-toggle-text-color: #9E9E9E;
+  --view-toggle-color: #FFFFFF;
+  --view-toggle-background: #F2F2F2;
 
+  /*Accents*/
+  --accent-color: #FFFFFF;
+  --accent-bg-color: #0099FE;
+  --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
 
+  /*Dropdown*/
+  --dropdown-background: #FFFFFF;
 
-  --dashed-border: 2px dashed #E3E3E3;
-  --font-size-btn: 14px;
-  --btn-bg-hover: #1769aa;
-  --font-size-name: 20px;
-  --font-size-domain: 12px;
-  --backdrop-blur: 20px;
-  --modal-background: #fff;
-  --heading-font-size: 18px;
-  --input-background: #ffffff;
-  --input-color: #686B74;
-  --input-padding: 12px;
-  --avatar-background: #fff;
-  --dashed-btn-color: #5E5E5E;
-  --dashed-btn-background: #F7F7F7;
+  /*Sidebar Tooltip*/
+  --sidebar-tooltip-background: #FFFFFF;
+
+  /*Tooltip*/
+  --tooltip-background: #494E58;
+  --tooltip-color: #FFFFFF;
+
+  /*Notification*/
+
+  /*Modal*/
+  --modal-background: #FFFFFF;
+  --modal-sidebar-background: #F2F2F2;
+  --modal-backdrop-color: rgba(0, 0, 0, 0.2);
+
+  /*Modal - Appearance*/
+  --appearance-light-theme: #F4F4F6;
+  --appearance-light-theme-border: rgba(224, 224, 224, 1);
+  --appearance-dark-theme: #272727;
+  --appearance-dark-theme-border: rgba(85, 85, 85, 1);
+
+  /*Modal - Support*/
+  --support-header-background: #D9D9D9;
+  --support-choice-background: #FFFFFF;
+  --support-dropzone-background: rgba(0, 153, 254, 0.1);
 }
-
-#root {
-  width: 100%;
-  min-height: 100svh;
-  background-color: var(--root-backgroundcolor);
-}
-
-
-
-
- 
-  
-@media (max-width: 767px) {
-
-  body{
-    overflow-x: hidden;
-  } 
-  #root{
-    width: 100vw;
-    background-color: transparent;
-    
-
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sidebar-background: #202020;
   }
-
 }
-  
-   
-
-
-  
-  
-  
-  
-  
+html[data-theme="light"] {
+  --sidebar-background: #f5f5f5;
+}
+html[data-theme="dark"] {
+  --sidebar-background: #202020;
+}
