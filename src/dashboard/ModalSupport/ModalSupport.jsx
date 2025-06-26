@@ -8,8 +8,8 @@ import { Tooltip } from '../Tooltip/Tooltip';
 
 export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
     const [selectedChoice, setSelectedChoice] = useState(null);
-    const [name, setName] = useState(user?.["First Name"] + " " + user?.["Second Name"]);
-    const [email, setEmail] = useState(user?.Email);
+    const [name, setName] = useState(user?.Name || 'User Name');
+    const [email, setEmail] = useState(user?.Email || 'User Email');
     const [message, setMessage] = useState('');
     const [files, setFiles] = useState([]);
     const [errors, setErrors] = useState({});
@@ -18,7 +18,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
 
     useEffect(() => {
         if(user){
-            setName(user?.["First Name"] + " " + user?.["Second Name"] || 'User Name');
+            setName(user?.Name|| 'User Name');
             setEmail(user?.Email || 'User Email');
             setErrors({});
         }

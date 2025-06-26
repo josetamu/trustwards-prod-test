@@ -1,6 +1,9 @@
 import React, { useEffect, useCallback, useRef, useId } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ANIM_TYPES } from '../dashboard_animations';
 import './ModalContainer.css';
 
+// Importar todas las imágenes necesarias
 import gradient1 from '../../assets/gradient1.png';
 import gradient2 from '../../assets/gradient2.png';
 import gradient3 from '../../assets/gradient3.png';
@@ -23,7 +26,6 @@ import aurora6 from '../../assets/aurora6.png';
 import avatar1 from '../../assets/avatar1.png';
 import avatar2 from '../../assets/avatar2.png';
 import avatar3 from '../../assets/avatar3.png';
-
 
 // Constants of images that will be used by ModalAvatar
 export const gradients = [
@@ -158,7 +160,7 @@ export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handl
         onClose();
       }
     }
-  }, [onClose]);
+  }, [onClose]); 
 
   // Press Escape (global)
   const handleKeyDown = useCallback((e) => {
@@ -209,20 +211,32 @@ export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, handl
       }
     };
 
-    modalRef.current.addEventListener('keydown', handleTabKey);
+ modalRef.current.addEventListener('keydown', handleTabKey);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       modalRef.current?.removeEventListener('keydown', handleTabKey);
     };
-  }, [handleKeyDown]);
-
-  if (!isOpen) return null;
+  }, [handleKeyDown]); 
 
   return (
     <div className={`modal__backdrop`} onClick={handleBackdropClick}>
-      <div className="modal" ref={modalRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" id={modalId}>
-        {children}
-      </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+            className="modal"
+            ref={modalRef}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            id={modalId}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  );
-} 
+  )
+}
+
+ 

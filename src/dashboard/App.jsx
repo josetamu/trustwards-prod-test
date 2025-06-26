@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../supabase/supabaseClient';
 import './Global.css'
 
@@ -6,7 +6,7 @@ import Academy from './Academy'
 import Home from './Home/Home'
 import { LegalNews } from './LegalNews/LegalNews'
 import { Settings } from './Settings/Settings'
-import { Sidebar, homePages, siteMenuPages, otherpages } from './SideBar/Sidebar'
+import { Sidebar, homePages, siteMenuPages, otherpages } from './sideBar/Sidebar'
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
 import { ModalAccount } from './ModalAccount/ModalAccount'
@@ -20,7 +20,7 @@ import { ModalAppearance } from './ModalAppearance/ModalAppearance'
 import SiteView from './SiteView/SiteView'
 import { ModalChange } from './ModalChange/ModalChange'
 import { ModalUser } from './ModalUser/ModalUser'
-
+import Notification from './Notification/Notification'
 function App() {
   const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,7 +40,11 @@ function App() {
   // ModalChange state
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [changeType, setChangeType] = useState('');
- 
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+  });
+  
 
    // function to open sidebar in desktop toggleing the .open class
    const toggleSidebar = () => {
@@ -215,6 +219,28 @@ function App() {
         return;
     }
   } */
+
+const handleKeyDown = useCallback((e) => {
+      if (e.key === 'Escape') {
+        if (isModalOpen) {
+          closeModal();
+        }
+        if (isChangeModalOpen) {
+          closeChangeModal();
+        }
+      }
+    }, [isModalOpen, isChangeModalOpen]); 
+
+    // Add event listener for keyboard events
+    useEffect(() => {
+      document.addEventListener('keydown', handleKeyDown);
+      
+      // Cleanup function to remove event listener
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }, [handleKeyDown]);
+
     const openModal = (type, props = null) => {
       setModalType(type);
       setModalProps(props);
@@ -237,6 +263,18 @@ function App() {
       setIsChangeModalOpen(false);
       setChangeType('');
     };
+    const showNotification = (message) => {
+      setNotification({
+        open: true,
+        message: message,
+      });
+    };
+    const hideNotification = () => {
+      setNotification({
+        open: false,
+        message: '',
+      });
+    };
 
     const renderModal = () => {
       if (!isModalOpen) return null;
@@ -255,8 +293,12 @@ function App() {
             user={user}
             setUser={setUser}
             setIsModalOpen={setIsModalOpen}
+            appearanceSettings={appearanceSettings}
+            setAppearanceSettings={setAppearanceSettings}
             userSettings={userSettings}
             setUserSettings={setUserSettings}
+            getAppearanceSettings={getAppearanceSettings}
+            openChangeModal={openChangeModal}
             />
           );
         case 'NewSite':
@@ -317,6 +359,8 @@ function App() {
             setAppearanceSettings={setAppearanceSettings}
             userSettings={userSettings}
             setUserSettings={setUserSettings}
+            getAppearanceSettings={getAppearanceSettings}
+            openChangeModal={openChangeModal}
           />)
         case 'Upgrade':
           return (
@@ -328,8 +372,12 @@ function App() {
               user={user}
               setUser={setUser}
               setIsModalOpen={setIsModalOpen}
+              appearanceSettings={appearanceSettings}
+              setAppearanceSettings={setAppearanceSettings}
               userSettings={userSettings}
               setUserSettings={setUserSettings}
+              getAppearanceSettings={getAppearanceSettings}
+              openChangeModal={openChangeModal}
             />
           )
         
@@ -381,7 +429,7 @@ function App() {
       {renderActivePage()}
 
       {isModalOpen && (
-      <ModalContainer isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isSidebarOpen={isSidebarOpen}>
+      <ModalContainer isOpen={isModalOpen} onClose={closeModal} isSidebarOpen={isSidebarOpen}>
        {renderModal()}
       </ModalContainer>
     )}
@@ -395,9 +443,20 @@ function App() {
           user={user}
           setUser={setUser}
           setIsModalOpen={setIsModalOpen}
+          showNotification={showNotification}
         />
       </ModalContainer>
     )}
+    <Notification
+      open={notification.open}
+      onClose={hideNotification}
+      position="top-right"
+      autoClose={1000}
+    >
+      <span className={`notification__message`}>
+        {notification.message}
+      </span>
+    </Notification>
      
     </div>
     

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Tooltip } from '../Tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
 
-export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen }) {
+export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen, showNotification }) {
 
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
@@ -236,6 +236,11 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
             const updatedUser = { ...user, ...updateData };
             setUser(updatedUser);
             
+            // Show success notification
+            if (showNotification) {
+                showNotification('Name updated successfully!');
+            }
+            
             // Close the modal
             onClose();
             
@@ -259,9 +264,16 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
         return () => document.removeEventListener('keydown', handleEsc, { capture: true });
     }, [onClose]);
 
+    // Handle click outside to close modal
+    const handleBackdropClick = (e) => {
+        if (e.target.className === 'modalChange') {
+            onClose();
+        }
+    };
+
     return (
-        <div className='modalChange'>
-            <div className='modalChange__content'>
+        <div className='modalChange' onClick={handleBackdropClick}>
+            <div className='modalChange__content' onClick={(e) => e.stopPropagation()}>
                 <div className='modalChange__header'>
                     <h2 className='modalChange__title'>Change {changeType}</h2>
                 </div>

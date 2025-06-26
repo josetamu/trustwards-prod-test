@@ -1,0 +1,36 @@
+/* Notification Container */
+.notification {
+  position: absolute;
+  top: 50px;
+  z-index: 9999;
+  max-width: 400px;
+  min-width: 300px;
+  background: var(--background-color-blue);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+ 
+}
+
+
+
+/* Notification Content */
+.notification__content {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  position: relative;
+  justify-content: center;
+}
+
+/* Notification Message */
+.notification__message {
+  margin-right: 12px;
+  font-size: var(--font-size-medium);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 1);
+  font-weight: var(--font-weight);
+  
+}
+
+
