@@ -98,7 +98,7 @@ export const Sort = ({ onSortChange }) => {
   return (
     <Dropdown 
       verticalPosition="bottom"
-      horizontalPosition="left"
+      horizontalPosition="right"
       open={open}
       onClose={() => setOpen(false)}
       menu={SortMenu}

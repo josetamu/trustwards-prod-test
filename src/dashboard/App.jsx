@@ -20,6 +20,7 @@ import { ModalAppearance } from './ModalAppearance/ModalAppearance'
 import SiteView from './SiteView/SiteView'
 import { ModalChange } from './ModalChange/ModalChange'
 import { ModalUser } from './ModalUser/ModalUser'
+
 function App() {
   const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,8 +75,8 @@ function App() {
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
-      /* email: 'darezo.2809@gmail.com', */
-      email: 'oscar.abad.brickscore@gmail.com',  
+      email: 'darezo.2809@gmail.com',
+      //email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };

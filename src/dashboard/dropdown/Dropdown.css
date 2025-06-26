@@ -3,6 +3,10 @@
   display: inline-block;
 }
 
+.sidebar--open .dropdown {
+  position: static;
+}
+
 .dropdown__menu {
   position: absolute;
   min-width: 140px;
@@ -130,4 +134,33 @@
   .profileDropdown--open .dropdown__menu{
     width: 100%;
    }
+}
+
+.dropdown__menu--bottom-left {
+  left: auto;
+  right: 0;
+  top: calc(100% + 4px);
+  bottom: auto;
+  transform-origin: top left;
+}
+.dropdown__menu--bottom-right {
+  right: auto;
+  left: 0;
+  top: calc(100% + 4px);
+  bottom: auto;
+  transform-origin: top right;
+}
+.dropdown__menu--top-left {
+  left: auto;
+  right: 0;
+  bottom: calc(100% + 4px);
+  top: auto;
+  transform-origin: bottom left;
+}
+.dropdown__menu--top-right {
+  right: auto;
+  left: 0;
+  bottom: calc(100% + 4px);
+  top: auto;
+  transform-origin: bottom right;
 }
