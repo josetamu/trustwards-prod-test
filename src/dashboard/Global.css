@@ -286,7 +286,74 @@ html[data-theme="light"] .sidebar__logo-img{
   height: 15px;
 }
 html[data-theme="dark"] {
+  /*App*/
   --sidebar-background: #202020;
+  --content-background: #191919;
+
+  /*General*/
+  --body-light-color: #666666;
+  --body-fresco-color: #9B9B9B;
+  --body-semistrong-color: #9B9B9B;
+  --body-strong-color: #FFFFFF;
+  --border-fresco-color: #252525;
+  --border-strong-color: #333333;
+
+  --icons-fresco-color: #9B9B9B;
+  --icons-strong-color: #FFFFFF;
+  --hover-light-color: #2B2B2B;
+  --hover-fresco-color: #2B2B2B;
+  --hover-strong-color: #333333;
+  --shadow-fresco-color: rgba(0, 0, 0, 0.05);
+  --shadow-strong-color: rgba(0, 0, 0, 0.15);
+  --warning-color: #EB5757;
+  --hover-warning-color: #EB575710;
+  --wrappers-fresco-color: #F2F2F2;
+  --wrappers-strong-color: #2B2B2B;
+  --logo-background: #404040;
+
+  /*Dashboard Hello Grid*/
+  --dashboard-hello-grid-heading-color: #FFFFFF;
+  --dashboard-hello-grid-text-fresco-color: #FFFFFF85;
+  --dashboard-hello-grid-text-strong-color: #FFFFFFB2;
+
+  /*Sites List*/
+  --site-background: #252525;
+  --site-pro-toggle-background: #2B2B2B;
+  --site-pro-toggle-text-color: #9B9B9B;
+  --view-toggle-color: #666666;
+  --view-toggle-background: #333333;
+
+  /*Buttons*/
+  --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+  --secondary-button-border-color: #373737;
+
+  /*Dropdown*/
+  --dropdown-background: #2B2B2B;
+
+  /*Sidebar Tooltip*/
+  --sidebar-tooltip-background: #2B2B2B;
+
+  /*Tooltip*/
+  --tooltip-background: #333333;
+  --tooltip-color: #FFFFFF;
+
+  /*Notification*/
+
+  /*Modal*/
+  --modal-background: #202020;
+  --modal-sidebar-background: #272727;
+  --modal-backdrop-color: rgba(0, 0, 0, 0.2);
+
+  /*Modal - Appearance*/
+  --appearance-light-theme: #F4F4F6;
+  --appearance-light-theme-border: rgba(224, 224, 224, 1);
+  --appearance-dark-theme: #272727;
+  --appearance-dark-theme-border: rgba(85, 85, 85, 1);
+
+  /*Modal - Support*/
+  --support-header-background: #272727;
+  --support-choice-background: #333333;
+  --support-dropzone-background: rgba(0, 153, 254, 0.1);
 }
 html[data-theme="dark"] .sidebar__logo-img{
   background: url('../../src/assets/logo-dark-mode.svg');
