@@ -15,7 +15,7 @@
 .modalUpgradePlan__title{
     font-size: var(--font-size-medium);
     font-weight: 600;
-    color: var(--body-fresco-color);
+    color: var(--body-strong-color);
 }
 .modalUpgradePlan__info{
     font-size: 11px;

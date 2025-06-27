@@ -107,19 +107,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
 
   /*Modal - Upgrade*/
   --upgrade-bg-popular: #0099FE10;
-  --upgrade-color-yearly: rgba(174, 174, 174, 1);
-  --upgrade-color-description: rgba(174, 174, 174, 1);
-  --upgrade-color-divider: rgba(224, 224, 224, 1);
-  --upgrade-color-plan: rgba(72, 72, 72, 1);
-  --upgrade-color-price: rgba(0, 0, 0, 1);
-  --upgrade-color-nsites: rgba(94, 94, 94, 1);
-  --upgrade-border-plan: rgba(224, 224, 224, 1);
-  --upgrade-color-button: rgba(94, 94, 94, 1);
-  --upgrade-color-site-title: rgba(72, 72, 72, 1);
-  --upgrade-color-site-info: rgba(104, 107, 116, 1);
 
-  /*Modal - Change*/
---change-advice-color: rgba(104, 107, 116, 1);
 
 
 }
@@ -203,20 +191,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
 
     /* Modal - Upgrade*/
     --upgrade-bg-popular: #0099FE10;
-    --upgrade-color-yearly: rgba(155, 155, 155, 1);
-    --upgrade-color-description: rgba(102, 102, 102, 1);
-    --upgrade-color-divider: rgba(51, 51, 51, 1);
-    --upgrade-color-plan: rgba(155, 155, 155, 1);
-    --upgrade-color-price: rgba(255, 255, 255, 1);
-    --upgrade-color-nsites: rgba(155, 155, 155, 1);
-    --upgrade-border-plan: rgba(55, 55, 55, 1);
-    --upgrade-color-button: rgba(255, 255, 255, 1);
-    --upgrade-color-site-title: rgba(155, 155, 155, 1);
-    --upgrade-color-site-info: rgba(155, 155, 155, 1);
 
-
-    /* Modal - Change*/
-    --change-advice-color: rgba(155, 155, 155, 1);
   }
 
   .sidebar__logo-img{
@@ -319,20 +294,7 @@ html[data-theme="light"] {
 
     /*Modal - Upgrade*/
   --upgrade-bg-popular: #0099FE10;
-  --upgrade-color-yearly: rgba(174, 174, 174, 1);
-  --upgrade-color-description: rgba(174, 174, 174, 1);
-  --upgrade-color-divider: rgba(224, 224, 224, 1);
-  --upgrade-color-plan: rgba(72, 72, 72, 1);
-  --upgrade-color-price: rgba(0, 0, 0, 1);
-  --upgrade-color-nsites: rgba(94, 94, 94, 1);
-  --upgrade-border-plan: rgba(224, 224, 224, 1);
-  --upgrade-color-button: rgba(94, 94, 94, 1);
-  --upgrade-color-site-title: rgba(72, 72, 72, 1);
-  --upgrade-color-site-info: rgba(104, 107, 116, 1);
 
-
-  /*Modal - Change*/
---change-advice-color: rgba(104, 107, 116, 1);
 }
 html[data-theme="light"] .sidebar__logo-img{
   background: url('../../src/assets/logo-light-mode.svg');
@@ -412,20 +374,7 @@ html[data-theme="dark"] {
 
     /* Modal - Upgrade*/
     --upgrade-bg-popular: #0099FE10;
-    --upgrade-color-yearly: rgba(155, 155, 155, 1);
-    --upgrade-color-description: rgba(102, 102, 102, 1);
-    --upgrade-color-divider: rgba(51, 51, 51, 1);
-    --upgrade-color-plan: rgba(155, 155, 155, 1);
-    --upgrade-color-price: rgba(255, 255, 255, 1);
-    --upgrade-color-nsites: rgba(155, 155, 155, 1);
-    --upgrade-border-button: rgba(55, 55, 55, 1);
-    --upgrade-color-button: rgba(255, 255, 255, 1);
-    --upgrade-color-site-title: rgba(155, 155, 155, 1);
-    --upgrade-color-site-info: rgba(155, 155, 155, 1);
 
-
-    /* Modal - Change*/
-    --change-advice-color: rgba(155, 155, 155, 1);
 }
 html[data-theme="dark"] .sidebar__logo-img{
   background: url('../../src/assets/logo-dark-mode.svg');
