@@ -187,6 +187,9 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
     --support-header-background: #272727;
     --support-choice-background: #333333;
     --support-dropzone-background: rgba(0, 153, 254, 0.1);
+
+    /* Modal - Change*/
+    --change-advice-color: rgba(104, 107, 116, 1);
   }
 
   .sidebar__logo-img{
