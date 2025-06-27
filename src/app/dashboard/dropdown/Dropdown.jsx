@@ -11,7 +11,7 @@ export function Dropdown({
   children,
   verticalPosition = "bottom", // "top" / "bottom"
   horizontalPosition = "right", // "left" / "right"
-  horizontalBreakpoint = 1425, // px
+  horizontalBreakpoint = 1450, // px
   horizontalBreakpointPosition = "left", // "left" / "right"
 }) {
   const containerRef = useRef(null);

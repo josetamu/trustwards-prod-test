@@ -104,9 +104,10 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
   --support-header-background: #D9D9D9;
   --support-choice-background: #FFFFFF;
   --support-dropzone-background: rgba(0, 153, 254, 0.1);
-  
-  /*Modal - Change*/
---change-advice-color: rgba(104, 107, 116, 1);
+
+  /*Modal - Upgrade*/
+  --upgrade-bg-popular: #0099FE10;
+
 
 
 }
@@ -140,7 +141,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
     --shadow-strong-color: rgba(0, 0, 0, 0.15);
     --warning-color: #EB5757;
     --hover-warning-color: #EB575710;
-    --wrappers-fresco-color: #F2F2F2;
+    --wrappers-fresco-color: #202020;
     --wrappers-strong-color: #2B2B2B;
     --logo-background: #404040;
   
@@ -187,6 +188,10 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
     --support-header-background: #272727;
     --support-choice-background: #333333;
     --support-dropzone-background: rgba(0, 153, 254, 0.1);
+
+    /* Modal - Upgrade*/
+    --upgrade-bg-popular: #0099FE10;
+
   }
 
   .sidebar__logo-img{
@@ -254,6 +259,7 @@ html[data-theme="light"] {
   --accent-color: #FFFFFF;
   --accent-bg-color: #0099FE;
 
+
   /*Buttons*/
   --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
   --secondary-button-border-color: #E0E0E0;
@@ -285,6 +291,10 @@ html[data-theme="light"] {
   --support-header-background: #D9D9D9;
   --support-choice-background: #FFFFFF;
   --support-dropzone-background: rgba(0, 153, 254, 0.1);
+
+    /*Modal - Upgrade*/
+  --upgrade-bg-popular: #0099FE10;
+
 }
 html[data-theme="light"] .sidebar__logo-img{
   background: url('/assets/logo-light-mode.svg');
@@ -314,7 +324,7 @@ html[data-theme="dark"] {
   --shadow-strong-color: rgba(0, 0, 0, 0.15);
   --warning-color: #EB5757;
   --hover-warning-color: #EB575710;
-  --wrappers-fresco-color: #F2F2F2;
+  --wrappers-fresco-color: #202020;
   --wrappers-strong-color: #2B2B2B;
   --logo-background: #404040;
 
@@ -361,6 +371,10 @@ html[data-theme="dark"] {
   --support-header-background: #272727;
   --support-choice-background: #333333;
   --support-dropzone-background: rgba(0, 153, 254, 0.1);
+
+    /* Modal - Upgrade*/
+    --upgrade-bg-popular: #0099FE10;
+
 }
 html[data-theme="dark"] .sidebar__logo-img{
   background: url('/assets/logo-dark-mode.svg');

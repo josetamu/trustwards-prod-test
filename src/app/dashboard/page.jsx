@@ -75,14 +75,31 @@ function Dashboard() {
     }
 };
 
-
+const arrayDePrueba = {
+  negro: {
+    backgroundColor: '#000000',
+    color: '#FFFFFF',
+  },
+  blanco: {
+    backgroundColor: '#FFFFFF',
+    color: '#000000',
+  },
+  azul: {
+    backgroundColor: '#003049',
+    color: '#FFFFFF',
+  },
+  celeste: {
+    backgroundColor: '#ade8f4',
+    color: '#000000',
+  },
+};
   
 
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'darezo.2809@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -291,8 +308,35 @@ const handleBackdropClick = useCallback((e) => {
       });
     };
 
-    const createNewSite = () => {
-      
+    const createNewSite = async () => {
+      try {
+        const colorKeys = Object.keys(arrayDePrueba);
+        const randomColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+        
+        const { data, error } = await supabase
+          .from('Site')
+          .insert([
+            {
+              Name: 'Untitled',
+              userid: user.id,
+              'Avatar Color': randomColorKey
+            }
+          ])
+          .select();
+
+        if (error) {
+          showNotification('Error creating site');
+          return;
+        }
+
+        // Refresh the sites list
+        fetchSites(user.id);
+        setSelectedSite(data[0]);
+        setIsSiteOpen(true);
+
+      } catch (error) {
+        showNotification('Error creating site');
+      }
     }
 
     const renderModal = () => {
@@ -318,30 +362,6 @@ const handleBackdropClick = useCallback((e) => {
             setUserSettings={setUserSettings}
             getAppearanceSettings={getAppearanceSettings}
             openChangeModal={openChangeModal}
-            />
-          );
-        case 'NewSite':
-          return (
-            <ModalNewSite
-              onSave={() => {setIsModalOpen(false); fetchSites(user?.id)}}
-              onCancel={() => setIsModalOpen(false)}
-              userSites={webs?.length || 0}
-              setIsModalOpen={setIsModalOpen}
-              userPlan={user?.Plan || 'free'}
-              openModal={openModal}
-              webs={webs}
-            />
-          );
-        case 'EditSite':
-          return (
-            <ModalEditSite
-              onSave={() => {setIsModalOpen(false); fetchSites(user?.id)}}
-              onCancel={() => setIsModalOpen(false)}
-              setIsModalOpen={setIsModalOpen}
-              webs={webs}
-              siteData={siteData}
-              setSiteData={setSiteData}
-              openModal={openModal}
             />
           );
         case 'DeleteSite':
@@ -443,6 +463,7 @@ const handleBackdropClick = useCallback((e) => {
       setSiteTab={setSiteTab}
       userSettings={userSettings}
       setUserSettings={setUserSettings}
+      createNewSite={createNewSite}
       />
     <div className="content__container">
       {renderActivePage()}
