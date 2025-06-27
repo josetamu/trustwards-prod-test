@@ -10,10 +10,8 @@ import { Sidebar, homePages, siteMenuPages, otherpages } from './sideBar/Sidebar
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
 import { ModalAccount } from './ModalAccount/ModalAccount'
-import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
-import { ModalEditSite } from './ModalEditSite/ModalEditSite'
 import { ModalDelete } from './ModalDelete/ModalDelete'
 import { ModalSupport } from './ModalSupport/ModalSupport'
 import { ModalAppearance } from './ModalAppearance/ModalAppearance'
@@ -80,7 +78,7 @@ function App() {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'oscar.abad.brickscore@gmail.com',  
+      email: 'jose11tamu@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -299,30 +297,6 @@ const handleKeyDown = useCallback((e) => {
             setUserSettings={setUserSettings}
             getAppearanceSettings={getAppearanceSettings}
             openChangeModal={openChangeModal}
-            />
-          );
-        case 'NewSite':
-          return (
-            <ModalNewSite
-              onSave={() => {setIsModalOpen(false); fetchSites(user?.id)}}
-              onCancel={() => setIsModalOpen(false)}
-              userSites={webs?.length || 0}
-              setIsModalOpen={setIsModalOpen}
-              userPlan={user?.Plan || 'free'}
-              openModal={openModal}
-              webs={webs}
-            />
-          );
-        case 'EditSite':
-          return (
-            <ModalEditSite
-              onSave={() => {setIsModalOpen(false); fetchSites(user?.id)}}
-              onCancel={() => setIsModalOpen(false)}
-              setIsModalOpen={setIsModalOpen}
-              webs={webs}
-              siteData={siteData}
-              setSiteData={setSiteData}
-              openModal={openModal}
             />
           );
         case 'DeleteSite':

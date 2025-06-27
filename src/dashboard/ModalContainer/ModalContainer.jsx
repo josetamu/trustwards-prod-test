@@ -23,10 +23,6 @@ import aurora4 from '../../assets/aurora4.png';
 import aurora5 from '../../assets/aurora5.png';
 import aurora6 from '../../assets/aurora6.png';
 
-import avatar1 from '../../assets/avatar1.png';
-import avatar2 from '../../assets/avatar2.png';
-import avatar3 from '../../assets/avatar3.png';
-
 // Constants of images that will be used by ModalAvatar
 export const gradients = [
   { id: 1, src: gradient1 },
@@ -51,16 +47,6 @@ export const auroras = [
   { id: 6, src: aurora6 }
 ];
 
-export const avatars = [
-  { id: 1, src: avatar1 },
-  { id: 2, src: avatar2 },
-  { id: 3, src: avatar3 },
-  { id: 4, src: avatar2 },
-  { id: 5, src: avatar1 },
-  { id: 6, src: avatar1 },
-  { id: 7, src: avatar3 }
-];
-
 // Function to preload images
 const preloadImages = (items) => {
   items.forEach(item => {
@@ -70,7 +56,7 @@ const preloadImages = (items) => {
 };
 
 // Preload all images when the module is loaded
-preloadImages([...gradients, ...auroras, ...avatars]);
+preloadImages([...gradients, ...auroras]);
 
 // Function to generate default gradient
 export const generateDefaultGradient = async () => {

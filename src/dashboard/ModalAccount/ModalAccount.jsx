@@ -2,7 +2,6 @@ import './ModalAccount.css';
 import { supabase } from '../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
 import { Tooltip } from '../Tooltip/Tooltip';
-import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
 import logoDefault from '../../assets/logo default.png';
 import { defaultGradient } from '../ModalContainer/ModalContainer';
 import { useRef } from 'react';
@@ -15,16 +14,6 @@ export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, open
   const [errors, setErrors] = useState({});
   // const [openChangeModal, setOpenChangeModal] = useState(false);
   // const [changeType, setChangeType] = useState('');
-
-
-  // Avatar changes logic
-  const handleEditSave = (editData) => {
-    setCustomHeader({
-      avatar: editData.avatar,
-      headerGradient: editData.headerGradient
-    });
-    setShowEdit(false);
-  };
 
   //Function to open files
   const fileInputRef = useRef(null);

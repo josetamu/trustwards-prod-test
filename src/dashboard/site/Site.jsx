@@ -1,6 +1,5 @@
 import './Site.css';
 import { Dropdown } from '../dropdown/Dropdown';
-import { ModalNewSite } from '../ModalNewSite/ModalNewSite';
 import { ModalContainer } from '../ModalContainer/ModalContainer';
 import { ModalDelete } from '../ModalDelete/ModalDelete';
 import { useState, useId } from 'react';
@@ -76,16 +75,11 @@ const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen,
 };
 
 export const Site = ({
-  id, text, domain, onUpdate, onRemove, setIsModalOpen, setModalType,
+  id, text, onRemove, setIsModalOpen, setModalType,
   isModalOpen, setSiteData, siteData, isGridView
 }) => {
-  const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const handleEdit = () => {
-    setEditModalOpen(true);
-  };
 
   const handleDeleteSite = async () => {
     const { error } = await supabase.from('Site').delete().eq('id', id);
@@ -114,7 +108,7 @@ export const Site = ({
               horizontalPosition="right"
               open={isDropdownOpen}
               onClose={() => setIsDropdownOpen(false)}
-              menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
+              menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
             >
               <ProButton
                 isHovering={isDropdownOpen}
@@ -123,18 +117,6 @@ export const Site = ({
             </Dropdown>
           </div>
         </div>
-    {/*  {editModalOpen && (
-        <ModalContainer isOpen={editModalOpen} onClose={() => setEditModalOpen(false)}>
-          <ModalNewSite
-            type="edit"
-            initialData={{ id, text, domain }}
-            onSave={(newText, newDomain) => {
-              onUpdate(newText, newDomain);
-              setEditModalOpen(false);
-            }}
-          />
-        </ModalContainer>
-      )} */}
         {deleteModalOpen && (
           <ModalContainer isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
             <ModalDelete
@@ -162,7 +144,7 @@ export const Site = ({
           horizontalPosition="right"
           open={isDropdownOpen}
           onClose={() => setIsDropdownOpen(false)}
-          menu={<SiteMenu onEdit={handleEdit} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
+          menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
         >
           <ProButton
             isHovering={isDropdownOpen}
