@@ -238,7 +238,21 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
             
             // Show success notification
             if (showNotification) {
-                showNotification('Name updated successfully!');
+                let successMessage = '';
+                switch (changeType) {
+                    case 'name':
+                        successMessage = 'Name updated successfully!';
+                        break;
+                    case 'email':
+                        successMessage = 'We’ve sent instructions to your new email to reset your password!';
+                        break;
+                    case 'password':
+                        successMessage = 'We’ve sent instructions to your new email to reset your password!';
+                        break;
+                    default:
+                        successMessage = 'Updated successfully!';
+                }
+                showNotification(successMessage);
             }
             
             // Close the modal

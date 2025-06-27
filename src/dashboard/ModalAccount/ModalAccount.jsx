@@ -2,9 +2,6 @@ import './ModalAccount.css';
 import { supabase } from '../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
 import { Tooltip } from '../Tooltip/Tooltip';
-import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
-import logoDefault from '../../assets/logo default.png';
-import { defaultGradient } from '../ModalContainer/ModalContainer';
 import { useRef } from 'react';
 
 // Modal profile

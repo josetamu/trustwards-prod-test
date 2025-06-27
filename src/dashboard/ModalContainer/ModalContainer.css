@@ -10,13 +10,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: var(--sidebar-transition);
+    
     z-index: 1000;
 }
 .open {
     left: var(--sidebar-width-open);
     width: calc(100vw - var(--sidebar-width-open));
-    transition: var(--sidebar-transition);
+
 }
 .modal {
     background: var(--modal-background);
@@ -51,7 +51,7 @@
     }
     .modal{
         max-height: 550px;
-        width: fit-content;
+        max-width: 350px;
     }
 }
 @media (max-width: 467px) {

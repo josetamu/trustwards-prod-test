@@ -76,6 +76,9 @@
   gap: 10px;
   padding-top: 0px;
 }
+.modalChange__actions--name{
+    justify-content: end;
+}
 .modalChange__forgot {
   font-size: var(--font-size-medium);
   font-weight: var(--font-weight);
