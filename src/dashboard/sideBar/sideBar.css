@@ -151,10 +151,15 @@ border: 1px solid var(--border-fresco-color);
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 5px var(--shadow-fresco-color);
+    color: var(--body-strong-color);
   }
   .sidebar__header__svg{
     width: 22px;
     height: 22px;
+  }
+
+  .sidebar__logos{
+    color: var(--icons-fresco-color);
   }
 
   .sidebar__sites{
@@ -175,7 +180,7 @@ border: 1px solid var(--border-fresco-color);
     
   }
   .sitesDisplay__nosites{
-    color: var(--sidebar-items-color);
+    color: var(--body-fresco-color);
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
@@ -309,7 +314,7 @@ border: 1px solid var(--border-fresco-color);
 .sidebar__sites__title{
   font-size: var(--font-size-small);
   font-weight: 700;
-  color: var(--body-strong-color);
+  color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing-positive);
   margin-right: 10px; 
   text-transform: uppercase;
@@ -327,15 +332,13 @@ border: 1px solid var(--border-fresco-color);
   position: relative;
   z-index: 1;
   margin-left: 5px;
-  
-
-  
+  color: var(--body-fresco-color);
 }
 .sidebar__sites__add{
   margin-left: 5px;
   cursor: pointer;
   padding-bottom: 3.5px;
-  
+  color: var(--icons-fresco-color);
 }
 
 
@@ -405,7 +408,7 @@ border: 1px solid var(--border-fresco-color);
     
   }
   .sidebar__others{
-    border-bottom: 1px solid var(--border-fresco-color);
+    border-bottom: 1px solid var(--border-strong-color);
     padding-bottom: 10px;
     max-width: 150px;
     display: flex;
@@ -456,6 +459,7 @@ border: 1px solid var(--border-fresco-color);
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 5px var(--shadow-fresco-color);
+    color: var(--icons-strong-color);
   }
   .site__link__text{
     text-decoration: none;

@@ -130,8 +130,7 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
- 
-  
+    background: transparent;
 }
 
 .modalSupport__input__field:focus{
