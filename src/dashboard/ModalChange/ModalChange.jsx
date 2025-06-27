@@ -57,6 +57,7 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
                 return (
                     <>
                         <div className='modalChange__body'>
+                            <span className='modalChange__advice'>We'll send an email to your new adress to confirm the change.</span>
                             <div className='modalChange__input__wrapper'>
                                 <input 
                                     className='modalChange__input' 

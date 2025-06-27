@@ -10,8 +10,7 @@ export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, open
   const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
   const [errors, setErrors] = useState({});
-  // const [openChangeModal, setOpenChangeModal] = useState(false);
-  // const [changeType, setChangeType] = useState('');
+
 
 
   // Avatar changes logic

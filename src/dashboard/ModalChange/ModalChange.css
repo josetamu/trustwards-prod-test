@@ -15,8 +15,7 @@
 .modalChange__content {
   background-color: var(--modal-background);
   border-radius: 16px;
-  min-width: 400px;
-  max-width: 500px;
+  max-width: 372px;
   box-shadow: 0 4px 20px var(--shadow-strong-color);
   display: flex;
   flex-direction: column;
@@ -51,6 +50,7 @@
   flex-direction: column;
   gap: 10px;
   padding-top: 5px;
+  min-width: 331px;
 }
 .modalChange__input {
   border: 1px solid var(--border-strong-color);
@@ -104,6 +104,13 @@
 }
 .modalChange__input__wrapper {
   position: relative;
+}
+.modalChange__advice {
+  font-size: var(--font-size-medium);
+  color: var(--change-advice-color);
+  font-weight: var(--font-weight);
+  letter-spacing: var(--letter-spacing-negative);
+  white-space: nowrap;
 }
 
 

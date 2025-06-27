@@ -211,41 +211,7 @@ border: 1px solid var(--border-fresco-color);
   .nosites__text__span{
     color: var(--accent-bg-color);
   }
-  .nosites__button{
-    width: 49px;
-    height: 25px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    background-color: var(--accent-bg-color);
-    color: var(--accent-color);
-    border-radius: 5px;
-    padding: 5px;
-    cursor: pointer;
-    font-size: 11px;
-    border: none;
-    border-radius: 8px;
-    box-shadow: var(--blue-button-shadow);
-    gap: 3px;
-  }
-  .nosites__button__text{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: var(--font-weight);
-    letter-spacing: var(--letter-spacing-negative);
-  }
-  .nosites__button__svg{
-    width: 9px;
-    height: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: .5px;
-  }
+  
   .nosites__container{
     display: flex;
     flex-direction: column;
@@ -511,8 +477,8 @@ border: 1px solid var(--border-fresco-color);
 
 .sidebar__container{
   width: 100%;
-  background-color: transparent;
-  backdrop-filter: blur(20px);
+  background-color: var(--dropdown-background);
+
   padding: 0px 10px;
   position: relative;
   left: 0;

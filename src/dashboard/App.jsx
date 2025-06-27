@@ -19,6 +19,7 @@ import SiteView from './SiteView/SiteView'
 import { ModalChange } from './ModalChange/ModalChange'
 import { ModalUser } from './ModalUser/ModalUser'
 import Notification from './Notification/Notification'
+import { NewSite } from './NewSite/NewSite'
 function App() {
   const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -286,6 +287,10 @@ const handleBackdropClick = useCallback((e) => {
         message: '',
       });
     };
+
+    const createNewSite = () => {
+      
+    }
 
     const renderModal = () => {
       if (!isModalOpen) return null;
