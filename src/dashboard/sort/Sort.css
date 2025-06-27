@@ -4,12 +4,11 @@
     justify-content: center;
     gap: 3px;
     padding: 6px;
-    background-color: fff;
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing);
     font-size: 12px;
     font-weight: 500;
-    border: 1px solid var(--border-fresco-color);
+    border: 1px solid var(--secondary-button-border-color);
     border-radius: 8px;
     cursor: pointer;
 }

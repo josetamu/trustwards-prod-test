@@ -2,8 +2,6 @@ import './ModalAccount.css';
 import { supabase } from '../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
 import { Tooltip } from '../Tooltip/Tooltip';
-import logoDefault from '../../assets/logo default.png';
-import { defaultGradient } from '../ModalContainer/ModalContainer';
 import { useRef } from 'react';
 
 // Modal profile
@@ -12,8 +10,6 @@ export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, open
   const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
   const [errors, setErrors] = useState({});
-  // const [openChangeModal, setOpenChangeModal] = useState(false);
-  // const [changeType, setChangeType] = useState('');
 
   //Function to open files
   const fileInputRef = useRef(null);

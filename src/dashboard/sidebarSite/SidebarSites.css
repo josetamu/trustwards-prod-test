@@ -51,6 +51,7 @@
     transition: opacity 0.3s ease;
     margin-right: 10px;
     height: 15px;
+    color: var(--icons-fresco-color);
 }   
 .sidebarSites__site--open:hover .sidebarSites__edit{
     opacity: 1;
@@ -91,7 +92,7 @@ border: 1px solid var(--border-strong-color);
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
+    
     color: var(--body-strong-color);
 }
 

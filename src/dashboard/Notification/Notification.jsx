@@ -7,7 +7,7 @@ const Notification = ({
   open = false,
   onClose,
   children,
-  autoClose = 3000 // milliseconds - reduced to 3 seconds
+  autoClose = 1000 // milliseconds - 1s
 }) => {
   const notificationRef = useRef(null);
 
@@ -21,17 +21,7 @@ const Notification = ({
     }
   }, [open, autoClose, onClose]);
 
-  // Remove click outside to close - notification will only auto-close
-  // useEffect(() => {
-  //   if (!open) return;
-  //   const handleClickOutside = (event) => {
-  //     if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-  //       onClose && onClose();
-  //     }
-  //   };
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => document.removeEventListener('mousedown', handleClickOutside);
-  // }, [open, onClose]);
+
 
   return (
     <AnimatePresence>

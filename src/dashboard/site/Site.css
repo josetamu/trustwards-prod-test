@@ -50,6 +50,7 @@
   padding: 16px;
   background: var(--site-background);
   border: 1px solid var(--border-fresco-color);
+  border-top: none;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
   position: relative;
@@ -96,7 +97,7 @@
   font-size: var(--font-size-btn);
   color: var(--site-pro-toggle-text-color);
   font-weight: 500;
-  font-family: var(--font-family);
+  
   letter-spacing: var(--letter-spacing);
   position: absolute;
   left: 0;

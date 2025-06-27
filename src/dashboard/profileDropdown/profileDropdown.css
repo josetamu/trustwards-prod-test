@@ -58,7 +58,7 @@
     font-weight: var(--font-weight);
     color: var(--sidebar-items-color);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
+    
     transition: var(--sidebar-transition);
     display: flex;
     opacity: 0;
@@ -84,7 +84,6 @@
     display: flex;
     transition: var(--sidebar-transition);
     opacity: 0;
-    
   }
   .profileDropdown__icons--open{
     display: flex;
@@ -93,13 +92,14 @@
     justify-content: end;
     transition: var(--sidebar-transition);
     opacity: 1;
-    
+    color: var(--icons-fresco-color);
   }
   .profileDropdown__icons--down{
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    color: var(--icons-fresco-color);
   }
   .profileDropdown__icons--up{
     display: none;
@@ -181,7 +181,7 @@
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
+    
     width: 100%;
     justify-items: center;
     height: 25px;
@@ -341,7 +341,7 @@
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    font-family: var(--font-family);
+    
     width: 98%;
    
   }

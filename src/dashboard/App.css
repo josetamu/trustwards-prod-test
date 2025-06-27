@@ -18,7 +18,7 @@
     background-color: var(--content-background);
     justify-content: center;
     border-radius: 10px;
-    border: 2px solid var(--border-strong-color);
+    border: 1px solid var(--border-fresco-color);
     top: 20px;
     min-height: calc(100vh - 40px);
     width: calc(100vw - 90px);

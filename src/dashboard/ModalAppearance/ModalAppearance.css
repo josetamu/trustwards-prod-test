@@ -332,12 +332,18 @@
     transform: translateX(8px);
 }
 
-@media (max-width: 768px) {
-    .modalAppearance__choices{
-        flex-direction: row;
-        gap: 10px;
-        justify-content: center;
-        
+@media (max-width: 767px) {
+    .modalAppearance__content{
+     gap: 10px;
     }
-    
+    .modalAppearance__choices{
+        flex-direction: column;
+        justify-content: center;
+    }
+    .modalAppearance__mid{
+        gap: 5px;
+    }
+    .modalAppearance__bottom{
+        gap: 10px;
+    }
 }
