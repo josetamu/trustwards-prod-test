@@ -29,7 +29,7 @@
     text-underline-offset: 2px;
 }
 .modalUpgradePlan__info--free{
-    color: var(--background-color-blue);
+    color: var(--accent-bg-color);
 }
 .modalUpgradePlan__sub{
     display: flex;
@@ -102,7 +102,7 @@
   }
   
   .modalUpgradePlan__input:checked + .modalUpgradePlan__slider {
-    background-color: var(--background-color-blue);
+    background-color: var(--accent-bg-color);
   }
   
 .modalUpgradePlan__input:checked + .modalUpgradePlan__slider:before {
@@ -137,7 +137,7 @@
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalUpgradePlan__plan__title--popular{
-    color: var(--background-color-blue);
+    color: var(--accent-bg-color);
     font-size: 8px;
     background-color: rgba(0, 153, 254, 0.1);
     padding: 2px 3px;
@@ -165,7 +165,7 @@
 }
 .modalUpgradePlan__plan__nsites--unlimited{
     font-size: 11px;
-    color: var(--background-color-blue);
+    color: var(--accent-bg-color);
     font-weight: 600;
     letter-spacing: var(--letter-spacing-negative);
 
@@ -196,8 +196,8 @@
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalUpgradePlan__subscribe--popular{
-    background-color: var(--background-color-blue);
-    box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+    background-color: var(--accent-bg-color);
+    box-shadow: var(--blue-button-shadow);
     border: none;
 }
 .modalUpgradePlan__subscribe__title--popular{
@@ -333,7 +333,7 @@
         margin-bottom: 15px;
         font-size: 13px;
         font-weight: 600;
-        color: var(--background-color-blue);
+        color: var(--accent-bg-color);
         letter-spacing: var(--letter-spacing-negative);
     }
 }

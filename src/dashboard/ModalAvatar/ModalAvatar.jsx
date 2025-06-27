@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { gradients, auroras, avatars, defaultGradient } from '../ModalContainer/ModalContainer';
+/* import React, { useState, useEffect } from 'react';
+
 import logoDefault from '../../assets/logo default.png';
 import './ModalAvatar.css';
 
@@ -225,4 +225,4 @@ export function ModalAvatar({ onClose, onSave, initialState = null }) {
       </div>
     </div>
   );
-} 
+}  */

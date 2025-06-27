@@ -4,11 +4,13 @@
   top: 50px;
   z-index: 9999;
   max-width: 400px;
-  min-width: 300px;
-  background: var(--background-color-blue);
+  background: var(--accent-bg-color);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--notification-box-shadow);
   overflow: hidden;
+  width: fit-content;
+  
+
  
 }
 
@@ -18,19 +20,25 @@
 .notification__content {
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: 10px;
   position: relative;
   justify-content: center;
+  width: fit-content;
 }
 
 /* Notification Message */
 .notification__message {
-  margin-right: 12px;
   font-size: var(--font-size-medium);
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 1);
+  color: var(--notification-color);
   font-weight: var(--font-weight);
-  
+  letter-spacing: var(--letter-spacing-negative);
+  text-align: center;
 }
 
 
+@media (max-width: 767px) {
+    
+    .notification__message{
+        font-size: var(--font-size-small);
+    }
+}

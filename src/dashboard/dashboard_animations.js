@@ -1,16 +1,16 @@
 export const ANIM_TYPES = [
   {
     name: 'SCALE_TOP',
-    initial: { opacity: 0, transform: 'scale(0.9)' },
-    animate: { opacity: 1, transform: 'scale(1)' },
-    exit: { opacity: 0, transform: 'scale(0.9)' },
+    initial: { opacity: 0, transform: 'scale(0.9) translateY(-20px)' },
+    animate: { opacity: 1, transform: 'scale(1) translateY(0px)' },
+    exit: { opacity: 0, transform: 'scale(0.9) translateY(-20px)' },
     transition: { duration: 0.2, ease: "easeOut" }
   },
   {
     name: 'SCALE_BOTTOM', 
-    initial: { opacity: 0, transform: 'scale(0.9)' },
-    animate: { opacity: 1, transform: 'scale(1)' },
-    exit: { opacity: 0, transform: 'scale(0.9)' },
+    initial: { opacity: 0, transform: 'scale(0.9) translateY(20px)' },
+    animate: { opacity: 1, transform: 'scale(1) translateY(0px)' },
+    exit: { opacity: 0, transform: 'scale(0.9) translateY(20px)' },
     transition: { duration: 0.2, ease: "easeOut" }
   }
 ];

@@ -10,10 +10,8 @@ import { Sidebar, homePages, siteMenuPages, otherpages } from './sideBar/Sidebar
 import { Sites } from './sites/Sites'  
 import { Reports } from './reports/Reports'
 import { ModalAccount } from './ModalAccount/ModalAccount'
-import { ModalNewSite } from './ModalNewSite/ModalNewSite'
 import { ModalContainer } from './ModalContainer/ModalContainer'
 import './App.css'
-import { ModalEditSite } from './ModalEditSite/ModalEditSite'
 import { ModalDelete } from './ModalDelete/ModalDelete'
 import { ModalSupport } from './ModalSupport/ModalSupport'
 import { ModalAppearance } from './ModalAppearance/ModalAppearance'
@@ -21,6 +19,7 @@ import SiteView from './SiteView/SiteView'
 import { ModalChange } from './ModalChange/ModalChange'
 import { ModalUser } from './ModalUser/ModalUser'
 import Notification from './Notification/Notification'
+import { NewSite } from './NewSite/NewSite'
 function App() {
   const [sites, setSites] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -221,15 +220,25 @@ function App() {
   } */
 
 const handleKeyDown = useCallback((e) => {
-      if (e.key === 'Escape') {
-        if (isModalOpen) {
-          closeModal();
-        }
-        if (isChangeModalOpen) {
-          closeChangeModal();
-        }
-      }
-    }, [isModalOpen, isChangeModalOpen]); 
+  if (e.key === 'Escape') {
+    if (isModalOpen) {
+      closeModal();
+    }
+    if (isChangeModalOpen) {
+      closeChangeModal();
+    }
+  }
+}, [isModalOpen, isChangeModalOpen]);
+
+const handleBackdropClick = useCallback((e) => {
+  if (e.target.className.includes('modal__backdrop')) {
+    if (isChangeModalOpen) {
+      closeChangeModal();
+    } else if (isModalOpen) {
+      closeModal();
+    }
+  }
+}, [isModalOpen, isChangeModalOpen]);
 
     // Add event listener for keyboard events
     useEffect(() => {
@@ -248,9 +257,11 @@ const handleKeyDown = useCallback((e) => {
     };
 
     const closeModal = () => {
-      setIsModalOpen(false);
-      setModalType(null);
-      setModalProps(null);
+
+        setIsModalOpen(false);
+        setModalType(null);
+        setModalProps(null);
+      
     };
 
     // ModalChange functions
@@ -260,9 +271,10 @@ const handleKeyDown = useCallback((e) => {
     };
 
     const closeChangeModal = () => {
-      setIsChangeModalOpen(false);
-      setChangeType('');
-    };
+        setIsChangeModalOpen(false);
+        setChangeType('');
+      };
+
     const showNotification = (message) => {
       setNotification({
         open: true,
@@ -275,6 +287,10 @@ const handleKeyDown = useCallback((e) => {
         message: '',
       });
     };
+
+    const createNewSite = () => {
+      
+    }
 
     const renderModal = () => {
       if (!isModalOpen) return null;
@@ -428,30 +444,36 @@ const handleKeyDown = useCallback((e) => {
     <div className="content__container">
       {renderActivePage()}
 
-      {isModalOpen && (
-      <ModalContainer isOpen={isModalOpen} onClose={closeModal} isSidebarOpen={isSidebarOpen}>
-       {renderModal()}
+      <ModalContainer 
+        isOpen={isModalOpen} 
+        onClose={closeModal} 
+        isSidebarOpen={isSidebarOpen}
+        onBackdropClick={handleBackdropClick}
+      >
+        {renderModal()}
       </ModalContainer>
-    )}
      
     {/* ModalChange as independent modal */}
-    {isChangeModalOpen && (
-      <ModalContainer isOpen={isChangeModalOpen} onClose={closeChangeModal} isSidebarOpen={isSidebarOpen}>
-        <ModalChange
-          changeType={changeType}
-          onClose={closeChangeModal}
-          user={user}
-          setUser={setUser}
-          setIsModalOpen={setIsModalOpen}
-          showNotification={showNotification}
-        />
-      </ModalContainer>
-    )}
+    <ModalContainer 
+      isOpen={isChangeModalOpen} 
+      onClose={closeChangeModal} 
+      isSidebarOpen={isSidebarOpen}
+      onBackdropClick={handleBackdropClick}
+    >
+      <ModalChange
+        changeType={changeType}
+        onClose={closeChangeModal}
+        user={user}
+        setUser={setUser}
+        setIsModalOpen={setIsModalOpen}
+        showNotification={showNotification}
+      />
+    </ModalContainer>
     <Notification
       open={notification.open}
       onClose={hideNotification}
       position="top-right"
-      autoClose={1000}
+      autoClose={1500}
     >
       <span className={`notification__message`}>
         {notification.message}

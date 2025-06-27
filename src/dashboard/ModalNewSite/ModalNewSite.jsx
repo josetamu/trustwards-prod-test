@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useId } from 'react';
+/* import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../Tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
 import logoDefault from '../../assets/logo default.png';
 import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
-import { defaultGradient } from '../ModalContainer/ModalContainer';
+
 import './ModalNewSite.css'
 
 export function ModalNewSite({ onSave, setIsModalOpen, userSites = 0, userPlan = 'free' }) {
@@ -376,4 +376,4 @@ export function ModalNewSite({ onSave, setIsModalOpen, userSites = 0, userPlan =
       </div>
     </>
   );
-}
+} */

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useId } from 'react';
+/* import React, { useState, useEffect, useId } from 'react';
 import { Tooltip } from '../Tooltip/Tooltip';
 import { supabase } from '../../supabase/supabaseClient';
 import { ModalAvatar } from '../ModalAvatar/ModalAvatar';
 import logoDefault from '../../assets/logo default.png';
-import { defaultGradient } from '../ModalContainer/ModalContainer';
+
 import './ModalEditSite.css'
 
 export function ModalEditSite({ onSave, onCancel, setIsModalOpen, siteData, setSiteData }) {
@@ -274,3 +274,4 @@ return (
   </>
 );
 }
+ */
