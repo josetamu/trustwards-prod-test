@@ -67,7 +67,6 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
   --site-pro-toggle-text-color: #9E9E9E;
   --view-toggle-color: #FFFFFF;
   --view-toggle-background: #F2F2F2;
-  --no-sites-heading-color: #484848;
 
   /*Accents*/
   --accent-color: #FFFFFF;
@@ -142,7 +141,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
     --shadow-strong-color: rgba(0, 0, 0, 0.15);
     --warning-color: #EB5757;
     --hover-warning-color: #EB575710;
-    --wrappers-fresco-color: #F2F2F2;
+    --wrappers-fresco-color: #202020;
     --wrappers-strong-color: #2B2B2B;
     --logo-background: #404040;
   
@@ -325,7 +324,7 @@ html[data-theme="dark"] {
   --shadow-strong-color: rgba(0, 0, 0, 0.15);
   --warning-color: #EB5757;
   --hover-warning-color: #EB575710;
-  --wrappers-fresco-color: #F2F2F2;
+  --wrappers-fresco-color: #202020;
   --wrappers-strong-color: #2B2B2B;
   --logo-background: #404040;
 
