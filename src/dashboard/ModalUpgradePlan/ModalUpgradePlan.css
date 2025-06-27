@@ -52,7 +52,7 @@
 .modalUpgradePlan__yearly-text{
     font-size: 10px;
     font-weight: 600;
-    color: rgba(174, 174, 174, 1);
+    color: var(--body-light-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -111,7 +111,7 @@
 
 .modalUpgradePlan__divider{
     height: 0.8px;
-    background: rgba(224, 224, 224, 1);
+    background: var(--border-strong-color);
     margin: 4px 0;
     width: 100%;
     border: none;
@@ -130,7 +130,7 @@
 .modalUpgradePlan__plan__title{
     font-size: 13px;
     font-weight: 600;
-    color: rgba(72, 72, 72, 1);
+    color: var(--body-fresco-color);
     display: flex;
     flex-direction: row;
     gap: 5px;
@@ -139,7 +139,7 @@
 .modalUpgradePlan__plan__title--popular{
     color: var(--accent-bg-color);
     font-size: 8px;
-    background-color: rgba(0, 153, 254, 0.1);
+    background-color: var(--upgrade-bg-popular);
     padding: 2px 3px;
     border-radius: 3px;
     align-self: center;
@@ -150,16 +150,16 @@
 .modalUpgradePlan__price{
     font-size: 24px;
     font-weight: 600;
-    color: rgba(0, 0, 0, 1);
+    color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalUpgradePlan__currency{
     font-size: 12px;
-    color: rgba(0, 0, 0, 1);
+    color: var(--body-strong-color);
 }
 .modalUpgradePlan__plan__nsites{
     font-size: 11px;
-    color: rgba(94, 94, 94, 1);
+    color: var(--body-semistrong-color);
     letter-spacing: var(--letter-spacing-negative);
     font-weight: 600;
 }
@@ -172,7 +172,7 @@
 }
 .modalUpgradePlan__plan__description{
     font-size: var(--font-size-small);
-    color: rgba(174, 174, 174, 1);
+    color: var(--body-light-color);
     letter-spacing: var(--letter-spacing-negative);
     font-weight: 600;
     min-width: 116px;
@@ -183,7 +183,7 @@
     gap: 10px;
     margin-top: 20px;
     align-items: center;
-    border: 1px solid rgba(224, 224, 224, 1);
+    border: 1px solid var(--secondary-button-border-color);
     justify-content: center;
     padding: 5px 0;
     border-radius: 7px;
@@ -191,7 +191,7 @@
 }
 .modalUpgradePlan__subscribe__title{
     font-size: 11px;
-    color: rgba(94, 94, 94, 1);
+    color: var(--body-strong-color);
     font-weight: 600;
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -201,7 +201,7 @@
     border: none;
 }
 .modalUpgradePlan__subscribe__title--popular{
-    color: rgba(255, 255, 255, 1);
+    color: #fff;
     
 }
 .modalUpgradePlan__site{
@@ -215,7 +215,7 @@
 .modalUpgradePlan__site__title{
     font-size: 11px;
     font-weight: 600;
-    color: rgba(72, 72, 72, 1);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalUpgradePlan__site__infos{
@@ -244,7 +244,7 @@
 .modalUpgradePlan__site__info__title{
     font-size: var(--font-size-small);
     font-weight: 600;
-    color: rgba(104, 107, 116, 1);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalUpgradePlan__site__tick{
@@ -252,6 +252,10 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    color: var(--body-fresco-color);
+}
+.modalUpgradePlan__site__tick--cross{
+    color: var(--body-light-color);
 }
 .modalUpgradePlan__site__info__title--underline{
     text-decoration: underline dotted;
@@ -260,7 +264,7 @@
     text-underline-offset: 2px;
 }
 .modalUpgradePlan__site__info__title--noincluded{
-    color: rgba(174, 174, 174, 1);
+    color: var(--body-light-color);
 }
 
 

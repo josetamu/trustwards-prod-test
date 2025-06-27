@@ -108,7 +108,7 @@
 }
 .modalChange__advice {
   font-size: var(--font-size-medium);
-  color: var(--change-advice-color);
+  color: var(--body-fresco-color);
   font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
   white-space: nowrap;
