@@ -11,17 +11,6 @@ export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, open
   const [email, setEmail] = useState(user?.Email);
   const [errors, setErrors] = useState({});
 
-
-
-  // Avatar changes logic
-  const handleEditSave = (editData) => {
-    setCustomHeader({
-      avatar: editData.avatar,
-      headerGradient: editData.headerGradient
-    });
-    setShowEdit(false);
-  };
-
   //Function to open files
   const fileInputRef = useRef(null);
 

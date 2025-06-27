@@ -79,7 +79,7 @@ function App() {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'oscar.abad.brickscore@gmail.com',  
+      email: 'jose11tamu@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -315,30 +315,6 @@ const handleBackdropClick = useCallback((e) => {
             setUserSettings={setUserSettings}
             getAppearanceSettings={getAppearanceSettings}
             openChangeModal={openChangeModal}
-            />
-          );
-        case 'NewSite':
-          return (
-            <ModalNewSite
-              onSave={() => {setIsModalOpen(false); fetchSites(user?.id)}}
-              onCancel={() => setIsModalOpen(false)}
-              userSites={webs?.length || 0}
-              setIsModalOpen={setIsModalOpen}
-              userPlan={user?.Plan || 'free'}
-              openModal={openModal}
-              webs={webs}
-            />
-          );
-        case 'EditSite':
-          return (
-            <ModalEditSite
-              onSave={() => {setIsModalOpen(false); fetchSites(user?.id)}}
-              onCancel={() => setIsModalOpen(false)}
-              setIsModalOpen={setIsModalOpen}
-              webs={webs}
-              siteData={siteData}
-              setSiteData={setSiteData}
-              openModal={openModal}
             />
           );
         case 'DeleteSite':

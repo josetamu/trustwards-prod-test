@@ -44,7 +44,7 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
 
   return (
     <div className="sites__wrapper">
-      <h2 className="sites__welcome">Hello, Jose 👋</h2>
+      <h2 className="sites__welcome">Hello, {user?.Name || "User"} 👋</h2>
       <div className="sites__top-grid">
         <div class="sites__top-left">
           <div className="sites__top-card sites__top-card--legacy">
@@ -184,28 +184,62 @@ export const Sites = ({ sites, isModalOpen, setIsModalOpen, user, webs, isSideba
         </div>
       </div>
 
-      <div className={`sites__grid ${isGridView ? 'grid' : 'list'}`}>
-        {sortedSites.map(site => (
-          user && site.userid === user.id && (
-            <Site
-              key={site.id}
-              id={site.id}
-              text={site.Name}
-              domain={site.Domain}
-              onRemove={() => {
-              }}
-              setIsModalOpen={setIsModalOpen}
-              setModalType={setModalType}
-              isModalOpen={isModalOpen}
-              isDropdownOpen={isDropdownOpen}
-              setIsDropdownOpen={setIsDropdownOpen}
-              setSiteData={setSiteData}
-              siteData={site}
-              isGridView={isGridView}
-            />
-          )
-        ))}
-      </div>
+      {sortedSites.length === 0 ? (
+        <div className="sites__nosites-big">
+          <div className="sites__nosites-container">
+            <span className="sites__nosites-heading">No Sites</span>
+            <div className="sites__nosites-text">
+              There aren't sites here yet.
+              <br />
+              Start by creating a <span className="sites__nosites-span">new site.</span>
+            </div>
+          </div>
+          <button className="sites__new-button" disabled>
+            New
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
+              <path d="M12 7V17M17 12L7 12" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+              <path d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
+              <path d="M2.5 8.5C2.86239 7.67056 3.3189 6.89166 3.85601 6.17677M6.17681 3.85598C6.89168 3.31888 7.67058 2.86239 8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+      ) : (
+        <div className={`sites__grid ${isGridView ? 'grid' : 'list'}`}>
+          {sortedSites.map(site => (
+            user && site.userid === user.id && (
+              <Site
+                key={site.id}
+                id={site.id}
+                text={site.Name}
+                domain={site.Domain}
+                onRemove={() => {
+                }}
+                setIsModalOpen={setIsModalOpen}
+                setModalType={setModalType}
+                isModalOpen={isModalOpen}
+                isDropdownOpen={isDropdownOpen}
+                setIsDropdownOpen={setIsDropdownOpen}
+                setSiteData={setSiteData}
+                siteData={site}
+                isGridView={isGridView}
+              />
+            )
+          ))}
+          <div className="sites__nosites-small">
+            <div className="sites__nosites-text">
+              Add a new website
+            </div>
+            <button className="sites__new-button" disabled>
+              New
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
+                <path d="M12 7V17M17 12L7 12" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                <path d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
+                <path d="M2.5 8.5C2.86239 7.67056 3.3189 6.89166 3.85601 6.17677M6.17681 3.85598C6.89168 3.31888 7.67058 2.86239 8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

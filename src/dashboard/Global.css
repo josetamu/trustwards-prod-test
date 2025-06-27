@@ -67,6 +67,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
   --site-pro-toggle-text-color: #9E9E9E;
   --view-toggle-color: #FFFFFF;
   --view-toggle-background: #F2F2F2;
+  --no-sites-heading-color: #484848;
 
   /*Accents*/
   --accent-color: #FFFFFF;
