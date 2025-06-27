@@ -18,15 +18,24 @@
     color: var(--body-strong-color);
 }
 .modalUpgradePlan__info{
-    font-size: 11px;
+    font-size: 10px;
     font-weight: var(--font-weight);
     color: var(--body-fresco-color);
+    min-width: 200px;
 }
 .modalUpgradePlan__info--underline{
     text-decoration: underline dotted;
     text-decoration-thickness: .5px;
     text-decoration-style: dotted;
     text-underline-offset: 2px;
+    cursor:default;
+    position: relative;
+}
+.tooltip--upgrade{
+    display: none;
+}
+.modalUpgradePlan__info--underline:hover .tooltip{
+    display: block;
 }
 .modalUpgradePlan__info--free{
     color: var(--accent-bg-color);
@@ -262,6 +271,12 @@
     text-decoration-thickness: .5px;
     text-decoration-style: dotted;
     text-underline-offset: 2px;
+    cursor: default;
+    position: relative;
+ 
+}
+.modalUpgradePlan__site__info__title--underline:hover .tooltip{
+    display: block;
 }
 .modalUpgradePlan__site__info__title--noincluded{
     color: var(--body-light-color);
@@ -278,7 +293,7 @@
         gap: 40px;
     }
     .modalUpgradePlan__plan{
-        border-top: 1px solid rgba(224, 224, 224, 1);
+        border-top: 1px solid var(--border-strong-color);
         padding-top: 20px;
     }
     .modalUpgradePlan__site{
@@ -304,7 +319,7 @@
         margin-bottom: 15px;
         font-size: 13px;
         font-weight: 600;
-        color: rgba(72, 72, 72, 1);
+        color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
     .modalUpgradePlan__info__container:nth-child(2)::before{
@@ -315,7 +330,7 @@
         margin-bottom: 15px;
         font-size: 13px;
         font-weight: 600;
-        color: rgba(72, 72, 72, 1);
+        color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
     .modalUpgradePlan__info__container:nth-child(3)::before{
@@ -326,7 +341,7 @@
         margin-bottom: 15px;
         font-size: 13px;
         font-weight: 600;
-        color: rgba(72, 72, 72, 1);
+        color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
     .modalUpgradePlan__info__container:nth-child(4)::before{

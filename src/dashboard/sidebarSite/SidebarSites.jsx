@@ -106,7 +106,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 setSelectedSite(siteData);
                 setIsSiteOpen(true);
             }}
-            style={{ cursor: 'pointer' }}
+            
         >
             <div className="sidebarSites__header">
                 <span className="sidebarSites__header-avatar">
