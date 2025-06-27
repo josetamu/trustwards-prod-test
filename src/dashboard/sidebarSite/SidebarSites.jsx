@@ -5,6 +5,7 @@ import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../Tooltip/Tooltip";
 import "../Dropdown/Dropdown.css";
 
+
 export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -110,6 +111,14 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
         >
             <div className="sidebarSites__header">
                 <span className="sidebarSites__header-avatar">
+                    {/* <span 
+                        className="sidebarSites__header-avatar" 
+                        style={{
+                            backgroundColor: arrayDePrueba[siteData['Avatar Color']]?.backgroundColor || '#000000',
+                            color: arrayDePrueba[siteData['Avatar Color']]?.color || '#FFFFFF'
+                        }}>
+                          {name.charAt(0)}
+                    </span> */}
                     <img className="sidebarSites__header-avatar-img" src={avatar}/>
                 </span>
                 <span className="sidebarSites__header-name">
