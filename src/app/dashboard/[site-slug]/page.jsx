@@ -2,13 +2,15 @@
 
 import './home.css';
 import { useParams, notFound } from 'next/navigation';
+import { useDashboard } from '../layout';
 
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
 
-    // This is temporary, this has to be fetched from the database
-    const availableSites = ['Noir', 'Untitled'];
+    // Fetch sites from the database using the dashboard context
+    const { webs } = useDashboard();
+    const availableSites = webs.map(site => site.Name);
     
     // Find the selected site based on the slug
     const selectedSite = availableSites.find(site => site.toLowerCase() === siteSlug?.toLowerCase());

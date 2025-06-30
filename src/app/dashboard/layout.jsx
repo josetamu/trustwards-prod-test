@@ -5,6 +5,7 @@ import './dashboard.css'
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../supabase/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 import { Sidebar, otherpages } from '@components/sideBar/Sidebar'
 import { ModalContainer } from '@components/ModalContainer/ModalContainer'
@@ -18,6 +19,7 @@ const DashboardContext = createContext(null);
 export const useDashboard = () => useContext(DashboardContext);
 
 function DashboardLayout({ children }) {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activePage, setActivePage] = useState('Websites');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -271,11 +273,28 @@ const handleBackdropClick = useCallback((e) => {
         const colorKeys = Object.keys(arrayDePrueba);
         const randomColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
         
+        // Function to generate a unique site name, mapping the existing sites names if includes the name adds a number to the end in the while loop
+        const generateUniqueSiteName = (baseName) => {
+          const existingNames = webs.map(site => site.Name);
+          let newName = baseName;
+          let counter = 1;
+          
+          while (existingNames.includes(newName)) {
+            newName = `${baseName}(${counter})`;
+            counter++;
+          }
+          
+          return newName;
+        };
+        
+        // When a user creates a new site, the auto generated name is "Untitled"
+        const uniqueSiteName = generateUniqueSiteName('Untitled');
+        
         const { data, error } = await supabase
           .from('Site')
           .insert([
             {
-              Name: 'Untitled',
+              Name: uniqueSiteName,
               userid: user.id,
               'Avatar Color': randomColorKey
             }
@@ -287,10 +306,13 @@ const handleBackdropClick = useCallback((e) => {
           return;
         }
 
-        // Refresh the sites list
-        fetchSites(user.id);
+        // Update the webs state immediately with the new site
+        setwebs(prevWebs => [...prevWebs, data[0]]);
         setSelectedSite(data[0]);
         setIsSiteOpen(true);
+        
+        // Navigate to the new site page
+        router.push(`/dashboard/${encodeURIComponent(uniqueSiteName)}`);
 
       } catch (error) {
         showNotification('Error creating site');

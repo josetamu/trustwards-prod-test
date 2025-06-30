@@ -316,9 +316,7 @@ export function Sidebar({
                                             key={page.name}
                                             className={`site__link`}
                                             onClick={() => {
-                                                //  agregar la lógica para navegar 
-                                                console.log(`Navegando a ${page.name} del sitio ${selectedSite?.Name}`);
-                                                setSiteTab(page.name);
+
                                                 if(window.innerWidth < 767) {
                                                     setIsSidebarOpen(false);
                                                     toggleSidebar();
