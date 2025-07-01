@@ -341,7 +341,7 @@ export function Sidebar({
                                                         <br />
                                                         Start by creating a <span className="nosites__text__span">new site.</span>
                                                     </div>
-                                                    <NewSite />
+                                                    <NewSite createNewSite={createNewSite} />
                                                 </div>
                                             )}
                                         </span>

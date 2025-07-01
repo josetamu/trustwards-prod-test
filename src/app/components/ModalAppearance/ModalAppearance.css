@@ -95,11 +95,15 @@
 .modalAppearence__choice__icon{
     display: none;
 }
-.modalAppearance__choice--active .modalAppearence__choice__icon{
+.modalAppearance__choice--active .modalAppearence__choice__icon { 
     display: block;
     position: absolute;
     top: 55px;
     left: 5px;
+}
+
+.modalAppearence__tick{
+    color: var(--accent-bg-color);
 }
 
 

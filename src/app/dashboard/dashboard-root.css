@@ -81,6 +81,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
 
   /*Sidebar Tooltip*/
   --sidebar-tooltip-background: #FFFFFF;
+  --sidebar-tooltip-color: #000000;
 
   /*Tooltip*/
   --tooltip-background: #494E58;
@@ -166,6 +167,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
 
     /*Sidebar Tooltip*/
     --sidebar-tooltip-background: #2B2B2B;
+    --sidebar-tooltip-color: #9B9B9B;
 
     /*Tooltip*/
     --tooltip-background: #333333;
@@ -269,6 +271,7 @@ html[data-theme="light"] {
 
   /*Sidebar Tooltip*/
   --sidebar-tooltip-background: #FFFFFF;
+  --sidebar-tooltip-color: #000000;
 
   /*Tooltip*/
   --tooltip-background: #494E58;
@@ -349,6 +352,7 @@ html[data-theme="dark"] {
 
   /*Sidebar Tooltip*/
   --sidebar-tooltip-background: #2B2B2B;
+  --sidebar-tooltip-color: #9B9B9B;
 
   /*Tooltip*/
   --tooltip-background: #333333;
@@ -381,4 +385,30 @@ html[data-theme="dark"] .sidebar__logo-img{
   background-size: cover;
   width: 21px;
   height: 15px;
+}
+
+/* Button color variables using data-color */
+html[data-color="blue"] {
+  --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+  --accent-bg-color: #0099FE;
+}
+
+html[data-color="green"] {
+  --blue-button-shadow: 0px -4px 4px 0px #3CB82C inset, 0px 0px 0px 1px #2FB11F, 0px 0px 0px 1px #7BD86F inset;
+  --accent-bg-color: #4EC93E
+}
+
+html[data-color="purple"] {
+  --blue-button-shadow: 0px -4px 4px 0px #5951EB inset, 0px 0px 0px 1px #554DFD, 0px 0px 0px 1px #8882FF inset;
+  --accent-bg-color: #635BFF
+}
+
+html[data-color="orange"] {
+  --blue-button-shadow: 0px -4px 4px 0px #F8722C inset, 0px 0px 0px 1px #FF6A1D, 0px 0px 0px 1px #FFA170 inset;
+  --accent-bg-color: #FD803F;
+}
+
+html[data-color="red"] {
+  --blue-button-shadow: 0px -4px 4px 0px #E31B1B inset, 0px 0px 0px 1px #F91212, 0px 0px 0px 1px #F97474 inset;
+  --accent-bg-color: #F33D3D;
 }

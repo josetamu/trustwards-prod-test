@@ -10,10 +10,9 @@ function Home() {
 
     // Fetch sites from the database using the dashboard context
     const { webs } = useDashboard();
-    const availableSites = webs.map(site => site.Name);
     
-    // Find the selected site based on the slug
-    const selectedSite = availableSites.find(site => site.toLowerCase() === siteSlug?.toLowerCase());
+    // Find the selected site object based on the slug
+    const selectedSite = webs.find(site => site.Name.toLowerCase().replace(/\s+/g, '-') === siteSlug?.toLowerCase());
     
     if (!selectedSite) {
         notFound();
@@ -32,7 +31,7 @@ function Home() {
             </div>
             <div className='siteView__content'>
                 <div>
-                    <h1>{selectedSite}</h1>
+                    <h1 style={{color: 'var(--body-strong-color)'}}>{selectedSite.Name}</h1>
                 </div>
             </div>
         </div>

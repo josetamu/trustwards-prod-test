@@ -3,7 +3,7 @@ import { supabase } from '../../../supabase/supabaseClient';
 import './ModalAppearance.css';
 
 
-export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, setAppearanceSettings }) => {
+export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
     const [selected, setSelected] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [reducedMotion, setReducedMotion] = useState(false);
@@ -12,9 +12,25 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
     // Load user's current appearance settings
     useEffect(() => {
         // Always set the values, even if appearanceSettings is null/undefined
-        setSelected(localStorage.getItem('appearanceTheme') || 'system');
+        setSelected(appearanceSettings?.['Theme'] || 'system');
         setSelectedColor(appearanceSettings?.['Accent Color'] || '');
         setReducedMotion(appearanceSettings?.['Reduced Motion'] || false);
+        
+        // Set data-color attribute based on current accent color
+        if (appearanceSettings?.['Accent Color']) {
+            document.documentElement.setAttribute('data-color', appearanceSettings['Accent Color']);
+        } else {
+            document.documentElement.removeAttribute('data-color');
+        }
+        
+        // Set data-theme attribute based on current theme
+        if (appearanceSettings?.['Theme']) {
+            if (appearanceSettings['Theme'] === 'system') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', appearanceSettings['Theme']);
+            }
+        }
         
         // Mark as initialized after a short delay to prevent initial animation
         const timer = setTimeout(() => {
@@ -26,6 +42,7 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
 
     // Save appearance settings to database
     const handleSave = async (newTheme = null, newColor = null, newReducedMotion = null) => {
+        const themeToSave = newTheme !== null ? newTheme : selected;
         const colorToSave = newColor !== null ? newColor : selectedColor;
         const motionToSave = newReducedMotion !== null ? newReducedMotion : reducedMotion;
         
@@ -33,6 +50,7 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
             const { error } = await supabase
                 .from('Appearance')
                 .update({
+                    'Theme': themeToSave,
                     'Accent Color': colorToSave,
                     'Reduced Motion': motionToSave
                 })
@@ -58,6 +76,13 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
 
     // Handle color selection
     const handleColorSelect = (color) => {
+        // Set data-color attribute on document
+        if (color) {
+            document.documentElement.setAttribute('data-color', color);
+        } else {
+            document.documentElement.removeAttribute('data-color');
+        }
+        
         handleSave(null, color, null);
     };
 
@@ -69,13 +94,13 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
     const updateLocalStorageTheme = (theme) => {
         handleSave(theme, null, null);
         if (theme === 'system') {
-            localStorage.removeItem('appearanceTheme');
             document.documentElement.removeAttribute('data-theme');
         } else {
-            localStorage.setItem('appearanceTheme', theme);
+
             document.documentElement.setAttribute('data-theme', theme);
         }
     };
+    
 
     return (
         <div className={`modalAppearance__content ${isInitialized ? 'modalAppearance__content--initialized' : ''}`}>
@@ -122,7 +147,7 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clipPath="url(#clip0_254_2015)">
                                         <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                        <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="#0099FE"/>
+                                        <path className="modalAppearence__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                         </g>
                                         <defs>
                                         <clipPath id="clip0_254_2015">
@@ -174,7 +199,7 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clipPath="url(#clip0_254_2015)">
                                             <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                            <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="#0099FE"/>
+                                            <path className="modalAppearence__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                             </g>
                                             <defs>
                                             <clipPath id="clip0_254_2015">
@@ -226,7 +251,7 @@ export const ModalAppearance = ({ user, onClose, onSave, appearanceSettings, set
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clipPath="url(#clip0_254_2015)">
                                             <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                            <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="#0099FE"/>
+                                            <path className="modalAppearence__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                             </g>
                                             <defs>
                                             <clipPath id="clip0_254_2015">

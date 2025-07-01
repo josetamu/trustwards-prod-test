@@ -14,6 +14,7 @@ import { ModalSupport } from '@components/ModalSupport/ModalSupport'
 import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
 import Notification from '@components/Notification/Notification'
+import { NewSite } from '@components/NewSite/NewSite'
 
 const DashboardContext = createContext(null);
 export const useDashboard = () => useContext(DashboardContext);
@@ -51,9 +52,35 @@ function DashboardLayout({ children }) {
     }
   }, []); 
 
+  // Apply appearance settings when they are loaded
+  useEffect(() => {
+    if (appearanceSettings) {
+      // Apply theme
+      if (appearanceSettings['Theme']) {
+        if (appearanceSettings['Theme'] === 'system') {
+          document.documentElement.removeAttribute('data-theme');
+        } else {
+          document.documentElement.setAttribute('data-theme', appearanceSettings['Theme']);
+        }
+      }
+      
+      // Apply accent color
+      if (appearanceSettings['Accent Color']) {
+        document.documentElement.setAttribute('data-color', appearanceSettings['Accent Color']);
+      } else {
+        document.documentElement.removeAttribute('data-color');
+      }
+    }
+  }, [appearanceSettings]);
+
    // function to open sidebar in desktop toggleing the .open class
-   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+   const toggleSidebar = async () => {
+    const newSidebarState = !isSidebarOpen;
+    setIsSidebarOpen(newSidebarState);
+    
+    // Save sidebar state to database
+    await updateAppearanceSettings({ Sidebar: newSidebarState });
+    
     const contentContainer = document.querySelector('.content__container');
     const userSettings = document.querySelector('.profile');
     const modal = document.querySelector('.modal__backdrop'); 
@@ -137,8 +164,26 @@ const arrayDePrueba = {
     setAppearanceSettings(data);
   };
 
+  // Function to update appearance settings in database
+  const updateAppearanceSettings = async (settings) => {
+    if (!user?.id) return;
+    
+    const { error } = await supabase
+      .from('Appearance')
+      .update(settings)
+      .eq('userid', user.id);
+    
+    if (error) {
+      console.error('Error updating appearance settings:', error);
+    }
+  };
 
-
+  // Apply sidebar state when appearance settings are loaded
+  useEffect(() => {
+    if (appearanceSettings && appearanceSettings.Sidebar !== undefined) {
+      setIsSidebarOpen(appearanceSettings.Sidebar);
+    }
+  }, [appearanceSettings]);
 
   // Function to fetch sites from Supabase
   const fetchSites = async (userId) => {
@@ -415,6 +460,8 @@ const handleBackdropClick = useCallback((e) => {
         setSiteData,
         siteData,
         setIsDropdownOpen,
+        fetchSites,
+        createNewSite,
     };
 
     return (
@@ -446,7 +493,7 @@ const handleBackdropClick = useCallback((e) => {
                     setUserSettings={setUserSettings}
                     createNewSite={createNewSite}
                 />
-                <div className="content__container">
+                <div className={`content__container ${isSidebarOpen ? 'open' : ''}`}>
                     {children}
 
                     <ModalContainer 
