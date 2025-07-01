@@ -92,6 +92,7 @@
     position: absolute;
     right: -5px;
     top: -5px;
+    color: var(--accent-bg-color);
 }
 
 .modalSupport__choice--active .modalSupport__choice__text{
@@ -155,7 +156,7 @@
     cursor: pointer;
     overflow-y: auto;
     overflow-x: hidden;
-    
+
     
 }
 .modalSupport__dropZone__span{
@@ -186,19 +187,23 @@
 .modalSupport__dropZone__span--none{
     display: none;
 }
+.modalSupport__dropZone:has(.modalSupport__files) {
+    padding-top: 50px;
+}
 .modalSupport__files{
     display: flex;
     gap: 5px;
     padding: 5px;
-    max-height: 69px;
+    max-height: auto;
     cursor: pointer;
     width: 100px;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-        
-
+    
 }
+
+
 .modalSupport__file{
     display: flex;
     align-items: center;
@@ -214,6 +219,7 @@
     border-radius: 8px;
     border: 1px solid var(--border-strong-color);
 }
+
 .modalSupport__file__name{
 
     overflow: hidden;

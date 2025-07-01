@@ -15,7 +15,8 @@ import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
 import Notification from '@components/Notification/Notification'
 import { NewSite } from '@components/NewSite/NewSite'
-
+import { ModalAppearance } from '@components/ModalAppearance/ModalAppearance'
+import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
 export const useDashboard = () => useContext(DashboardContext);
 
@@ -34,6 +35,7 @@ function DashboardLayout({ children }) {
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
   const [siteTab, setSiteTab] = useState('Home');
+  const { theme, setTheme } = useTheme();
   const [appearanceSettings, setAppearanceSettings] = useState(null);
   // ModalChange state
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
@@ -43,26 +45,12 @@ function DashboardLayout({ children }) {
     message: '',
   });
 
-  useEffect(() => {
-    const theme = localStorage.getItem('appearanceTheme');
-    if (theme === 'dark' || theme === 'light') {
-        document.documentElement.setAttribute('data-theme', theme);
-    } else {
-        document.documentElement.removeAttribute('data-theme');
-    }
-  }, []); 
+ 
 
   // Apply appearance settings when they are loaded
   useEffect(() => {
     if (appearanceSettings) {
-      // Apply theme
-      if (appearanceSettings['Theme']) {
-        if (appearanceSettings['Theme'] === 'system') {
-          document.documentElement.removeAttribute('data-theme');
-        } else {
-          document.documentElement.setAttribute('data-theme', appearanceSettings['Theme']);
-        }
-      }
+      setTheme(appearanceSettings['Theme']);
       
       // Apply accent color
       if (appearanceSettings['Accent Color']) {
@@ -78,8 +66,10 @@ function DashboardLayout({ children }) {
     const newSidebarState = !isSidebarOpen;
     setIsSidebarOpen(newSidebarState);
     
-    // Save sidebar state to database
-    await updateAppearanceSettings({ Sidebar: newSidebarState });
+    // Save sidebar state to database only on desktop (>767px)
+    if (window.innerWidth > 767) {
+      await updateAppearanceSettings({ Sidebar: newSidebarState });
+    }
     
     const contentContainer = document.querySelector('.content__container');
     const userSettings = document.querySelector('.profile');
@@ -162,6 +152,7 @@ const arrayDePrueba = {
       .eq('userid', userId)
       .single();
     setAppearanceSettings(data);
+    console.log(data)
   };
 
   // Function to update appearance settings in database
@@ -181,7 +172,13 @@ const arrayDePrueba = {
   // Apply sidebar state when appearance settings are loaded
   useEffect(() => {
     if (appearanceSettings && appearanceSettings.Sidebar !== undefined) {
-      setIsSidebarOpen(appearanceSettings.Sidebar);
+      // En dispositivos móviles (≤767px), siempre iniciar con la sidebar cerrada
+      // En desktop (>767px), usar el estado guardado en la base de datos
+      if (window.innerWidth <= 767) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(appearanceSettings.Sidebar);
+      }
     }
   }, [appearanceSettings]);
 
@@ -405,6 +402,7 @@ const handleBackdropClick = useCallback((e) => {
             user={user}
             setUser={setUser}
             setIsModalOpen={setIsModalOpen}
+            showNotification={showNotification}
           />)
       case 'Appearance':
         return ( 

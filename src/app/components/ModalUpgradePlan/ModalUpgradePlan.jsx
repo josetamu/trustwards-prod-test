@@ -97,7 +97,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'> scans
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'top' }}
                                         type='default'
                                     ></Tooltip>
                             </span>/month</span>
@@ -130,7 +130,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'> scans
                                 <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'top' }}
                                         type='default'
                                     ></Tooltip>
                             </span>/month</span>
@@ -163,7 +163,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'>scans 
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span>/month</span>
@@ -220,7 +220,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'> themes
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span>
@@ -246,7 +246,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'> Watermark
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span> removed</span>
@@ -263,7 +263,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'> themes 
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span>
@@ -287,7 +287,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'> Watermark
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span> removed
@@ -305,7 +305,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'> themes
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span>
@@ -329,7 +329,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'>Watermark
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span> removed
@@ -347,7 +347,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'> themes
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span>
@@ -371,7 +371,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'>Watermark
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span> removed

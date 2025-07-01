@@ -4,7 +4,7 @@ import { Tooltip } from '../tooltip/Tooltip';
 
 import { Resend } from 'resend';
 
-export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
+export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) => {
     const resend = new Resend('re_xxxxxxxxx');
     const [selectedChoice, setSelectedChoice] = useState(null);
     const [name, setName] = useState(user?.Name || 'User Name');
@@ -54,45 +54,51 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
 
     setIsSubmitting(true);
 
+
+    // Here we send the email to the support email
     try {
-        const res = await fetch('/api/send', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              // puedes pasar datos al email si lo modificas en route.ts
-              firstName: 'Juan',
-            }),
-        });
-
-        const result = await res.json();
-        if (res.ok) {
-          console.log('Correo enviado:', result);
-        } else {
-          console.error('Error al enviar correo:', result.error);
-        }
-
-        /*
+        // we take the form data from the form and append it to the form data
         const formData = new FormData();
-        formData.append('name', name);
+        formData.append('firstName', name);
         formData.append('email', email);
         formData.append('message', message);
         formData.append('type', selectedChoice);
+        
+        // we append the files to the form data mapping them because can be more than one file
         files.forEach(file => {
             formData.append('files', file);
         });
-        */
 
-        // Limpiar el formulario después del envío exitoso
-        setName('');
-        setEmail('');
-        setMessage('');
-        setFiles([]);
-        setSelectedChoice(null);
-        setIsModalOpen(false);
+        // we send the form data to the api route
+        const res = await fetch('/api/send', {
+            method: 'POST',
+            body: formData, //Here we use the formData
+        });
+
+        const result = await res.json(); // we get the response from the api route and the check if the email is sent successfully in the condition below
+        
+        if (res.ok && result.success) {
+          
+          // we clean the form after the email is sent 
+          setName('');
+          setEmail('');
+          setMessage('');
+          setFiles([]);
+          setSelectedChoice(null);
+          setIsModalOpen(false);
+          
+          // we show the success message to the user
+          showNotification('Email sent successfully');
+        } else {
+          
+          // we show the error specific to the user
+          const errorMessage = result.error || result.details || 'Error sending email';
+          showNotification(`Error: ${errorMessage}`);
+        }
+
     } catch (error) {
         console.error('Error en la solicitud:', error);
+        showNotification(`Connection error: ${error.message}`);
     } finally {
         setIsSubmitting(false);
     }
@@ -180,7 +186,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="#0099FE"/>
+                                    <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                     </g>
                                     <defs>
                                     <clipPath id="clip0_254_2015">
@@ -198,7 +204,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="#0099FE"/>
+                                    <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                     </g>
                                     <defs>
                                     <clipPath id="clip0_254_2015">
@@ -216,7 +222,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="#0099FE"/>
+                                    <path fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                     </g>
                                     <defs>
                                     <clipPath id="clip0_254_2015">

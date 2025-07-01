@@ -395,11 +395,7 @@ export function Sidebar({
 
                                     }
 
-                                    if(window.innerWidth < 767) {
-                                        setIsSidebarOpen(false);
-                                        toggleSidebar();
-                                        /* toggleDropdown(); */
-                                    }
+                                    
                                 }}
                             />
                         ))}

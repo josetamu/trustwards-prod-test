@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
+import { useTheme } from 'next-themes';
 import './ModalAppearance.css';
 
 
 export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
+    const { theme, setTheme } = useTheme();
     const [selected, setSelected] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [reducedMotion, setReducedMotion] = useState(false);
@@ -24,13 +26,13 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
         }
         
         // Set data-theme attribute based on current theme
-        if (appearanceSettings?.['Theme']) {
+/*         if (appearanceSettings?.['Theme']) {
             if (appearanceSettings['Theme'] === 'system') {
                 document.documentElement.removeAttribute('data-theme');
             } else {
                 document.documentElement.setAttribute('data-theme', appearanceSettings['Theme']);
             }
-        }
+        } */
         
         // Mark as initialized after a short delay to prevent initial animation
         const timer = setTimeout(() => {
@@ -39,7 +41,10 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
         
         return () => clearTimeout(timer);
     }, [appearanceSettings]);
-
+    const updateTheme = (newTheme) => {
+        setTheme(newTheme);
+        handleSave(newTheme, null, null);
+    };
     // Save appearance settings to database
     const handleSave = async (newTheme = null, newColor = null, newReducedMotion = null) => {
         const themeToSave = newTheme !== null ? newTheme : selected;
@@ -90,7 +95,7 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
     const handleReducedMotionToggle = (checked) => {
         handleSave(null, null, checked);
     };
-
+/* 
     const updateLocalStorageTheme = (theme) => {
         handleSave(theme, null, null);
         if (theme === 'system') {
@@ -99,7 +104,7 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
 
             document.documentElement.setAttribute('data-theme', theme);
         }
-    };
+    }; */
     
 
     return (
@@ -109,7 +114,7 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
                         Theme
                     </span>
                     <div className="modalAppearance__choices">
-                        <div className="modalAppearance__choice" onClick={() => updateLocalStorageTheme('light')}>
+                        <div className="modalAppearance__choice" onClick={() => updateTheme('light')}>
                             <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--light ${selected === 'light' ? 'modalAppearance__choice--active' : ''}`}>
                                 <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_350)">
@@ -161,7 +166,7 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
                                 Light
                             </span>
                         </div>
-                        <div className="modalAppearance__choice" onClick={() => updateLocalStorageTheme('dark')}>
+                        <div className="modalAppearance__choice" onClick={() => updateTheme('dark')}>
                             <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--dark ${selected === 'dark' ? 'modalAppearance__choice--active' : ''}`}>
                                 <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_351)">
@@ -213,7 +218,7 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
                                 Dark
                             </span>
                         </div>
-                        <div className="modalAppearance__choice" onClick={() => updateLocalStorageTheme('system')}>
+                        <div className="modalAppearance__choice" onClick={() => updateTheme('system')}>
                             <div className="modalAppearance__imgWrapper modalAppearance__imgWrapper--system">
                                 <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--light ${selected === 'system' ? 'modalAppearance__choice--active' : ''}`}>
                                     <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
