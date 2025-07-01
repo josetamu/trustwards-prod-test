@@ -253,10 +253,13 @@ const arrayDePrueba = {
     };
   }, []);
 
+  // Force login (only dev mode)
   useEffect(() => {
-    setIsSidebarOpen(false);
-  }, [activePage]);
+    _loginDevUser();
+  }, []);
 
+
+//Global function to close modals with escape key
 const handleKeyDown = useCallback((e) => {
   if (e.key === 'Escape') {
     if (isModalOpen) {
@@ -268,6 +271,7 @@ const handleKeyDown = useCallback((e) => {
   }
 }, [isModalOpen, isChangeModalOpen]);
 
+//Global function to close modals by clicking outside the modal
 const handleBackdropClick = useCallback((e) => {
   if (e.target.className.includes('modal__backdrop')) {
     if (isChangeModalOpen) {
