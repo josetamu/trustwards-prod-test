@@ -81,6 +81,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
 
   /*Sidebar Tooltip*/
   --sidebar-tooltip-background: #FFFFFF;
+  --sidebar-tooltip-color: #000000;
 
   /*Tooltip*/
   --tooltip-background: #494E58;
@@ -118,190 +119,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
   width: 21px;
   height: 15px;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    /*App*/
-    --sidebar-background: #202020;
-    --content-background: #191919;
 
-    /*General*/
-    --body-light-color: #666666;
-    --body-fresco-color: #9B9B9B;
-    --body-semistrong-color: #9B9B9B;
-    --body-strong-color: #FFFFFF;
-    --border-fresco-color: #252525;
-    --border-strong-color: #333333;
-
-    --icons-fresco-color: #9B9B9B;
-    --icons-strong-color: #FFFFFF;
-    --hover-light-color: #2B2B2B;
-    --hover-fresco-color: #2B2B2B;
-    --hover-strong-color: #333333;
-    --shadow-fresco-color: rgba(0, 0, 0, 0.05);
-    --shadow-strong-color: rgba(0, 0, 0, 0.15);
-    --warning-color: #EB5757;
-    --hover-warning-color: #EB575710;
-    --wrappers-fresco-color: #202020;
-    --wrappers-strong-color: #2B2B2B;
-    --logo-background: #404040;
-  
-    /*Dashboard Hello Grid*/
-    --dashboard-hello-grid-heading-color: #FFFFFF;
-    --dashboard-hello-grid-text-fresco-color: #FFFFFF85;
-    --dashboard-hello-grid-text-strong-color: #FFFFFFB2;
-  
-    /*Sites List*/
-    --site-background: #252525;
-    --site-pro-toggle-background: #2B2B2B;
-    --site-pro-toggle-text-color: #9B9B9B;
-    --view-toggle-color: #666666;
-    --view-toggle-background: #333333;
-
-    /*Buttons*/
-    --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
-    --secondary-button-border-color: #373737;
-
-    /*Dropdown*/
-    --dropdown-background: #2B2B2B;
-
-    /*Sidebar Tooltip*/
-    --sidebar-tooltip-background: #2B2B2B;
-
-    /*Tooltip*/
-    --tooltip-background: #333333;
-    --tooltip-color: #FFFFFF;
-
-    /*Notification*/
-
-    /*Modal*/
-    --modal-background: #202020;
-    --modal-sidebar-background: #272727;
-    --modal-backdrop-color: rgba(0, 0, 0, 0.2);
-
-    /*Modal - Appearance*/
-    --appearance-light-theme: #F4F4F6;
-    --appearance-light-theme-border: rgba(224, 224, 224, 1);
-    --appearance-dark-theme: #272727;
-    --appearance-dark-theme-border: rgba(85, 85, 85, 1);
-
-    /*Modal - Support*/
-    --support-header-background: #272727;
-    --support-choice-background: #333333;
-    --support-dropzone-background: rgba(0, 153, 254, 0.1);
-
-    /* Modal - Upgrade*/
-    --upgrade-bg-popular: #0099FE10;
-
-  }
-
-  .sidebar__logo-img{
-    background: url('/assets/logo-dark-mode.svg');
-    background-size: cover;
-    width: 21px;
-    height: 15px;
-  }
-}
-html[data-theme="light"] {
-  --input-padding: 12px;
-  --letter-spacing: -0.03em;
-  --font-size-btn: 14px;
-  --font-size-name: 20px;
-  --font-size-domain: 12px;
-  --backdrop-blur: 20px;
-  --heading-font-size: 18px;
-  --font-weight: 500;
-  --letter-spacing-negative: -0.03em;
-  --letter-spacing-positive: 0.03em;
-  --font-size-small: 10px;
-  --font-size-medium: 12px;
-  --sidebar-icon-size: 16px;
-  --sidebar-width-open: 200px;
-  --sidebar-width-close: 70px;
-  --sidebar-font-size: 14px;
-
-  /*App*/
-  --sidebar-background: #F5F5F5;
-  --content-background: #FFFFFF;
-
-  /*General*/
-  --body-light-color: #A0A0A0;
-  --body-fresco-color: #5E5E5E;
-  --body-semistrong-color: #333333;
-  --body-strong-color: #000000;
-  --border-fresco-color: #E6E6E6;
-  --border-strong-color: #E0E0E0;
-  --icons-fresco-color: #5E5E5E;
-  --icons-strong-color: #000000;
-  --hover-light-color: #FFFFFF;
-  --hover-fresco-color: #EBEBEB;
-  --hover-strong-color: #E3E3E3;
-  --shadow-fresco-color: rgba(0, 0, 0, 0.05);
-  --shadow-strong-color: rgba(0, 0, 0, 0.1);
-  --warning-color: #D00606;
-  --hover-warning-color: rgba(248, 218, 218, 1);
-  --wrappers-fresco-color: #F2F2F2;
-  --wrappers-strong-color: #EDEDED;
-  --logo-background: #FFFFFF;
-
-  /*Dashboard Hello Grid*/
-  --dashboard-hello-grid-heading-color: #FFFFFF;
-  --dashboard-hello-grid-text-fresco-color: #FFFFFF85;
-  --dashboard-hello-grid-text-strong-color: #FFFFFFB2;
-
-  /*Sites List*/
-  --site-background: #FFFFFF;
-  --site-pro-toggle-background: #F2F2F2;
-  --site-pro-toggle-text-color: #9E9E9E;
-  --view-toggle-color: #FFFFFF;
-  --view-toggle-background: #F2F2F2;
-
-  /*Accents*/
-  --accent-color: #FFFFFF;
-  --accent-bg-color: #0099FE;
-
-
-  /*Buttons*/
-  --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
-  --secondary-button-border-color: #E0E0E0;
-
-  /*Dropdown*/
-  --dropdown-background: #FFFFFF;
-
-  /*Sidebar Tooltip*/
-  --sidebar-tooltip-background: #FFFFFF;
-
-  /*Tooltip*/
-  --tooltip-background: #494E58;
-  --tooltip-color: #FFFFFF;
-
-  /*Notification*/
-
-  /*Modal*/
-  --modal-background: #FFFFFF;
-  --modal-sidebar-background: #F2F2F2;
-  --modal-backdrop-color: rgba(0, 0, 0, 0.2);
-
-  /*Modal - Appearance*/
-  --appearance-light-theme: #F4F4F6;
-  --appearance-light-theme-border: rgba(224, 224, 224, 1);
-  --appearance-dark-theme: #272727;
-  --appearance-dark-theme-border: rgba(85, 85, 85, 1);
-
-  /*Modal - Support*/
-  --support-header-background: #D9D9D9;
-  --support-choice-background: #FFFFFF;
-  --support-dropzone-background: rgba(0, 153, 254, 0.1);
-
-    /*Modal - Upgrade*/
-  --upgrade-bg-popular: #0099FE10;
-
-}
-html[data-theme="light"] .sidebar__logo-img{
-  background: url('/assets/logo-light-mode.svg');
-  background-size: cover;
-  width: 21px;
-  height: 15px;
-}
 html[data-theme="dark"] {
   /*App*/
   --sidebar-background: #202020;
@@ -349,6 +167,7 @@ html[data-theme="dark"] {
 
   /*Sidebar Tooltip*/
   --sidebar-tooltip-background: #2B2B2B;
+  --sidebar-tooltip-color: #9B9B9B;
 
   /*Tooltip*/
   --tooltip-background: #333333;
@@ -381,4 +200,52 @@ html[data-theme="dark"] .sidebar__logo-img{
   background-size: cover;
   width: 21px;
   height: 15px;
+}
+
+/* Button color variables using data-color */
+html[data-color="blue"] {
+  --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+  --accent-bg-color: #0099FE;
+}
+
+html[data-color="green"] {
+  --blue-button-shadow: 0px -4px 4px 0px #3CB82C inset, 0px 0px 0px 1px #2FB11F, 0px 0px 0px 1px #7BD86F inset;
+  --accent-bg-color: #4EC93E
+}
+
+html[data-color="purple"] {
+  --blue-button-shadow: 0px -4px 4px 0px #5951EB inset, 0px 0px 0px 1px #554DFD, 0px 0px 0px 1px #8882FF inset;
+  --accent-bg-color: #635BFF
+}
+
+html[data-color="orange"] {
+  --blue-button-shadow: 0px -4px 4px 0px #F8722C inset, 0px 0px 0px 1px #FF6A1D, 0px 0px 0px 1px #FFA170 inset;
+  --accent-bg-color: #FD803F;
+}
+
+html[data-color="red"] {
+  --blue-button-shadow: 0px -4px 4px 0px #E31B1B inset, 0px 0px 0px 1px #F91212, 0px 0px 0px 1px #F97474 inset;
+  --accent-bg-color: #F33D3D;
+}
+
+
+
+
+
+
+/* Hide buttons until color is loaded, if not blue is showed during half second*/
+[style*="background-color: var(--accent-bg-color)"],
+.sites__new-button,
+.newSite__button,
+.modalAppearance__ancentColor__button {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* show buttons when color is loaded */
+html[data-color] [style*="background-color: var(--accent-bg-color)"],
+html[data-color] .sites__new-button,
+html[data-color] .newSite__button,
+html[data-color] .modalAppearance__ancentColor__button {
+  opacity: 1;
 }

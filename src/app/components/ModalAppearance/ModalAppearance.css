@@ -95,11 +95,15 @@
 .modalAppearence__choice__icon{
     display: none;
 }
-.modalAppearance__choice--active .modalAppearence__choice__icon{
+.modalAppearance__choice--active .modalAppearence__choice__icon { 
     display: block;
     position: absolute;
     top: 55px;
     left: 5px;
+}
+
+.modalAppearence__tick{
+    color: var(--accent-bg-color);
 }
 
 
@@ -315,7 +319,7 @@
     background-color: white;
     transition: .4s;
     border-radius: 50%;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+   
   }
 
   /* Disable transitions during initial load */
@@ -326,6 +330,7 @@
   
   .modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider {
     background-color: var(--accent-bg-color);
+    box-shadow: var(--blue-button-shadow);
   }
   
 .modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider:before {

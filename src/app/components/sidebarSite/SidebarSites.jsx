@@ -1,18 +1,114 @@
 import "./SidebarSites.css";
-import { useId, useState } from "react";
+import { useId, useState, useEffect, useRef } from "react";
 import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../tooltip/Tooltip";
 import "../../components/dropdown/Dropdown.css";
 import Link from "next/link";
+import { supabase } from "../../../supabase/supabaseClient";
+import { useDashboard } from "../../dashboard/layout";
 
 export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedName, setEditedName] = useState(name);
+    const inputRef = useRef(null);
+    const { fetchSites, user, webs } = useDashboard();
     
-    const SiteMenu = ({ onEdit, onDelete, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen}) => {
+    // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
+    const generateUniqueSiteName = (baseName, currentSiteId) => {
+        const existingNames = webs
+            .filter(site => site.id !== currentSiteId) // Exclude current site from check
+            .map(site => site.Name);
+        
+        let newName = baseName;
+        let counter = 1;
+        
+        while (existingNames.includes(newName)) {
+            newName = `${baseName}(${counter})`;
+            counter++;
+        }
+        
+        return newName;
+    };
+    
+    // function to initialize the edit mode
+    const handleEdit = () => {
+        setIsEditing(true);
+        setEditedName(name);
+        setIsDropdownOpen(false);
+    };
+
+    // function to save the edited name in the database
+    const handleSave = async () => {
+        try {
+            // Trim whitespace from the edited name
+            const trimmedName = editedName.trim();
+            
+            // Generate unique name if needed
+            const uniqueName = generateUniqueSiteName(trimmedName, siteData.id);
+            
+            // Update the site in the database
+            const { error } = await supabase
+                .from('Site')
+                .update({ Name: uniqueName })
+                .eq('id', siteData.id);
+
+            if (error) {
+                console.error('Error updating site name:', error);
+                // Revert to original name if update fails
+                setEditedName(name);
+                setIsEditing(false);
+                return;
+            }
+
+            // Update local state
+            const updatedSiteData = { ...siteData, Name: uniqueName };
+            setSiteData(updatedSiteData);
+            
+            // Refresh the global sites list
+            if (user && fetchSites) {
+                await fetchSites(user.id);
+            }
+            
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error updating site name:', error);
+            // Revert to original name if update fails
+            setEditedName(name);
+            setIsEditing(false);
+        }
+    };
+
+    // if click outside the input, save the edited name in the database
+    const handleBlur = async () => {
+        await handleSave();
+    };
+
+    // if press enter, save the edited name in the database. If press escape, revert to the original name.
+    const handleKeyDown = async (e) => {
+        if (e.key === 'Enter') {
+            await handleSave();
+        } else if (e.key === 'Escape') {
+            setEditedName(name);
+            setIsEditing(false);
+        }
+    };
+
+    // When we enter edit mode, select the text
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.select();
+        }
+    }, [isEditing]);
+    
+    const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType}) => {
       return (
         <>
-          <button className="dropdown__item" onClick={(e) => e.stopPropagation()}>
+          <button className="dropdown__item" onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}>
             <span className="dropdown__icon">
               <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0H14V2.72727H0V0Z" fill="currentColor"/>
@@ -22,7 +118,10 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
     </span>
             Builder
           </button>
-          <button className="dropdown__item" onClick={(e) => e.stopPropagation()}>
+          <button className="dropdown__item" onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}>
             <span className="dropdown__icon">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5.08398 8.58398C5.08398 6.93408 5.08398 6.10913 5.59655 5.59655C6.10913 5.08398 6.93408 5.08398 8.58398 5.08398H9.16732C10.8172 5.08398 11.6422 5.08398 12.1547 5.59655C12.6673 6.10913 12.6673 6.93408 12.6673 8.58398V9.16732C12.6673 10.8172 12.6673 11.6422 12.1547 12.1547C11.6422 12.6673 10.8172 12.6673 9.16732 12.6673H8.58398C6.93408 12.6673 6.10913 12.6673 5.59655 12.1547C5.08398 11.6422 5.08398 10.8172 5.08398 9.16732V8.58398Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
@@ -34,24 +133,9 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
           <button 
             className="dropdown__item" 
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
-              if(modalType === 'EditSite' && isModalOpen && siteData.id === globalSiteData?.id) {
-                setIsModalOpen(false);
-                setModalType(null);
-                setIsDropdownOpen(false);
-              } else {
-                setIsModalOpen(true);
-                setModalType('EditSite');
-                setIsDropdownOpen(false);
-                setSiteData(siteData);
-              }
-              
-              // Check if we're on mobile and handle sidebar/dropdown state
-              if (window.innerWidth <= 767) {
-                setIsSidebarOpen(false);
-                toggleSidebar();
-                toggleDropdown();
-              }
+              handleEdit();
             }}
           >
             <span className="dropdown__icon">
@@ -60,12 +144,13 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 <path d="M8.16602 3.5L10.4993 5.83333" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </span>
-            Settings
+            Rename
           </button>
           <div className="dropdown__divider"></div>
           <button 
             className="dropdown__item dropdown__item--delete" 
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               if(modalType === 'DeleteSite' && isModalOpen) {
                 setIsModalOpen(false);
@@ -97,28 +182,54 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
         </>
       );
     };
-    
+    const getSiteName = () => {
+      return siteData.Name.toLowerCase().replace(/\s+/g, '-');
+    };
     return(
-        <div className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`}>
-            <Link 
-                href={`/dashboard/${siteData.Name}`}
-                className="sidebarSites__link"
-                id={sidebarSitesId}
-                onClick={() => {
-                    setSelectedSite(siteData);
-                    setIsSiteOpen(true);
-                }}
-            >
-                <div className="sidebarSites__header">
-                    <span className="sidebarSites__header-avatar">
-                        <img className="sidebarSites__header-avatar-img" src={avatar}/>
-                    </span>
-                    <span className="sidebarSites__header-name">
-                        {name}
-                    </span> 
-                </div>
-            </Link>
+        <Link 
+            href={`/dashboard/${getSiteName()}`}
+            className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`} 
+            id={sidebarSitesId}
+            onClick={(e) => {
+                // Prevent navigation if in editing mode
+                if (isEditing) {
+                    e.preventDefault();
+                    return;
+                }
+                setSelectedSite(siteData);
+                setIsSiteOpen(true);
+            }}
             
+        >
+            <div className="sidebarSites__header">
+                <span className="sidebarSites__header-avatar">
+                    {/* <span 
+                        className="sidebarSites__header-avatar" 
+                        style={{
+                            backgroundColor: arrayDePrueba[siteData['Avatar Color']]?.backgroundColor || '#000000',
+                            color: arrayDePrueba[siteData['Avatar Color']]?.color || '#FFFFFF'
+                        }}>
+                          {name.charAt(0)}
+                    </span> */}
+                    <img className="sidebarSites__header-avatar-img" src={avatar}/>
+                </span>
+                <span className="sidebarSites__header-name">
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={editedName}
+                            onChange={(e) => setEditedName(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            onBlur={handleBlur}
+                            autoFocus
+                            className="sidebarSites__header-name-input"
+                            ref={inputRef}
+                        />
+                    ) : (
+                        name
+                    )}
+                </span> 
+            </div>
             {!isSidebarOpen && window.innerWidth > 767 && (
                 <Tooltip 
                   message={name} 
@@ -132,9 +243,10 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 className="sidebarSites-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
-                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} />}
+                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} setIsEditing={setIsEditing} setEditedName={setEditedName} name={name} />}
             >
                 <div className="sidebarSites__edit" onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     setIsDropdownOpen(v => !v);
                 }}>

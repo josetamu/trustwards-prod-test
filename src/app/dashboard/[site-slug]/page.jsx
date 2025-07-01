@@ -2,16 +2,22 @@
 
 import './home.css';
 import { useParams, notFound } from 'next/navigation';
+import { useDashboard } from '../layout';
 
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
 
-    // This is temporary, this has to be fetched from the database
-    const availableSites = ['Noir', 'Untitled'];
+    // Fetch sites from the database using the dashboard context
+    const { webs } = useDashboard();
     
-    // Find the selected site based on the slug
-    const selectedSite = availableSites.find(site => site.toLowerCase() === siteSlug?.toLowerCase());
+    // Find the selected site object based on the slug
+    const selectedSite = webs.find(site => site.Name.toLowerCase().replace(/\s+/g, '-') === siteSlug?.toLowerCase());
+
+     // if webs is empty return waiting for the webs to load. Here we could add a loading spinner or a message to the user
+     if (!webs || webs.length === 0) {
+        return 
+    }
     
     if (!selectedSite) {
         notFound();
@@ -30,7 +36,7 @@ function Home() {
             </div>
             <div className='siteView__content'>
                 <div>
-                    <h1>{selectedSite}</h1>
+                    <h1 style={{color: 'var(--body-strong-color)'}}>{selectedSite.Name}</h1>
                 </div>
             </div>
         </div>

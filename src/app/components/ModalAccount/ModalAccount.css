@@ -79,6 +79,10 @@
   font-size: var(--font-size-medium);
   color: var(--body-fresco-color);
   font-weight: var(--font-weight);
+  letter-spacing: var(--letter-spacing-negative);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 250px;
 }
 
 .modalAccount__change{

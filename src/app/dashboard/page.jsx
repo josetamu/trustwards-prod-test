@@ -4,6 +4,7 @@ import './dashboard-root.css'
 
 import { Sites } from '@components/sites/Sites'  
 import './dashboard.css'
+  
 
 import { useDashboard } from './layout'
 
@@ -18,6 +19,7 @@ function Dashboard() {
     setSiteData,
     siteData,
     setIsDropdownOpen,
+    createNewSite,
   } = useDashboard();
 
   return (
@@ -31,6 +33,7 @@ function Dashboard() {
       setSiteData={setSiteData}
       siteData={siteData}
       setIsDropdownOpen={setIsDropdownOpen}
+      createNewSite={createNewSite}
     />
   );
 }

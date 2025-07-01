@@ -78,6 +78,10 @@
 .modalUser__item--upgrade{
     padding-right: 25px;
 }
+.modalUser__tick{
+    color: var(--accent-bg-color);
+}
+
 
 @media (max-width: 767px) {
     .modalUser{

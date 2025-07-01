@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react';
 import { Site } from '../site/Site';
 import { Sort } from '../sort/Sort';
 import { View } from '../view/View';
+import { NewSite } from '../NewSite/NewSite';
 import Image from 'next/image';
 import './Sites.css'
 
-export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData}) => {
+export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, createNewSite}) => {
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
   const [isGridView, setIsGridView] = useState(() => {
@@ -43,6 +44,8 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
     setIsGridView(newView);
     localStorage.setItem('viewMode', JSON.stringify(newView));
   };
+
+  
 
   return (
     <div className="sites__wrapper">
@@ -278,29 +281,11 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
         <div className="sites__header-actions">
         <View isGridView={isGridView} onViewChange={handleViewChange} />
           <Sort onSortChange={handleSortChange} />
-          <button 
-            className="sites__new-button"
-            onClick={() => {
-              setIsModalOpen(!isModalOpen);
-              setModalType("NewSite");
-              /* if(window.innerWidth < 767) {
-                setIsSidebarOpen(false);
-                toggleSidebar();
-                toggleDropdown();
-              } */
-            }} 
-          >
-            New
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-              <path d="M12 7V17M17 12L7 12" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-              <path d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
-              <path d="M2.5 8.5C2.86239 7.67056 3.3189 6.89166 3.85601 6.17677M6.17681 3.85598C6.89168 3.31888 7.67058 2.86239 8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <NewSite createNewSite={createNewSite}/>
         </div>
       </div>
 
-      <div className={`sites__grid ${isGridView ? 'grid' : 'list'}`}> 
+      <div className={`sites__grid ${isGridView ? 'grid' : 'list'} `}> 
         {sortedSites.map(site => (
           user && site.userid === user.id && (
             <Site
@@ -324,14 +309,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
           <div className="sites__nosites-text">
             Add a new website
           </div>
-          <button className="sites__new-button" disabled>
-            New
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-              <path d="M12 7V17M17 12L7 12" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-              <path d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
-              <path d="M2.5 8.5C2.86239 7.67056 3.3189 6.89166 3.85601 6.17677M6.17681 3.85598C6.89168 3.31888 7.67058 2.86239 8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <NewSite createNewSite={createNewSite}/>
         </div>
       </div>
       <div className="sites__nosites-big">
@@ -343,14 +321,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
             Start by creating a <span className="sites__nosites-span">new site.</span>
           </div>
         </div>
-        <button className="sites__new-button" disabled>
-          New
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-            <path d="M12 7V17M17 12L7 12" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-            <path d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
-            <path d="M2.5 8.5C2.86239 7.67056 3.3189 6.89166 3.85601 6.17677M6.17681 3.85598C6.89168 3.31888 7.67058 2.86239 8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="round" />
-          </svg>
-        </button>
+        <NewSite createNewSite={createNewSite}/>
       </div>
     </div>
   );
