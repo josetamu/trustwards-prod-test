@@ -2,7 +2,10 @@ import './ModalSupport.css';
 import { useState, useEffect } from 'react';
 import { Tooltip } from '../tooltip/Tooltip';
 
+import { Resend } from 'resend';
+
 export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
+    const resend = new Resend('re_xxxxxxxxx');
     const [selectedChoice, setSelectedChoice] = useState(null);
     const [name, setName] = useState(user?.Name || 'User Name');
     const [email, setEmail] = useState(user?.Email || 'User Email');
@@ -42,8 +45,8 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
     if (!validateInputs()) {
         return;
@@ -52,6 +55,25 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
     setIsSubmitting(true);
 
     try {
+        const res = await fetch('/api/send', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              // puedes pasar datos al email si lo modificas en route.ts
+              firstName: 'Juan',
+            }),
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          console.log('Correo enviado:', result);
+        } else {
+          console.error('Error al enviar correo:', result.error);
+        }
+
+        /*
         const formData = new FormData();
         formData.append('name', name);
         formData.append('email', email);
@@ -60,15 +82,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
         files.forEach(file => {
             formData.append('files', file);
         });
-
-        const response = await fetch('/api/send-support-email', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to send email');
-        }
+        */
 
         // Limpiar el formulario después del envío exitoso
         setName('');
@@ -77,12 +91,8 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
         setFiles([]);
         setSelectedChoice(null);
         setIsModalOpen(false);
-
-        // Mostrar mensaje de éxito
-        alert('Your message has been sent successfully!');
     } catch (error) {
-        console.error('Error sending email:', error);
-        alert('Failed to send message. Please try again later.');
+        console.error('Error en la solicitud:', error);
     } finally {
         setIsSubmitting(false);
     }
@@ -159,7 +169,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                     </svg>
                 </span>
             </div>
-            <form className="modalSupport__form">
+            <div className="modalSupport__form">
                 <div className="modalSupport__top">
                     <span className="modalSupport__description">
                         Please be as descriptive as possible. Screenshots and recordings will help us identify better your concerns.
@@ -353,7 +363,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen}) => {
                 <div className="modalSupport__bottom">
                     <button className="modalSupport__button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Send'}</button>
                 </div>
-            </form>
+            </div>
         </div>
     );
 }
