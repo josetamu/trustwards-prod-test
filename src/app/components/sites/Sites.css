@@ -101,9 +101,13 @@
     height: 90px;
   }
 }
-@media (max-width: 967px) {
+@media (max-width: 992px) {
   .sites__top-card--changelog .sites__top-card-text {
     max-width: 80%;
+  }
+  .sites__top-card--changelog .sites__changelog-svg {
+    width: 400px;
+    height: 110px;
   }
 }
 @media (max-width: 367px) {
@@ -187,6 +191,14 @@
   color: var(--dashboard-hello-grid-text-strong-color);
   max-width: 80%;
 }
+@media (max-width: 992px) {
+  .sites__top-card--news .sites__news-svg  {
+    bottom: -180px;
+    left: -60px;
+    width: 700px;
+    height: 525px;
+  }
+}
 @media (max-width: 867px) {
   .sites__top-card--news .sites__top-card-text {
     max-width: 90%;
@@ -212,6 +224,12 @@
 @media (max-width: 367px) {
   .sites__top-card--news .sites__top-card-text {
     max-width: 85%;
+  }
+  .sites__top-card--news .sites__news-svg {
+    bottom: -140px;
+    left: 20px;
+    width: 450px;
+    height: 350px;
   }
 }
 
@@ -427,6 +445,24 @@
 
 /* Responsive */
 
+@media (max-width: 1200px) {
+  .sites__top-grid {
+    grid-template-columns: 1fr;
+  }
+  .sites__grid.grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  .sites__top-grid {
+    grid-template-columns: 1fr;
+  }
+  .sites__grid.grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 /* Tablet */
 @media (max-width: 767px) {
   .sites__title {
@@ -434,18 +470,6 @@
   }
   .sites__new-button {
     font-size: 12px;
-  }
-  .sites__top-grid {
-    grid-template-columns: 1fr;
-  }
-  .sites__top-left {
-    flex-direction: column;
-  }
-  .sites__top-right-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .sites__grid.grid {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -457,24 +481,11 @@
   .sites__new-button {
     font-size: 12px;
   }
-  .sites__top-grid {
-    grid-template-columns: 1fr;
-  }
-  .sites__top-left {
-    flex-direction: column;
-  }
   .sites__top-right-grid {
     grid-template-columns: 1fr;
   }
   .sites__grid.grid {
     grid-template-columns: 1fr;
-  }
-  .sites__top-card--changelog .sites__changelog-svg {
-    bottom: -15px;
-  }
-  .sites__top-card--news .sites__news-svg {
-    bottom: -160px;
-    left: 70px;
   }
   .sites__top-card-text {
     max-width: 75%;
