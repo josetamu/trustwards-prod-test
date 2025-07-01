@@ -3,7 +3,7 @@
   height: 100%;
   display: flex;
   flex-direction: row;
-  align-items: start;
+  align-items: flex-start;
   justify-content: center;
   gap: 30px;
   padding: 20px 30px;
@@ -15,8 +15,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .modalAccount__header{
@@ -24,8 +24,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: start;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: 10px;
 }
 
@@ -52,8 +52,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: 10px;
   padding-top: 20px;
 }
@@ -63,8 +63,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: start;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: 15px;
 }
 

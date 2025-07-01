@@ -104,8 +104,7 @@ export const Site = ({
           <span className="site__name">{text}</span>
           <div className="site__footer-right">
             <Dropdown
-              verticalPosition="bottom"
-              horizontalPosition="right"
+              className="site-dropdown"
               open={isDropdownOpen}
               onClose={() => setIsDropdownOpen(false)}
               menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
@@ -140,8 +139,7 @@ export const Site = ({
       </div>
       <div className="site__list-right">
         <Dropdown
-          verticalPosition="bottom"
-          horizontalPosition="right"
+          className="site-dropdown"
           open={isDropdownOpen}
           onClose={() => setIsDropdownOpen(false)}
           menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}

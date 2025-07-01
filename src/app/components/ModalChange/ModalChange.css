@@ -78,7 +78,7 @@
   padding-top: 0px;
 }
 .modalChange__actions--name{
-    justify-content: end;
+    justify-content: flex-end;
 }
 .modalChange__forgot {
   font-size: var(--font-size-medium);

@@ -133,7 +133,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
               </div>
             </div>
             <div className="sites__top-card sites__top-card--news">
-              <Image src="/assets/News-card.png" alt="News background" className="sites__news-bg" width={552} height={319} />
+              <Image src="/assets/News-card.png" alt="News background" className="sites__news-bg" width={552} height={319} priority />
               <svg className='sites__news-svg'
                 width="552" height="319" viewBox="0 0 552 319" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g filter="url(#filter0_d_349_4)">

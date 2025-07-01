@@ -99,43 +99,37 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
     };
     
     return(
-        <Link 
-            href={`/dashboard/${siteData.Name}`}
-            className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`} 
-            id={sidebarSitesId}
-            onClick={() => {
-                setSelectedSite(siteData);
-                setIsSiteOpen(true);
-            }}
+        <div className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`}>
+            <Link 
+                href={`/dashboard/${siteData.Name}`}
+                className="sidebarSites__link"
+                id={sidebarSitesId}
+                onClick={() => {
+                    setSelectedSite(siteData);
+                    setIsSiteOpen(true);
+                }}
+            >
+                <div className="sidebarSites__header">
+                    <span className="sidebarSites__header-avatar">
+                        <img className="sidebarSites__header-avatar-img" src={avatar}/>
+                    </span>
+                    <span className="sidebarSites__header-name">
+                        {name}
+                    </span> 
+                </div>
+            </Link>
             
-        >
-            <div className="sidebarSites__header">
-                <span className="sidebarSites__header-avatar">
-                    {/* <span 
-                        className="sidebarSites__header-avatar" 
-                        style={{
-                            backgroundColor: arrayDePrueba[siteData['Avatar Color']]?.backgroundColor || '#000000',
-                            color: arrayDePrueba[siteData['Avatar Color']]?.color || '#FFFFFF'
-                        }}>
-                          {name.charAt(0)}
-                    </span> */}
-                    <img className="sidebarSites__header-avatar-img" src={avatar}/>
-                </span>
-                <span className="sidebarSites__header-name">
-                    {name}
-                </span> 
-            </div>
             {!isSidebarOpen && window.innerWidth > 767 && (
-                    <Tooltip 
-                      message={name} 
-                      id={siteData.id}
-                      responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
-                      type='default'
-                    />
-                )} 
+                <Tooltip 
+                  message={name} 
+                  id={siteData.id}
+                  responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                  type='default'
+                />
+            )} 
+            
             <Dropdown
-                verticalPosition="bottom "
-                horizontalPosition="right"
+                className="sidebarSites-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
                 menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} />}
@@ -149,7 +143,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                     </svg>
                 </div>
             </Dropdown>
-        </Link>
+        </div>
     );
 }
 

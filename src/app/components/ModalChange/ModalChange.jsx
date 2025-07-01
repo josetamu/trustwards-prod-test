@@ -245,10 +245,10 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
                         successMessage = 'Name updated successfully!';
                         break;
                     case 'email':
-                        successMessage = 'We’ve sent instructions to your new email to reset your password!';
+                        successMessage = 'We\'ve sent instructions to your new email to reset your password!';
                         break;
                     case 'password':
-                        successMessage = 'We’ve sent instructions to your new email to reset your password!';
+                        successMessage = 'We\'ve sent instructions to your new email to reset your password!';
                         break;
                     default:
                         successMessage = 'Updated successfully!';
