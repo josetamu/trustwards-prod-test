@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
-  max-height: calc(100vh - 40px);
+  min-height: calc(100vh - 40px);
 }
 
 .sites__welcome {
@@ -29,6 +29,7 @@
   flex-direction: column;
   min-height: 160px;
   box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+  overflow: hidden;
 }
 
 .sites__top-grid {
@@ -55,12 +56,23 @@
 }
 .sites__top-card--legacy .sites__legacy-svg {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 10px;
+  right: -10px;
   width: 450px;
   height: 150px;
   pointer-events: none;
   overflow: visible;
+}
+@media (max-width: 967px) {
+  .sites__top-card--legacy .sites__top-card-text {
+    max-width: 70%;
+  }
+  .sites__top-card--legacy .sites__legacy-svg {
+    top: 10px;
+    right: -20px;
+    width: 400px;
+    height: 130px;
+  }
 }
 
 /* Changelog */
@@ -83,6 +95,26 @@
 .sites__top-card--changelog .sites__top-card-text {
   color: var(--dashboard-hello-grid-text-strong-color);
 }
+@media (max-width: 1200px) {
+  .sites__top-card--changelog .sites__changelog-svg {
+    width: 300px;
+    height: 90px;
+  }
+}
+@media (max-width: 967px) {
+  .sites__top-card--changelog .sites__top-card-text {
+    max-width: 80%;
+  }
+}
+@media (max-width: 367px) {
+  .sites__top-card--changelog .sites__changelog-svg {
+    width: 250px;
+    height: 90px;
+  }
+  .sites__top-card--changelog .sites__top-card-text {
+    max-width: 90%;
+  }
+}
 
 /* Top Right Grid*/
 
@@ -103,7 +135,7 @@
 .sites__top-card--trustwards .sites__trustwards-svg {
   position: absolute;
   bottom: 0;
-  right: -20px;
+  right: -40px;
   width: 250px;
   height: 90px;
   overflow: visible;
@@ -111,6 +143,18 @@
 .sites__top-card--trustwards .sites__top-card-text {
   color: var(--dashboard-hello-grid-text-strong-color);
   max-width: 100%;
+}
+@media (max-width: 867px) {
+  .sites__top-card--trustwards .sites__trustwards-svg {
+    width: 225px;
+    height: 70px;
+  }
+}
+@media (max-width: 767px) {
+  .sites__top-card--trustwards .sites__trustwards-svg {
+    width: 250px;
+    height: 80px;
+  }
 }
 
 /* News */
@@ -133,8 +177,8 @@
 .sites__top-card--news .sites__news-svg {
   position: absolute;
   bottom: -120px;
-  left: -120px;
-  width: 600px;
+  left: -80px;
+  width: 620px;
   height: 400px;
   overflow: visible;
   pointer-events: none;
@@ -142,6 +186,33 @@
 .sites__top-card--news .sites__top-card-text {
   color: var(--dashboard-hello-grid-text-strong-color);
   max-width: 80%;
+}
+@media (max-width: 867px) {
+  .sites__top-card--news .sites__top-card-text {
+    max-width: 90%;
+  }
+}
+@media (max-width: 767px) {
+  .sites__top-card--news .sites__news-svg {
+    bottom: -180px;
+    left: -100px;
+    width: 800px;
+    height: 500px;
+  }
+}
+@media (max-width: 467px) {
+  .sites__top-card--news .sites__top-card-text {
+    max-width: 65%;
+  }
+  .sites__top-card--news .sites__news-svg {
+    width: 600px;
+    height: 400px;
+  }
+}
+@media (max-width: 367px) {
+  .sites__top-card--news .sites__top-card-text {
+    max-width: 85%;
+  }
 }
 
 /* Builder */
@@ -162,6 +233,18 @@
 }
 .sites__top-card--builder .sites__top-card-text {
   color: var(--dashboard-hello-grid-text-strong-color);
+}
+@media (max-width: 967px) {
+  .sites__top-card--builder .sites__builder-svg {
+    width: 250px;
+    height: 90px;
+  }
+}
+@media (max-width: 467px) {
+  .sites__top-card--builder .sites__builder-svg {
+    width: 300px;
+    height: 115px;
+  }
 }
 
 /* Card Content */
@@ -194,6 +277,12 @@
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 17px;
 }
+.sites__grid:empty {
+  display: none;
+}
+.sites__grid.list:not(:has(.site)) {
+  display: none;
+}
 
 .sites__grid.list {
   display: flex;
@@ -209,6 +298,7 @@
   flex-wrap: wrap;
   width: 100%;
   margin-top: 40px;
+  gap: 10px;
 }
 
 .sites__title {
@@ -260,6 +350,7 @@
   justify-content: center;
   gap: 18px;
   background-color: var(--wrappers-fresco-color);
+  padding: 60px;
 }
 
 .sites__nosites-container {
@@ -314,19 +405,24 @@
   display: none;
 }
 
-/* Oculta la caja de 'Add a new website' en modo lista */
+/* Hide the 'Add a new website' box in list mode */
 .sites__grid.list .sites__nosites-small {
   display: none !important;
 }
 
-/* Solo muestra la caja de 'Add a new website' en grid view si hay al menos un .site */
+/* Show the 'Add a new website' box in grid view if there is at least one .site */
 .sites__grid.grid:has(.site) .sites__nosites-small {
   display: flex;
 }
 
-/* Si no hay ningún .site, oculta la caja */
+/* Hide the 'Add a new website' box if there are no .sites */
 .sites__grid:not(:has(.site)) .sites__nosites-small {
   display: none;
+}
+
+/* Hide the grid/list if there are no sites */
+.sites__grid:not(:has(.site)) {
+  display: none !important;
 }
 
 /* Responsive */
@@ -351,17 +447,6 @@
   .sites__grid.grid {
     grid-template-columns: 1fr 1fr;
   }
-  .sites__grid.list {
-    padding-bottom: 60px;
-  }
-  .sites__top-card--news .sites__news-svg {
-    bottom: -180px;
-    left: -100px;
-    width: 800px;
-    height: 500px;
-  }
- 
-
 }
 
 /* Mobile */
@@ -383,7 +468,6 @@
   }
   .sites__grid.grid {
     grid-template-columns: 1fr;
-    padding-bottom: 60px;
   }
   .sites__top-card--changelog .sites__changelog-svg {
     bottom: -15px;
@@ -395,8 +479,4 @@
   .sites__top-card-text {
     max-width: 75%;
   }
-  .sites__top-card--news .sites__top-card-text {
-    max-width: 60%;
-  }
-
 }

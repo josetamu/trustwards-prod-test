@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useId } from 'react';
+import React, { useRef, useEffect, useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 import './Dropdown.css';
@@ -7,35 +7,14 @@ export function Dropdown({
   open,
   menu,
   onClose,
-  onResize,
   children,
-  verticalPosition = "bottom", // "top" / "bottom"
-  horizontalPosition = "right", // "left" / "right"
-  horizontalBreakpoint = 1450, // px
-  horizontalBreakpointPosition = "left", // "left" / "right"
+  className = ""
 }) {
   const containerRef = useRef(null);
   const menuRef = useRef(null);
   const dropdownId = useId();
-  const [currentHorizontal, setCurrentHorizontal] = useState(horizontalPosition);
 
-  // horizontalPosition -> horizontalBreakpointPosition
-  useEffect(() => {
-    if (!open) return;
-    const handleResize = () => {
-      if (window.innerWidth < horizontalBreakpoint) {
-        setCurrentHorizontal(horizontalBreakpointPosition);
-      } else {
-        setCurrentHorizontal(horizontalPosition);
-      }
-      if (onResize) onResize();
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [open, horizontalBreakpoint, horizontalBreakpointPosition, horizontalPosition, onResize]);
-
-  // Close dropdown when clicking outside (only if not openOnHover)
+  // Close dropdown when clicking outside
   useEffect(() => {
     if (!open) return;
     const handleClickOutside = (event) => {
@@ -54,7 +33,7 @@ export function Dropdown({
 
   return (
     <div
-      className="dropdown"
+      className={`dropdown ${className}`}
       ref={containerRef}
       id={dropdownId}
     >
@@ -63,7 +42,7 @@ export function Dropdown({
         {open && (
           <motion.div
             {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
-            className={`dropdown__menu dropdown__menu--${verticalPosition}-${currentHorizontal}`}
+            className={`dropdown__menu`}
             ref={menuRef}
           >
             {menu}

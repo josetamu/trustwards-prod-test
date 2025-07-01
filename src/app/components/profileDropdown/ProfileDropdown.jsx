@@ -94,42 +94,37 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
           onMouseEnter={() => isSidebarOpen && setIsDropdownOpen(true)} 
           onMouseLeave={() => isSidebarOpen && setIsDropdownOpen(false)}>
              <Dropdown
-                position="top-left"
+                className="profileDropdown-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
                 menu={<ProfileDropdownMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} />}
-            ></Dropdown>
+            >
+                <div className={`profileDropdown__profile ${isSidebarOpen ? 'profileDropdown__profile--open' : ''}`} onClick={() => {
+                  toggleDropdown(); 
+                }}>
+                <div className="profileDropdown__header">
+                    {avatar && (
+                        <img className="profileDropdown__header__avatar" src={avatar} alt="avatar" />
+                    )}
+                        
+                    <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.Name || "User"}</span> 
+                </div>
+                <div className={`${isSidebarOpen ? 'profileDropdown__icons--open' : 'profileDropdown__icons'}`}>
+                    <span className="profileDropdown__icons--down">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3.00002 4.5C3.00002 4.5 5.20948 7.49999 6.00003 7.5C6.79058 7.5 9 4.5 9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </span>
+                    <span className="profileDropdown__icons--up">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3.00002 7.5C3.00002 7.5 5.20948 4.50001 6.00003 4.5C6.79058 4.5 9 7.5 9 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
 
-            
-            
-           <div className={`profileDropdown__profile ${isSidebarOpen ? 'profileDropdown__profile--open' : ''}`} onClick={() => {
-              toggleDropdown(); 
-            }}>
-            <div className="profileDropdown__header">
-                {avatar && (
-                    <img className="profileDropdown__header__avatar" src={avatar} alt="avatar" />
-                )}
-                    
-                <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.Name || "User"}</span> 
-            </div>
-            <div className={`${isSidebarOpen ? 'profileDropdown__icons--open' : 'profileDropdown__icons'}`}>
-                <span className="profileDropdown__icons--down">
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.00002 4.5C3.00002 4.5 5.20948 7.49999 6.00003 7.5C6.79058 7.5 9 4.5 9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </span>
-                <span className="profileDropdown__icons--up">
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.00002 7.5C3.00002 7.5 5.20948 4.50001 6.00003 4.5C6.79058 4.5 9 7.5 9 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-
-                </span>
-            </div>                   
-            </div> 
-            
-            
+                    </span>
+                </div>                   
+                </div>
+            </Dropdown>
         </div>
-        
     )
 }
 

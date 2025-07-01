@@ -231,16 +231,16 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 </span> 
             </div>
             {!isSidebarOpen && window.innerWidth > 767 && (
-                    <Tooltip 
-                      message={name} 
-                      id={siteData.id}
-                      responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
-                      type='default'
-                    />
-                )} 
+                <Tooltip 
+                  message={name} 
+                  id={siteData.id}
+                  responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
+                  type='default'
+                />
+            )} 
+            
             <Dropdown
-                verticalPosition="bottom "
-                horizontalPosition="right"
+                className="sidebarSites-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
                 menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} setIsEditing={setIsEditing} setEditedName={setEditedName} name={name} />}
