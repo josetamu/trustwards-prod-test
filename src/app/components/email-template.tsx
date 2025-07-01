@@ -3,17 +3,13 @@ import * as React from 'react';
 interface EmailTemplateProps {
   firstName: string;
   message: string;
-  files: File[];
 }
 
-export function EmailTemplate({ firstName, message, files }: EmailTemplateProps) {
+export function EmailTemplate({ firstName, message}: EmailTemplateProps) {
   return (
     <div>
       <h1>Hi, I'm {firstName}!</h1>
       <p>{message}.</p>
-      {files.map((file) => (
-        <p>{file.name}</p>
-      ))}
     </div>
   );
 }

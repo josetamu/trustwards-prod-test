@@ -45,6 +45,8 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
     localStorage.setItem('viewMode', JSON.stringify(newView));
   };
 
+  
+
   return (
     <div className="sites__wrapper">
       <h2 className="sites__welcome">Hello, {user?.Name || "User"}</h2>
@@ -283,7 +285,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
         </div>
       </div>
 
-      <div className={`sites__grid ${isGridView ? 'grid' : 'list'}`}> 
+      <div className={`sites__grid ${isGridView ? 'grid' : 'list'} `}> 
         {sortedSites.map(site => (
           user && site.userid === user.id && (
             <Site

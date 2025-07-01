@@ -44,7 +44,7 @@ In react we pass the email template with the data we need in this case the first
       ],
       subject: type,
       replyTo: email,
-      react: EmailTemplate({ firstName, message, files }),
+      react: EmailTemplate({ firstName, message}),
       attachments: files && files.length > 0 ? await Promise.all(
         files.map(async file => ({
           content: Buffer.from(await file.arrayBuffer()),

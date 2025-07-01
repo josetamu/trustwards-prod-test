@@ -228,17 +228,24 @@ html[data-color="red"] {
   --accent-bg-color: #F33D3D;
 }
 
-/* Ocultar botones hasta que se cargue el color */
-.button-loading {
+
+
+
+
+
+/* Hide buttons until color is loaded, if not blue is showed during half second*/
+[style*="background-color: var(--accent-bg-color)"],
+.sites__new-button,
+.newSite__button,
+.modalAppearance__ancentColor__button {
   opacity: 0;
-  transition: opacity 0.1s ease;
+  transition: opacity 0.2s ease;
 }
 
-.button-loaded {
-  opacity: 1;
-}
-
-/* Aplicar cuando el color esté cargado */
-html[data-color] .button-loading {
+/* show buttons when color is loaded */
+html[data-color] [style*="background-color: var(--accent-bg-color)"],
+html[data-color] .sites__new-button,
+html[data-color] .newSite__button,
+html[data-color] .modalAppearance__ancentColor__button {
   opacity: 1;
 }

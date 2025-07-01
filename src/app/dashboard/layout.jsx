@@ -14,45 +14,57 @@ import { ModalSupport } from '@components/ModalSupport/ModalSupport'
 import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
 import Notification from '@components/Notification/Notification'
-import { NewSite } from '@components/NewSite/NewSite'
-import { ModalAppearance } from '@components/ModalAppearance/ModalAppearance'
+
+
 import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
 export const useDashboard = () => useContext(DashboardContext);
 
 function DashboardLayout({ children }) {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [modalProps, setModalProps] = useState(null);
+
+  // Sidebar state && Site state
   const [activePage, setActivePage] = useState('Websites');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userSettings, setUserSettings] = useState(null);
-  const [user, setUser] = useState(null);
-  const [webs, setwebs] = useState([]);
-  const [modalType, setModalType] = useState(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [siteData, setSiteData] = useState(null);
-  const [modalProps, setModalProps] = useState(null);
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
   const [siteTab, setSiteTab] = useState('Home');
-  const { theme, setTheme } = useTheme();
+
+  // DB state
+  const [userSettings, setUserSettings] = useState(null);
+  const [user, setUser] = useState(null);
+  const [webs, setWebs] = useState([]);
+  const [siteData, setSiteData] = useState(null);
   const [appearanceSettings, setAppearanceSettings] = useState(null);
+
   // ModalChange state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [changeType, setChangeType] = useState('');
+
+  // Notification state
   const [notification, setNotification] = useState({
     open: false,
     message: '',
   });
 
+  // Dropdown state
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
  
 
-  // Apply appearance settings when they are loaded
+
+
+
+  // We set the appearance settings when they are loaded. appearanceSettings is a object with the settings of the user(database)
+  // Theme is controlled with next-themes and Accent Color is an attribute of the html tag
   useEffect(() => {
     if (appearanceSettings) {
       setTheme(appearanceSettings['Theme']);
       
-      // Apply accent color
       if (appearanceSettings['Accent Color']) {
         document.documentElement.setAttribute('data-color', appearanceSettings['Accent Color']);
       } else {
@@ -61,16 +73,19 @@ function DashboardLayout({ children }) {
     }
   }, [appearanceSettings]);
 
-   // function to open sidebar in desktop toggleing the .open class
+
+
+   // function to open sidebar in desktop toggleing the .open class. Also we save the state in the database only on desktop
    const toggleSidebar = async () => {
     const newSidebarState = !isSidebarOpen;
     setIsSidebarOpen(newSidebarState);
     
-    // Save sidebar state to database only on desktop (>767px)
+    //save in the database only on desktop
     if (window.innerWidth > 767) {
       await updateAppearanceSettings({ Sidebar: newSidebarState });
     }
-    
+
+    // we add the .open class to the content container and the user settings and the modal
     const contentContainer = document.querySelector('.content__container');
     const userSettings = document.querySelector('.profile');
     const modal = document.querySelector('.modal__backdrop'); 
@@ -94,6 +109,20 @@ function DashboardLayout({ children }) {
 
     }
 };
+
+
+  // Apply sidebar state saved in the database when appearance settings are loaded. if the user is in mobile, this is not applied
+  useEffect(() => {
+    if (appearanceSettings && appearanceSettings.Sidebar !== undefined) {
+      // In mobile (≤767px), always start with the sidebar closed
+      // In desktop (>767px), use the saved state in the database
+      if (window.innerWidth <= 767) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(appearanceSettings.Sidebar);
+      }
+    }
+  }, [appearanceSettings]);
 
 const arrayDePrueba = {
   negro: {
@@ -124,6 +153,9 @@ const arrayDePrueba = {
     });
   };
 
+
+
+  // We get the user data from the database
   const getUser = async (userId) => {
     console.log(userId)
     if (!userId) {
@@ -144,7 +176,7 @@ const arrayDePrueba = {
   };
 
 
-
+  // We get the appearance settings from the database
   const getAppearanceSettings = async (userId) => {
     const { data, error } = await supabase
       .from('Appearance')
@@ -152,10 +184,9 @@ const arrayDePrueba = {
       .eq('userid', userId)
       .single();
     setAppearanceSettings(data);
-    console.log(data)
   };
 
-  // Function to update appearance settings in database
+  // Function to update the appearance settings in the database
   const updateAppearanceSettings = async (settings) => {
     if (!user?.id) return;
     
@@ -169,43 +200,31 @@ const arrayDePrueba = {
     }
   };
 
-  // Apply sidebar state when appearance settings are loaded
-  useEffect(() => {
-    if (appearanceSettings && appearanceSettings.Sidebar !== undefined) {
-      // En dispositivos móviles (≤767px), siempre iniciar con la sidebar cerrada
-      // En desktop (>767px), usar el estado guardado en la base de datos
-      if (window.innerWidth <= 767) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(appearanceSettings.Sidebar);
+    // Function to fetch sites from Supabase. Also used to realtime update the sites when a new site is created
+    const fetchSites = async (userId) => {
+      if (!userId) {
+        setWebs([]);
+        return;
       }
-    }
-  }, [appearanceSettings]);
+      const { data, error } = await supabase
+        .from('Site')
+        .select('*')
+        .eq('userid', userId);
+  
+      if (error) {
+        console.error('Error fetching sites:', error);
+      } else {
+        setWebs(data);
+      }
+    };
 
-  // Function to fetch sites from Supabase
-  const fetchSites = async (userId) => {
-    if (!userId) {
-      setwebs([]);
-      return;
-    }
-    const { data, error } = await supabase
-      .from('Site')
-      .select('*')
-      .eq('userid', userId);
 
-    if (error) {
-      console.error('Error fetching sites:', error);
-    } else {
-      setwebs(data);
-    }
-  };
-
-  // Remove a site from the webs state
+  // Remove a site from the webs state. 
   const handleDeleteSite = (id) => {
-    setwebs(prev => prev.filter(site => site.id !== id));
+    setWebs(prev => prev.filter(site => site.id !== id));
   };
 
-  // Expose the function globally for Sites.jsx using useEffect
+  // Expose the function globally for Sites.jsx using useEffect, and real time removed
   useEffect(() => {
     window.onDeleteSite = handleDeleteSite;
     
@@ -214,6 +233,8 @@ const arrayDePrueba = {
     };
   }, []);
 
+
+  
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -223,15 +244,11 @@ const arrayDePrueba = {
           getAppearanceSettings(session.user.id); // Fetch appearance settings when user is authenticated
         } else {
           getUser(null);
-          setwebs([]); // Clear sites when user logs out
+          setWebs([]); // Clear sites when user logs out
           setAppearanceSettings(null); // Clear appearance settings when user logs out
         }
       }
     );
-
-    // Call _loginDevUser only once on mount to force login in development
-    _loginDevUser();
-
     return () => {
       authListener?.subscription.unsubscribe();
     };
@@ -349,7 +366,7 @@ const handleBackdropClick = useCallback((e) => {
         }
 
         // Update the webs state immediately with the new site
-        setwebs(prevWebs => [...prevWebs, data[0]]);
+        setWebs(prevWebs => [...prevWebs, data[0]]);
         setSelectedSite(data[0]);
         setIsSiteOpen(true);
         
@@ -359,6 +376,14 @@ const handleBackdropClick = useCallback((e) => {
       } catch (error) {
         showNotification('Error creating site');
       }
+    }
+
+    const blockSidebar = () => {
+
+      if(window.innerWidth <= 767 && isSidebarOpen){
+        return true;
+      }
+      return false;
     }
 
     const renderModal = () => {
@@ -491,7 +516,7 @@ const handleBackdropClick = useCallback((e) => {
                     setUserSettings={setUserSettings}
                     createNewSite={createNewSite}
                 />
-                <div className={`content__container ${isSidebarOpen ? 'open' : ''}`}>
+                <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
                     {children}
 
                     <ModalContainer 
