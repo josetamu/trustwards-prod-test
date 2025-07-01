@@ -163,8 +163,6 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 
               // Check if we're on mobile and handle sidebar/dropdown state
               if (window.innerWidth <= 767) {
-                setIsSidebarOpen(false);
-                toggleSidebar();
                 toggleDropdown();
               }
             }}

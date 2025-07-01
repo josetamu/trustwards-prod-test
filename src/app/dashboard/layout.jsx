@@ -23,14 +23,11 @@ export const useDashboard = () => useContext(DashboardContext);
 function DashboardLayout({ children }) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const [modalProps, setModalProps] = useState(null);
 
   // Sidebar state && Site state
-  const [activePage, setActivePage] = useState('Websites');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
-  const [siteTab, setSiteTab] = useState('Home');
 
   // DB state
   const [userSettings, setUserSettings] = useState(null);
@@ -54,11 +51,6 @@ function DashboardLayout({ children }) {
   // Dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
- 
-
-
-
-
   // We set the appearance settings when they are loaded. appearanceSettings is a object with the settings of the user(database)
   // Theme is controlled with next-themes and Accent Color is an attribute of the html tag
   useEffect(() => {
@@ -72,7 +64,6 @@ function DashboardLayout({ children }) {
       }
     }
   }, [appearanceSettings]);
-
 
 
    // function to open sidebar in desktop toggleing the .open class. Also we save the state in the database only on desktop
@@ -110,7 +101,6 @@ function DashboardLayout({ children }) {
     }
 };
 
-
   // Apply sidebar state saved in the database when appearance settings are loaded. if the user is in mobile, this is not applied
   useEffect(() => {
     if (appearanceSettings && appearanceSettings.Sidebar !== undefined) {
@@ -143,7 +133,6 @@ const arrayDePrueba = {
   },
 };
   
-
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
@@ -152,7 +141,6 @@ const arrayDePrueba = {
       password: 'TW.141109'
     });
   };
-
 
 
   // We get the user data from the database
@@ -233,7 +221,7 @@ const arrayDePrueba = {
   }, []);
 
 
-  
+  //We get the user data from the database when the user is authenticated
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -282,6 +270,7 @@ const handleBackdropClick = useCallback((e) => {
   }
 }, [isModalOpen, isChangeModalOpen]);
 
+
     // Add event listener for keyboard events
     useEffect(() => {
       document.addEventListener('keydown', handleKeyDown);
@@ -292,37 +281,36 @@ const handleBackdropClick = useCallback((e) => {
       };
     }, [handleKeyDown]);
 
-    const openModal = (type, props = null) => {
-      setModalType(type);
-      setModalProps(props);
-      setIsModalOpen(true);
-    };
 
+//Function to close the modal
     const closeModal = () => {
-
         setIsModalOpen(false);
         setModalType(null);
-        setModalProps(null);
+        
       
     };
 
-    // ModalChange functions
+    // Function to open the ModalChange modal
     const openChangeModal = (type) => {
       setChangeType(type);
       setIsChangeModalOpen(true);
     };
 
+    //Function to close the ModalChange modal
     const closeChangeModal = () => {
         setIsChangeModalOpen(false);
         setChangeType('');
       };
 
+    //Function to show the notification
     const showNotification = (message) => {
       setNotification({
         open: true,
         message: message,
       });
     };
+
+    //Function to hide the notification
     const hideNotification = () => {
       setNotification({
         open: false,
@@ -330,6 +318,7 @@ const handleBackdropClick = useCallback((e) => {
       });
     };
 
+    //Function to create a new site
     const createNewSite = async () => {
       try {
         const colorKeys = Object.keys(arrayDePrueba);
@@ -381,14 +370,18 @@ const handleBackdropClick = useCallback((e) => {
       }
     }
 
+    //Function to check if the sidebar is open and the window is in mobile. Then in the return() we add the class to the content container
     const blockSidebar = () => {
-
       if(window.innerWidth <= 767 && isSidebarOpen){
         return true;
+      } else {
+        return false;
       }
-      return false;
-    }
+    };
 
+
+//This function is the master of the modals. It is the function that renders the modal depending on the modalType. Each modal is a component that is rendered in the ModalContainer as a child.
+//Also ModalUser is ModalContainer child, but it is father of account, appearance and upgrade. That's why we have to check the modalType and render ModalUser in those cases.
     const renderModal = () => {
       if (!isModalOpen) return null;
   
@@ -494,8 +487,6 @@ const handleBackdropClick = useCallback((e) => {
         <DashboardContext.Provider value={contextProps}>
             <div className="app-container">
                 <Sidebar  
-                    otherPages={otherpages}
-                    onPageChange={setActivePage} 
                     isSidebarOpen={isSidebarOpen} 
                     setIsSidebarOpen={setIsSidebarOpen} 
                     toggleSidebar={toggleSidebar}
@@ -513,8 +504,6 @@ const handleBackdropClick = useCallback((e) => {
                     setSelectedSite={setSelectedSite}
                     isSiteOpen={isSiteOpen}
                     setIsSiteOpen={setIsSiteOpen}
-                    siteTab={siteTab}
-                    setSiteTab={setSiteTab}
                     userSettings={userSettings}
                     setUserSettings={setUserSettings}
                     createNewSite={createNewSite}

@@ -5,6 +5,7 @@ interface EmailTemplateProps {
   message: string;
 }
 
+//This is the email template that we will receive from the user.
 export function EmailTemplate({ firstName, message}: EmailTemplateProps) {
   return (
     <div>

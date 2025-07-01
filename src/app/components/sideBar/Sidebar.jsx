@@ -1,12 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
+import { useParams } from 'next/navigation';     
+
+import "./sideBar.css";
+
 import { SidebarLink } from '../sidebarLink/SidebarLink';
 import { ProfileDropdown } from '../profileDropdown/ProfileDropdown';
 import { SidebarSites } from '../sidebarSite/SidebarSites';
-import "./Sidebar.css";
 import { NewSite } from '../NewSite/NewSite';
-
 import Link from 'next/link';
-import { useParams } from 'next/navigation';                                                   
+                                              
 
 // names and icons maped in the sidebar. By changing here icons and names you change sidebar items
 export const homePages = [
@@ -121,7 +123,6 @@ export const otherpages = [
 
 // Sidebar component
 export function Sidebar({ 
-    onPageChange, 
     isSidebarOpen, 
     setIsSidebarOpen, 
     toggleSidebar, 
@@ -140,17 +141,17 @@ export function Sidebar({
     setSelectedSite,
     setIsSiteOpen,
     isSiteOpen,
-    siteTab,
-    setSiteTab,
     createNewSite,
     }) {
     const { 'site-slug': siteSlug } = useParams();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    //const to check if you are clicking outside the sidebar and the action button
     const sidebarContainerRef = useRef(null);
     const sidebarActionRef = useRef(null);
 
-    // Use useEffect to handle state updates based on siteSlug
+    // if siteSlug the sidebar content change to the site menu
     useEffect(() => {
         if(siteSlug) {
             setIsSiteOpen(true);
@@ -159,7 +160,7 @@ export function Sidebar({
         }
     }, [siteSlug, setIsSiteOpen]);
 
-    // Add click outside handler for mobile
+    // function to close the sidebar when clicking outside in mobile 
     useEffect(() => {
         const handleClickOutside = (event) => {
             // Only handle clicks outside on mobile devices
@@ -237,21 +238,15 @@ export function Sidebar({
     }).sort((a, b) => new Date(a.Date) - new Date(b.Date)); 
     
 
-
-    const handleDropdownClick = () => {
-        if(window.innerWidth < 767){
-            setIsDropdownOpen(false);
-        }
-    };
-
+    //function to open the sidebar
     const handleToggleSidebar = () => {
         toggleSidebar();
-        handleDropdownClick();
         setIsSearchOpen(false);
     };
 
     return (
         <div className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
+            {/* Logo and action button */}
             <div className={`sidebar__logos ${isSidebarOpen ? 'sidebar__logos--open' : ''}`}>
                 <div className={`sidebar__logo ${isSidebarOpen ? 'sidebar__logo--open' : ''}`}>
                     <div className="sidebar__logo-img"></div>
@@ -277,10 +272,12 @@ export function Sidebar({
 
                 </a>
             </div>
+            {/* Sidebar container divided in two parts: upper and lower */}
             <div 
                 ref={sidebarContainerRef}
                 className={`sidebar__container ${isSidebarOpen ? 'sidebar__container--open' : ''}`}
             >
+                {/* Upper part of the sidebar */}
                 <div className="sidebar__upper">
                     <div className="sidebar__home">
                         <Link href={`/dashboard`} className={`sidebar__header ${!isSiteOpen ? 'sidebar__header--active' : ''}`}>
@@ -304,6 +301,7 @@ export function Sidebar({
                     </div>
                     <div className={`sidebar__sites ${isSidebarOpen ? 'sidebar__sites--open' : ''}`}>
                         <div className={`sidebar__sites__header ${isSidebarOpen ? 'sidebar__sites__header--open' : ''}`}>
+                            {/* render different headers depending you are inside site or not */}
                             {isSiteOpen ? (
                                 <>
                                     <span className='sidebar__sites__title sidebar__sites__title--site'>{selectedSite?.Name || 'SITE'}</span>
@@ -367,7 +365,7 @@ export function Sidebar({
                                 // Vista normal - mostrar lista de sitios
                                 <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
                                     {filteredWebs.length === 0 ? (
-                                        <span className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
+                                        <div className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
                                             {searchQuery ? 'No sites found' : (
                                                 <div className="nosites__container">
                                                     <div className="nosites__text">
@@ -378,7 +376,7 @@ export function Sidebar({
                                                     <NewSite createNewSite={createNewSite} />
                                                 </div>
                                             )}
-                                        </span>
+                                        </div>
                                     ) : (
                                         (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
                                             web.userid === user.id && (
@@ -411,6 +409,7 @@ export function Sidebar({
                         </div>
                     </div>
                 </div>
+                {/* Lower part of the sidebar */}
                 <div className="sidebar__lower">
                    <div className="sidebar__others">
                         {otherpages.map((otherPage) => (
