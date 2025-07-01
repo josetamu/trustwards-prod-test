@@ -255,7 +255,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                     </svg>
                 </div>
             </Dropdown>
-        </div>
+        </Link>
     );
 }
 
