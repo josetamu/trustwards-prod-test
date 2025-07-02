@@ -3,6 +3,7 @@ import './ModalDelete.css';
 import React from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 
+// ModalDelete: Confirmation for deleting a site
 export const ModalDelete = ({ onClose, siteData, setIsModalOpen, setSiteData }) => {
 
   const handleDelete = async () => {
@@ -27,7 +28,6 @@ export const ModalDelete = ({ onClose, siteData, setIsModalOpen, setSiteData }) 
       }
     } catch (error) {
       console.error('Error deleting site:', error);
-      // Here you could show an error message to the user
     }
   };
 

@@ -4,7 +4,7 @@ import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 import './ModalContainer.css';
 
 
-export function ModalContainer({ isOpen, onClose, children, onBackdropClick, isSidebarOpen }) {
+export function ModalContainer({ isOpen, onClose, children, onBackdropClick }) {
   
   
 
@@ -22,7 +22,7 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, isS
     <AnimatePresence>
       {isOpen && (
         <motion.div 
-          className={`modal__backdrop`} 
+          className="modal__backdrop" 
           onClick={handleBackdropClick}
         >
           <motion.div

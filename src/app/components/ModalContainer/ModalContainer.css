@@ -1,3 +1,4 @@
+/* Modal backdrop */
 .modal__backdrop {
     position: fixed;
     left: 0;
@@ -28,11 +29,11 @@
     align-items: center;
     position: relative;
     max-height: 493px;
-  }
+}
 
+/* Remove gap for edit actions */
 .modal:has(.modal__actions-edit) {
     gap: 0px;
-    
 }
 
 @media (max-width: 767px) {

@@ -1,3 +1,4 @@
+/* View toggle container */
 .view__toggle {
   display: flex;
   align-items: center;
@@ -7,6 +8,8 @@
   position: relative;
   width: fit-content;
 }
+
+/* Animated background slider */
 .view__toggle::before {
   content: '';
   position: absolute;
@@ -21,13 +24,17 @@
   pointer-events: none;
 }
 
+/* Slider position for list view */
 .view__toggle:has(.view__option:last-child.active)::before {
   transform: translateX(100%);
 }
+
+/* Slider position for grid view */
 .view__toggle:has(.view__option:first-child.active)::before {
   transform: translateX(0);
 }
 
+/* View option buttons */
 .view__option {
   flex: 1;
   display: flex;
@@ -36,7 +43,6 @@
   padding: 4px;
   background: none;
   color: var(--body-fresco-color);
-  
   font-size: 14px;
   font-weight: 500;
   border: none;
@@ -46,13 +52,14 @@
   transition: color 0.2s;
   position: relative;
 }
+
 .view__option svg {
   width: 14px;
   height: 14px;
   color: var(--icons-strong-color);
 }
 
-/* Mobile */
+/* Mobile responsive */
 @media (max-width: 480px) {
   .view__button {
     font-size: 12px;

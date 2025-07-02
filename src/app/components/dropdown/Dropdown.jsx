@@ -1,15 +1,10 @@
-import React, { useRef, useEffect, useId, useState } from 'react';
+import React, { useRef, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 import './Dropdown.css';
 
-export function Dropdown({ 
-  open,
-  menu,
-  onClose,
-  children,
-  className = ""
-}) {
+// Dropdown component for menus and actions
+export function Dropdown({ open, menu, onClose, children, className = "" }) {
   const containerRef = useRef(null);
   const menuRef = useRef(null);
   const dropdownId = useId();
@@ -42,7 +37,7 @@ export function Dropdown({
         {open && (
           <motion.div
             {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
-            className={`dropdown__menu`}
+            className="dropdown__menu"
             ref={menuRef}
           >
             {menu}
