@@ -2,13 +2,17 @@ import { useState, useRef, useEffect } from 'react';
 import './Sort.css';
 import { Dropdown } from '../dropdown/Dropdown';
 
+// Sort: Dropdown component for sorting sites by date or alphabetically
 export const Sort = ({ onSortChange }) => {
+  // Get initial sort mode from localStorage or default to alphabetical
   const getInitialSortMode = () => {
     if (typeof window !== 'undefined' && window.localStorage) {
       return localStorage.getItem('sortMode') || 'alphabetical';
     }
     return 'alphabetical';
   };
+
+  // Get initial sort direction from localStorage or default to ascending
   const getInitialAscending = () => {
     if (typeof window !== 'undefined' && window.localStorage) {
       const stored = localStorage.getItem('sortAscending');
@@ -16,15 +20,18 @@ export const Sort = ({ onSortChange }) => {
     }
     return true;
   };
+
   const [sortMode, setSortMode] = useState(getInitialSortMode);
   const [ascending, setAscending] = useState(getInitialAscending);
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
 
+  // Initialize sort on component mount
   useEffect(() => {
     onSortChange(sortMode, ascending);
   }, []);
 
+  // Handle sort option selection
   const handleSortChange = (mode, direction) => {
     setSortMode(mode);
     setAscending(direction);
@@ -34,6 +41,7 @@ export const Sort = ({ onSortChange }) => {
     setOpen(false);
   };
 
+  // Sort button trigger
   const SortTrigger = (
     <div className="sort__button" ref={buttonRef} onClick={() => setOpen(v => !v)}>
       Sort
@@ -44,6 +52,7 @@ export const Sort = ({ onSortChange }) => {
     </div>
   );
 
+  // Sort dropdown menu content
   const SortMenu = (
     <>
       <div className="sort__title">Date</div>

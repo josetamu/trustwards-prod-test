@@ -1,3 +1,4 @@
+/* Modal backdrop */
 .modal__backdrop {
     position: fixed;
     left: 0;
@@ -13,11 +14,14 @@
     
     z-index: 1000;
 }
+
+/* Open state for sidebar/modal (desktop) */
 .open {
     left: var(--sidebar-width-open);
     width: calc(100vw - var(--sidebar-width-open));
-
 }
+
+/* Modal styles */
 .modal {
     background: var(--modal-background);
     border-radius: 16px;
@@ -29,16 +33,14 @@
     align-items: center;
     position: relative;
     max-height: 493px;
-  }
-
-.modal:has(.modal__actions-edit) {
-    gap: 0px;
-    
 }
 
+/* Remove gap for edit actions */
+.modal:has(.modal__actions-edit) {
+    gap: 0px;
+}
 
-
-
+/* --- Responsive --- */
 @media (max-width: 767px) {
     .modal__backdrop {
         left: 0;
@@ -53,7 +55,4 @@
         max-height: 550px;
         max-width: 350px;
     }
-}
-@media (max-width: 467px) {
-
 }

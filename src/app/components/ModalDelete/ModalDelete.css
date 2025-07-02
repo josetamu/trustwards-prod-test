@@ -1,3 +1,4 @@
+/* ModalDelete content wrapper */
 .modal-delete__content {
   width: 100%;
   display: flex;
@@ -6,10 +7,12 @@
   padding: 15px;
 }
 
+/* Reduce modal width for delete dialog */
 .modal:has(.modal-delete__content){
   max-width: 220px;
 }
 
+/* Top wrapper */
 .modal-delete__top-wrapper {
   width: 100%;
   display: flex;
@@ -34,7 +37,6 @@
 }
 
 .modal-delete__paragraph {
- 
   letter-spacing: var(--letter-spacing-negative);
   font-weight: var(--font-weight);
   font-size: var(--font-size-medium);
@@ -42,6 +44,7 @@
   text-align: left;
 }
 
+/* Actions */
 .modal-delete__actions {
   width: 100%;
   display: flex;
