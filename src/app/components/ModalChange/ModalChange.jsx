@@ -1,10 +1,11 @@
-import { input } from 'framer-motion/client';
 import './ModalChange.css';
+
 import { useState, useEffect } from 'react';
-import { Tooltip } from '../tooltip/Tooltip';
 import { supabase } from '../../../supabase/supabaseClient';
 
-export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen, showNotification }) {
+import { Tooltip } from '../tooltip/Tooltip';
+
+export function ModalChange({ changeType, onClose, user, setUser, showNotification }) {
 
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
@@ -13,12 +14,7 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
     
-
-
-    const handleClose = () => {
-        onClose();
-    }
-
+    //Use modalChange in the different cases we need it: to change name, email or password... The function bellow render the content of the modal based on the changeType.
     const renderContent = () => {
         switch(changeType){
             case 'name':
@@ -47,12 +43,7 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
                         </div>
                     </>
                 );
-                
-                
-                
-                
-                
-               
+    
             case 'email':
                 return (
                     <>
@@ -97,6 +88,7 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
                         </div>
                     </>
                 );
+            
             case 'password':
                 return (
                     <>
@@ -160,16 +152,19 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
         }
     }
 
+    //Handle key down Enter to save the changes
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleSave();
         }
     }
 
+    //Function to save the changes uploading the data to the database
     const handleSave = async () => {
-        // Validate input based on change type
+        // Validate input based on different change types
         const validationErrors = {};
-        
+        //validations for each change type:
+
         if (changeType === 'name' && (!newName || newName.trim() === '')) {
             validationErrors.name = 'Name is required';
         }
@@ -202,14 +197,16 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
             }
         }
 
+        //Check if the object validationErrors has any key, if it has, show the errors
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
 
+        //Try to update the data in the database
         try {
             let updateData = {};
-            
+            //Update the data based on the change type and save in the object updateData
             if (changeType === 'name') {
                 updateData = { Name: newName.trim() };
             } else if (changeType === 'email') {
@@ -220,7 +217,7 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
                 updateData = { Password: newPassword };
             }
 
-            // Update user data in Supabase
+            //Update the data in the database using the object updateData
             const { data, error } = await supabase
                 .from('User')
                 .update(updateData)
@@ -265,7 +262,7 @@ export function ModalChange({ changeType, onClose, user, setUser, setIsModalOpen
         }
     }
 
-    // Handle ESC key to close this modal specifically
+    // Handle ESC key to close this modal specifically(it is independent of the modalUser)
     useEffect(() => {
         const handleEsc = (e) => {
             if (e.key === 'Escape') {

@@ -1,11 +1,13 @@
-import React from 'react';
 import './ModalDelete.css';
+
+import React from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 
 export const ModalDelete = ({ onClose, siteData, setIsModalOpen, setSiteData }) => {
+
   const handleDelete = async () => {
     try {
-      // Delete the site from Supabase
+    // Delete the site from Supabase
       const { error } = await supabase
         .from('Site')
         .delete()
@@ -15,11 +17,11 @@ export const ModalDelete = ({ onClose, siteData, setIsModalOpen, setSiteData }) 
         throw error;
       }
 
-      // Close modal and clean up
+      // Close modal and clean up 
       setIsModalOpen(false);
       setSiteData(null);
       
-      // Call the global onDeleteSite function to update the UI
+      // Call the global onDeleteSite function to update the UI realtime
       if (window.onDeleteSite) {
         window.onDeleteSite(siteData.id);
       }

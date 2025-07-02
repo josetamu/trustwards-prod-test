@@ -1,44 +1,35 @@
-import React, { useEffect, useCallback, useRef, useId } from 'react';
+import React, {useCallback} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 import './ModalContainer.css';
 
 
-export function ModalContainer({ isOpen, onClose, children, isSidebarOpen, onBackdropClick }) {
-  const modalRef = useRef(null);
-  const modalId = useId();
+export function ModalContainer({ isOpen, onClose, children, onBackdropClick, isSidebarOpen }) {
+  
+  
 
-
-
-  // Click outside modal
+//Function to handle the backdrop click, to close the modal
   const handleBackdropClick = useCallback((e) => {
     if (e.target.className.includes('modal__backdrop')) {
+      // Prevent sidebar from closing when clicking on modal backdrop
+      e.stopPropagation();
       onBackdropClick?.(e) || onClose();
     }
   }, [onBackdropClick, onClose]);
 
- 
-
-
+  //usamo
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div 
           className={`modal__backdrop`} 
           onClick={handleBackdropClick}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
         >
           <motion.div
             {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
             className="modal"
-            ref={modalRef}
             onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            id={modalId}
+            
           >
             {children}
           </motion.div>

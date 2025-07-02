@@ -1,8 +1,11 @@
-import { Tooltip } from '../tooltip/Tooltip';
 import './ModalUpgradePlan.css';
+
+import { Tooltip } from '../tooltip/Tooltip';
+
 import { useState } from 'react';
 const ModalUpgradePlan = () => {
     const [yearly, setYearly] = useState(false);
+    
     return (
         <div className="modalUpgradePlan">
             <div className="modalUpgradePlan__header">
@@ -371,7 +374,7 @@ const ModalUpgradePlan = () => {
                                 <span className='modalUpgradePlan__site__info__title--underline'>Watermark
                                     <Tooltip
                                         message={'Here will be a beautiful explanation.'} 
-                                        responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
+                                        responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
                                         type='default'
                                     ></Tooltip>
                                 </span> removed

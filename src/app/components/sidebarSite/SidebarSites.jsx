@@ -1,13 +1,14 @@
 import "./SidebarSites.css";
+import "../../components/dropdown/Dropdown.css";
+
 import { useId, useState, useEffect, useRef } from "react";
 import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../tooltip/Tooltip";
-import "../../components/dropdown/Dropdown.css";
 import Link from "next/link";
 import { supabase } from "../../../supabase/supabaseClient";
 import { useDashboard } from "../../dashboard/layout";
 
-export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, isModalOpen, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen}) {
+export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -45,8 +46,11 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
             // Trim whitespace from the edited name
             const trimmedName = editedName.trim();
             
+            // If the name is empty, set it to "untitled"
+            const finalName = trimmedName === '' ? 'Untitled' : trimmedName;
+            
             // Generate unique name if needed
-            const uniqueName = generateUniqueSiteName(trimmedName, siteData.id);
+            const uniqueName = generateUniqueSiteName(finalName, siteData.id);
             
             // Update the site in the database
             const { error } = await supabase
@@ -102,7 +106,8 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
         }
     }, [isEditing]);
     
-    const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType}) => {
+    //This is the dropdown menu
+    const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType}) => {
       return (
         <>
           <button className="dropdown__item" onClick={(e) => {
@@ -161,10 +166,6 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                 setSiteData(siteData);
               }
                 
-              // Check if we're on mobile and handle sidebar/dropdown state
-              if (window.innerWidth <= 767) {
-                toggleDropdown();
-              }
             }}
           >
             <span className="dropdown__icon dropdown__icon--delete">
@@ -180,8 +181,10 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
         </>
       );
     };
+
+    //This function returns the site name in lowercase and replaces spaces with hyphens(-)
     const getSiteName = () => {
-      return siteData.Name.toLowerCase().replace(/\s+/g, '-');
+      return siteData.Name.replace(/\s+/g, '-');
     };
     return(
         <Link 

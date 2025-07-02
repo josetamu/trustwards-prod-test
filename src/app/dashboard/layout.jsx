@@ -51,9 +51,13 @@ function DashboardLayout({ children }) {
   // Dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Browser state to handle SSR
+  const [isBrowser, setIsBrowser] = useState(false);
+
   // We set the appearance settings when they are loaded. appearanceSettings is a object with the settings of the user(database)
   // Theme is controlled with next-themes and Accent Color is an attribute of the html tag
   useEffect(() => {
+    setIsBrowser(true);
     if (appearanceSettings) {
       setTheme(appearanceSettings['Theme']);
       
@@ -137,7 +141,7 @@ const arrayDePrueba = {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'jose11tamu@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -372,11 +376,8 @@ const handleBackdropClick = useCallback((e) => {
 
     //Function to check if the sidebar is open and the window is in mobile. Then in the return() we add the class to the content container
     const blockSidebar = () => {
-      if(window.innerWidth <= 767 && isSidebarOpen){
-        return true;
-      } else {
-        return false;
-      }
+      if (!isBrowser) return false;
+      return window.innerWidth <= 767 && isSidebarOpen;
     };
 
 
@@ -397,8 +398,6 @@ const handleBackdropClick = useCallback((e) => {
               
             }}
             user={user}
-            setUser={setUser}
-            setIsModalOpen={setIsModalOpen}
             appearanceSettings={appearanceSettings}
             setAppearanceSettings={setAppearanceSettings}
             userSettings={userSettings}
@@ -514,8 +513,8 @@ const handleBackdropClick = useCallback((e) => {
                     <ModalContainer 
                         isOpen={isModalOpen} 
                         onClose={closeModal} 
-                        isSidebarOpen={isSidebarOpen}
                         onBackdropClick={handleBackdropClick}
+                        isSidebarOpen={isSidebarOpen}
                     >
                         {renderModal()}
                     </ModalContainer>
@@ -524,8 +523,8 @@ const handleBackdropClick = useCallback((e) => {
                     <ModalContainer 
                     isOpen={isChangeModalOpen} 
                     onClose={closeChangeModal} 
-                    isSidebarOpen={isSidebarOpen}
                     onBackdropClick={handleBackdropClick}
+                    isSidebarOpen={isSidebarOpen}
                     >
                     <ModalChange
                         changeType={changeType}
@@ -540,7 +539,7 @@ const handleBackdropClick = useCallback((e) => {
                     open={notification.open}
                     onClose={hideNotification}
                     position="top-right"
-                    autoClose={1500}
+                    autoClose={1500} //duration of the notification in ms
                     >
                     <span className={`notification__message`}>
                         {notification.message}

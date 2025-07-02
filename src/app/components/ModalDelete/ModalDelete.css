@@ -34,7 +34,6 @@
 }
 
 .modal-delete__paragraph {
- 
   letter-spacing: var(--letter-spacing-negative);
   font-weight: var(--font-weight);
   font-size: var(--font-size-medium);

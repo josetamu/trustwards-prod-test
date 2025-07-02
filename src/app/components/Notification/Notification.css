@@ -10,11 +10,7 @@
   overflow: hidden;
   width: fit-content;
   
-
- 
 }
-
-
 
 /* Notification Content */
 .notification__content {
@@ -35,9 +31,7 @@
   text-align: center;
 }
 
-
 @media (max-width: 767px) {
-    
     .notification__message{
         font-size: var(--font-size-small);
     }

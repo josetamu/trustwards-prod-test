@@ -1,21 +1,22 @@
 import './ModalAccount.css';
+
 import { supabase } from '../../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
 import { useRef } from 'react';
 
-// Modal profile
-export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, openChangeModal }) {
+// Modal Account is a modal that allows the user to change their profile information.
+export function ModalAccount({ user, openChangeModal }) {
   //states to save user data
   const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
   const [errors, setErrors] = useState({});
 
-  //Function to open files
+  //Function to open local files
   const fileInputRef = useRef(null);
 
   const handleEditClick = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.click(); // Abrir selector de archivos
+      fileInputRef.current.click(); // Open local files
     }
   };
 
@@ -32,7 +33,7 @@ export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, open
     openChangeModal(type);
   };
 
-  //useEffect to set user data
+  //useEffect to set user data from database and be dynamic data
   useEffect(() => {
     if(user){
       setName(user?.Name);
@@ -41,60 +42,6 @@ export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, open
     }
   }, [user]);
 
-  // Validate inputs
-  const validateInputs = () => {
-    const newErrors = {};
-    if (!Name?.trim()) {
-      newErrors.Name = 'Name is required';
-    }
-    if (!email?.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!email.includes('@') || !email.includes('.') || email.indexOf('@') > email.lastIndexOf('.')) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Handle input editing and clear errors when input is valid
-  const handleInputEdit = (field, value) => {
-    if (field === 'Name') {
-      setName(value);
-      if (value.trim()) {
-        setErrors(prev => ({ ...prev, Name: undefined }));
-      }
-    } else if (field === 'email') {
-      setEmail(value);
-      if (value.trim() /* && value.includes('@') && value.includes('.') */) {
-        setErrors(prev => ({ ...prev, email: undefined }));
-      }
-    }
-  };
-
-  //function to update user data
-  const updateUser = async () => {
-    if (!validateInputs()) {
-      return false;
-    }
-
-    const { data, error } = await supabase
-      .from('User')
-      .update({
-        Name: Name.trim(),
-        Email: email.trim(),
-        "Avatar URL": customHeader.avatar?.src || user?.["Avatar URL"] || null
-      }).eq('id', user?.id);
-
-    if(error) throw error;
-
-    setUser({
-      ...user,
-      Name: Name.trim(),
-      Email: email.trim(),
-      "Avatar URL": customHeader.avatar?.src || user?.["Avatar URL"] || null
-    });
-    return true;
-  };
 
   //function to reset password
   /* const resetPassword = async () => {
@@ -102,33 +49,23 @@ export function ModalAccount({ user, setUser, setIsModalOpen, setModalType, open
           redirectTo: 'http://localhost:5173/reset-password'
       });
   } */
-  /* function to handle key press */
-  const handleKeyPress = async (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const success = await updateUser();
-      if (success) {
-        setIsModalOpen(false);
-      }
-    }
-  };
 
   //function to logout
-  const userLogout = async () => {
-    /* const { error } = await supabase.auth.signOut();
+/*   const userLogout = async () => {
+    const { error } = await supabase.auth.signOut();
     if(error) throw error;
     setUser(null);
-    setUserSettings(null); */
+    setUserSettings(null); 
 
    
-    /* await supabase.auth.signOut();
-    window.location.reload(); // o redirige a login */
+    await supabase.auth.signOut();
+    window.location.reload(); // o redirige a login 
 
     console.log('logout');
     window.location.reload();
     
       
-  }
+  } */
 
   return (
       <>

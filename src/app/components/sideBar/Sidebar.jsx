@@ -96,18 +96,18 @@ export const profilePages = [
 export const otherpages = [
     {
         name: 'Support',
-        icon: <svg className="profileDropdown__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path className="profileDropdown__link__path" d="M8.26553 11.8938C10.7056 11.7316 12.6493 9.76038 12.8092 7.28571C12.8405 6.80142 12.8405 6.29987 12.8092 5.81559C12.6493 3.3409 10.7056 1.36967 8.26553 1.20747C7.43306 1.15214 6.56395 1.15225 5.73316 1.20747C3.29308 1.36967 1.34942 3.3409 1.18949 5.81559C1.15819 6.29987 1.15819 6.80142 1.18949 7.28571C1.24774 8.18702 1.64635 9.02153 2.11563 9.7262C2.3881 10.2195 2.20828 10.8352 1.92447 11.3731C1.71984 11.7609 1.61752 11.9548 1.69967 12.0948C1.78183 12.2349 1.96533 12.2394 2.33235 12.2483C3.05816 12.266 3.54758 12.0602 3.93608 11.7737C4.15641 11.6112 4.26659 11.53 4.34252 11.5206C4.41845 11.5113 4.56788 11.5729 4.86669 11.6959C5.13525 11.8065 5.44707 11.8748 5.73316 11.8938C6.56395 11.949 7.43306 11.9492 8.26553 11.8938Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-        <path className="profileDropdown__link__path" d="M7.00065 9.04232V9.33398M7.00065 7.58398V7.29232L7.97931 5.82432C8.10193 5.64044 8.16732 5.42438 8.16732 5.20339C8.16732 4.55634 7.6275 4.08398 7.00065 4.08398C6.3563 4.08398 5.83398 4.60632 5.83398 5.25065" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+        icon: <svg className="sidebar__link__svg" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path className="sidebar__link__path" d="M8.26553 11.8938C10.7056 11.7316 12.6493 9.76038 12.8092 7.28571C12.8405 6.80142 12.8405 6.29987 12.8092 5.81559C12.6493 3.3409 10.7056 1.36967 8.26553 1.20747C7.43306 1.15214 6.56395 1.15225 5.73316 1.20747C3.29308 1.36967 1.34942 3.3409 1.18949 5.81559C1.15819 6.29987 1.15819 6.80142 1.18949 7.28571C1.24774 8.18702 1.64635 9.02153 2.11563 9.7262C2.3881 10.2195 2.20828 10.8352 1.92447 11.3731C1.71984 11.7609 1.61752 11.9548 1.69967 12.0948C1.78183 12.2349 1.96533 12.2394 2.33235 12.2483C3.05816 12.266 3.54758 12.0602 3.93608 11.7737C4.15641 11.6112 4.26659 11.53 4.34252 11.5206C4.41845 11.5113 4.56788 11.5729 4.86669 11.6959C5.13525 11.8065 5.44707 11.8748 5.73316 11.8938C6.56395 11.949 7.43306 11.9492 8.26553 11.8938Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+        <path className="sidebar__link__path" d="M7.00065 9.04232V9.33398M7.00065 7.58398V7.29232L7.97931 5.82432C8.10193 5.64044 8.16732 5.42438 8.16732 5.20339C8.16732 4.55634 7.6275 4.08398 7.00065 4.08398C6.3563 4.08398 5.83398 4.60632 5.83398 5.25065" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
         
     }, 
     {
         name: 'Appearance',
-        icon: <svg className="profileDropdown__link__svg" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        icon: <svg className="sidebar__link__svg" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clipPath="url(#clip0_64_433)">
-        <path className="profileDropdown__link__path" d="M11.3327 7.99935C11.3327 9.84028 9.84028 11.3327 7.99935 11.3327C6.1584 11.3327 4.66602 9.84028 4.66602 7.99935C4.66602 6.1584 6.1584 4.66602 7.99935 4.66602C9.84028 4.66602 11.3327 6.1584 11.3327 7.99935Z" stroke="currentColor" strokeWidth="1.5"/>
-        <path className="profileDropdown__link__path" opacity="0.4" d="M8.00065 1.33398V2.33398M8.00065 13.6673V14.6673M12.7145 12.7149L12.0074 12.0077M3.99349 3.99349L3.28638 3.28638M14.6673 8.00065H13.6673M2.33398 8.00065H1.33398M12.7149 3.28646L12.0077 3.99356M3.99382 12.0078L3.28671 12.7149" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <path className="sidebar__link__path" d="M11.3327 7.99935C11.3327 9.84028 9.84028 11.3327 7.99935 11.3327C6.1584 11.3327 4.66602 9.84028 4.66602 7.99935C4.66602 6.1584 6.1584 4.66602 7.99935 4.66602C9.84028 4.66602 11.3327 6.1584 11.3327 7.99935Z" stroke="currentColor" strokeWidth="1.5"/>
+        <path className="sidebar__link__path" opacity="0.4" d="M8.00065 1.33398V2.33398M8.00065 13.6673V14.6673M12.7145 12.7149L12.0074 12.0077M3.99349 3.99349L3.28638 3.28638M14.6673 8.00065H13.6673M2.33398 8.00065H1.33398M12.7149 3.28646L12.0077 3.99356M3.99382 12.0078L3.28671 12.7149" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
         </g>
         <defs>
         <clipPath id="clip0_64_433">
@@ -165,6 +165,11 @@ export function Sidebar({
         const handleClickOutside = (event) => {
             // Only handle clicks outside on mobile devices
             if (window.innerWidth < 767 && isSidebarOpen) {
+                // Don't close sidebar if a modal is open
+                if (isModalOpen) {
+                    return;
+                }
+                
                 // Check if click is outside both the container and the action button
                 const isOutsideContainer = sidebarContainerRef.current && !sidebarContainerRef.current.contains(event.target);
                 const isOutsideAction = sidebarActionRef.current && !sidebarActionRef.current.contains(event.target);
@@ -183,7 +188,7 @@ export function Sidebar({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar]);
+    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen]);
 
     // Define overviewPages inside the component to access siteData
     const overviewPages = [
@@ -310,6 +315,7 @@ export function Sidebar({
                                 <>
                                     <span className='sidebar__sites__title'>SITES</span>
                                     <div className={`sidebar__sites__searcher ${isSearchOpen ? 'sidebar__sites__searcher--open' : ''}`}>
+                                        {/* here is the sidebars' search */}
                                         <span className='sidebar__sites__search' onClick={() => {
                                             setIsSearchOpen(!isSearchOpen);
                                             if (isSearchOpen) {
@@ -329,6 +335,7 @@ export function Sidebar({
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                         />
                                     </div>
+                                    {/* this is the + to add a newsite */}
                                     <span className='sidebar__sites__add' onClick={() => {createNewSite()}} >
                                             <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="currentColor"/>
@@ -339,7 +346,7 @@ export function Sidebar({
                         </div>
                         <div className="sidebar__sites__container">
                             {isSiteOpen ? (
-                                // Vista específica del sitio - mostrar overviewPages como SidebarLink
+                                // if we are inside a site, show the overviewPages
                                 <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
                                     <div className="sitesDisplay__siteslinks">
                                     {overviewPages.map((page) => (
@@ -362,7 +369,8 @@ export function Sidebar({
                                     </div>
                                 </div>
                             ) : (
-                                // Vista normal - mostrar lista de sitios
+                                // if we are not inside a site, show the list of sites
+                                //Also if there are no sites, show the add a new site button or if you are searching for a site that doesn't exist show a message
                                 <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
                                     {filteredWebs.length === 0 ? (
                                         <div className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
@@ -378,6 +386,7 @@ export function Sidebar({
                                             )}
                                         </div>
                                     ) : (
+                                        //Display the sites, but if sidebar is closed, show only 6 sites
                                         (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
                                             web.userid === user.id && (
                                                 <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}>
@@ -412,6 +421,7 @@ export function Sidebar({
                 {/* Lower part of the sidebar */}
                 <div className="sidebar__lower">
                    <div className="sidebar__others">
+                        {/* render the other pages (support and appearance)*/}
                         {otherpages.map((otherPage) => (
                             <SidebarLink
                                 key={otherPage.name}
@@ -433,6 +443,7 @@ export function Sidebar({
                             />
                         ))}
                     </div>
+                    {/* render the profile dropdown */}
                     <ProfileDropdown 
                     user={user}
                     toggleSidebar={toggleSidebar}

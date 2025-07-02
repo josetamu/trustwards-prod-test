@@ -1,10 +1,12 @@
+import './ModalAppearance.css';
+
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import { useTheme } from 'next-themes';
-import './ModalAppearance.css';
 
 
-export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
+
+export const ModalAppearance = ({ user, appearanceSettings}) => {
     const { theme, setTheme } = useTheme();
     const [selected, setSelected] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
@@ -18,22 +20,6 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
         setSelectedColor(appearanceSettings?.['Accent Color'] || '');
         setReducedMotion(appearanceSettings?.['Reduced Motion'] || false);
         
-        // Set data-color attribute based on current accent color
-        if (appearanceSettings?.['Accent Color']) {
-            document.documentElement.setAttribute('data-color', appearanceSettings['Accent Color']);
-        } else {
-            document.documentElement.removeAttribute('data-color');
-        }
-        
-        // Set data-theme attribute based on current theme
-/*         if (appearanceSettings?.['Theme']) {
-            if (appearanceSettings['Theme'] === 'system') {
-                document.documentElement.removeAttribute('data-theme');
-            } else {
-                document.documentElement.setAttribute('data-theme', appearanceSettings['Theme']);
-            }
-        } */
-        
         // Mark as initialized after a short delay to prevent initial animation
         const timer = setTimeout(() => {
             setIsInitialized(true);
@@ -41,16 +27,20 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
         
         return () => clearTimeout(timer);
     }, [appearanceSettings]);
+
+    //Update the theme using the theme hook from next-themes 
     const updateTheme = (newTheme) => {
         setTheme(newTheme);
         handleSave(newTheme, null, null);
     };
     // Save appearance settings to database
     const handleSave = async (newTheme = null, newColor = null, newReducedMotion = null) => {
+        //Get the current theme from the theme hook
         const themeToSave = newTheme !== null ? newTheme : selected;
         const colorToSave = newColor !== null ? newColor : selectedColor;
         const motionToSave = newReducedMotion !== null ? newReducedMotion : reducedMotion;
         
+        //Save the appearance settings to the database
         try {
             const { error } = await supabase
                 .from('Appearance')
@@ -69,10 +59,7 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
                 if (newColor !== null) setSelectedColor(newColor);
                 if (newReducedMotion !== null) setReducedMotion(newReducedMotion);
                 
-                // Call the onSave prop to refresh user data in parent component
-                if (onSave) {
-                    onSave();
-                }
+               
             }
         } catch (error) {
             console.error('Error saving appearance settings:', error);
@@ -95,16 +82,7 @@ export const ModalAppearance = ({ user, onSave, appearanceSettings}) => {
     const handleReducedMotionToggle = (checked) => {
         handleSave(null, null, checked);
     };
-/* 
-    const updateLocalStorageTheme = (theme) => {
-        handleSave(theme, null, null);
-        if (theme === 'system') {
-            document.documentElement.removeAttribute('data-theme');
-        } else {
 
-            document.documentElement.setAttribute('data-theme', theme);
-        }
-    }; */
     
 
     return (

@@ -26,8 +26,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  padding-bottom: 5px;
+  padding: 15px 15px 5px 15px;
 }
 
 .modalChange__title {
@@ -38,20 +37,21 @@
 }
 
 .modalChange__divider {
-    height: 0.8px;
-    background: var(--border-strong-color);
-    margin: 4px 0;
-    width: 100%;
-    border: none;
+  height: 0.8px;
+  background: var(--border-strong-color);
+  margin: 4px 0;
+  width: 100%;
+  border: none;
 }
+
 .modalChange__body {
-  padding: 15px;
+  padding: 5px 15px 15px 15px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 5px;
   min-width: 331px;
 }
+
 .modalChange__input {
   border: 1px solid var(--border-strong-color);
   background: transparent;
@@ -64,22 +64,26 @@
   font-weight: var(--font-weight);
   width: 100%;
 }
+
 .modalChange__input:focus {
   outline: none;
 }
+
 .modalChange__input::placeholder {
   color: var(--body-light-color);
 }
+
 .modalChange__actions {
-  padding: 15px;
+  padding: 0 15px 15px 15px;
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  padding-top: 0px;
 }
-.modalChange__actions--name{
-    justify-content: flex-end;
+
+.modalChange__actions--name {
+  justify-content: flex-end;
 }
+/* link of forgot password? */
 .modalChange__forgot {
   font-size: var(--font-size-medium);
   font-weight: var(--font-weight);
@@ -106,6 +110,7 @@
 .modalChange__input__wrapper {
   position: relative;
 }
+
 .modalChange__advice {
   font-size: var(--font-size-medium);
   color: var(--body-fresco-color);
@@ -114,10 +119,9 @@
   white-space: nowrap;
 }
 
-
 @media (max-width: 767px) {
-    .modalChange__content {
-        min-width: 300px;
-        max-width: 400px;
-    }
+  .modalChange__content {
+    min-width: 300px;
+    max-width: 400px;
+  }
 }

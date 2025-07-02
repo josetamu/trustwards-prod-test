@@ -1,0 +1,21 @@
+.sidebar__link {
+    text-decoration: none;
+    color: var(--body-fresco-color);
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    display: flex;
+    overflow: hidden;
+    gap: 12px;
+    white-space: nowrap;
+    align-items: center;
+    padding: 6px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: var(--sidebar-transition);
+  }
+  
+  .sidebar__link:hover {
+    background-color: var(--hover-light-color);
+    border: 1px solid var(--border-fresco-color);
+  }

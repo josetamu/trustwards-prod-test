@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import './ModalUser.css';
+
 import { ModalAccount } from '@components/ModalAccount/ModalAccount';
 import { ModalAppearance } from '../ModalAppearance/ModalAppearance';
-import './ModalUser.css';
 import ModalUpgradePlan from '../ModalUpgradePlan/ModalUpgradePlan';
-export function ModalUser({ onClose, onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings, getAppearanceSettings, openChangeModal }) {
 
-
+export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings, getAppearanceSettings, openChangeModal }) {
+//Modal User is a modal that allows the user to change their account settings, appearance settings, and upgrade plan.
+//In this function we render the content of the modal based on the userSettings state.
     const renderContent = () => {
         switch (userSettings) {
             case 'Account':
@@ -71,6 +72,7 @@ export function ModalUser({ onClose, onSave, user, setUser, setIsModalOpen, appe
                 </div>
             </div>
             <div className="modalUser__setting">
+                {/* render the content of the modal based on the userSettings state */}
                 {renderContent()}
             </div>
         </div>

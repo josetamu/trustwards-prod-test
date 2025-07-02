@@ -1,31 +1,14 @@
+import "./profileDropdown.css";
+
 import { useEffect, useState } from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
+
 import { SidebarLink } from '../sidebarLink/SidebarLink';
 import { profilePages } from '../sideBar/Sidebar';
-import "./ProfileDropdown.css";
 import { Dropdown } from '../dropdown/Dropdown';
-import { span } from 'framer-motion/client';
+
 
 export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, avatar }) => {
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        setIsMobile(window.innerWidth < 767);
-
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 767);
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const toggleDropdown = () => {
-        if(isMobile){
-            setIsDropdownOpen(!isDropdownOpen);
-
-        }
-    };
+//Here the dropdown's menu is defined by mapping the profilePages array
     const ProfileDropdownMenu = () => {
         return(
             <>
@@ -43,12 +26,6 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                                             setModalType(profilePage.name);
                                             setIsDropdownOpen(false);
                                             setUserSettings(profilePage.name);
-
-                                        if(window.innerWidth < 767) {
-                                                setIsSidebarOpen(false);
-                                                toggleSidebar();
-                                                toggleDropdown();
-                                            }
                                         }
                                         
                                     }}
@@ -78,17 +55,6 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
 
     }
 
-   /*  const handleOutsideClick = (event) => {
-        if(window.innerWidth < 767){
-            if(!event.target.closest(".profileDropdown__dropdown")){
-                setIsDropdownOpen(false);
-            }
-        }
-    }; */
-
-   
-    
-    
     return (
         <div className={`profileDropdown ${isSidebarOpen ? 'profileDropdown--open' : ''}`} 
           onMouseEnter={() => isSidebarOpen && setIsDropdownOpen(true)} 
@@ -97,16 +63,13 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                 className="profileDropdown-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
-                menu={<ProfileDropdownMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} />}
+                menu={<ProfileDropdownMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} setIsSidebarOpen={setIsSidebarOpen} />}
             >
-                <div className={`profileDropdown__profile ${isSidebarOpen ? 'profileDropdown__profile--open' : ''}`} onClick={() => {
-                  toggleDropdown(); 
-                }}>
+                <div className={`profileDropdown__profile ${isSidebarOpen ? 'profileDropdown__profile--open' : ''}`}>
                 <div className="profileDropdown__header">
                     {avatar && (
                         <img className="profileDropdown__header__avatar" src={avatar} alt="avatar" />
                     )}
-                        
                     <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.Name || "User"}</span> 
                 </div>
                 <div className={`${isSidebarOpen ? 'profileDropdown__icons--open' : 'profileDropdown__icons'}`}>

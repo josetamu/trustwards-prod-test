@@ -7,7 +7,7 @@
   justify-content: center;
   gap: 30px;
   padding: 20px 30px;
-  padding-bottom: 75px;
+ 
 }
 
 .modalAccount__aside{
@@ -29,7 +29,6 @@
   gap: 10px;
 }
 
-
 .modalAccount__avatar{
   width: 50px;
   height: 50px;
@@ -47,6 +46,7 @@
   color: var(--body-strong-color);
   transition: all 0.3s ease;
 }
+
 .modalAccount__main{
   width: 263px;
   height: 100%;
@@ -83,6 +83,7 @@
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 250px;
+  white-space: nowrap;
 }
 
 .modalAccount__change{

@@ -1,10 +1,11 @@
 import './ModalSupport.css';
-import { useState, useEffect } from 'react';
-import { Tooltip } from '../tooltip/Tooltip';
 
+import { useState, useEffect } from 'react';
 import { Resend } from 'resend';
 
-export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) => {
+import { Tooltip } from '../tooltip/Tooltip';
+
+export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
     const resend = new Resend('re_xxxxxxxxx');
     const [selectedChoice, setSelectedChoice] = useState(null);
     const [name, setName] = useState(user?.Name || 'User Name');
@@ -15,6 +16,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
 
+    // useEffect to set the user name and email from database, so it shows dinamic in the modal
     useEffect(() => {
         if(user){
             setName(user?.Name|| 'User Name');
@@ -45,6 +47,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) 
     return Object.keys(newErrors).length === 0;
   };
 
+  // Function to handle the submit button and the back logic about the form, sending the email to the support email.
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -104,7 +107,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) 
     }
 };
   
-  // Handle input editing and clear errors when input is valid
+  // Function to edit inputs values and clear errors when input is valid
   const handleInputEdit = (field, value) => {
     if (field === 'name') {
       setName(value);
@@ -119,50 +122,62 @@ export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) 
     }
   };
 
-    const handleFileChange = (event) => {
-        const uploadedFiles = Array.from(event.target.files);
-        setFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
-    };
-    const handleDragEnter = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const dt = e.dataTransfer;
-        if (dt.types && dt.types.indexOf('Files') >= 0) {
+  // Function to handle the file change and add the files to the files array
+  const handleFileChange = (event) => {
+    const uploadedFiles = Array.from(event.target.files);
+    setFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
+  };
+
+  // Function to know when the user enters the dropzone
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const dt = e.dataTransfer;
+    if (dt.types && dt.types.indexOf('Files') >= 0) {
             setIsDragging(true);
-        }
-    };
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        // Only set isDragging to false if we're leaving the main dropzone
-        if (e.currentTarget === e.target) {
+    }
+  };
+
+  // Function to know if the user leaved the dropzone
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set isDragging to false if we're leaving the main dropzone
+    if (e.currentTarget === e.target) {
             setIsDragging(false);
         }
     };
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const dt = e.dataTransfer;
-        if (dt.types && dt.types.indexOf('Files') >= 0) {
+
+  // Function to know if the user is dragging a file over the dropzone
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const dt = e.dataTransfer;
+    if (dt.types && dt.types.indexOf('Files') >= 0) {
             setIsDragging(true);
         }
     };  
-    const handleDrop = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(false);
-        
+
+  // Function to handle the drop event, adding the files to the files array
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
         const droppedFiles = Array.from(e.dataTransfer.files);
         setFiles(prevFiles => [...prevFiles, ...droppedFiles]);
     };
-    const removeFile = (indexToRemove) => {
+
+  // Function to remove the file from the files array
+  const removeFile = (indexToRemove) => {
         setFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
     };
 
-    const handleDropzoneClick = (e) => {
-        e.stopPropagation();
-        document.getElementById('fileInput').click();
-    };
+  // Open the user's file when the user clicks on the dropzone
+  const handleDropzoneClick = (e) => {
+    e.stopPropagation();
+    document.getElementById('fileInput').click();
+  };
 
     return (
         <div className="modalSupport__content">
@@ -313,8 +328,7 @@ export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) 
                         </div>
                     </div>
                 </div>
-                <div 
-                className="modalSupport__dropZone"
+                <div className="modalSupport__dropZone"
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDragOver={handleDragOver}
@@ -325,11 +339,11 @@ export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) 
                     backgroundColor: isDragging ? 'var(--support-dropzone-background)' : 'transparent'
                 }}
                 >
-                    <input
+                    {/* input to upload files hidden*/}
+                    <input className='modalSupport__input--hidden'
                         type="file"
                         multiple
                         onChange={handleFileChange}
-                        style={{ display: 'none' }}
                         id="fileInput"
                         onClick={(e) => e.stopPropagation()}
                     />
@@ -340,29 +354,32 @@ export const ModalSupport = ({user, setUser, setIsModalOpen, showNotification}) 
                     </span>
                     <span className={`modalSupport__dropZone__span ${files.length > 0 ? 'modalSupport__dropZone__span--none' : ''}`}>Select or drop files from your device</span>
                     {files.length > 0 && (
-                        <div className="modalSupport__files" 
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDropzoneClick(e);
-                            }}
-                        >
-                            {files.map((file, index) => (
-                                <div key={index} className="modalSupport__file">
-                                    <span className="modalSupport__file__name">{file.name}</span>
-                                    <button 
-                                        className="modalSupport__file__remove"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            removeFile(index);
-                                        }}
-                                    >
-                                            <svg width="6" height="6" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M10 1L9 0L5 4L1 0L0 1L4 5L0 9L1 10L5 6L9 10L10 9L6 5L10 1Z" fill="currentColor"/>
-                                            </svg>
-                                    </button>
-                                </div>
-                            ))}
+                        <div className="modalSupport__files__container">
+                            <div className="modalSupport__files" 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDropzoneClick(e);
+                                }}
+                            >
+                                {/* map the files and show them in the modal. with removeFile function to remove the file */}
+                                {files.map((file, index) => (
+                                    <div key={index} className="modalSupport__file">
+                                        <span className="modalSupport__file__name">{file.name}</span>
+                                        <button 
+                                            className="modalSupport__file__remove"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                removeFile(index);
+                                            }}
+                                        >
+                                                <svg width="6" height="6" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M10 1L9 0L5 4L1 0L0 1L4 5L0 9L1 10L5 6L9 10L10 9L6 5L10 1Z" fill="currentColor"/>
+                                                </svg>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>

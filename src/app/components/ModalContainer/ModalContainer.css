@@ -6,18 +6,17 @@
     width: 100vw;
     height: fit-content;
     background-color: var(--modal-backdrop-color);
-
     display: flex;
     justify-content: center;
     align-items: center;
-    
     z-index: 1000;
 }
+
 .open {
     left: var(--sidebar-width-open);
     width: calc(100vw - var(--sidebar-width-open));
-
 }
+
 .modal {
     background: var(--modal-background);
     border-radius: 16px;
@@ -36,9 +35,6 @@
     
 }
 
-
-
-
 @media (max-width: 767px) {
     .modal__backdrop {
         left: 0;
@@ -53,7 +49,4 @@
         max-height: 550px;
         max-width: 350px;
     }
-}
-@media (max-width: 467px) {
-
 }
