@@ -335,7 +335,7 @@ const handleBackdropClick = useCallback((e) => {
           let counter = 1;
           
           while (existingNames.includes(newName)) {
-            newName = `${baseName}(${counter})`;
+            newName = `${baseName} (${counter})`;
             counter++;
           }
           

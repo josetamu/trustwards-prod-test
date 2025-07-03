@@ -12,7 +12,7 @@ function Home() {
     const { webs } = useDashboard();
     
     // Find the selected site object based on the slug
-    const selectedSite = webs.find(site => site.Name.toLowerCase().replace(/\s+/g, '-') === siteSlug?.toLowerCase());
+    const selectedSite = webs.find(site => site.id === siteSlug);
 
      // if webs is empty return waiting for the webs to load. Here we could add a loading spinner or a message to the user
      if (!webs || webs.length === 0) {

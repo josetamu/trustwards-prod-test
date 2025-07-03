@@ -26,7 +26,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
         let counter = 1;
         
         while (existingNames.includes(newName)) {
-            newName = `${baseName}(${counter})`;
+            newName = `${baseName} (${counter})`;
             counter++;
         }
         
@@ -182,13 +182,10 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
       );
     };
 
-    //This function returns the site name in lowercase and replaces spaces with hyphens(-)
-    const getSiteName = () => {
-      return siteData.Name.replace(/\s+/g, '-');
-    };
+  
     return(
         <Link 
-            href={`/dashboard/${getSiteName()}`}
+            href={`/dashboard/${siteData.id}`}
             className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`} 
             id={sidebarSitesId}
             onClick={(e) => {

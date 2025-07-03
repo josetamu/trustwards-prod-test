@@ -80,7 +80,7 @@
 
 .sidebarSites__header-name{
     text-overflow: ellipsis;
-    max-width: 94px;
+    max-width: 80px;
     overflow: hidden;
     white-space: nowrap;
     font-size: var(--sidebar-font-size);
