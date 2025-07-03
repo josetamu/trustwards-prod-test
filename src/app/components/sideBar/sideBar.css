@@ -102,7 +102,9 @@
   padding: 0 18px;
   margin-top: 25px;
 }
-
+.sidebar__upper--open{
+  padding-right: 0;
+}
 .sidebar__home{
   border-bottom: var(--border);  
   padding: 15px 1px;  
@@ -185,6 +187,7 @@
 .sidebar__sites__header--open{
   opacity: 1;
   padding-top: 20px;
+  margin-right: 10px;
 }
 
 .sidebar__sites__searcher{
@@ -208,7 +211,7 @@
 }
 
 .sidebar__sites__input--open{
-  width: 100px;
+  width: 120px;
   background-color: var(--hover-light-color);
   border: 1px solid var(--border-fresco-color);
   display: flex;

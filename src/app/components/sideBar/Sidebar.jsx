@@ -142,6 +142,10 @@ export function Sidebar({
     setIsSiteOpen,
     isSiteOpen,
     createNewSite,
+    checkProfilePicture,
+    profileStyle,
+    checkSitePicture,
+    SiteStyle
     }) {
     const { 'site-slug': siteSlug } = useParams();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -283,7 +287,7 @@ export function Sidebar({
                 className={`sidebar__container ${isSidebarOpen ? 'sidebar__container--open' : ''}`}
             >
                 {/* Upper part of the sidebar */}
-                <div className="sidebar__upper">
+                <div className={`sidebar__upper ${isSidebarOpen ? 'sidebar__upper--open' : ''}`}>
                     <div className="sidebar__home">
                         <Link href={`/dashboard`} className={`sidebar__header ${!isSiteOpen ? 'sidebar__header--active' : ''}`}>
                             <span className="sidebar__header__icon">
@@ -408,6 +412,8 @@ export function Sidebar({
                                                         globalSiteData={siteData}
                                                         setSelectedSite={setSelectedSite}
                                                         setIsSiteOpen={setIsSiteOpen}
+                                                        checkSitePicture={checkSitePicture}
+                                                        SiteStyle={SiteStyle}
                                                     />
                                                 </div>
                                             )
@@ -456,9 +462,8 @@ export function Sidebar({
                     setIsModalOpen={setIsModalOpen}
                     isModalOpen={isModalOpen}
                     modalType={modalType}
-                    avatar={user?.["Avatar URL"]}
-               
-                    
+                    checkProfilePicture={checkProfilePicture}
+                    profileStyle={profileStyle}
                     /> 
 
                 </div>

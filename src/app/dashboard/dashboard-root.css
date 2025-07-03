@@ -233,6 +233,9 @@ html[data-color="red"] {
 
 
 
+
+
+
 /* Hide buttons until color is loaded, if not blue is showed during half second*/
 [style*="background-color: var(--accent-bg-color)"],
 .sites__new-button,

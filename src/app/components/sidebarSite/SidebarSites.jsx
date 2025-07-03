@@ -8,7 +8,7 @@ import Link from "next/link";
 import { supabase } from "../../../supabase/supabaseClient";
 import { useDashboard } from "../../dashboard/layout";
 
-export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen}) {
+export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -200,18 +200,14 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
             
         >
             <div className="sidebarSites__header">
-                <span className="sidebarSites__header-avatar">
-                    {/* <span 
-                        className="sidebarSites__header-avatar" 
-                        style={{
-                            backgroundColor: arrayDePrueba[siteData['Avatar Color']]?.backgroundColor || '#000000',
-                            color: arrayDePrueba[siteData['Avatar Color']]?.color || '#FFFFFF'
-                        }}>
+                <span className="sidebarSites__avatar">
+                    <span className={`sidebarSites__color ${checkSitePicture(siteData) === '' ? '' : 'sidebarSites__color--null'}`} 
+                        style={SiteStyle(siteData)}>
                           {name.charAt(0)}
-                    </span> */}
-                    <img className="sidebarSites__header-avatar-img" src={avatar}/>
+                    </span> 
+                    <img className={`sidebarSites__img ${checkSitePicture(siteData) === '' ? 'sidebarSites__img--null' : ''}`} src={siteData["Avatar URL"]}/>
                 </span>
-                <span className="sidebarSites__header-name">
+                <span className="sidebarSites__name">
                     {isEditing ? (
                         <input
                             type="text"
@@ -220,7 +216,7 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
                             onKeyDown={handleKeyDown}
                             onBlur={handleBlur}
                             autoFocus
-                            className="sidebarSites__header-name-input"
+                            className="sidebarSites__input"
                             ref={inputRef}
                         />
                     ) : (

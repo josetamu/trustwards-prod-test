@@ -118,24 +118,63 @@ function DashboardLayout({ children }) {
     }
   }, [appearanceSettings]);
 
-const arrayDePrueba = {
-  negro: {
+  // Avatar colors pool
+const avatarColors = {
+  black: {
     backgroundColor: '#000000',
     color: '#FFFFFF',
   },
-  blanco: {
+  white: {
     backgroundColor: '#FFFFFF',
     color: '#000000',
   },
-  azul: {
-    backgroundColor: '#003049',
+  yellow: {
+    backgroundColor: '#f7b633',
     color: '#FFFFFF',
   },
-  celeste: {
-    backgroundColor: '#ade8f4',
+  blue: {
+    backgroundColor: '#0099FE',
     color: '#000000',
   },
 };
+
+// Function to check if the profile picture is null, undefined or empty, to know if we should show the avatar color or the avatar image
+const checkProfilePicture = (user) => {
+  const profilePicture = user?.["Avatar URL"];
+  if(profilePicture === null || profilePicture === undefined || profilePicture === ''){
+    return '';
+  } else {
+    return profilePicture;
+  }
+}
+
+// Function to set the style of the profile picture
+const ProfileStyle = (user) => {
+  const color = avatarColors[user?.["Avatar Color"]]?.color || '#FFFFFF';
+  const backgroundColor = avatarColors[user?.["Avatar Color"]]?.backgroundColor || '#000000';
+  return {
+    color,
+    backgroundColor
+  }
+}
+
+const checkSitePicture = (site) => {
+  const sitePicture = site?.["Avatar URL"];
+  if(sitePicture === null || sitePicture === undefined || sitePicture === ''){
+    return '';
+  } else {
+    return sitePicture;
+  }
+}
+
+const SiteStyle = (site) => {
+  const color = avatarColors[site?.["Avatar Color"]]?.color || '#FFFFFF';
+  const backgroundColor = avatarColors[site?.["Avatar Color"]]?.backgroundColor || '#000000';
+  return {
+    color,
+    backgroundColor
+  }
+}
   
   //Force login (only dev mode)
   const _loginDevUser = async () => {
@@ -325,7 +364,7 @@ const handleBackdropClick = useCallback((e) => {
     //Function to create a new site
     const createNewSite = async () => {
       try {
-        const colorKeys = Object.keys(arrayDePrueba);
+        const colorKeys = Object.keys(avatarColors);
         const randomColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
         
         // Function to generate a unique site name, mapping the existing sites names if includes the name adds a number to the end in the while loop
@@ -367,7 +406,7 @@ const handleBackdropClick = useCallback((e) => {
         setIsSiteOpen(true);
         
         // Navigate to the new site page
-        router.push(`/dashboard/${encodeURIComponent(uniqueSiteName)}`);
+        router.push(`/dashboard/${data[0].id}`);
 
       } catch (error) {
         showNotification('Error creating site');
@@ -404,6 +443,8 @@ const handleBackdropClick = useCallback((e) => {
             setUserSettings={setUserSettings}
             getAppearanceSettings={getAppearanceSettings}
             openChangeModal={openChangeModal}
+            checkProfilePicture={checkProfilePicture}
+            profileStyle={ProfileStyle}
             />
           );
         case 'DeleteSite':
@@ -443,6 +484,8 @@ const handleBackdropClick = useCallback((e) => {
             setUserSettings={setUserSettings}
             getAppearanceSettings={getAppearanceSettings}
             openChangeModal={openChangeModal}
+            checkProfilePicture={checkProfilePicture}
+            profileStyle={ProfileStyle}
           />)
         case 'Upgrade':
           return (
@@ -460,6 +503,8 @@ const handleBackdropClick = useCallback((e) => {
               setUserSettings={setUserSettings}
               getAppearanceSettings={getAppearanceSettings}
               openChangeModal={openChangeModal}
+              checkProfilePicture={checkProfilePicture}
+              profileStyle={ProfileStyle}
             />
           )
         
@@ -480,6 +525,8 @@ const handleBackdropClick = useCallback((e) => {
         setIsDropdownOpen,
         fetchSites,
         createNewSite,
+        checkSitePicture,
+        SiteStyle
     };
 
     return (
@@ -506,6 +553,10 @@ const handleBackdropClick = useCallback((e) => {
                     userSettings={userSettings}
                     setUserSettings={setUserSettings}
                     createNewSite={createNewSite}
+                    checkProfilePicture={checkProfilePicture}
+                    profileStyle={ProfileStyle}
+                    checkSitePicture={checkSitePicture}
+                    SiteStyle={SiteStyle}
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
                     {children}

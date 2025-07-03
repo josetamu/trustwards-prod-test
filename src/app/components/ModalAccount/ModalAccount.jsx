@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRef } from 'react';
 
 // Modal Account is a modal that allows the user to change their profile information.
-export function ModalAccount({ user, openChangeModal }) {
+export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle }) {
   //states to save user data
   const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
@@ -20,11 +20,25 @@ export function ModalAccount({ user, openChangeModal }) {
     }
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Handle file upload logic here
+      //file upload logic here
       console.log('File selected:', file);
+     /*  if(!file.type.startsWith('image/')){
+        setErrors({
+          file: 'The file must be an image'
+        });
+        return;
+      }
+      if(file.size > 5 * 1024 * 1024){
+        setErrors({
+          file: 'The file must be less than 5MB'
+        });
+        return;
+      } */
+      
+      
     }
   };
 
@@ -72,7 +86,11 @@ export function ModalAccount({ user, openChangeModal }) {
        <div className="modalAccount">
         <div className="modalAccount__aside">
           <div className="modalAccount__header">
-            <img className='modalAccount__avatar' src={user?.["Avatar URL"]} alt="logo" />
+            <span className={`modalAccount__color ${checkProfilePicture(user) === '' ? '' : 'modalAccount__color--null'}`} 
+              style={profileStyle(user)}>
+              {user?.Name.charAt(0)}
+            </span>
+            <img className={`modalAccount__avatar ${checkProfilePicture(user) === '' ? 'modalAccount__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="logo" />
             <span className='modalAccount__edit' onClick={handleEditClick}>Edit</span>
           </div>
         </div>

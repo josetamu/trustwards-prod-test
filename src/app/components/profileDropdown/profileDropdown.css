@@ -34,11 +34,11 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 5px;
     padding: 3.5px;
   }
 
-  .profileDropdown__header__avatar{
+  .profileDropdown__avatar{
     width: 25px;
     height: 25px;
     border-radius: 100%;
@@ -46,7 +46,30 @@
     padding: 2px;
   }
 
-  .profileDropdown__header__name{
+  .profileDropdown__avatar--null{
+    display: none;
+  }
+
+  .profileDropdown__color{
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    border: 1px solid var(--border-strong-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--avatar-color);
+    background-color: var(--avatar-background);
+    text-transform: uppercase;
+  }
+
+  .profileDropdown__color--null{
+    display: none;
+  }
+  
+  .profileDropdown__name{
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--sidebar-items-color);
@@ -57,7 +80,7 @@
     opacity: 0;
   }
 
-  .profileDropdown__header__name--open{
+  .profileDropdown__name--open{
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--body-strong-color);

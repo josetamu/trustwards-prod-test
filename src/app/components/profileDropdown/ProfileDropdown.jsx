@@ -7,7 +7,7 @@ import { profilePages } from '../sideBar/Sidebar';
 import { Dropdown } from '../dropdown/Dropdown';
 
 
-export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, avatar }) => {
+export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle }) => {
 //Here the dropdown's menu is defined by mapping the profilePages array
     const ProfileDropdownMenu = () => {
         return(
@@ -55,6 +55,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
 
     }
 
+
     return (
         <div className={`profileDropdown ${isSidebarOpen ? 'profileDropdown--open' : ''}`} 
           onMouseEnter={() => isSidebarOpen && setIsDropdownOpen(true)} 
@@ -67,10 +68,12 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
             >
                 <div className={`profileDropdown__profile ${isSidebarOpen ? 'profileDropdown__profile--open' : ''}`}>
                 <div className="profileDropdown__header">
-                    {avatar && (
-                        <img className="profileDropdown__header__avatar" src={avatar} alt="avatar" />
-                    )}
-                    <span className={`${isSidebarOpen ? 'profileDropdown__header__name--open' : 'profileDropdown__header__name'}`}>{user?.Name || "User"}</span> 
+                    <span className={`profileDropdown__color ${checkProfilePicture(user) === '' ? '' : 'profileDropdown__color--null'}`} 
+                        style={profileStyle(user)}>
+                          {user?.Name.charAt(0)}
+                    </span> 
+                        <img className={`profileDropdown__avatar ${checkProfilePicture(user) === '' ? 'profileDropdown__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="avatar" />
+                    <span className={`${isSidebarOpen ? 'profileDropdown__name--open' : 'profileDropdown__name'}`}>{user?.Name || "User"}</span> 
                 </div>
                 <div className={`${isSidebarOpen ? 'profileDropdown__icons--open' : 'profileDropdown__icons'}`}>
                     <span className="profileDropdown__icons--down">
