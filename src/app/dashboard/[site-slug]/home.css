@@ -97,6 +97,24 @@
     color: var(--accent-color);
     background-color: var(--accent-bg-color);
 }
+
+.siteView__content{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.siteView__content-header{
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    height: 100%;
+    width: 100%;
+}
 @media (max-width: 767px) {
     .siteView__header{
         height: 150px;

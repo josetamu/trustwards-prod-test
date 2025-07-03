@@ -526,7 +526,8 @@ const handleBackdropClick = useCallback((e) => {
         fetchSites,
         createNewSite,
         checkSitePicture,
-        SiteStyle
+        SiteStyle,
+        showNotification
     };
 
     return (

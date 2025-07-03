@@ -5,7 +5,7 @@ import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '../layout';
 import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
-
+import ScriptCopy from '../../components/ScriptCopy/ScriptCopy';
 // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
 const generateUniqueSiteName = (baseName, currentSiteId, webs) => {
     const existingNames = webs
@@ -26,7 +26,7 @@ const generateUniqueSiteName = (baseName, currentSiteId, webs) => {
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs, checkSitePicture, SiteStyle, user, fetchSites } = useDashboard();
+    const { webs, checkSitePicture, SiteStyle, user, fetchSites, showNotification } = useDashboard();
     const selectedSite = webs.find(site => site.id === siteSlug);
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState(selectedSite?.Name);
@@ -168,22 +168,34 @@ function Home() {
                     </span>
                 </div>
                 <span className={`siteView__plan ${siteData?.Plan === 'Pro' ? 'siteView__plan--pro' : ''}`}>{siteData?.Plan}</span>
-                
-
-            </div>
-            <div className='siteView__content'>
-                <div>
-                    <h1 style={{color: 'var(--body-strong-color)'}}>{siteData?.Name}</h1>
-                </div>
-            </div>
-            {/* Hidden input to open file selector */}
-            <input className='siteView__fileInput'
+                {/* Hidden input to open file selector */}
+                <input className='siteView__fileInput'
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 accept="image/*"
                 
             />
+                
+
+            </div>
+            <div className='siteView__content'>
+                <div className='siteView__content-header'>
+                    <h1 style={{color: 'var(--body-strong-color)'}}>{siteData?.Name}</h1>
+                    <ScriptCopy showNotification={showNotification}/>
+                </div>
+                <div className='home__installation-container'>
+                    <div className='home__installation-header'>
+                        <h2>Installation</h2>
+                        <div className='home__verify'>
+                            <span>Verify</span>
+                        </div>
+                    </div>
+                    <h2>Installation</h2>
+                    <p>Copy and paste the following code into the head section of your website:</p>
+                    <ScriptCopy showNotification={showNotification}/>
+                </div>
+            </div>
         </div>
     );
 }
