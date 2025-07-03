@@ -8,6 +8,7 @@ export function Dropdown({ open, menu, onClose, children, className = "" }) {
   const containerRef = useRef(null);
   const menuRef = useRef(null);
   const dropdownId = useId();
+  const [fixedStyle, setFixedStyle] = React.useState(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -26,6 +27,36 @@ export function Dropdown({ open, menu, onClose, children, className = "" }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, onClose]);
 
+  // Calculate fixed position for sidebarSites-dropdown
+  useEffect(() => {
+    if (
+      open &&
+      className.includes('sidebarSites-dropdown') &&
+      containerRef.current &&
+      menuRef.current
+    ) {
+      const toggleRect = containerRef.current.getBoundingClientRect();
+      if (window.innerWidth < 767) {
+        // Responsive: menú ocupa todo el ancho de la pantalla
+        setFixedStyle({
+          position: 'fixed',
+          top: toggleRect.bottom + 4,
+          left: 0,
+          right: 0,
+        });
+      } else {
+        setFixedStyle({
+          position: 'fixed',
+          top: toggleRect.bottom + 4,
+          left: toggleRect.left,
+          width: toggleRect.width,
+        });
+      }
+    } else {
+      setFixedStyle(null);
+    }
+  }, [open, className]);
+
   return (
     <div
       className={`dropdown ${className}`}
@@ -39,6 +70,7 @@ export function Dropdown({ open, menu, onClose, children, className = "" }) {
             {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
             className="dropdown__menu"
             ref={menuRef}
+            style={fixedStyle ? fixedStyle : undefined}
           >
             {menu}
           </motion.div>
@@ -47,4 +79,3 @@ export function Dropdown({ open, menu, onClose, children, className = "" }) {
     </div>
   );
 }
-

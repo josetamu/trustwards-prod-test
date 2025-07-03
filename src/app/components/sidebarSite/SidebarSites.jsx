@@ -258,5 +258,3 @@ export function SidebarSites ({avatar, name, isSidebarOpen, setIsModalOpen, setM
 }
 
     
-
-

@@ -1,0 +1,102 @@
+.scanner__wrapper {
+  width: 100%;
+  max-width: 900px;
+  padding: 50px;
+  gap: 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.scanner__top-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.scanner__header {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.scanner__title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-negative);
+  color: var(--body-semistrong-color);
+}
+
+.scanner__paragraph {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--body-fresco-color);
+  letter-spacing: var(--letter-spacing-negative);
+  max-width: 250px;
+}
+
+.scanner__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.scanner__scan {
+  background: var(--accent-bg-color);
+  color: var(--accent-color);
+  box-shadow: var(--blue-button-shadow);
+  border: none;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: var(--letter-spacing-negative);
+  cursor: pointer;
+}
+
+.scanner__monthly {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-negative);
+  color: var(--body-semistrong-color);
+}
+.scanner__monthly-label {
+  display: inline-block;
+}
+.scanner__monthly-count {
+  font-weight: 500;
+}
+.scanner__progress-bar {
+  width: 120px;
+  height: 7px;
+  background: #eee;
+  border-radius: 3.5px;
+  overflow: hidden;
+}
+.scanner__progress-bar-inner {
+  height: 100%;
+  background: #0070f3;
+  border-radius: 3.5px;
+}
+
+.scanner__main-box {
+  background: var(--wrappers-fresco-color);
+  border-radius: 16px;
+  min-height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scanner__main-box-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scanner__main-box-text {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: var(--letter-spacing-negative);
+  color: var(--body-fresco-color);
+}
