@@ -88,20 +88,6 @@
   border: none;
 }
 
-
-
-@media (max-width: 767px) {
-.sidebarSites__site--open .dropdown{
-    width: 100%;
-    justify-content: flex-end;
-    display: flex;
-  } 
-  .sidebarSites__site--open .dropdown__menu{
-    width: 100%;
-    margin-top: 25px;
-  }
-}
-
 /* Site Dropdown */
 .site-dropdown {
   position: relative;
@@ -148,6 +134,16 @@
     transform-origin: top right;
   }
 }
+@media (max-width: 767px) {
+  .sidebarSites__site--open .dropdown{
+      width: 100%;
+      justify-content: flex-end;
+      display: flex;
+    } 
+    .sidebarSites__site--open .dropdown__menu{
+      width: 100%;
+    }
+  }
 
 /* Profile Dropdown */
 .profileDropdown-dropdown {

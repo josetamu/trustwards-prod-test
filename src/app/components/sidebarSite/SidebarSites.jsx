@@ -254,5 +254,3 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
 }
 
     
-
-
