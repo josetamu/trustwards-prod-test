@@ -92,7 +92,7 @@ const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteDa
 // Site: Card/list for a single site
 export const Site = ({
   id, text, onRemove, setIsModalOpen, setModalType,
-  isModalOpen, setSiteData, siteData, isGridView
+  isModalOpen, modalType, setSiteData, siteData, isGridView, checkSitePicture, SiteStyle
 }) => {
   // State for delete modal and dropdown
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -147,7 +147,11 @@ export const Site = ({
         <div className="site__visual" />
         <div className="site__footer">
           <div className="site__avatar">
-            <img src={siteData?.["Avatar URL"]} alt="logo" />
+            <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 
+                        style={SiteStyle(siteData)}>
+                          {text.charAt(0)}
+                    </span> 
+            <img className={`site__img ${checkSitePicture(siteData) === '' ? 'site__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt="logo" />
           </div>
           <span className="site__name">{text}</span>
           <div className="site__footer-right">
@@ -155,7 +159,7 @@ export const Site = ({
               className="site-dropdown"
               open={isDropdownOpen}
               onClose={handleDropdownClose}
-              menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
+              menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} modalType={modalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
             >
               <ProButton
                 isActive={isActive}
@@ -194,7 +198,7 @@ export const Site = ({
           className="site-dropdown"
           open={isDropdownOpen}
           onClose={handleDropdownClose}
-          menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
+          menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} modalType={modalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
         >
           <ProButton
             isActive={isActive}

@@ -109,6 +109,10 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
   /*Modal - Upgrade*/
   --upgrade-bg-popular: #0099FE10;
 
+  /*Home*/
+  --home-subtitle-color: #FFFFFF;
+  --home-text-color: #FFFFFFB3;
+  --home-noInstalled-bg: #FFFFFFB3;
 
 
 }
@@ -194,6 +198,10 @@ html[data-theme="dark"] {
     /* Modal - Upgrade*/
     --upgrade-bg-popular: #0099FE10;
 
+    /*Home*/
+    --home-subtitle-color: #FFFFFF;
+    --home-text-color: #FFFFFFB3;
+    --home-noInstalled-bg: #191919b3;
 }
 html[data-theme="dark"] .sidebar__logo-img{
   background: url('/assets/logo-dark-mode.svg');

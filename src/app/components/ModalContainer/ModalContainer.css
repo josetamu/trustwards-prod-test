@@ -13,10 +13,7 @@
     z-index: 1000;
 }
 
-.open {
-    left: var(--sidebar-width-open);
-    width: calc(100vw - var(--sidebar-width-open));
-}
+
 
 .modal {
     background: var(--modal-background);
