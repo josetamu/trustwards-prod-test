@@ -20,6 +20,8 @@ function Dashboard() {
     siteData,
     setIsDropdownOpen,
     createNewSite,
+    checkSitePicture,
+    SiteStyle,
   } = useDashboard();
 
   return (
@@ -34,6 +36,8 @@ function Dashboard() {
       siteData={siteData}
       setIsDropdownOpen={setIsDropdownOpen}
       createNewSite={createNewSite}
+      checkSitePicture={checkSitePicture}
+      SiteStyle={SiteStyle}
     />
   );
 }

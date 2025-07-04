@@ -107,7 +107,11 @@
 }
 .sidebar__home{
   border-bottom: var(--border);  
-  padding: 15px 1px;  
+  padding: 15px 1px; 
+ 
+}
+.sidebar__upper--open .sidebar__home{
+  padding-right: 18px;
 }
 
 /* Header elements */

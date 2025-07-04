@@ -1,10 +1,12 @@
 .sidebar__sites-tooltip-wrapper{
     position: relative;
     width: 100%;
+    
 }
 
 .sidebar__sites-tooltip-wrapper--open{
     position: static;
+    padding-right: 8px;
 }
 
 .sidebarSites__site{
@@ -106,7 +108,7 @@
 
 .sidebarSites__name{
     text-overflow: ellipsis;
-    max-width: 100px;
+    max-width: 92px;
     overflow: hidden;
     white-space: nowrap;
     font-size: var(--sidebar-font-size);

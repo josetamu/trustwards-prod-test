@@ -7,7 +7,8 @@ import './Notification.css';
 const Notification = ({ 
   open = false,
   onClose,
-  children,
+  notificationMessage,
+  position,
   autoClose = 1000 // milliseconds - 1s
 }) => {
   const notificationRef = useRef(null);
@@ -29,11 +30,13 @@ const Notification = ({
       {open && (
         <motion.div
           {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
-          className={`notification`}
+          className={`notification notification--${position}`}
           ref={notificationRef}
         >
           <div className="notification__content">
-            {children}
+            <span className={`notification__message`}>
+              {notificationMessage}
+            </span>
           </div>
         </motion.div>
       )}

@@ -2,6 +2,7 @@
 
 import './dashboard-root.css'
 import './dashboard.css'
+import './[site-slug]/home.css'
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../supabase/supabaseClient';
@@ -14,7 +15,7 @@ import { ModalSupport } from '@components/ModalSupport/ModalSupport'
 import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
 import Notification from '@components/Notification/Notification'
-
+import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
 
 import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
@@ -118,7 +119,7 @@ function DashboardLayout({ children }) {
     }
   }, [appearanceSettings]);
 
-  // Avatar colors pool
+  // Avatar's colors pool
 const avatarColors = {
   black: {
     backgroundColor: '#000000',
@@ -180,7 +181,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'darezo.2809@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -346,10 +347,11 @@ const handleBackdropClick = useCallback((e) => {
       };
 
     //Function to show the notification
-    const showNotification = (message) => {
+    const showNotification = (message, position = 'top') => {
       setNotification({
         open: true,
         message: message,
+        position: position,
       });
     };
 
@@ -560,6 +562,7 @@ const handleBackdropClick = useCallback((e) => {
                     SiteStyle={SiteStyle}
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
+                    {isSiteOpen && <DashboardHeader />}
                     {children}
 
                     <ModalContainer 
@@ -590,12 +593,10 @@ const handleBackdropClick = useCallback((e) => {
                     <Notification
                     open={notification.open}
                     onClose={hideNotification}
-                    position="top-right"
                     autoClose={1500} //duration of the notification in ms
+                    notificationMessage={notification.message}
+                    position={notification.position || 'top'}
                     >
-                    <span className={`notification__message`}>
-                        {notification.message}
-                    </span>
                     </Notification>
                 </div>
             </div>

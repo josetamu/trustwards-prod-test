@@ -1,9 +1,5 @@
 /* SITES */
-.open{
-  left: var(--sidebar-width-open);
-  width: calc(100vw - 220px);
 
-} 
 .sites__wrapper {
   width: 100%;
   max-width: 1200px;

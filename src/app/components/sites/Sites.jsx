@@ -6,7 +6,7 @@ import { NewSite } from '../NewSite/NewSite';
 import Image from 'next/image';
 import './Sites.css'
 
-export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, createNewSite}) => {
+export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, createNewSite, checkSitePicture, SiteStyle}) => {
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
   const [isGridView, setIsGridView] = useState(() => {
@@ -302,6 +302,8 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
               setSiteData={setSiteData}
               siteData={site}
               isGridView={isGridView}
+              checkSitePicture={checkSitePicture}
+              SiteStyle={SiteStyle}
             />
           )
         ))}

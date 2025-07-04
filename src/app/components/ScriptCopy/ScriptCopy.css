@@ -16,4 +16,8 @@
     font-weight: 500;
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
+    white-space: nowrap;
+}
+.scriptCopy__copy {
+    cursor: pointer;
 }
