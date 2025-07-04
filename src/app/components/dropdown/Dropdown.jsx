@@ -37,12 +37,9 @@ export function Dropdown({ open, menu, onClose, children, className = "" }) {
     ) {
       const toggleRect = containerRef.current.getBoundingClientRect();
       if (window.innerWidth < 767) {
-        // Responsive: menú ocupa todo el ancho de la pantalla
         setFixedStyle({
           position: 'fixed',
           top: toggleRect.bottom + 4,
-          left: 0,
-          right: 0,
         });
       } else {
         setFixedStyle({

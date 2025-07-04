@@ -83,7 +83,6 @@
 .dropdown__divider {
   height: 0.8px;
   background: var(--border-strong-color);
-  margin: 4px 0;
   width: 100%;
   border: none;
 }
@@ -141,7 +140,8 @@
       display: flex;
     } 
     .sidebarSites__site--open .dropdown__menu{
-      width: 100%;
+      left: 20px;
+      width: calc(100% - 40px);
     }
   }
 

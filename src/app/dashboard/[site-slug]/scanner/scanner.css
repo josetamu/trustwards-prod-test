@@ -51,6 +51,11 @@
   font-weight: 500;
   letter-spacing: var(--letter-spacing-negative);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  min-height: 32px;
 }
 
 .scanner__monthly {
@@ -59,6 +64,14 @@
   letter-spacing: var(--letter-spacing-negative);
   color: var(--body-semistrong-color);
 }
+
+.scanner__monthly-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+
 .scanner__monthly-label {
   display: inline-block;
 }
@@ -99,4 +112,79 @@
   font-weight: 500;
   letter-spacing: var(--letter-spacing-negative);
   color: var(--body-fresco-color);
+}
+
+.scan__progress-bar {
+  width: 200px;
+  height: 7px;
+  background: #e6f7ff;
+  border-radius: 3.5px;
+  overflow: hidden;
+  border: 2px solid #0070f3;
+}
+
+/* Variante pequeña para el botón */
+.scanner__scan .scan__progress-bar {
+  width: 60px;
+  height: 7px;
+  min-width: 60px;
+  min-height: 7px;
+  margin: 0;
+}
+
+.scan__progress-bar-inner {
+  height: 100%;
+  background: #0070f3;
+  border-radius: 3.5px;
+  transition: width 0.2s linear;
+}
+
+.scanner__result-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 24px;
+  min-width: 320px;
+  max-width: 700px;
+  margin: 32px auto 0 auto;
+}
+
+.scanner__result-title {
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.scanner__result-meta {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.scanner__result-table {
+  width: 100%;
+  font-size: 14px;
+  border-collapse: collapse;
+}
+
+.scanner__result-table th {
+  text-align: left;
+  font-weight: 600;
+  padding-bottom: 6px;
+}
+
+.scanner__result-status--tracked {
+  color: #0070f3;
+  font-weight: 600;
+}
+
+.scanner__result-status--untracked {
+  color: red;
+  font-weight: 600;
+}
+
+.scanner__result-table td {
+  font-size: 12px;
 }

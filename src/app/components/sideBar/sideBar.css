@@ -457,8 +457,7 @@
   .sidebar__container--open{
     padding: 10px;
     border: 1px solid var(--border-fresco-color);
-    height: auto;
-    min-height: 650px;
+    min-height: fit-content;
     gap: 20px;
   }
 
@@ -472,6 +471,7 @@
     flex-direction: column;
     justify-content: space-between;
     margin: 0;
+    padding: 0;
   }
 
   .sidebar__home{
@@ -514,6 +514,7 @@
     justify-content: space-between;
     width: 100%; 
     justify-self: end;
+    padding: 0;
    
   }
 

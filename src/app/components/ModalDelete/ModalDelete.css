@@ -31,7 +31,6 @@
 .modal-delete__divider {
   height: 0.8px;
   background: var(--border-strong-color);
-  margin: 4px 0;
   width: 100%;
   border: none;
 }
