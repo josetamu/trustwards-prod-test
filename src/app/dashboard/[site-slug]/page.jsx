@@ -7,7 +7,59 @@ import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import ScriptCopy from '../../components/ScriptCopy/ScriptCopy';
 
+function CircleChart({data, centerText, centerLabel}) {
+    const radius = 50;
+    const strokeWidth = 15;
+    const circumference = 2 * Math.PI * radius;
+    let offset = 0;
 
+    const totalValue = data.reduce((sum, d) => sum + d.value, 0);
+    return (
+        <svg width="140" height="140" viewBox="0 0 140 140">
+      <g transform="translate(70,70)">
+        {data.map((d, i) => {
+          const value = d.value;
+          const dash = (value / totalValue) * circumference;
+          const dashArray = `${dash} ${circumference - dash}`;
+          const circle = (
+            <circle
+              key={i}
+              r={radius}
+              fill="none"
+              stroke={d.color}
+              strokeWidth={strokeWidth}
+              strokeDasharray={dashArray}
+              strokeDashoffset={-offset}
+              style={{ transition: "stroke-dasharray 0.3s" }}
+            />
+          );
+          offset += dash;
+          return circle;
+        })}
+      </g>
+      <text
+        x="70"
+        y="70"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="22"
+        fontWeight="bold"
+        fill="#888"
+      >
+        {centerText}
+      </text>
+      <text
+        x="70"
+        y="90"
+        textAnchor="middle"
+        fontSize="12"
+        fill="#888"
+      >
+        {centerLabel}
+      </text>
+    </svg>
+    );
+};
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
@@ -51,7 +103,91 @@ const marketing = /* scanMarketing || */ 0;
 const other = /* scanOther || */ 0;
 const social = /* scanSocial || */ 0;
 
+const usages = [
+    {
+        title: 'Pages',
+        current: 6,
+        total: 12,
+        percentage: 6 / 12,
+    },
+    {
+        title: 'Monthly scans',
+        current: 2,
+        total: 3,
+        percentage: 2 / 3,
+    },
+    
+    {
+        title: 'Monthly Visitors',
+        current: 217,
+        total: 1000,
+        percentage: 217 / 1000,
+    },
+]
 
+const complyHealthStatus = 78;
+const complyHealth = [
+    {
+        region: 'Europe',
+        current: 9,
+        total: 12,
+    },
+    {
+        region: 'North America',
+        current: 5,
+        total: 6,
+    },
+    {
+        region: 'South America',
+        current: 3,
+        total: 4,
+    },
+    {
+        region: 'Asia',
+        current: 6,
+        total: 6,
+    },
+    {
+        region: 'Africa',
+        current: 4,
+        total: 5,
+    },
+    {
+        region: 'Oceania',
+        current: 2,
+        total: 3,
+    },
+]
+
+const analyticsCookies = [
+    {
+        title: 'Accepted cookies',
+        value: '11,054',
+        color: 'blue',
+    },
+    {
+        title: 'Modified cookies',
+        value: '4,627',
+        color: 'celeste',
+    },
+    {
+        title: 'Rejected cookies',
+        value: '12,653',
+        color: 'red',
+    },
+    {
+        title: 'No answer',
+        value: '1,768',
+        color: 'orange',
+    },
+]
+
+const cookiesData = [
+    { value: 11054, color: "#2196f3" },   // azul
+    { value: 4627, color: "#90caf9" },    // celeste
+    { value: 12653, color: "#f44336" },   // rojo
+    { value: 1768, color: "#ff9800" },    // naranja
+  ];
 
     return (
     
@@ -190,6 +326,102 @@ const social = /* scanSocial || */ 0;
                                     <div className="home__fullView">
                                         <div className="home__fullView-text">To have a full view go to the <a href={`/dashboard/${siteData?.id}/scanner`} className="home__fullView-link">scanner.</a></div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="home__bottom">
+                        
+                        <div className="home__cardInfo">
+                            <div className="home__cardInfo-header">
+                                <span className="home__cardInfo-title">Site Usage</span>
+                                <span className="home__cardInfo-plan">{siteData?.Plan}</span>
+                            </div>
+                            {noInstalled()}
+                            <div className="home__cardInfo-content">
+                                {siteData?.Plan === 'Free' && (
+                                <div className="home__cardInfo-upgrade">
+                                    <span className="home__cardInfo-enjoy">Enjoy unlimited usage. <span className="home__cardInfo-enjoy--upgrade">Upgrade</span> this site to pro</span>
+                                </div>
+                                )}
+                                <div className="home__usages">
+                                    <div className="home__usage">
+                                        <div className="home__usage-header">
+                                            <span className="home__usage-title">Pages</span>
+                                            <span className="home__usage-value">{usages[0].current}/{usages[0].total}</span>
+                                        </div>
+                                        <div className="home__pagesBar">
+                                            <div className="home__pagesBar-fill"></div>
+                                            <div className="home__pagesBar-fill--color" style={{width: `${usages[0].percentage * 100}%`}}></div>
+                                        </div>
+                                    </div>
+                                    <div className="home__usage">
+                                    <div className="home__usage-header">
+                                            <span className="home__usage-title">Monthly scans</span>
+                                            <span className="home__usage-value">{usages[1].current}/{usages[1].total}</span>
+                                        </div>
+                                        <div className="home__pagesBar">
+                                            <div className="home__pagesBar-fill"></div>
+                                            <div className="home__pagesBar-fill--color" style={{width: `${usages[1].percentage * 100}%`}}></div>
+                                        </div>
+                                    </div>
+                                    <div className="home__usage">
+                                        <div className="home__usage-header">
+                                                <span className="home__usage-title">Monthly Visitors</span>
+                                                <span className="home__usage-value">{usages[2].current}/{usages[2].total}</span>
+                                        </div>
+                                        <div className="home__pagesBar">
+                                            <div className="home__pagesBar-fill"></div>
+                                            <div className="home__pagesBar-fill--color" style={{width: `${usages[2].percentage * 100}%`}}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="home__buttonUpgrade">
+                                    <span className="home__buttonUpgrade-text">Upgrade</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="home__cardInfo home__cardInfo--analytics">
+                            <div className="home__cardInfo-header">
+                                <span className="home__cardInfo-title">Analytics</span>
+                            </div>
+                            {noInstalled()}
+                            <div className="home__cardInfo-content home__cardInfo-content--analytics">
+                                <div className="home__cookiesDisplayed"> 
+                                    <CircleChart 
+                                    data={cookiesData} 
+                                    centerText="12,653" 
+                                    centerLabel="" />
+                                </div>
+                                <div className="home__analytics">
+                                    {analyticsCookies.map((item, index) => (
+                                        <div className="home__cookie" key={index}>
+                                            <div className={`home__color home__color--${item.color}`}></div>
+                                            <div className="home__cookie-text">
+                                                <span className="home__cookie-title">{item.title}</span>
+                                                <span className="home__cookie-value">{item.value}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="home__cardInfo">
+                            <div className="home__cardInfo-header">
+                                <span className="home__cardInfo-title">Comply Health</span>
+                            </div>
+                            {noInstalled()}
+                            <div className="home__cardInfo-content">
+                                <div className="home__complyHealth">
+                                    <span className="home__complyHealth-text">{complyHealthStatus}</span>
+                                </div>
+                                <div className="home__complyHealth-datas">
+                                        {complyHealth.map((item, index) => (
+                                            <div className="home__complyHealth-data" key={index}>
+                                                <span className="home__complyHealth-region">{item.region}</span>
+                                                <span className="home__complyHealth-value">{item.current}/{item.total}</span>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
                         </div>

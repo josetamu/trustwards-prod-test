@@ -51,9 +51,9 @@ const handleImgEditClick = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Handle file upload logic here
+      //file upload logic here
       console.log('File selected:', file);
-      // Add your file upload logic here
+      // file upload logic here
     }
   };
 

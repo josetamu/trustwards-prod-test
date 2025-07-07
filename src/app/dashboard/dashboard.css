@@ -28,6 +28,7 @@
     overflow-x: hidden;
     flex-direction: column;
     align-items: center;
+    
   }
 
   /* we use this class in the elements we need to readjust when sidebar is open. with only this class we not need modifyers in every element we wanna change*/
