@@ -32,8 +32,12 @@ function Scan({ isScanning, onFinish, onlyBar = false }) {
 
   if (isScanning && onlyBar) {
     return (
-      <div className="scan__progress-bar">
-        <div className="scan__progress-bar-inner" style={{ width: `${progress}%` }}></div>
+      <div className="scan__progress-bar scan__progress-bar--small">
+        <div className="scan__progress-bar-bg"></div>
+        <div
+          className="scan__progress-bar-inner"
+          style={{ width: `${progress}%` }}
+        ></div>
       </div>
     );
   }
@@ -43,6 +47,7 @@ function Scan({ isScanning, onFinish, onlyBar = false }) {
       <div className="scan__progress-box">
         <div className="scan__progress-text">Scanning <span role="img" aria-label="loading">⏳</span></div>
         <div className="scan__progress-bar">
+          <div className="scan__progress-bar-bg"></div>
           <div className="scan__progress-bar-inner" style={{ width: `${progress}%` }}></div>
         </div>
       </div>

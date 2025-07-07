@@ -54,15 +54,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 80px;
-  min-height: 32px;
 }
 
 .scanner__monthly {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: var(--letter-spacing-negative);
-  color: var(--body-semistrong-color);
+  display: flex;
+  flex-direction: column;
+  gap: 8px; 
+  min-width: 165px;
 }
 
 .scanner__monthly-wrapper {
@@ -73,22 +71,49 @@
 }
 
 .scanner__monthly-label {
-  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-negative);
+  color: var(--body-fresco-color);
 }
 .scanner__monthly-count {
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-negative);
+  color: var(--body-semistrong-color);
 }
 .scanner__progress-bar {
-  width: 120px;
-  height: 7px;
-  background: #eee;
-  border-radius: 3.5px;
+  position: relative;
+  width: 100%;
+  height: 11px;
+  background: var(--content-background);
+  border-radius: 7px;
+  border: 2px solid var(--border-fresco-color);
+  padding: 2px 0;
   overflow: hidden;
+  box-sizing: border-box;
 }
+
+.scanner__progress-bar-background {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: var(--wrappers-fresco-color);
+  border-radius: 5px;
+}
+
 .scanner__progress-bar-inner {
-  height: 100%;
-  background: #0070f3;
-  border-radius: 3.5px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  bottom: 2px;
+  height: auto;
+  background: var(--accent-bg-color);
+  border-radius: 3px;
+  transition: width 0.3s cubic-bezier(.4,1.3,.6,1);
+  width: 0;
 }
 
 .scanner__main-box {
@@ -105,6 +130,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 12px;
 }
 
 .scanner__main-box-text {
@@ -114,77 +140,85 @@
   color: var(--body-fresco-color);
 }
 
-.scan__progress-bar {
-  width: 200px;
-  height: 7px;
-  background: #e6f7ff;
-  border-radius: 3.5px;
-  overflow: hidden;
-  border: 2px solid #0070f3;
-}
-
-/* Variante pequeña para el botón */
-.scanner__scan .scan__progress-bar {
-  width: 60px;
-  height: 7px;
-  min-width: 60px;
-  min-height: 7px;
-  margin: 0;
-}
-
-.scan__progress-bar-inner {
-  height: 100%;
-  background: #0070f3;
-  border-radius: 3.5px;
-  transition: width 0.2s linear;
-}
-
-.scanner__result-card {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px #0001;
-  padding: 24px;
-  min-width: 320px;
-  max-width: 700px;
-  margin: 32px auto 0 auto;
-}
-
-.scanner__result-title {
-  font-weight: 700;
-  font-size: 20px;
-  margin-bottom: 8px;
-}
-
-.scanner__result-meta {
-  font-size: 12px;
-  color: #888;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.scanner__result-table {
+.scanner__card {
+  position: relative;
   width: 100%;
-  font-size: 14px;
-  border-collapse: collapse;
+  background: var(--content-background);
+  border: 1px solid var(--border-fresco-color);
+  border-radius: 16px;
+  box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
 }
 
-.scanner__result-table th {
-  text-align: left;
+.scanner__card-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+  gap: 25px;
+}
+
+.scanner__card-title {
   font-weight: 600;
-  padding-bottom: 6px;
+  font-size: 18px;
+  letter-spacing: var(--letter-spacing-negative);
+  color: var(--body-semistrong-color);
 }
 
-.scanner__result-status--tracked {
-  color: #0070f3;
+.scanner__card-scripts-count {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  font-size: 10px;
+  color: var(--body-light-color);;
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-negative);
+  background: var(--wrappers-fresco-color);
+  border-radius: 4px;
+  padding: 3px;
+}
+
+.scanner__card-divider {
+  width: 100%;
+  height: 1px;
+  background: #ececec;
+  margin: 0 0 4px 0;
+  border-radius: 1px;
+}
+
+.scanner__card-table {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.scanner__card-table-header,
+.scanner__card-table-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2.5fr;
+  align-items: center;
+  font-size: 13px;
+}
+
+.scanner__card-table-title {
   font-weight: 600;
-}
-
-.scanner__result-status--untracked {
-  color: red;
-  font-weight: 600;
-}
-
-.scanner__result-table td {
   font-size: 12px;
+  color: var(--body-fresco-color);
+  letter-spacing: var(--letter-spacing-negative);
+  display: flex;
+  gap: 5px;
+}
+
+.scanner__card-table-script {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--body-fresco-color);
+  letter-spacing: var(--letter-spacing-negative);
+}
+
+.scanner__card-status--tracked {
+  color: var(--accent-bg-color);
+  font-weight: 600;
+}
+.scanner__card-status--untracked {
+  color: var(--warning-color);
+  font-weight: 600;
 }
