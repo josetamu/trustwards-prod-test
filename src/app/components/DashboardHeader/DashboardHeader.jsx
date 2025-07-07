@@ -2,6 +2,7 @@ import './DashboardHeader.css';
 import { useDashboard } from '../../dashboard/layout';
 import { useState, useRef, useEffect } from 'react';
 
+
 // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
 const generateUniqueSiteName = (baseName, currentSiteId, webs) => {
     const existingNames = webs
@@ -22,27 +23,25 @@ const generateUniqueSiteName = (baseName, currentSiteId, webs) => {
 
 
 function DashboardHeader() {
-    const { siteData,  checkSitePicture, SiteStyle, webs, supabase, user, fetchSites, setSiteData } = useDashboard();
+    const { siteData, checkSitePicture, SiteStyle, webs, supabase, user, fetchSites, setSiteData, setModalType, setIsModalOpen, setUserSettings } = useDashboard();
     const [isEditing, setIsEditing] = useState(false);
-    const [editedName, setEditedName] = useState(siteData?.Name);
+    const [editedName, setEditedName] = useState('');
     const inputRef = useRef(null);
     const fileInputRef = useRef(null);
-    const selectedSite = webs.find(site => site.id === siteData?.id);
 
-        // When we enter edit mode, select the text
-  useEffect(() => {
+    // Update editedName when siteData changes
+    useEffect(() => {
+        if (siteData?.Name) {
+            setEditedName(siteData.Name);
+        }
+    }, [siteData?.Name]);
+
+    // When we enter edit mode, select the text
+    useEffect(() => {
         if (isEditing && inputRef.current) {
             inputRef.current.select();
         }
     }, [isEditing]); 
-
-    // Update siteData when selectedSite changes
-    useEffect(() => {
-        if (selectedSite) {
-            setSiteData(selectedSite);
-            setEditedName(selectedSite.Name);
-        }
-    }, [selectedSite]); 
 const handleImgEditClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click(); // Open local files
@@ -123,7 +122,12 @@ const handleImgEditClick = () => {
               setIsEditing(false);
           }
       };
-    return (
+    // Don't render if siteData is not available
+    if (!siteData) {
+        return null;
+    }
+    
+    return (  
         <div className='dashboardHeader'>
             <div className='dashboardHeader__header'>
                 <div className='dashboardHeader__avatar'>
@@ -149,7 +153,12 @@ const handleImgEditClick = () => {
                     }
                     </span>
                 </div>
-                <span className={`dashboardHeader__plan ${siteData?.Plan === 'Pro' ? 'dashboardHeader__plan--pro' : ''}`}>{siteData?.Plan}</span>
+                <span className={`dashboardHeader__plan ${siteData?.Plan === 'Pro' ? 'dashboardHeader__plan--pro' : ''}`} onClick={() => {
+                    setModalType('Upgrade');
+                    setIsModalOpen(true);
+                }}>
+                    {siteData?.Plan || 'Free'}
+                </span>
                 {/* Hidden input to open file selector */}
                 <input className='dashboardHeader__fileInput'
                 type="file"

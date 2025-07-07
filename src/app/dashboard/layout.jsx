@@ -6,7 +6,7 @@ import './[site-slug]/home.css'
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../supabase/supabaseClient';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
 import { Sidebar, otherpages } from '@components/sideBar/Sidebar'
 import { ModalContainer } from '@components/ModalContainer/ModalContainer'
@@ -23,6 +23,7 @@ export const useDashboard = () => useContext(DashboardContext);
 
 function DashboardLayout({ children }) {
   const router = useRouter();
+  const params = useParams();
   const { theme, setTheme } = useTheme();
 
   // Sidebar state && Site state
@@ -290,6 +291,28 @@ const SiteStyle = (site) => {
     _loginDevUser();
   }, []);
 
+  // Update global siteData when navigating to a specific site
+  useEffect(() => {
+    const siteSlug = params['site-slug'];
+    if (siteSlug && webs.length > 0) {
+      const selectedSite = webs.find(site => site.id === siteSlug);
+      if (selectedSite) {
+        setSiteData(selectedSite);
+        setIsSiteOpen(true);
+      }
+    } else if (!siteSlug) {
+      setSiteData(null);
+      setIsSiteOpen(false);
+    }
+  }, [params, webs, setSiteData, setIsSiteOpen]);
+
+  // Set userSettings based on modalType
+  useEffect(() => {
+    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Upgrade') {
+      setUserSettings(modalType);
+    }
+  }, [modalType]);
+
 
 //Global function to close modals with escape key
 const handleKeyDown = useCallback((e) => {
@@ -529,7 +552,8 @@ const handleBackdropClick = useCallback((e) => {
         createNewSite,
         checkSitePicture,
         SiteStyle,
-        showNotification
+        showNotification,
+        supabase
     };
 
     return (
