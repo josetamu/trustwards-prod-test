@@ -39,7 +39,7 @@ const defaultScanResults = [
 function ResultCardArray({ results }) {
   return (
     <>
-      {results.map((cat, idx) => (
+      {results.map((cat) => (
         <div className="scanner__card" key={cat.category}>
             <div className='scanner__card-wrapper'>
                 <div className="scanner__card-scripts-count">
@@ -87,18 +87,19 @@ function ResultCardArray({ results }) {
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const selectedSite = siteSlug || "My Site";
 
     const [scanCount, setScanCount] = useState(0);
     const [isScanning, setIsScanning] = useState(false);
     const [scanDone, setScanDone] = useState(false);
     const MAX_SCANS = 3;
     const [scanResults, setScanResults] = useState(defaultScanResults);
+    const [scanSession, setScanSession] = useState(0);
 
     const startScan = () => {
         if (isScanning || scanCount >= MAX_SCANS) return;
-        setIsScanning(true);
         setScanDone(false);
+        setIsScanning(true);
+        setScanSession(prev => prev + 1);
     };
 
     const handleScanFinish = () => {
@@ -117,7 +118,7 @@ function Home() {
                 <div className='scanner__actions'>
                     <button className="scanner__scan" onClick={startScan} disabled={isScanning || scanCount >= MAX_SCANS}>
                         {isScanning ? (
-                            <Scan isScanning={isScanning} onlyBar />
+                            <Scan isScanning={isScanning} onlyBar key={scanSession} />
                         ) : 'Scan'}
                     </button>
                     <div className="scanner__monthly">
@@ -127,10 +128,12 @@ function Home() {
                         </div>
                         <div className="scanner__progress-bar">
                             <div className="scanner__progress-bar-background"></div>
-                            <div
-                                className="scanner__progress-bar-inner"
-                                style={{ width: `${(scanCount / MAX_SCANS) * 100}%` }}
-                            ></div>
+                            <div className="scanner__progress-bar-inner">
+                                <div
+                                    className="scanner__progress-bar-fill"
+                                    style={{ transform: `scaleX(${(scanCount / MAX_SCANS)})` }}
+                                ></div>
+                            </div>
                         </div>
                     </div>
                 </div>
