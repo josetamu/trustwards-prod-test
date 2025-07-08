@@ -16,8 +16,17 @@
     font-weight: 500;
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
+    max-width: 540px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 .scriptCopy__copy {
     cursor: pointer;
+}
+
+@media (max-width: 767px) {
+    .scriptCopy__script {
+        max-width: 480px;
+    }
 }

@@ -121,6 +121,8 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
   --home-modified-color: #0099fe80;
   --home-rejected-color: #F61C0D;
   --home-noanswer-color: #FE8700;
+  --home-chart-color: #666666;
+  --home-chart-icon-color: #F3F3F3;
 
 
 }
@@ -212,6 +214,8 @@ html[data-theme="dark"] {
     --home-noInstalled-bg: #191919b3;
     --home-bar-color: #666666;
     --home-complyHealth-status-color: #FFFFFF;
+    --home-chart-color: #FFFFFF;
+    --home-chart-icon-color: #272727;
 }
 html[data-theme="dark"] .sidebar__logo-img{
   background: url('/assets/logo-dark-mode.svg');

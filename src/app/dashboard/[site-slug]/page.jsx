@@ -7,15 +7,16 @@ import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import ScriptCopy from '../../components/ScriptCopy/ScriptCopy';
 
-function CircleChart({data, centerText, centerLabel}) {
-    const radius = 50;
-    const strokeWidth = 15;
+//function to create a circle chart
+function CircleChart({data, centerText, centerLabel, centerIcon}) {
+    const radius = 53.5;
+    const strokeWidth = 12;
     const circumference = 2 * Math.PI * radius;
     let offset = 0;
 
     const totalValue = data.reduce((sum, d) => sum + d.value, 0);
     return (
-        <svg width="140" height="140" viewBox="0 0 140 140">
+    <svg className="home__circleChart" viewBox="0 0 140 140">
       <g transform="translate(70,70)">
         {data.map((d, i) => {
           const value = d.value;
@@ -37,29 +38,43 @@ function CircleChart({data, centerText, centerLabel}) {
           return circle;
         })}
       </g>
+      
+      {/* Center Icon - positioned behind the text */}
+      {centerIcon && (
+        <g transform="translate(35, 50)" style={{zIndex: 0}}>
+          {centerIcon}
+        </g>
+      )}
+      
       <text
         x="70"
         y="70"
         textAnchor="middle"
         dominantBaseline="middle"
-        fontSize="22"
-        fontWeight="bold"
-        fill="#888"
+        fontSize="14.5"
+        fontWeight="500"
+        fill="var(--home-chart-color)"
+        letterSpacing="var(--letter-spacing-negative)"
+        style={{zIndex: 1}}
       >
         {centerText}
       </text>
       <text
         x="70"
-        y="90"
+        y="85"
         textAnchor="middle"
-        fontSize="12"
-        fill="#888"
+        fontSize="8.5"
+        fill="var(--home-chart-color)"
+        letterSpacing="var(--letter-spacing-negative)"
+        style={{zIndex: 1}}
       >
         {centerLabel}
       </text>
     </svg>
     );
 };
+
+//Home page
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
@@ -68,7 +83,7 @@ function Home() {
     const [siteData, setSiteData] = useState(selectedSite);
     const [isInstalled, setIsInstalled] = useState(false);
 
-
+    //update site data when the selected site changes
     useEffect(() => {
         setSiteData(selectedSite);
     }, [selectedSite]); 
@@ -82,7 +97,7 @@ function Home() {
         notFound();
     }
 
-
+//function to show the no installed message on cards
 const noInstalled = () => {
     if(!isInstalled){
         return (
@@ -97,12 +112,14 @@ const noInstalled = () => {
     }
 }
 
+//variables for the scanner overview
 const general = /* scanGeneral || */ 0;
 const analytics = /* scanAnalytics || */ 0;
 const marketing = /* scanMarketing || */ 0;
 const other = /* scanOther || */ 0;
 const social = /* scanSocial || */ 0;
 
+//variables for the usages
 const usages = [
     {
         title: 'Pages',
@@ -125,6 +142,7 @@ const usages = [
     },
 ]
 
+//variables for the comply health
 const complyHealthStatus = 78;
 const complyHealth = [
     {
@@ -159,6 +177,7 @@ const complyHealth = [
     },
 ]
 
+//variables for the analytics cookies
 const analyticsCookies = [
     {
         title: 'Accepted cookies',
@@ -182,23 +201,29 @@ const analyticsCookies = [
     },
 ]
 
-const cookiesData = [
-    { value: 11054, color: "#2196f3" },   // azul
-    { value: 4627, color: "#90caf9" },    // celeste
-    { value: 12653, color: "#f44336" },   // rojo
-    { value: 1768, color: "#ff9800" },    // naranja
-  ];
+//map colors to hex codes
+const colorMap = {
+    blue: "#2196f3",
+    celeste: "#90caf9", 
+    red: "#f44336",
+    orange: "#ff9800",
+};
+
+//convert analyticsCookies to format for the chart
+const cookiesData = analyticsCookies.map(item => ({
+    value: parseInt(item.value.replace(/,/g, "")),
+    color: colorMap[item.color]
+}));
 
     return (
     
-           <div className='siteView__content'>
-                <div className="home">
-                    {isInstalled ? (
-                        <div className='home__installation-container home__installation-container--installed'>
-                            <ScriptCopy showNotification={showNotification}/>
-                        </div>
-                    ) : (
-                        <div className='home__installation-container'>
+          <div className="home">
+            {isInstalled ? (
+                <div className='home__installation-container home__installation-container--installed'>
+                    <ScriptCopy showNotification={showNotification}/>
+                </div>
+                ) : (
+                    <div className='home__installation-container'>
                         <div className='home__installation-header'>
                             <span className='home__installation-title'>Installation</span>
                             <div className='home__verify' onClick={() => setIsInstalled(true)}>
@@ -247,7 +272,6 @@ const cookiesData = [
                                         </defs>
                                     </svg>
                                     </div>
-                                    
                                 </div>
                                 <div className="home__card home__card--reverse">
                                     <div className="home__card-header">
@@ -291,143 +315,153 @@ const cookiesData = [
                                 </div>
                             </div>
                         </div>
-                        </div>
-                    )}
-                    <div className="home__mid">
-                        <div className="home__midCard"></div>
-                        <div className="home__midCard">
-                            <div className="home__midCard-header">
-                                <span className="home__midCard-title">Scanner Overview</span>
-                                <div className="home__scan">
-                                    <span className="home__scan-text">Scan</span>
-                                </div>
-                            </div>
-                            {noInstalled()}
-                            <div className="home__midCard-content">
-                                <div className="home__scanner">
-                                    <div className="home__scannerItems">
-                                        <div className="home__scannerItem">
-                                            <span className="home__scannerItem-text">General</span>
-                                            <span className="home__scannerItem-text">{general}</span>
-                                        </div>
-                                        <div className="home__scannerItem">
-                                            <span className="home__scannerItem-text">Analytics</span>
-                                            <span className="home__scannerItem-text">{analytics}</span>
-                                        </div>
-                                        <div className="home__scannerItem">
-                                            <span className="home__scannerItem-text">Marketing</span>
-                                            <span className="home__scannerItem-text">{marketing}</span>
-                                        </div>
-                                        <div className="home__scannerItem">
-                                            <span className="home__scannerItem-text">Other</span>
-                                            <span className="home__scannerItem-text">{other}</span>
-                                        </div>
-                                    </div>
-                                    <div className="home__fullView">
-                                        <div className="home__fullView-text">To have a full view go to the <a href={`/dashboard/${siteData?.id}/scanner`} className="home__fullView-link">scanner.</a></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                    <div className="home__bottom">
-                        
-                        <div className="home__cardInfo">
-                            <div className="home__cardInfo-header">
-                                <span className="home__cardInfo-title">Site Usage</span>
-                                <span className="home__cardInfo-plan">{siteData?.Plan}</span>
-                            </div>
-                            {noInstalled()}
-                            <div className="home__cardInfo-content">
-                                {siteData?.Plan === 'Free' && (
-                                <div className="home__cardInfo-upgrade">
-                                    <span className="home__cardInfo-enjoy">Enjoy unlimited usage. <span className="home__cardInfo-enjoy--upgrade">Upgrade</span> this site to pro</span>
-                                </div>
-                                )}
-                                <div className="home__usages">
-                                    <div className="home__usage">
-                                        <div className="home__usage-header">
-                                            <span className="home__usage-title">Pages</span>
-                                            <span className="home__usage-value">{usages[0].current}/{usages[0].total}</span>
-                                        </div>
-                                        <div className="home__pagesBar">
-                                            <div className="home__pagesBar-fill"></div>
-                                            <div className="home__pagesBar-fill--color" style={{width: `${usages[0].percentage * 100}%`}}></div>
-                                        </div>
-                                    </div>
-                                    <div className="home__usage">
-                                    <div className="home__usage-header">
-                                            <span className="home__usage-title">Monthly scans</span>
-                                            <span className="home__usage-value">{usages[1].current}/{usages[1].total}</span>
-                                        </div>
-                                        <div className="home__pagesBar">
-                                            <div className="home__pagesBar-fill"></div>
-                                            <div className="home__pagesBar-fill--color" style={{width: `${usages[1].percentage * 100}%`}}></div>
-                                        </div>
-                                    </div>
-                                    <div className="home__usage">
-                                        <div className="home__usage-header">
-                                                <span className="home__usage-title">Monthly Visitors</span>
-                                                <span className="home__usage-value">{usages[2].current}/{usages[2].total}</span>
-                                        </div>
-                                        <div className="home__pagesBar">
-                                            <div className="home__pagesBar-fill"></div>
-                                            <div className="home__pagesBar-fill--color" style={{width: `${usages[2].percentage * 100}%`}}></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="home__buttonUpgrade">
-                                    <span className="home__buttonUpgrade-text">Upgrade</span>
-                                </div>
+                )}
+                <div className="home__mid">
+                    <div className="home__midCard"></div>
+                    <div className="home__midCard">
+                        <div className="home__midCard-header">
+                            <span className="home__midCard-title">Scanner Overview</span>
+                            <div className="home__scan">
+                                <span className="home__scan-text">Scan</span>
                             </div>
                         </div>
-                        <div className="home__cardInfo home__cardInfo--analytics">
-                            <div className="home__cardInfo-header">
-                                <span className="home__cardInfo-title">Analytics</span>
-                            </div>
-                            {noInstalled()}
-                            <div className="home__cardInfo-content home__cardInfo-content--analytics">
-                                <div className="home__cookiesDisplayed"> 
-                                    <CircleChart 
-                                    data={cookiesData} 
-                                    centerText="12,653" 
-                                    centerLabel="" />
+                        {noInstalled()}
+                        <div className="home__midCard-content">
+                            <div className="home__scanner">
+                                <div className="home__scannerItems">
+                                    <div className="home__scannerItem">
+                                        <span className="home__scannerItem-text">General</span>
+                                        <span className="home__scannerItem-text">{general}</span>
+                                    </div>
+                                    <div className="home__scannerItem">
+                                        <span className="home__scannerItem-text">Analytics</span>
+                                        <span className="home__scannerItem-text">{analytics}</span>
+                                    </div>
+                                    <div className="home__scannerItem">
+                                        <span className="home__scannerItem-text">Marketing</span>
+                                        <span className="home__scannerItem-text">{marketing}</span>
+                                    </div>
+                                    <div className="home__scannerItem">
+                                        <span className="home__scannerItem-text">Other</span>
+                                        <span className="home__scannerItem-text">{other}</span>
+                                    </div>
                                 </div>
-                                <div className="home__analytics">
-                                    {analyticsCookies.map((item, index) => (
-                                        <div className="home__cookie" key={index}>
-                                            <div className={`home__color home__color--${item.color}`}></div>
-                                            <div className="home__cookie-text">
-                                                <span className="home__cookie-title">{item.title}</span>
-                                                <span className="home__cookie-value">{item.value}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="home__cardInfo">
-                            <div className="home__cardInfo-header">
-                                <span className="home__cardInfo-title">Comply Health</span>
-                            </div>
-                            {noInstalled()}
-                            <div className="home__cardInfo-content">
-                                <div className="home__complyHealth">
-                                    <span className="home__complyHealth-text">{complyHealthStatus}</span>
-                                </div>
-                                <div className="home__complyHealth-datas">
-                                        {complyHealth.map((item, index) => (
-                                            <div className="home__complyHealth-data" key={index}>
-                                                <span className="home__complyHealth-region">{item.region}</span>
-                                                <span className="home__complyHealth-value">{item.current}/{item.total}</span>
-                                            </div>
-                                        ))}
+                                <div className="home__fullView">
+                                    <div className="home__fullView-text">To have a full view go to the <a href={`/dashboard/${siteData?.id}/scanner`} className="home__fullView-link">scanner.</a></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> 
+                <div className="home__bottom">
+                    
+                    <div className="home__cardInfo">
+                        <div className="home__cardInfo-header">
+                            <span className="home__cardInfo-title">Site Usage</span>
+                            <span className="home__cardInfo-plan">{siteData?.Plan}</span>
+                        </div>
+                        {noInstalled()}
+                        <div className="home__cardInfo-content">
+                            {siteData?.Plan === 'Free' && (
+                            <div className="home__cardInfo-upgrade">
+                                <span className="home__cardInfo-enjoy">Enjoy unlimited usage. <span className="home__cardInfo-enjoy--upgrade">Upgrade</span> this site to pro</span>
+                            </div>
+                            )}
+                            <div className="home__usages">
+                                <div className="home__usage">
+                                    <div className="home__usage-header">
+                                        <span className="home__usage-title">Pages</span>
+                                        <span className="home__usage-value">{usages[0].current}/{usages[0].total}</span>
+                                    </div>
+                                    <div className="home__pagesBar">
+                                        <div className="home__pagesBar-fill"></div>
+                                        <div className="home__pagesBar-fill--color" style={{width: `${usages[0].percentage * 100}%`}}></div>
+                                    </div>
+                                </div>
+                                <div className="home__usage">
+                                <div className="home__usage-header">
+                                        <span className="home__usage-title">Monthly scans</span>
+                                        <span className="home__usage-value">{usages[1].current}/{usages[1].total}</span>
+                                    </div>
+                                    <div className="home__pagesBar">
+                                        <div className="home__pagesBar-fill"></div>
+                                        <div className="home__pagesBar-fill--color" style={{width: `${usages[1].percentage * 100}%`}}></div>
+                                    </div>
+                                </div>
+                                <div className="home__usage">
+                                    <div className="home__usage-header">
+                                            <span className="home__usage-title">Monthly Visitors</span>
+                                            <span className="home__usage-value">{usages[2].current}/{usages[2].total}</span>
+                                    </div>
+                                    <div className="home__pagesBar">
+                                        <div className="home__pagesBar-fill"></div>
+                                        <div className="home__pagesBar-fill--color" style={{width: `${usages[2].percentage * 100}%`}}></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="home__buttonUpgrade">
+                                <span className="home__buttonUpgrade-text">Upgrade</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="home__cardInfo home__cardInfo--analytics">
+                        <div className="home__cardInfo-header home__cardInfo-header--analytics">
+                            <span className="home__cardInfo-title">Analytics</span>
+                        </div>
+                        {noInstalled()}
+                        <div className="home__cardInfo-content home__cardInfo-content--analytics">
+                            <div className="home__cookiesDisplayed"> 
+                                <CircleChart 
+                                data={cookiesData} 
+                                centerText="12,653" 
+                                centerLabel="Cookies displayed"
+                                centerIcon={
+                                    <g>
+                                        {/* Cookie icon - simple circle with dots */}
+                                        <svg className="home__circleChart-icon" width="70" height="50" viewBox="0 0 102 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0 0H102V20.4545H0V0Z" fill="currentColor"/>
+                                            <path d="M27.2 75V34.0909H68L27.2 75Z" fill="currentColor"/>
+                                            <path d="M54.4 75V34.0909H88.4L54.4 75Z" fill="currentColor"/>
+                                        </svg>
+                                    </g>
+                                } />
+                            </div>
+                            <div className="home__analytics">
+                                {analyticsCookies.map((item, index) => (
+                                    <div className="home__cookie" key={index}>
+                                        <div className={`home__color home__color--${item.color}`}></div>
+                                        <div className="home__cookie-text">
+                                            <span className="home__cookie-title">{item.title}</span>
+                                            <span className="home__cookie-value">{item.value}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="home__cardInfo">
+                        <div className="home__cardInfo-header">
+                            <span className="home__cardInfo-title">Comply Health</span>
+                        </div>
+                        {noInstalled()}
+                        <div className="home__cardInfo-content">
+                            <div className="home__complyHealth">
+                                <span className="home__complyHealth-text">{complyHealthStatus}</span>
+                            </div>
+                            <div className="home__complyHealth-datas">
+                                    {complyHealth.map((item, index) => (
+                                        <div className="home__complyHealth-data" key={index}>
+                                            <span className="home__complyHealth-region">{item.region}</span>
+                                            <span className="home__complyHealth-value">{item.current}/{item.total}</span>
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+          </div>
+          
         
     );
 }

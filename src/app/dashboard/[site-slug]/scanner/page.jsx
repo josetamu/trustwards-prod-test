@@ -34,6 +34,7 @@ const defaultScanResults = [
       ],
     ],
   },
+  
 ];
 
 function ResultCardArray({ results }) {
