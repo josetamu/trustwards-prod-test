@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './Scan.css';
 
+// shows an animated progress bar for a scanning process.
 function Scan({ isScanning, onFinish, onlyBar = false }) {
   const [progress, setProgress] = useState(0);
   const PROGRESS_DURATION = 5000; // ms
   const animRef = useRef();
 
+  // Handles the animation for the scan progress.
   useEffect(() => {
     if (isScanning) {
       setProgress(0);

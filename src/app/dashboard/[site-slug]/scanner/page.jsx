@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import Scan from '@components/scan/Scan.jsx';
 
-// tridimensional array
+// tridimensional array with default scan results grouped by category
 const defaultScanResults = [
   {
     category: 'Marketing',
@@ -36,6 +36,7 @@ const defaultScanResults = [
   },
 ];
 
+// renders scan results grouped by category
 function ResultCardArray({ results }) {
   return (
     <>
@@ -84,6 +85,7 @@ function ResultCardArray({ results }) {
   );
 }
 
+// Manages scan state, triggers scans, and displays results or scan UI.
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
