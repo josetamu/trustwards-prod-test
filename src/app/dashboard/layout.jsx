@@ -122,21 +122,21 @@ function DashboardLayout({ children }) {
 
   // Avatar's colors pool
 const avatarColors = {
-  black: {
-    backgroundColor: '#000000',
+  green: {
+    backgroundColor: '#2FB11F',
     color: '#FFFFFF',
   },
-  white: {
-    backgroundColor: '#FFFFFF',
+  pink: {
+    backgroundColor: '#FF3DDB',
     color: '#000000',
   },
   yellow: {
-    backgroundColor: '#f7b633',
-    color: '#FFFFFF',
+    backgroundColor: '#FEBA00',
+    color: '#000000',
   },
   blue: {
     backgroundColor: '#0099FE',
-    color: '#000000',
+    color: '#FFFFFF',
   },
 };
 
@@ -308,7 +308,7 @@ const SiteStyle = (site) => {
 
   // Set userSettings based on modalType
   useEffect(() => {
-    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Upgrade') {
+    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Plan') {
       setUserSettings(modalType);
     }
   }, [modalType]);
@@ -512,7 +512,7 @@ const handleBackdropClick = useCallback((e) => {
             checkProfilePicture={checkProfilePicture}
             profileStyle={ProfileStyle}
           />)
-        case 'Upgrade':
+        case 'Plan':
           return (
             <ModalUser
               onClose={() => setIsModalOpen(false)}

@@ -1,6 +1,6 @@
 /* Notification Container */
 .notification {
-  position: absolute;
+  position: fixed;
   top: 50px;
   z-index: 9999;
   max-width: 400px;
@@ -24,6 +24,7 @@
   top: auto;
   left: 50%;
   transform: translateX(-50%);
+  position: fixed;
 }
 
 /* Notification Content */

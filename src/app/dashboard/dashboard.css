@@ -22,6 +22,7 @@
     align-items: center;
     overflow-y: auto;
     
+    
   }
 
   /* we use this class in the elements we need to readjust when sidebar is open. with only this class we not need modifyers in every element we wanna change*/
@@ -33,10 +34,12 @@
 
 
   @media (max-width: 767px) {
+    
 
     .app-container{
       width: 100vw;
       background-color: transparent;
+      
       
     }
   .content__container {
@@ -46,6 +49,7 @@
     top: 0px;
     border: 0px;
     border-radius: 0px;
+   
   
   }
   .open{

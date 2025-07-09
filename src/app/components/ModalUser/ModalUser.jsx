@@ -34,7 +34,7 @@ export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSett
                     setAppearanceSettings={setAppearanceSettings}
                     userSettings={userSettings}
                 />
-            case 'Upgrade':
+            case 'Plan':
                 return <ModalUpgradePlan 
                     onClose={() => setIsModalOpen(false)}
                     onSave={onSave}
@@ -46,7 +46,7 @@ export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSett
     }
     
     return (
-        <div className={`modalUser ${userSettings === 'Upgrade' ? 'modalUser--upgrade' : ''}`}>
+        <div className={`modalUser ${userSettings === 'Plan' ? 'modalUser--upgrade' : ''}`}>
             <div className="modalUser__aside">
                 <div className="modalUser__settings">
                     <div className={`modalUser__item ${userSettings === 'Account' ? 'modalUser__item--active' : ''}`} onClick={() => {setUserSettings('Account');}}>
@@ -56,7 +56,7 @@ export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSett
                         <span className="modalUser__item__span">Appearance</span>
                     </div>
                     <div className="modalUser__divider"></div>
-                    <div className={`modalUser__item modalUser__item--upgrade ${userSettings === 'Upgrade' ? 'modalUser__item--active' : ''}`} onClick={() => {setUserSettings('Upgrade');}}>
+                    <div className={`modalUser__item modalUser__item--upgrade ${userSettings === 'Plan' ? 'modalUser__item--active' : ''}`} onClick={() => {setUserSettings('Plan');}}>
                         <span className="modalUser__item__icon">
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clipPath="url(#clip0_439_1015)">

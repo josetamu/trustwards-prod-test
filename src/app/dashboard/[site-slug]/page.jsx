@@ -82,11 +82,37 @@ function Home() {
     const selectedSite = webs.find(site => site.id === siteSlug);
     const [siteData, setSiteData] = useState(selectedSite);
     const [isInstalled, setIsInstalled] = useState(false);
+    const [complyHealthStatus, setComplyHealthStatus] = useState(78);
 
     //update site data when the selected site changes
     useEffect(() => {
         setSiteData(selectedSite);
     }, [selectedSite]); 
+
+//function to handle the gradient of the comply health circle. the 0 and 100 are absolute values. then in the between we have a gradient.
+const gradientHandle = (complyHealthStatus) => {
+    const circle = document.querySelector('.home__complyHealth');
+    if (!circle) {
+        // If element doesn't exist, try again after a short delay
+        setTimeout(() => gradientHandle(complyHealthStatus), 100);
+        return;
+    }
+    
+    let gradient;
+    if (complyHealthStatus === 0) {
+        gradient = '#999';
+      } else if (complyHealthStatus === 100) {
+        gradient = 'var(--accent-bg-color)';
+      } else {
+        gradient = `linear-gradient(180deg, #999 ${100 - complyHealthStatus}%, var(--accent-bg-color), var(--accent-bg-color) 100%)`;
+      }
+    
+    circle.style.background = gradient;
+}
+//update the gradient when the comply health status changes
+    useEffect(() => {
+        gradientHandle(complyHealthStatus);
+    }, [complyHealthStatus]);
 
     // if webs is empty return waiting for the webs to load. Here we could add a loading spinner or a message to the user
     if (!webs || webs.length === 0) {
@@ -143,7 +169,7 @@ const usages = [
 ]
 
 //variables for the comply health
-const complyHealthStatus = 78;
+
 const complyHealth = [
     {
         region: 'Europe',
@@ -177,43 +203,44 @@ const complyHealth = [
     },
 ]
 
-//variables for the analytics cookies
+// Variables for the analytics cookies
 const analyticsCookies = [
     {
         title: 'Accepted cookies',
         value: '11,054',
         color: 'blue',
+        hex: '#0099FE',
     },
     {
         title: 'Modified cookies',
         value: '4,627',
         color: 'celeste',
+        hex: '#0099fe80',
     },
     {
         title: 'Rejected cookies',
         value: '12,653',
         color: 'red',
+        hex: '#F61C0D',
     },
     {
         title: 'No answer',
         value: '1,768',
         color: 'orange',
+        hex: '#FE8700',
     },
-]
+];
 
-//map colors to hex codes
-const colorMap = {
-    blue: "#2196f3",
-    celeste: "#90caf9", 
-    red: "#f44336",
-    orange: "#ff9800",
-};
 
-//convert analyticsCookies to format for the chart
+// Convert analyticsCookies to format for the chart
 const cookiesData = analyticsCookies.map(item => ({
     value: parseInt(item.value.replace(/,/g, "")),
-    color: colorMap[item.color]
+    color: item.hex
 }));
+
+
+
+
 
     return (
     
@@ -400,9 +427,11 @@ const cookiesData = analyticsCookies.map(item => ({
                                     </div>
                                 </div>
                             </div>
-                            <div className="home__buttonUpgrade">
-                                <span className="home__buttonUpgrade-text">Upgrade</span>
-                            </div>
+                            {siteData?.Plan === 'Free' && (
+                                <div className="home__buttonUpgrade">
+                                    <span className="home__buttonUpgrade-text">Upgrade</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="home__cardInfo home__cardInfo--analytics">
@@ -414,7 +443,9 @@ const cookiesData = analyticsCookies.map(item => ({
                             <div className="home__cookiesDisplayed"> 
                                 <CircleChart 
                                 data={cookiesData} 
-                                centerText="12,653" 
+                                centerText={
+                                    (cookiesData[0].value + cookiesData[1].value + cookiesData[3].value).toLocaleString()
+                                }
                                 centerLabel="Cookies displayed"
                                 centerIcon={
                                     <g>

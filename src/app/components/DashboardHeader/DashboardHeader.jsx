@@ -154,7 +154,7 @@ const handleImgEditClick = () => {
                     </span>
                 </div>
                 <span className={`dashboardHeader__plan ${siteData?.Plan === 'Pro' ? 'dashboardHeader__plan--pro' : ''}`} onClick={() => {
-                    setModalType('Upgrade');
+                    setModalType('Plan');
                     setIsModalOpen(true);
                 }}>
                     {siteData?.Plan || 'Free'}
