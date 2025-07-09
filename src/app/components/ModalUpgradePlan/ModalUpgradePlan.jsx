@@ -17,8 +17,8 @@ const ModalUpgradePlan = () => {
                             <span className="modalUpgradePlan__info--underline"> 3 free sites
                                 <Tooltip
                                     message={'All Pro plans include 3 free sites.'} 
-                                    responsivePosition={{ desktop: 'upgrade', mobile: 'bottom' }}
-                                    type='default'
+                                    responsivePosition={{ desktop: 'upgrade', mobile: 'upgrade' }}
+                                  
                                 >
                                 </Tooltip>
                      

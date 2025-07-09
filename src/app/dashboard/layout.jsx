@@ -511,6 +511,7 @@ const handleBackdropClick = useCallback((e) => {
             openChangeModal={openChangeModal}
             checkProfilePicture={checkProfilePicture}
             profileStyle={ProfileStyle}
+            
           />)
         case 'Plan':
           return (
@@ -553,7 +554,10 @@ const handleBackdropClick = useCallback((e) => {
         checkSitePicture,
         SiteStyle,
         showNotification,
-        supabase
+        supabase,
+        isDropdownOpen,
+        
+
     };
 
     return (

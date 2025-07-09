@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 
 
 
-export const ModalAppearance = ({ user, appearanceSettings}) => {
+export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSettings}) => {
     const { theme, setTheme } = useTheme();
     const [selected, setSelected] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
@@ -51,6 +51,7 @@ export const ModalAppearance = ({ user, appearanceSettings}) => {
                 })
                 .eq('userid', user.id);
 
+
             if (error) {
                 console.error('Error saving appearance settings:', error);
             } else {
@@ -58,6 +59,16 @@ export const ModalAppearance = ({ user, appearanceSettings}) => {
                 if (newTheme !== null) setSelected(newTheme);
                 if (newColor !== null) setSelectedColor(newColor);
                 if (newReducedMotion !== null) setReducedMotion(newReducedMotion);
+
+                // Update global state immediately
+                if (setAppearanceSettings) {
+                    setAppearanceSettings(prev => ({
+                        ...prev,
+                        'Theme': themeToSave,
+                        'Accent Color': colorToSave,
+                        'Reduced Motion': motionToSave
+                    }));
+                }
                 
                
             }

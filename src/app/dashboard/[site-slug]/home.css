@@ -598,6 +598,9 @@
     .home__midCard{
         max-width: 70%;
     }
+    .home__installation-container{
+        width: 70%;
+    }
 }
 
 @media (max-width: 767px) {

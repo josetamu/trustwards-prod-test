@@ -15,7 +15,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     const [editedName, setEditedName] = useState(name);
     const inputRef = useRef(null);
     const { fetchSites, user, webs } = useDashboard();
-    
+
     // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
     const generateUniqueSiteName = (baseName, currentSiteId) => {
         const existingNames = webs
@@ -182,7 +182,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
       );
     };
 
-  
+
     return(
         <Link 
             href={`/dashboard/${siteData.id}`}
@@ -196,6 +196,9 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                 }
                 setSelectedSite(siteData);
                 setIsSiteOpen(true);
+                if(window.innerWidth < 767){
+                    setIsSidebarOpen(false);
+                }
             }}
             
         >
@@ -224,7 +227,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                     )}
                 </span> 
             </div>
-            {!isSidebarOpen && window.innerWidth > 767 && (
+            {!isSidebarOpen && window.innerWidth > 767 &&(
                 <Tooltip 
                   message={name} 
                   id={siteData.id}

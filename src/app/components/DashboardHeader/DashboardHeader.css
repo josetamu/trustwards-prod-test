@@ -1,9 +1,12 @@
 .dashboardHeader{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     width: 100%;
     height: 100%;
     align-items: center;
+    border-bottom: 1px solid var(--border-strong-color);
+    justify-content: center;
+    
     
 }
 
@@ -11,11 +14,11 @@
     display: flex;
     flex-direction: row;
     height: 60px;
-    width: 100%;
-    border-bottom: 1px solid var(--border-strong-color);
+    width: 100%;    
     align-items: center;
-    justify-content: center;
     gap: 5px;
+    justify-content: center;
+    padding-left: 104px;
 }
 .dashboardHeader__avatar{
     display: flex;
@@ -96,4 +99,67 @@
 .dashboardHeader__plan--pro{
     color: var(--accent-color);
     background-color: var(--accent-bg-color);
+}
+.dashboardHeader__actions{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-right: 20px;
+    position: relative;
+}
+.dashboardHeader__dots{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 26px;
+    height: 24px;
+    border-radius: 6px;
+    background-color: var(--view-toggle-background);
+    cursor: pointer;
+ 
+}
+.dashboardHeader__dots-dot{
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background-color: var(--site-pro-toggle-text-color);
+ 
+}
+
+.dashboardHeader__builder{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    background-color: var(--accent-bg-color);
+    box-shadow: var(--blue-button-shadow);
+}
+.dashboardHeader__builder-text{
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--accent-color);
+    padding: 5px;
+}
+
+
+@media (max-width: 767px) {
+    .dashboardHeader{
+        padding-top: 70px;
+        
+    }
+    .dashboardHeader__header{
+        padding-left: 40px;
+        justify-content: flex-start;
+    }
+    .dashboardHeader__actions{
+        padding-right: 40px;
+    }
+
 }

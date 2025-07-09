@@ -189,7 +189,11 @@ export const Site = ({
     >
       <div className="site__list-left">
         <div className="site__list-avatar">
-          <img src={siteData?.["Avatar URL"]} alt="logo" />
+          <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 
+                        style={SiteStyle(siteData)}>
+                          {text.charAt(0)}
+                    </span> 
+          <img className={`site__img ${checkSitePicture(siteData) === '' ? 'site__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt="logo" />
         </div>
         <span className="site__list-name">{text}</span>
       </div>
