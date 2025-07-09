@@ -89,25 +89,28 @@ function Home() {
         setSiteData(selectedSite);
     }, [selectedSite]); 
 
-//function to handle the gradient of the comply health circle. the 0 and 100 are absolute values. then in the between we have a gradient.
+// Function to handle the gradient of the comply health circle.
+// If complyHealthStatus is 0 or 100, use the corresponding class.
+// Otherwise, set a CSS variable with the complyHealthStatus value.
 const gradientHandle = (complyHealthStatus) => {
     const circle = document.querySelector('.home__complyHealth');
-    if (!circle) {
-        // If element doesn't exist, try again after a short delay
+    if(!circle){
         setTimeout(() => gradientHandle(complyHealthStatus), 100);
         return;
     }
-    
-    let gradient;
+
+    // Remove all possible gradient classes first
+    circle.classList.remove('home__complyHealth--empty', 'home__complyHealth--full', 'home__complyHealth--gradient');
+
     if (complyHealthStatus === 0) {
-        gradient = '#999';
-      } else if (complyHealthStatus === 100) {
-        gradient = 'var(--accent-bg-color)';
-      } else {
-        gradient = `linear-gradient(180deg, #999 ${100 - complyHealthStatus}%, var(--accent-bg-color), var(--accent-bg-color) 100%)`;
-      }
-    
-    circle.style.background = gradient;
+        circle.classList.add('home__complyHealth--empty');
+    } else if (complyHealthStatus === 100) {
+        circle.classList.add('home__complyHealth--full');
+    } else {
+        circle.classList.add('home__complyHealth--gradient');
+        // Set the CSS variable for complyHealthStatus
+        circle.style.setProperty('--comply-health-status', complyHealthStatus + '%');
+    }
 }
 //update the gradient when the comply health status changes
     useEffect(() => {

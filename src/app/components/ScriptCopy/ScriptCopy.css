@@ -29,4 +29,7 @@
     .scriptCopy__script {
         max-width: 480px;
     }
+    .scriptCopy__copy{
+        width: 40px;
+    }
 }

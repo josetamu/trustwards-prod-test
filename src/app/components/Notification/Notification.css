@@ -14,13 +14,13 @@
 
 /* Position variants */
 .notification--top {
-  top: 20px;
+  top: 100px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .notification--bottom {
-  bottom: 20px;
+  bottom: 100px;
   top: auto;
   left: 50%;
   transform: translateX(-50%);

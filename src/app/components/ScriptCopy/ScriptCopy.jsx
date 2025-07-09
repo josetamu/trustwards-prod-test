@@ -10,7 +10,7 @@ const ScriptCopy = ({ showNotification, position = 'bottom' }) => {
     const script = `
     <script>https://trustwards.io/cdn/${siteSlug}.js</script>
     `;
-
+//copy script to clipboard
     const handleCopy = async () => {
         try {
             await navigator.clipboard.writeText(script);

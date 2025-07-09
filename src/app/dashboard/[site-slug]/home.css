@@ -1,7 +1,7 @@
 .home{
     display: flex;
     flex-direction: column;
-    width: 95%;
+    width: 100%;
     max-width: 900px;
     align-items: center;
     justify-content: center;
@@ -444,6 +444,15 @@
     margin-top: 20px
     
 }
+.home__complyHealth--empty{
+    background-color: #999;
+}
+.home__complyHealth--full{
+    background-color: var(--accent-bg-color);
+}
+.home__complyHealth--gradient{
+    background: linear-gradient(180deg, #999 calc(90% - var(--comply-health-status)), var(--accent-bg-color) 100%);
+}
 .home__complyHealth-text{
     font-size: 32px;
     font-weight: 600;
@@ -559,20 +568,23 @@
     color: var(--body-fresco-color);
 }
 .home__circleChart{
-    width: 200px;
-    height: 200px;
+    width: 100%;
+    height: 100%;
 }
 .home__circleChart-icon{
     color: var(--home-chart-icon-color);
 }
 
 
-@media (max-width: 1130px) {
-
+@media (max-width: 1050px) {
+    .home{
+        max-width: 800px;
+    }
     .home__cards{
         flex-direction: column;
     }
     .home__card{
+        width: 100%;
         max-width: 100%;
     }
     .home__bottom{
@@ -580,26 +592,27 @@
         height: fit-content;
     }
     .home__cardInfo{
-        width: 70%;
+        width: 100%;
+        max-width: 70%;
     }
     .home__cardInfo--analytics{
-        width: 70%;
+        width: 100%;
+        max-width: 70%;
     }
     .home__analytics{
         padding-top: 20px;
     }
-    .home__circleChart{
-        width: 150px;
-        height: 150px;
-    }
+
     .home__mid{
         flex-direction: column;
     }
     .home__midCard{
+        width: 100%;
         max-width: 70%;
     }
     .home__installation-container{
-        width: 70%;
+        width: 100%;
+        max-width: 70%;
     }
 }
 
@@ -637,9 +650,9 @@
     .home__analytics{
         padding-top: 20px;
     }
-    .home__circleChart{
-        width: 150px;
-        height: 150px;
+
+    .home__installation-container{
+        width: 100%;
     }
 }
 @media (max-width: 467px) {

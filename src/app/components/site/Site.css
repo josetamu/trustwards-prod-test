@@ -197,7 +197,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 15px;
+
   
+
 
 }
 .site__color--null {

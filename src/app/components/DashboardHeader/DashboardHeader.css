@@ -55,7 +55,6 @@
     display: none;
 }
 
-
 .dashboardHeader__title{
     font-size: var(--font-size-medium);
     font-weight: 600;
@@ -65,13 +64,12 @@
     display: inline-block;
     position: relative;
     max-width: 200px;
-  
-
-
 }
+
 .dashboardHeader__fileInput{
     display: none;
 }
+
 .dashboardHeader__input{
     background: transparent;
     border: none;
@@ -83,8 +81,8 @@
     width: 100px;
     box-sizing: border-box;
     text-decoration: none;
- 
 }
+
 .dashboardHeader__plan{
     font-size: var(--font-size-small);
     font-weight: 700;
@@ -96,10 +94,12 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
 .dashboardHeader__plan--pro{
     color: var(--accent-color);
     background-color: var(--accent-bg-color);
 }
+
 .dashboardHeader__actions{
     display: flex;
     flex-direction: row;
@@ -109,6 +109,7 @@
     padding-right: 20px;
     position: relative;
 }
+
 .dashboardHeader__dots{
     display: flex;
     flex-direction: row;
@@ -120,14 +121,13 @@
     border-radius: 6px;
     background-color: var(--view-toggle-background);
     cursor: pointer;
- 
 }
+
 .dashboardHeader__dots-dot{
     width: 2px;
     height: 2px;
     border-radius: 50%;
     background-color: var(--site-pro-toggle-text-color);
- 
 }
 
 .dashboardHeader__builder{
