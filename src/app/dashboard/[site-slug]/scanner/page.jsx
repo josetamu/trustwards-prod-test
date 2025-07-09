@@ -39,54 +39,73 @@ const defaultScanResults = [
 
 // renders scan results grouped by category
 function ResultCardArray({ results }) {
+  const [isVisible, setIsVisible] = React.useState(false);
+
+  // Trigger fade-in animation when component mounts
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <>
-      {results.map((cat) => (
+    <div className={`scanner__results-container ${isVisible ? 'scanner__results-container--visible' : ''}`}>
+      {results.map((cat, idx) => (
         <div className="scanner__card" key={cat.category}>
             <div className='scanner__card-wrapper'>
                 <div className="scanner__card-scripts-count">
                     {cat.groups.reduce((acc, group) => acc + group.length, 0)} SCRIPTS
                 </div>
                 <div className="scanner__card-title">{cat.category}</div>
-                <div className="scanner__card-table">
-                    <div className="scanner__card-table-header">
-                    <span className="scanner__card-table-title">Status
-                        <span className="scanner__card-info">
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="0.5" y="0.5" width="9" height="9" rx="1.5" stroke="#5E5E5E"/>
-                                <path d="M4.2983 7V3.72727H5.47443V7H4.2983ZM4.88636 3.38636C4.72727 3.38636 4.59091 3.33381 4.47727 3.22869C4.36364 3.12358 4.30682 2.99716 4.30682 2.84943C4.30682 2.7017 4.36364 2.57528 4.47727 2.47017C4.59091 2.36506 4.72727 2.3125 4.88636 2.3125C5.04688 2.3125 5.18324 2.36506 5.29545 2.47017C5.40909 2.57528 5.46591 2.7017 5.46591 2.84943C5.46591 2.99716 5.40909 3.12358 5.29545 3.22869C5.18324 3.33381 5.04688 3.38636 4.88636 3.38636Z" fill="#5E5E5E"/>
-                            </svg>
-                        </span>
-                    </span>
-                    <span className="scanner__card-table-title">Name</span>
-                    <span className="scanner__card-table-title">Script</span>
-                    </div>
-                    <div className="scanner__card-divider" />
-                    {cat.groups.map((group, gIdx) =>
-                    group.map((script, sIdx) => (
-                        <div className="scanner__card-table-content" key={gIdx + '-' + sIdx}>
-                        <span
-                            className={`scanner__card-table-script ${script.status === 'tracked'
-                            ? 'scanner__card-status--tracked'
-                            : 'scanner__card-status--untracked'
-                            }`}
-                        >
-                            {script.status === 'tracked' ? '● Tracked' : '✖ Untracked'}
-                        </span>
-                        <span className='scanner__card-table-script'>{script.name}</span>
-                        <span className='scanner__card-table-script'>{script.script}</span>
-                        </div>
-                    ))
-                    )}
+                <div className="scanner__card-table-responsive">
+                  <table className="scanner__card-table">
+                    <thead>
+                      <tr>
+                        <th className="scanner__card-table-title">Status</th>
+                        <th className="scanner__card-table-title">Name</th>
+                        <th className="scanner__card-table-title">Script</th>
+                      </tr>
+                    </thead>
+                    <tr>
+                      <td colSpan={3}>
+                        <div className="scanner__card-divider"></div>
+                      </td>
+                    </tr>
+                    <tbody>
+                      {cat.groups.map((group, gIdx) =>
+                        group.map((script, sIdx) => (
+                          <tr key={gIdx + '-' + sIdx}>
+                            <td>
+                              <span
+                                className={`scanner__card-table-script ${script.status === 'tracked'
+                                  ? 'scanner__card-status--tracked'
+                                  : 'scanner__card-status--untracked'
+                                  }`}
+                              >
+                                {script.status === 'tracked' ? '● Tracked' : '✖ Untracked'}
+                              </span>
+                            </td>
+                            <td>
+                              <span className='scanner__card-table-script'>{script.name}</span>
+                            </td>
+                            <td>
+                              <span className='scanner__card-table-script'>{script.script}</span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
             </div>
         </div>
       ))}
-    </>
+    </div>
   );
 }
 
-// Manages scan state, triggers scans, and displays results or scan UI.
+// Manages scan state, triggers scans, and displays results
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
@@ -142,7 +161,10 @@ function Home() {
                 </div>
             </div>
             {scanDone ? (
-                <ResultCardArray results={scanResults} />
+                <>
+                    <div className="scanner__card-divider"></div>
+                    <ResultCardArray results={scanResults} />
+                </>
             ) : (
                 <div className="scanner__main-box">
                     <div className="scanner__main-box-content">

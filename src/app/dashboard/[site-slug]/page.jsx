@@ -6,6 +6,7 @@ import { useDashboard } from '../layout';
 import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import ScriptCopy from '../../components/ScriptCopy/ScriptCopy';
+import Scan from '@components/scan/Scan.jsx';
 
 //function to create a circle chart
 function CircleChart({data, centerText, centerLabel, centerIcon}) {
@@ -83,12 +84,26 @@ function Home() {
     const [siteData, setSiteData] = useState(selectedSite);
     const [isInstalled, setIsInstalled] = useState(false);
     const [complyHealthStatus, setComplyHealthStatus] = useState(78);
+    const [isScanning, setIsScanning] = useState(false);
+    const [scanSession, setScanSession] = useState(0);
 
     //update site data when the selected site changes
     useEffect(() => {
         setSiteData(selectedSite);
     }, [selectedSite]); 
 
+ // scan functions
+    // start the scan
+    const startScan = () => {
+        if (isScanning) return;
+        setIsScanning(true);
+        setScanSession(prev => prev + 1);
+    };
+    // finish the scan
+    const handleScanFinish = () => {
+        setIsScanning(false);
+    }; 
+    
 // Function to handle the gradient of the comply health circle.
 // If complyHealthStatus is 0 or 100, use the corresponding class.
 // Otherwise, set a CSS variable with the complyHealthStatus value.
@@ -352,8 +367,12 @@ const cookiesData = analyticsCookies.map(item => ({
                     <div className="home__midCard">
                         <div className="home__midCard-header">
                             <span className="home__midCard-title">Scanner Overview</span>
-                            <div className="home__scan">
-                                <span className="home__scan-text">Scan</span>
+                            <div className="home__scan" onClick={startScan} style={{ cursor: isScanning ? 'default' : 'pointer' }}>
+                                {isScanning ? (
+                                    <Scan isScanning={isScanning} onlyBar key={scanSession} onFinish={handleScanFinish} />
+                                ) : (
+                                    <span className="home__scan-text">Scan</span>
+                                )}
                             </div>
                         </div>
                         {noInstalled()}
