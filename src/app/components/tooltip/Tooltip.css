@@ -28,7 +28,7 @@
 .tooltip__message {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: wrap;
   max-width: 100%; 
   display: block;
   text-align: center;
