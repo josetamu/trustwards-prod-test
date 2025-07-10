@@ -7,7 +7,8 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
-  min-height: calc(100vh - 40px);
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .sites__welcome {
@@ -390,6 +391,12 @@
 .sites__grid.list {
   display: flex;
   flex-direction: column;
+}
+
+.sites__grid,
+.sites__nosites-big {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 
