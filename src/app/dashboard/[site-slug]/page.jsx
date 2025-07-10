@@ -4,7 +4,6 @@ import './home.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '../layout';
 import { useState, useRef, useEffect } from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
 import ScriptCopy from '../../components/ScriptCopy/ScriptCopy';
 import Scan from '@components/scan/Scan.jsx';
 
@@ -52,7 +51,7 @@ function CircleChart({data, centerText, centerLabel, centerIcon}) {
         y="70"
         textAnchor="middle"
         dominantBaseline="middle"
-        fontSize="18"
+        fontSize="17"
         fontWeight="500"
         fill="var(--home-chart-color)"
         letterSpacing="var(--letter-spacing-negative)"
@@ -64,7 +63,7 @@ function CircleChart({data, centerText, centerLabel, centerIcon}) {
         x="70"
         y="90"
         textAnchor="middle"
-        fontSize="10"
+        fontSize="9"
         fill="var(--home-chart-color)"
         letterSpacing="var(--letter-spacing-negative)"
         style={{zIndex: 1}}
@@ -141,6 +140,9 @@ const gradientHandle = (complyHealthStatus) => {
         notFound();
     }
 
+const verify = () => {
+    setIsInstalled(true);
+}
 //function to show the no installed message on cards
 const noInstalled = () => {
     if(!isInstalled){
@@ -149,7 +151,7 @@ const noInstalled = () => {
             <span className="home__noInstalled-text">Install Trustwards on your site first.
             </span>
             <div className="home__verify">
-                <span className="home__verify-text">Verify</span>
+                <span className="home__verify-text" onClick={verify}>Verify</span>
             </div>
         </div>
         )
@@ -271,7 +273,7 @@ const cookiesData = analyticsCookies.map(item => ({
                     <div className='home__installation-container'>
                         <div className='home__installation-header'>
                             <span className='home__installation-title'>Installation</span>
-                            <div className='home__verify' onClick={() => setIsInstalled(true)}>
+                            <div className='home__verify' onClick={verify}>
                                 <span className='home__verify-text'>Verify</span>
                             </div>
                         </div>
@@ -472,9 +474,9 @@ const cookiesData = analyticsCookies.map(item => ({
                                 }
                                 centerLabel="Cookies displayed"
                                 centerIcon={
-                                    <g>
+                                    <g transform="translate(-2.5, -20)">
                                         {/* Cookie icon - simple circle with dots */}
-                                        <svg className="home__circleChart-icon" width="70" height="50" viewBox="0 0 102 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg className="home__circleChart-icon" width="75" height="100" viewBox="0 0 102 75" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M0 0H102V20.4545H0V0Z" fill="currentColor"/>
                                             <path d="M27.2 75V34.0909H68L27.2 75Z" fill="currentColor"/>
                                             <path d="M54.4 75V34.0909H88.4L54.4 75Z" fill="currentColor"/>

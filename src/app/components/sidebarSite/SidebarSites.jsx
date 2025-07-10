@@ -13,6 +13,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState(name);
+    const [isHovered, setIsHovered] = useState(false);
     const inputRef = useRef(null);
     const { fetchSites, user, webs } = useDashboard();
 
@@ -188,6 +189,9 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             href={`/dashboard/${siteData.id}`}
             className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`} 
             id={sidebarSitesId}
+            //on mouse enter, set is hovered to true to show the tooltip
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             onClick={(e) => {
                 // Prevent navigation if in editing mode
                 if (isEditing) {
@@ -227,7 +231,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                     )}
                 </span> 
             </div>
-            {!isSidebarOpen && window.innerWidth > 767 &&(
+            {!isSidebarOpen && window.innerWidth > 767 && isHovered &&(
                 <Tooltip 
                   message={name} 
                   id={siteData.id}

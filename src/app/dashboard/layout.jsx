@@ -593,7 +593,9 @@ const handleBackdropClick = useCallback((e) => {
                     {isSiteOpen && <DashboardHeader />}
                     {children}
 
-                    <ModalContainer 
+
+                </div>
+                <ModalContainer 
                         isOpen={isModalOpen} 
                         onClose={closeModal} 
                         onBackdropClick={handleBackdropClick}
@@ -601,7 +603,6 @@ const handleBackdropClick = useCallback((e) => {
                     >
                         {renderModal()}
                     </ModalContainer>
-                    
                     {/* ModalChange as independent modal */}
                     <ModalContainer 
                     isOpen={isChangeModalOpen} 
@@ -621,12 +622,11 @@ const handleBackdropClick = useCallback((e) => {
                     <Notification
                     open={notification.open}
                     onClose={hideNotification}
-                    autoClose={1500} //duration of the notification in ms
+                    autoClose={2000} //duration of the notification in ms
                     notificationMessage={notification.message}
                     position={notification.position || 'top'}
                     >
                     </Notification>
-                </div>
             </div>
         </DashboardContext.Provider>
     );
