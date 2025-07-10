@@ -233,6 +233,23 @@
     justify-content: space-between;
     padding-top: 30px;
 }
+
+.home__scanner--scanning{
+    justify-content: center;
+    padding-top: 0;
+}
+
+/* Fade animation for scanner content */
+.home__scanner-content {
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.home__scanner-content--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 .home__scannerItems{
     display: flex;
     flex-direction: column;

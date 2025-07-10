@@ -86,6 +86,7 @@ function Home() {
     const [complyHealthStatus, setComplyHealthStatus] = useState(78);
     const [isScanning, setIsScanning] = useState(false);
     const [scanSession, setScanSession] = useState(0);
+    const [isContentVisible, setIsContentVisible] = useState(true);
 
     //update site data when the selected site changes
     useEffect(() => {
@@ -96,12 +97,17 @@ function Home() {
     // start the scan
     const startScan = () => {
         if (isScanning) return;
+        setIsContentVisible(false);
         setIsScanning(true);
         setScanSession(prev => prev + 1);
     };
     // finish the scan
     const handleScanFinish = () => {
         setIsScanning(false);
+        // Trigger fade-in animation after a short delay
+        setTimeout(() => {
+            setIsContentVisible(true);
+        }, 100);
     }; 
 
 // Function to handle the gradient of the comply health circle.
@@ -379,29 +385,35 @@ const cookiesData = analyticsCookies.map(item => ({
                         </div>
                         {noInstalled()}
                         <div className="home__midCard-content">
-                            <div className="home__scanner">
-                                <div className="home__scannerItems">
-                                    <div className="home__scannerItem">
-                                        <span className="home__scannerItem-text">General</span>
-                                        <span className="home__scannerItem-text">{general}</span>
+                            {isScanning ? (
+                                <div className="home__scanner home__scanner--scanning">
+                                    <Scan isScanning={isScanning} onFinish={handleScanFinish} />
+                                </div>
+                            ) : (
+                                <div className={`home__scanner home__scanner-content ${isContentVisible ? 'home__scanner-content--visible' : ''}`}>
+                                    <div className="home__scannerItems">
+                                        <div className="home__scannerItem">
+                                            <span className="home__scannerItem-text">General</span>
+                                            <span className="home__scannerItem-text">{general}</span>
+                                        </div>
+                                        <div className="home__scannerItem">
+                                            <span className="home__scannerItem-text">Analytics</span>
+                                            <span className="home__scannerItem-text">{analytics}</span>
+                                        </div>
+                                        <div className="home__scannerItem">
+                                            <span className="home__scannerItem-text">Marketing</span>
+                                            <span className="home__scannerItem-text">{marketing}</span>
+                                        </div>
+                                        <div className="home__scannerItem">
+                                            <span className="home__scannerItem-text">Other</span>
+                                            <span className="home__scannerItem-text">{other}</span>
+                                        </div>
                                     </div>
-                                    <div className="home__scannerItem">
-                                        <span className="home__scannerItem-text">Analytics</span>
-                                        <span className="home__scannerItem-text">{analytics}</span>
-                                    </div>
-                                    <div className="home__scannerItem">
-                                        <span className="home__scannerItem-text">Marketing</span>
-                                        <span className="home__scannerItem-text">{marketing}</span>
-                                    </div>
-                                    <div className="home__scannerItem">
-                                        <span className="home__scannerItem-text">Other</span>
-                                        <span className="home__scannerItem-text">{other}</span>
+                                    <div className="home__fullView">
+                                        <div className="home__fullView-text">To have a full view go to the <a href={`/dashboard/${siteData?.id}/scanner`} className="home__fullView-link">scanner.</a></div>
                                     </div>
                                 </div>
-                                <div className="home__fullView">
-                                    <div className="home__fullView-text">To have a full view go to the <a href={`/dashboard/${siteData?.id}/scanner`} className="home__fullView-link">scanner.</a></div>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
