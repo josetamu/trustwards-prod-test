@@ -15,7 +15,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     const [editedName, setEditedName] = useState(name);
     const [isHovered, setIsHovered] = useState(false);
     const inputRef = useRef(null);
-    const { fetchSites, user, webs, handleCopy } = useDashboard();
+    const { fetchSites, user, webs, handleCopy, showNotification } = useDashboard();
 
     // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
     const generateUniqueSiteName = (baseName, currentSiteId) => {
@@ -77,6 +77,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             }
             
             setIsEditing(false);
+            showNotification('Site name updated successfully', 'top');
         } catch (error) {
             console.error('Error updating site name:', error);
             // Revert to original name if update fails

@@ -24,12 +24,16 @@ const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
 
 
 function DashboardHeader() {
-    const { siteData, checkSitePicture, SiteStyle, webs, supabase, user, fetchSites, setSiteData, setModalType, setIsModalOpen, handleCopy} = useDashboard();
+    const { siteData, checkSitePicture, SiteStyle, webs, supabase, user, fetchSites, setSiteData, setModalType, setIsModalOpen, handleCopy, showNotification} = useDashboard();
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
     const inputRef = useRef(null);
     const fileInputRef = useRef(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [inputWidth, setInputWidth] = useState(0);
+    const spanRef = useRef(null);
+
+
     // Update editedName when siteData changes
     useEffect(() => {
         if (siteData?.Name) {
@@ -43,6 +47,22 @@ function DashboardHeader() {
             inputRef.current.select();
         }
     }, [isEditing]); 
+
+    // When we change the name, calculate the width of the input
+    useEffect(() => {
+      if (spanRef.current) {
+        setInputWidth(spanRef.current.offsetWidth + 2); // +2 for padding/border
+      }
+    }, [editedName]);
+
+    // When we enter edit mode, select the text and calculate initial width
+    useEffect(() => {
+      if (isEditing && spanRef.current) {
+        setInputWidth(spanRef.current.offsetWidth + 2);
+      }
+    }, [isEditing]);
+
+    
 const handleImgEditClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click(); // Open local files
@@ -60,6 +80,10 @@ const handleImgEditClick = () => {
 
       // function to initialize the edit mode
       const handleEdit = () => {
+        if(spanRef.current) {
+          const calculatedWidth = spanRef.current.offsetWidth + 2;
+          setInputWidth(calculatedWidth);
+        }
           setIsEditing(true);
           setEditedName(siteData?.Name);
       };
@@ -93,13 +117,18 @@ const handleImgEditClick = () => {
               // Update local state
               const updatedSiteData = { ...siteData, Name: uniqueName };
               setSiteData(updatedSiteData);
-              
+
               // Refresh the global sites list
+              console.log('user:', user);
+              console.log('fetchSites:', fetchSites);
               if (user && fetchSites) {
+                  console.log('Executing fetchSites with user.id:', user.id);
                   await fetchSites(user.id);
+              } else {
+                  console.log('fetchSites not executed - user or fetchSites is falsy');
               }
-              
               setIsEditing(false);
+              showNotification('Site name updated successfully', 'bottom');
           } catch (error) {
               console.error('Error updating site name:', error);
               // Revert to original name if update fails
@@ -111,7 +140,9 @@ const handleImgEditClick = () => {
       // if click outside the input, save the edited name in the database
       const handleBlur = async () => {
           setIsEditing(false);
-          await handleSave();
+          if (editedName !== siteData?.Name?.trim()) {
+            await handleSave();
+          }
       };
   
       // if press enter, save the edited name in the database. If press escape, revert to the original name.
@@ -162,7 +193,8 @@ const handleImgEditClick = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
+                handleEdit();
+                setIsDropdownOpen(false);
               }}
             >
               <span className="dropdown__icon">
@@ -210,6 +242,7 @@ const handleImgEditClick = () => {
                     <img className={`dashboardHeader__img ${checkSitePicture(siteData) === '' ? 'dashboardHeader__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt={siteData?.Name} onClick={handleImgEditClick}/> 
                     <span className='dashboardHeader__title' onClick={handleEdit}>
                     {isEditing ? (
+                        
                         <input className="dashboardHeader__input"
                             type="text"
                             value={editedName}
@@ -218,11 +251,29 @@ const handleImgEditClick = () => {
                             onBlur={handleBlur}
                             autoFocus
                             ref={inputRef}
+                            style={{ width: `${inputWidth}px` }}
                         />
+
+                      
                     ) : (
                         siteData?.Name
                     )
                     }
+                      <span
+                          ref={spanRef}
+                          className="dashboardHeader__inputMirror"
+                          style={{
+                            position: 'absolute',
+                            visibility: 'hidden',
+                            whiteSpace: 'pre',
+                            fontSize: 'inherit',
+                            fontFamily: 'inherit',
+                            fontWeight: 'inherit',
+                            padding: '0',
+                          }}
+                        >
+                        {editedName}
+                      </span>
                     </span>
                 </div>
                 <span className={`dashboardHeader__plan ${siteData?.Plan === 'Pro' ? 'dashboardHeader__plan--pro' : ''}`} onClick={() => {

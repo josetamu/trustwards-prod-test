@@ -27,6 +27,7 @@
     justify-content: center;
     gap: 5px;
     cursor: pointer;
+
 }
 .dashboardHeader__img{
     width: 23px;
@@ -64,6 +65,9 @@
     display: inline-block;
     position: relative;
     max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .dashboardHeader__fileInput{
@@ -78,9 +82,10 @@
     font-size: inherit;
     font-weight: inherit;
     letter-spacing: inherit;
-    width: 100px;
     box-sizing: border-box;
     text-decoration: none;
+    overflow: hidden;
+
 }
 
 .dashboardHeader__plan{
@@ -93,6 +98,7 @@
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
+
 }
 
 .dashboardHeader__plan--pro{
@@ -147,6 +153,18 @@
     color: var(--accent-color);
     padding: 5px;
 }
+/* .dashboardHeader__inputMirror {
+    position: absolute;
+    visibility: hidden;
+    white-space: pre;
+    font-size: var(--font-size-medium);
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing-negative);
+    font-family: inherit;
+    padding: 5px;
+    box-sizing: border-box;
+    color: var(--body-strong-color);
+} */
 
 
 @media (max-width: 767px) {
