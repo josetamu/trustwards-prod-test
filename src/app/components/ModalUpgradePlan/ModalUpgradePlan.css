@@ -295,6 +295,7 @@
     text-underline-offset: 2px;
     cursor: default;
     position: relative;
+
 }
 
 .modalUpgradePlan__site__info__title--underline:hover .tooltip{

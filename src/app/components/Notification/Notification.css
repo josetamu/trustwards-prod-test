@@ -15,16 +15,17 @@
 /* Position variants */
 .notification--top {
   top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  justify-self: center;
+
 }
 
 .notification--bottom {
   bottom: 100px;
   top: auto;
-  left: 50%;
-  transform: translateX(-50%);
   position: fixed;
+  display: flex;
+  justify-self: center;
 }
 
 /* Notification Content */
@@ -48,6 +49,6 @@
 
 @media (max-width: 767px) {
     .notification__message{
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-medium);
     }
 }

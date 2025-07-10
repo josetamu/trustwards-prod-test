@@ -128,9 +128,9 @@
 
 /* Sidebar position */
 .tooltip--sidebar {
-  top: 50%;
+  top: 20%;
   left: 100%;
-  transform: translateY(-50%);
+  transform: translateX(0%);
   margin-left: 8px;
 }
 
@@ -164,15 +164,15 @@
 
 /* Upgrade tooltip */
 .tooltip--upgrade {
-  bottom: 100%;
-  left: 50%;
+  top: -40px;
+  left: -100%;
   transform: translateX(-50%);
-  margin-bottom: 8px;
+  min-width: 150px
 
 }
 
 .tooltip--upgrade .tooltip__mask {
-  display: inline-block;
+  
   background-color: var(--tooltip-background);
   border-radius: 8px;
   padding: 6px 12px;
@@ -190,7 +190,7 @@
   content: '';
   position: absolute;
   left: 50%;
-  top: 110%;
+  top: 105%;
   transform: translateY(-60%) rotate(-90deg);
   width: 0;
   height: 0;

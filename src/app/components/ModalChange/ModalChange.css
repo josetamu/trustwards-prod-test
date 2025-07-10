@@ -119,9 +119,10 @@
   white-space: nowrap;
 }
 
+
 @media (max-width: 767px) {
   .modalChange__content {
-    min-width: 300px;
+    min-width: 330px;
     max-width: 400px;
   }
 }
