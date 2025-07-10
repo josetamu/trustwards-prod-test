@@ -168,7 +168,7 @@
     height: 100%;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 15px;
 }
 .home__midCard{
     display: flex;
@@ -282,20 +282,21 @@
     align-items: center;
     justify-content: space-between;
     height: 303px;
-    gap: 20px;
+    gap: 15px;
 }
 .home__cardInfo{
     display: flex;
     flex-direction: column;
-    width: 25%;
+    width: 20%;
     height: 100%;
     border: 1px solid var(--border-strong-color);
     border-radius: 16px;
-    padding: 20px;
+    padding: 15px;
     position: relative;
+    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
 }
 .home__cardInfo--analytics{
-    width: 50%;
+    width: 60%;
 }
 .home__cardInfo-header{
     display: flex;
@@ -429,8 +430,8 @@
     color: var(--accent-color);
 }
 .home__complyHealth{
-    width: 85px;
-    height: 85px;
+    width: 100px;
+    height: 100px;
     border-radius: 100%;
     display: flex;
     align-items: center;
@@ -488,10 +489,7 @@
     color: var(--body-fresco-color);
 }
 
-.home__cardInfo--analytics{
-    padding-left: 0;
-    
-}
+
 
 .home__cardInfo-content--analytics{
     flex-direction: row;
@@ -499,27 +497,26 @@
     gap: 0;
 }
 
-.home__cardInfo-header--analytics{
-    padding-left:20px;
-}
+
 
 .home__cookiesDisplayed{
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 50%;
     height: 100%;
     justify-content: space-between;
     align-items: flex-end;
-    padding-right: 10px;
+    padding-right: 15px; 
+    
 }
 
 .home__analytics{
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 50%;
     height: 100%;
-    padding-top: 30px;
-    gap: 5px;
+    padding-top: 40px;
+   
 }
 .home__cookie{
     display: flex;
@@ -574,54 +571,50 @@
 }
 .home__circleChart-icon{
     color: var(--home-chart-icon-color);
+    width: 100px;
+    height: 100px;
 }
 
 
-@media (max-width: 1050px) {
-    .home{
-        max-width: 800px;
-    }
+@media (max-width: 1010px) {
+
     .home__cards{
         flex-direction: column;
     }
-    .home__card{
-        width: 100%;
-        max-width: 100%;
+    .home__mid{
+        flex-direction: column;
     }
+
     .home__bottom{
         flex-direction: column;
         height: fit-content;
     }
     .home__cardInfo{
         width: 100%;
-        max-width: 70%;
-    }
-    .home__cardInfo--analytics{
-        width: 100%;
-        max-width: 70%;
-    }
-    .home__analytics{
-        padding-top: 20px;
-    }
-
-    .home__mid{
-        flex-direction: column;
+        max-width: 500px;
+        min-height: 305px;
     }
     .home__midCard{
-        width: 100%;
-        max-width: 70%;
+        max-width: 500px;
+        min-height: 295px;
     }
+
+
     .home__installation-container{
         width: 100%;
-        max-width: 70%;
+        max-width: 500px;
     }
+    .home__analytics{
+        padding-top: 30px;
+    }
+
+
+
+
 }
 
 @media (max-width: 767px) {
-    
-    .siteView__header{
-        height: 150px;
-    }
+
     .home__bottom{
         height: fit-content;
     }
@@ -629,37 +622,60 @@
         flex-direction: column;
     }
     .home__card{
-        max-width: 100%;
+        max-width: 400px;
     }
     .home__mid{
         flex-direction: column;
     }
 
     .home__midCard{
-        max-width: 100%;
+        max-width: 400px;
     }
     .home__bottom{
         flex-direction: column;
     }
     .home__cardInfo{
         width: 100%;
-        
+        max-width: 400px;
     }
     .home__cardInfo--analytics{
         width: 100%;
-    }
-    .home__analytics{
-        padding-top: 20px;
+        max-width: 400px;
     }
 
     .home__installation-container{
         width: 100%;
+        max-width: 400px;
+    }
+    .home__analytics{
+        padding-top: 20px;
     }
 }
 @media (max-width: 467px) {
     
-    .home__circleChart{
-        width: 120px;
-        height: 120px;
+    .home__card{
+        max-width: 350px;
     }
+    
+    .home__midCard{
+        max-width: 350px;
+    }
+    .home__cardInfo{
+        width: 100%;
+        max-width: 350px;
+    }
+    .home__cardInfo--analytics{
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .home__installation-container{
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .home__analytics{
+        padding-top: 15px;
+    }
+
 }
