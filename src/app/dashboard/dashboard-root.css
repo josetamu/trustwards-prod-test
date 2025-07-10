@@ -7,6 +7,16 @@
   line-height: normal;
   font-family: 'Inter', sans-serif;
 }
+html{
+  padding: 20px 20px 20px 0;
+  background-color: var(--sidebar-background);
+}
+
+@media (max-width: 767px) {
+  html{
+    padding: 0;
+  }
+}
 
 /*
 Light selected: use html[data-theme="light"]

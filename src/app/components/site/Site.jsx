@@ -4,6 +4,7 @@ import { ModalContainer } from '../../components/ModalContainer/ModalContainer';
 import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
 import { useState, useId } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
+import { useDashboard } from '../../dashboard/layout';
 
 // ProButton: Button for site actions (shows dots on hover or dropdown open)
 const ProButton = ({ onClick, isActive }) => (
@@ -27,7 +28,9 @@ const ProButton = ({ onClick, isActive }) => (
 );
 
 // SiteMenu: Dropdown menu for site actions
-const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType }) => (
+const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType }) => {
+  const { handleCopy } = useDashboard();
+  return (
   <>
     <button className="dropdown__item">
       <span className="dropdown__icon">
@@ -39,7 +42,10 @@ const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteDa
       </span>
       Builder
     </button>
-    <button className="dropdown__item">
+    <button className="dropdown__item" onClick={() => {
+      handleCopy(siteData?.id, 'top');
+      setIsDropdownOpen(false);
+    }}>
       <span className="dropdown__icon">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.08398 8.58398C5.08398 6.93408 5.08398 6.10913 5.59655 5.59655C6.10913 5.08398 6.93408 5.08398 8.58398 5.08398H9.16732C10.8172 5.08398 11.6422 5.08398 12.1547 5.59655C12.6673 6.10913 12.6673 6.93408 12.6673 8.58398V9.16732C12.6673 10.8172 12.6673 11.6422 12.1547 12.1547C11.6422 12.6673 10.8172 12.6673 9.16732 12.6673H8.58398C6.93408 12.6673 6.10913 12.6673 5.59655 12.1547C5.08398 11.6422 5.08398 10.8172 5.08398 9.16732V8.58398Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
@@ -88,6 +94,7 @@ const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteDa
     </button>
   </>
 );
+};
 
 // Site: Card/list for a single site
 export const Site = ({

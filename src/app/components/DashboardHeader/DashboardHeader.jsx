@@ -24,7 +24,7 @@ const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
 
 
 function DashboardHeader() {
-    const { siteData, checkSitePicture, SiteStyle, webs, supabase, user, fetchSites, setSiteData, setModalType, setIsModalOpen} = useDashboard();
+    const { siteData, checkSitePicture, SiteStyle, webs, supabase, user, fetchSites, setSiteData, setModalType, setIsModalOpen, handleCopy} = useDashboard();
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
     const inputRef = useRef(null);
@@ -127,7 +127,7 @@ const handleImgEditClick = () => {
     if (!siteData) {
         return null;
     }
-    const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType}) => {
+    const SiteMenu = ({ setIsModalOpen, setModalType, siteData, setIsDropdownOpen}) => {
         return (
           <>
             <button className="dropdown__item" onClick={(e) => {
@@ -146,6 +146,8 @@ const handleImgEditClick = () => {
             <button className="dropdown__item" onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              handleCopy(siteData?.id, 'top');
+              setIsDropdownOpen(false);
             }}>
               <span className="dropdown__icon">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

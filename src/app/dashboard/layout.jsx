@@ -182,7 +182,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'oscar.abad.brickscore@gmail.com',  
+      email: 'darezo.2809@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -386,6 +386,18 @@ const handleBackdropClick = useCallback((e) => {
       });
     };
 
+    //Function to copy script to clipboard
+    const handleCopy = async (siteSlug, position = 'top') => {
+        const script = `<script>https://trustwards.io/cdn/${siteSlug}.js</script>`;
+        try {
+            await navigator.clipboard.writeText(script);
+            showNotification("Copied script to clipboard", position);
+        } catch (error) {
+            console.error('Failed to copy text: ', error);
+            showNotification("Failed to copy script", position);
+        }
+    };
+
     //Function to create a new site
     const createNewSite = async () => {
       try {
@@ -556,8 +568,7 @@ const handleBackdropClick = useCallback((e) => {
         showNotification,
         supabase,
         isDropdownOpen,
-        
-
+        handleCopy,
     };
 
     return (
