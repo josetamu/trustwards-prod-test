@@ -10,7 +10,7 @@ import Scan from '@components/scan/Scan.jsx';
 
 //function to create a circle chart
 function CircleChart({data, centerText, centerLabel, centerIcon}) {
-    const radius = 53.5;
+    const radius = 62;
     const strokeWidth = 12;
     const circumference = 2 * Math.PI * radius;
     let offset = 0;
@@ -52,7 +52,7 @@ function CircleChart({data, centerText, centerLabel, centerIcon}) {
         y="70"
         textAnchor="middle"
         dominantBaseline="middle"
-        fontSize="14.5"
+        fontSize="18"
         fontWeight="500"
         fill="var(--home-chart-color)"
         letterSpacing="var(--letter-spacing-negative)"
@@ -62,9 +62,9 @@ function CircleChart({data, centerText, centerLabel, centerIcon}) {
       </text>
       <text
         x="70"
-        y="85"
+        y="90"
         textAnchor="middle"
-        fontSize="8.5"
+        fontSize="10"
         fill="var(--home-chart-color)"
         letterSpacing="var(--letter-spacing-negative)"
         style={{zIndex: 1}}
@@ -103,7 +103,7 @@ function Home() {
     const handleScanFinish = () => {
         setIsScanning(false);
     }; 
-    
+
 // Function to handle the gradient of the comply health circle.
 // If complyHealthStatus is 0 or 100, use the corresponding class.
 // Otherwise, set a CSS variable with the complyHealthStatus value.
@@ -367,6 +367,7 @@ const cookiesData = analyticsCookies.map(item => ({
                     <div className="home__midCard">
                         <div className="home__midCard-header">
                             <span className="home__midCard-title">Scanner Overview</span>
+                            {isInstalled && (
                             <div className="home__scan" onClick={startScan} style={{ cursor: isScanning ? 'default' : 'pointer' }}>
                                 {isScanning ? (
                                     <Scan isScanning={isScanning} onlyBar key={scanSession} onFinish={handleScanFinish} />
@@ -374,6 +375,7 @@ const cookiesData = analyticsCookies.map(item => ({
                                     <span className="home__scan-text">Scan</span>
                                 )}
                             </div>
+                            )}
                         </div>
                         {noInstalled()}
                         <div className="home__midCard-content">
