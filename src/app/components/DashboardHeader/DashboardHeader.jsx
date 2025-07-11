@@ -3,6 +3,8 @@ import { useDashboard } from '../../dashboard/layout';
 import { useState, useRef, useEffect } from 'react';
 import { Dropdown } from '../dropdown/Dropdown';
 
+import { useParams } from 'next/navigation';    
+import Link from 'next/link';
 
 // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
 const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
@@ -32,7 +34,7 @@ function DashboardHeader() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [inputWidth, setInputWidth] = useState(0);
     const spanRef = useRef(null);
-
+    const { 'site-slug': siteSlug } = useParams();
 
     // Update editedName when siteData changes
     useEffect(() => {
@@ -306,12 +308,12 @@ const handleImgEditClick = () => {
                         setIsDropdownOpen(!isDropdownOpen);
                     }}>
                         <div className="dashboardHeader__dots-dot"></div>
-                        <div className="dashboardHeader__dots-dot"></div>   
+                        <div className="dashboardHeader__dots-dot"></div>
                         <div className="dashboardHeader__dots-dot"></div>
                     </div>
                 </Dropdown>
                     <div className="dashboardHeader__builder">
-                        <span className="dashboardHeader__builder-text">Builder</span>
+                        <Link href={`/builder/${siteSlug}`} className="dashboardHeader__builder-text">Builder</Link>
                     </div>
                 </div>
             </div>

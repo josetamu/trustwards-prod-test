@@ -6,7 +6,7 @@ import './[site-slug]/home.css'
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../supabase/supabaseClient';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, usePathname } from 'next/navigation';
 
 import { Sidebar, otherpages } from '@components/sideBar/Sidebar'
 import { ModalContainer } from '@components/ModalContainer/ModalContainer'
@@ -24,6 +24,7 @@ export const useDashboard = () => useContext(DashboardContext);
 function DashboardLayout({ children }) {
   const router = useRouter();
   const params = useParams();
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
   // Sidebar state && Site state
@@ -182,7 +183,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'oscar.abad.brickscore@gmail.com',  
+      email: 'jose11tamu@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -601,7 +602,7 @@ const handleBackdropClick = useCallback((e) => {
                     SiteStyle={SiteStyle}
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
-                    {isSiteOpen && <DashboardHeader />}
+                    {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}
                     {children}
 
 

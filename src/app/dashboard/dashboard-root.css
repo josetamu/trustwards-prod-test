@@ -7,6 +7,9 @@
   line-height: normal;
   font-family: 'Inter', sans-serif;
 }
+a {
+  text-decoration: none;
+}
 html{
   padding: 20px 20px 20px 0;
   background-color: var(--sidebar-background);

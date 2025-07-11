@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: normal;
+  font-family: 'Inter', sans-serif;
+}
+
+.tw-root__header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px;
+}
+.tw-root__dashboard-button {	
+    padding: 8px 12px;
+
+    cursor: pointer;
+    font-size: 14px;
+    color: #FFFFFF;
+
+    border-radius: 8px;
+    background-color: #0099FE;
+    box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+
+    text-decoration: none;
+}
