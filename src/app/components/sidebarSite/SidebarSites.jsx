@@ -231,12 +231,12 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                     )}
                 </span> 
             </div>
-            {!isSidebarOpen && window.innerWidth > 767 && isHovered &&(
+            {!isSidebarOpen && window.innerWidth > 767 && (
                 <Tooltip 
                   message={name} 
                   id={siteData.id}
-                  responsivePosition={{ desktop: 'sidebar', mobile: 'bottom' }}
-                  type='default'
+                  responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
+                  open={isHovered}
                 />
             )} 
             

@@ -8,7 +8,9 @@ import { useId } from 'react';
 export function Tooltip({ 
   message,
   className = '',
-  responsivePosition
+  responsivePosition,
+  open = false,
+  width = '100px',
 }) {
   const tooltipId = useId();
   const defaultPosition = responsivePosition ? null : 'right';
@@ -33,17 +35,21 @@ export function Tooltip({
 
   return (
     <AnimatePresence>
-      <motion.div 
-        className={`tooltip tooltip--${finalPosition} ${className}`}
-        role="tooltip"
-        aria-live="polite"
-        id={tooltipId}
-        {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
-      >
-        <div className="tooltip__mask">
-          <span className="tooltip__message">{message}</span>
-        </div>
-      </motion.div>
+      {open && (
+        <motion.div
+          key="tooltip"
+          className={`tooltip tooltip--${finalPosition} ${className}`}
+          role="tooltip"
+          aria-live="polite"
+          id={tooltipId}
+          style={width ? { '--tooltip-width': width } : {}}
+          {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+        >
+          <div className="tooltip__mask">
+            <span className="tooltip__message">{message}</span>
+          </div>
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 } 

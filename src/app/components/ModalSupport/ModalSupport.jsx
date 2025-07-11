@@ -250,14 +250,12 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 Other
                             </span>
                         </div>
-                        {errors.selectedChoice && (
-                            <Tooltip 
-                                message={errors.selectedChoice} 
-                                id="selectedChoice-error"
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                type='alert'
-                            />
-                        )}
+                        <Tooltip 
+                            message={errors.selectedChoice} 
+                            id="selectedChoice-error"
+                            responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                            open={!!errors.selectedChoice}
+                        />
                     </div>
                 </div>
                 <div className="modalSupport__mid">
@@ -273,14 +271,11 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             aria-describedby={errors.name ? 'name-error' : undefined} 
                             
                             />
-                            {errors.name && (
-                                <Tooltip 
-                                    message={errors.name} 
-                                    id="name-error"
-                                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                    type='alert'
-                                />
-                            )}
+                            <Tooltip
+                                message={errors.name}
+                                responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                open={!!errors.name}
+                            />
                         </div>
                         
                     </div>
@@ -295,14 +290,11 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             aria-invalid={!!errors.email} 
                             aria-describedby={errors.email ? 'email-error' : undefined} 
                             />
-                        {errors.email && (
-                            <Tooltip 
-                                message={errors.email} 
-                                id="email-error"
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                type='alert'
+                            <Tooltip
+                                message={errors.email}
+                                responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                open={!!errors.email}
                             />
-                        )}
                         </div>
                     </div>
                     <div className="modalSupport__input">
@@ -313,18 +305,18 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             className="modalSupport__input__field modalSupport__input__field--textarea" 
                             placeholder='...' 
                             value={message} 
-                            onChange={(e) => setMessage(e.target.value)}
+                            onChange={(e) => {
+                                setMessage(e.target.value);
+                                if (errors.message) setErrors(prev => ({ ...prev, message: undefined }));
+                            }}
                             aria-invalid={!!errors.message} 
                             aria-describedby={errors.message ? 'message-error' : undefined} 
                             />
-                        {errors.message && (
-                            <Tooltip 
-                                message={errors.message} 
-                                id="message-error"
-                                responsivePosition={{ desktop: 'bottom', mobile: 'top' }}
-                                type='alert'
-                            />
-                        )}
+                        <Tooltip
+                            message={errors.message}
+                            responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                            open={!!errors.message}
+                        />
                         </div>
                     </div>
                 </div>

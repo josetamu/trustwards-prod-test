@@ -393,7 +393,6 @@
   flex-direction: column;
 }
 
-.sites__grid,
 .sites__nosites-big {
   flex: 1 1 auto;
   min-height: 0;

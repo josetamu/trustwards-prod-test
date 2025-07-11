@@ -26,16 +26,18 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     className='modalChange__input' 
                                     type='text' 
                                     value={newName} 
-                                    onChange={(e) => setNewName(e.target.value)}
+                                    onChange={e => {
+                                        setNewName(e.target.value);
+                                        if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                     placeholder="New name"
                                 />
-                            {errors[changeType] && (
                                 <Tooltip
-                                message={errors[changeType]}
-                                responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    message={errors.name}
+                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    open={!!errors.name}
                                 />
-                            )}
                             </div>
                         </div>
                         <div className='modalChange__actions modalChange__actions--name'>
@@ -54,16 +56,18 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     className='modalChange__input' 
                                     type='email' 
                                     value={newEmail} 
-                                    onChange={(e) => setNewEmail(e.target.value)}
+                                    onChange={e => {
+                                        setNewEmail(e.target.value);
+                                        if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                 placeholder="New email"
                                 />
-                                {errors.email && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.email}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    />
-                                )}
+                                    open={!!errors.email}
+                                />
                             </div>
                             <div className='modalChange__input__wrapper'>
                                 <input 
@@ -71,15 +75,17 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     className='modalChange__input' 
                                     placeholder='Current password' 
                                     value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    onChange={e => {
+                                        setCurrentPassword(e.target.value);
+                                        if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                 />
-                                {errors.password && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.password}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    />
-                                )}
+                                    open={!!errors.password}
+                                />
                             </div>
                         </div>
                         <div className='modalChange__actions'>
@@ -99,31 +105,35 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     className='modalChange__input' 
                                     placeholder='Current password' 
                                     value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    onChange={e => {
+                                        setCurrentPassword(e.target.value);
+                                        if (errors.currentPassword) setErrors(prev => ({ ...prev, currentPassword: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                 />
-                                {errors.currentPassword && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.currentPassword}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    />
-                                )}
+                                    open={!!errors.currentPassword}
+                                />
                             </div>
                             <div className='modalChange__input__wrapper'>
                                 <input 
                                     className='modalChange__input' 
                                     type='password' 
                                     value={newPassword} 
-                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    onChange={e => {
+                                        setNewPassword(e.target.value);
+                                        if (errors.newPassword) setErrors(prev => ({ ...prev, newPassword: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                     placeholder="New password"
                                 />
-                                {errors.newPassword && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.newPassword}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    />
-                                )}
+                                    open={!!errors.newPassword}
+                                />
                             </div>
                            
                             <div className='modalChange__input__wrapper'>
@@ -132,15 +142,17 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 className='modalChange__input' 
                                 placeholder='Confirm password' 
                                 value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onChange={e => {
+                                    setConfirmPassword(e.target.value);
+                                    if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: undefined }));
+                                }}
                                 onKeyDown={handleKeyDown}
                             />
-                            {errors.confirmPassword && (
-                                <Tooltip
+                            <Tooltip
                                 message={errors.confirmPassword}
                                 responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                open={!!errors.confirmPassword}
                                 />
-                            )}
                             </div>
                         </div>
                         <div className='modalChange__actions'>
@@ -185,7 +197,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         
         if (changeType === 'password') {
             if (!currentPassword) {
-                validationErrors.currentPassword = 'Current password is required';
+                validationErrors.currentPassword = 'Current passwordrequired';
             }
             if (!newPassword || newPassword.length < 6) {
                 validationErrors.newPassword = 'New password must be at least 6 characters';

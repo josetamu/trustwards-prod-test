@@ -5,6 +5,7 @@
   align-items: stretch;
   position: relative;
   width: 100%;
+  height: fit-content;
 }
 
 .site__visual {

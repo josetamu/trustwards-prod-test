@@ -1,7 +1,7 @@
 .sidebar__sites-tooltip-wrapper{
     position: relative;
     width: 100%;
-    
+    display: flex;
 }
 
 .sidebar__sites-tooltip-wrapper--open{
@@ -96,14 +96,6 @@
 
 .sidebarSites__color--null{
     display: none;
-}
-
-.tooltip--sidebar{
-   display: none;
-}
-
-.sidebar__sites-tooltip-wrapper:hover .tooltip--sidebar{
-    display: block;
 }
 
 .sidebarSites__name{

@@ -115,6 +115,7 @@
 
 .modalSupport__input__container {
     position: relative;
+    display: flex;
 }
 
 .modalSupport__input__title {

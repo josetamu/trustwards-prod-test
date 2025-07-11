@@ -109,6 +109,7 @@
 }
 .modalChange__input__wrapper {
   position: relative;
+  display: flex;
 }
 
 .modalChange__advice {
