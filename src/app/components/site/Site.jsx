@@ -2,8 +2,27 @@ import './Site.css';
 import { Dropdown } from '../../components/dropdown/Dropdown';
 import { ModalContainer } from '../../components/ModalContainer/ModalContainer';
 import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
-import { useState, useId } from 'react';
+import { useState} from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
+import { useDashboard } from '../../dashboard/layout';
+
+// If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
+/* const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
+  const existingNames = webs
+      .filter(site => site.id !== currentSiteId) // Exclude current site from check
+      .map(site => site.Name);
+  
+  let newName = baseName;
+  let counter = 1;
+  
+  while (existingNames.includes(newName)) {
+      newName = `${baseName} (${counter})`;
+      counter++;
+  }
+  
+  return newName;
+}; */
+
 
 // ProButton: Button for site actions (shows dots on hover or dropdown open)
 const ProButton = ({ onClick, isActive }) => (
@@ -27,7 +46,9 @@ const ProButton = ({ onClick, isActive }) => (
 );
 
 // SiteMenu: Dropdown menu for site actions
-const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType }) => (
+const SiteMenu = ({setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType}) => {
+  const { handleCopy } = useDashboard();
+  return (
   <>
     <button className="dropdown__item">
       <span className="dropdown__icon">
@@ -39,7 +60,11 @@ const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteDa
       </span>
       Builder
     </button>
-    <button className="dropdown__item">
+    <button className="dropdown__item" onClick={() => {
+      handleCopy(siteData?.id, 'top');
+      setIsDropdownOpen(false);
+     
+    }}>
       <span className="dropdown__icon">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.08398 8.58398C5.08398 6.93408 5.08398 6.10913 5.59655 5.59655C6.10913 5.08398 6.93408 5.08398 8.58398 5.08398H9.16732C10.8172 5.08398 11.6422 5.08398 12.1547 5.59655C12.6673 6.10913 12.6673 6.93408 12.6673 8.58398V9.16732C12.6673 10.8172 12.6673 11.6422 12.1547 12.1547C11.6422 12.6673 10.8172 12.6673 9.16732 12.6673H8.58398C6.93408 12.6673 6.10913 12.6673 5.59655 12.1547C5.08398 11.6422 5.08398 10.8172 5.08398 9.16732V8.58398Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
@@ -48,7 +73,11 @@ const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteDa
       </span>
       Copy script
     </button>
-    <button className="dropdown__item" onClick={() => {onEdit(); setIsModalOpen(true); setModalType('EditSite'); setIsDropdownOpen(false); setSiteData(siteData);}}>
+    <button className="dropdown__item" onClick={() => {
+
+      setIsDropdownOpen(false); 
+      
+    }}>
       <span className="dropdown__icon">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M2.29734 9.11365L1.75 12.25L4.88653 11.7025C5.12307 11.6613 5.34111 11.548 5.5109 11.3782L11.9937 4.89533C12.3354 4.55362 12.3354 3.99959 11.9936 3.65789L10.342 2.00627C10.0003 1.66457 9.44628 1.66458 9.10456 2.00628L2.62168 8.48931C2.45189 8.65906 2.33862 8.87711 2.29734 9.11365Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
@@ -88,6 +117,7 @@ const SiteMenu = ({ onEdit, setIsModalOpen, setModalType, isModalOpen, setSiteDa
     </button>
   </>
 );
+};
 
 // Site: Card/list for a single site
 export const Site = ({
@@ -98,6 +128,9 @@ export const Site = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+
+
+
 
   // Handle site delete (list mode)
   const handleDeleteSite = async () => {
@@ -134,7 +167,7 @@ export const Site = ({
   // Dots are visible if hovering or dropdown is open
   const isActive = isHovering || isDropdownOpen;
 
-  const siteId = useId();
+
 
   if (isGridView) {
     // Grid view
@@ -159,7 +192,7 @@ export const Site = ({
               className="site-dropdown"
               open={isDropdownOpen}
               onClose={handleDropdownClose}
-              menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} modalType={modalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
+              menu={<SiteMenu onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} modalType={modalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
             >
               <ProButton
                 isActive={isActive}
@@ -202,7 +235,7 @@ export const Site = ({
           className="site-dropdown"
           open={isDropdownOpen}
           onClose={handleDropdownClose}
-          menu={<SiteMenu onEdit={() => {}} onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} modalType={modalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
+          menu={<SiteMenu onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} modalType={modalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} />}
         >
           <ProButton
             isActive={isActive}

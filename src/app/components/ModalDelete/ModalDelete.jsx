@@ -23,6 +23,7 @@ export const ModalDelete = ({ onClose, siteData, setIsModalOpen, setSiteData }) 
         .eq('id', siteData.id);
 
       if (error) {
+        alert(`Error deleting site: ${error.message}`);
         throw error;
       }
 
@@ -39,6 +40,7 @@ export const ModalDelete = ({ onClose, siteData, setIsModalOpen, setSiteData }) 
 
     } catch (error) {
       console.error('Error deleting site:', error);
+
     }
   };
 

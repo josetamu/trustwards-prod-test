@@ -1,11 +1,11 @@
 import './DashboardHeader.css';
 import { useDashboard } from '../../dashboard/layout';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef,} from 'react';
 import { Dropdown } from '../dropdown/Dropdown';
 
 
 // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
-const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
+/* const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
     const existingNames = webs
         .filter(site => site.id !== currentSiteId) // Exclude current site from check
         .map(site => site.Name);
@@ -19,30 +19,18 @@ const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
     }
     
     return newName;
-};
+}; */
 
 
 
 function DashboardHeader() {
-    const { siteData, checkSitePicture, SiteStyle, webs, supabase, user, fetchSites, setSiteData, setModalType, setIsModalOpen} = useDashboard();
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedName, setEditedName] = useState('');
-    const inputRef = useRef(null);
+    const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings} = useDashboard();
     const fileInputRef = useRef(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    // Update editedName when siteData changes
-    useEffect(() => {
-        if (siteData?.Name) {
-            setEditedName(siteData.Name);
-        }
-    }, [siteData?.Name]);
 
-    // When we enter edit mode, select the text
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.select();
-        }
-    }, [isEditing]); 
+
+
+ 
 const handleImgEditClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click(); // Open local files
@@ -58,76 +46,12 @@ const handleImgEditClick = () => {
     }
   };
 
-      // function to initialize the edit mode
-      const handleEdit = () => {
-          setIsEditing(true);
-          setEditedName(siteData?.Name);
-      };
-  
-      // function to save the edited name in the database
-     const handleSave = async () => {
-          try {
-              // Trim whitespace from the edited name
-              const trimmedName = editedName.trim();
-              
-              // If the name is empty, set it to "untitled"
-              const finalName = trimmedName === '' ? 'Untitled' : trimmedName;
-              
-              // Generate unique name if needed
-              const uniqueName = generateUniqueSiteName(finalName, siteData.id, webs);
-              
-              // Update the site in the database
-              const { error } = await supabase
-                  .from('Site')
-                  .update({ Name: uniqueName })
-                  .eq('id', siteData.id);
-  
-              if (error) {
-                  console.error('Error updating site name:', error);
-                  // Revert to original name if update fails
-                  setEditedName(siteData?.Name);
-                  setIsEditing(false);
-                  return;
-              }
-  
-              // Update local state
-              const updatedSiteData = { ...siteData, Name: uniqueName };
-              setSiteData(updatedSiteData);
-              
-              // Refresh the global sites list
-              if (user && fetchSites) {
-                  await fetchSites(user.id);
-              }
-              
-              setIsEditing(false);
-          } catch (error) {
-              console.error('Error updating site name:', error);
-              // Revert to original name if update fails
-              setEditedName(siteData?.Name);
-              setIsEditing(false);
-          }
-      };
-  
-      // if click outside the input, save the edited name in the database
-      const handleBlur = async () => {
-          setIsEditing(false);
-          await handleSave();
-      };
-  
-      // if press enter, save the edited name in the database. If press escape, revert to the original name.
-      const handleKeyDown = async (e) => {
-          if (e.key === 'Enter') {
-              await handleSave();
-          } else if (e.key === 'Escape') {
-              setEditedName(siteData?.Name);
-              setIsEditing(false);
-          }
-      };
+ 
     // Don't render if siteData is not available
     if (!siteData) {
         return null;
     }
-    const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType}) => {
+    const SiteMenu = ({ setIsModalOpen, setModalType, siteData, setIsDropdownOpen, openChangeModalSettings}) => {
         return (
           <>
             <button className="dropdown__item" onClick={(e) => {
@@ -146,6 +70,8 @@ const handleImgEditClick = () => {
             <button className="dropdown__item" onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              handleCopy(siteData?.id, 'bottom', true);
+              setIsDropdownOpen(false);
             }}>
               <span className="dropdown__icon">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -160,7 +86,8 @@ const handleImgEditClick = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
+                openChangeModalSettings(siteData);
+                setIsDropdownOpen(false);
               }}
             >
               <span className="dropdown__icon">
@@ -169,7 +96,7 @@ const handleImgEditClick = () => {
                   <path d="M8.16602 3.5L10.4993 5.83333" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
-              Rename
+              Settings
             </button>
             <div className="dropdown__divider"></div>
             <button 
@@ -206,22 +133,7 @@ const handleImgEditClick = () => {
                         {siteData?.Name?.charAt(0)}
                     </span> 
                     <img className={`dashboardHeader__img ${checkSitePicture(siteData) === '' ? 'dashboardHeader__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt={siteData?.Name} onClick={handleImgEditClick}/> 
-                    <span className='dashboardHeader__title' onClick={handleEdit}>
-                    {isEditing ? (
-                        <input className="dashboardHeader__input"
-                            type="text"
-                            value={editedName}
-                            onChange={(e) => setEditedName(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            onBlur={handleBlur}
-                            autoFocus
-                            ref={inputRef}
-                        />
-                    ) : (
-                        siteData?.Name
-                    )
-                    }
-                    </span>
+                    <span className='dashboardHeader__title'>{siteData?.Name}</span>
                 </div>
                 <span className={`dashboardHeader__plan ${siteData?.Plan === 'Pro' ? 'dashboardHeader__plan--pro' : ''}`} onClick={() => {
                     setModalType('Plan');
@@ -244,7 +156,7 @@ const handleImgEditClick = () => {
                     open={isDropdownOpen}
                     onClose={() => setIsDropdownOpen(false)}
                     menu={
-                        <SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} />
+                        <SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} openChangeModalSettings={openChangeModalSettings} />
                     }
                 >
                     <div className="dashboardHeader__dots" onClick={(e) => {

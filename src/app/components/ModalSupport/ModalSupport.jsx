@@ -91,17 +91,17 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
           setIsModalOpen(false);
           
           // we show the success message to the user
-          showNotification('Email sent successfully');
+          showNotification('Email sent successfully', 'top', false);
         } else {
           
           // we show the error specific to the user
           const errorMessage = result.error || result.details || 'Error sending email';
-          showNotification(`Error: ${errorMessage}`);
+          showNotification(`Error: ${errorMessage}`, 'top', false);
         }
 
     } catch (error) {
         console.error('Error en la solicitud:', error);
-        showNotification(`Connection error: ${error.message}`);
+        showNotification(`Connection error: ${error.message}`, 'top', false);
     } finally {
         setIsSubmitting(false);
     }

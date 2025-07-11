@@ -14,18 +14,24 @@
 
 /* Position variants */
 .notification--top {
-  top: 100px;
+  top: 90px;
   display: flex;
   justify-self: center;
+  
 
 }
 
 .notification--bottom {
-  bottom: 100px;
+  bottom: 90px;
   top: auto;
   position: fixed;
   display: flex;
   justify-self: center;
+}
+
+/* Sidebar open variant - centers notification when sidebar is open on desktop */
+.notification--sidebar {
+  left: 50%; /* Adjust based on sidebar width */
 }
 
 /* Notification Content */

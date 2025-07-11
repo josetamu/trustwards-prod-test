@@ -182,7 +182,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'darezo.2809@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -363,6 +363,13 @@ const handleBackdropClick = useCallback((e) => {
       setIsChangeModalOpen(true);
     };
 
+    // Function to open the ModalChange modal with the site data
+    const openChangeModalSettings = (siteData) => {
+      setChangeType('settings');
+      setIsChangeModalOpen(true);
+      setSiteData(siteData);
+    };
+
     //Function to close the ModalChange modal
     const closeChangeModal = () => {
         setIsChangeModalOpen(false);
@@ -370,11 +377,12 @@ const handleBackdropClick = useCallback((e) => {
       };
 
     //Function to show the notification
-    const showNotification = (message, position = 'top') => {
+    const showNotification = (message, position = 'top', contentCenter = false) => {
       setNotification({
         open: true,
         message: message,
         position: position,
+        contentCenter: contentCenter,
       });
     };
 
@@ -383,11 +391,26 @@ const handleBackdropClick = useCallback((e) => {
       setNotification({
         open: false,
         message: '',
+        position: '',
+        contentCenter: false,
       });
     };
 
+    //Function to copy script to clipboard
+    const handleCopy = async (siteSlug, position = 'top', contentCenter = false) => {
+        const script = `<script>https://trustwards.io/cdn/${siteSlug}.js</script>`;
+        try {
+            await navigator.clipboard.writeText(script);
+            showNotification("Copied script to clipboard", position, contentCenter);
+        } catch (error) {
+            console.error('Failed to copy text: ', error);
+            showNotification("Failed to copy script", position, contentCenter);
+        }
+    };
+
     //Function to create a new site
-    const createNewSite = async () => {
+    const createNewSite = async (createSiteName, createSiteDomain) => {
+    
       try {
         const colorKeys = Object.keys(avatarColors);
         const randomColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
@@ -407,7 +430,7 @@ const handleBackdropClick = useCallback((e) => {
         };
         
         // When a user creates a new site, the auto generated name is "Untitled"
-        const uniqueSiteName = generateUniqueSiteName('Untitled');
+        const uniqueSiteName = generateUniqueSiteName(createSiteName || 'Untitled');
         
         const { data, error } = await supabase
           .from('Site')
@@ -415,7 +438,9 @@ const handleBackdropClick = useCallback((e) => {
             {
               Name: uniqueSiteName,
               userid: user.id,
-              'Avatar Color': randomColorKey
+              'Avatar Color': randomColorKey,
+              Plan: 'Free',
+              Domain: createSiteDomain
             }
           ])
           .select();
@@ -550,14 +575,14 @@ const handleBackdropClick = useCallback((e) => {
         siteData,
         setIsDropdownOpen,
         fetchSites,
-        createNewSite,
         checkSitePicture,
         SiteStyle,
         showNotification,
         supabase,
         isDropdownOpen,
-        
-
+        handleCopy,
+        setSelectedSite,
+        openChangeModalSettings,
     };
 
     return (
@@ -583,11 +608,13 @@ const handleBackdropClick = useCallback((e) => {
                     setIsSiteOpen={setIsSiteOpen}
                     userSettings={userSettings}
                     setUserSettings={setUserSettings}
-                    createNewSite={createNewSite}
                     checkProfilePicture={checkProfilePicture}
                     profileStyle={ProfileStyle}
                     checkSitePicture={checkSitePicture}
                     SiteStyle={SiteStyle}
+                    openChangeModal={openChangeModal}
+                    openChangeModalSettings={openChangeModalSettings}
+                    
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
                     {isSiteOpen && <DashboardHeader />}
@@ -606,9 +633,9 @@ const handleBackdropClick = useCallback((e) => {
                     {/* ModalChange as independent modal */}
                     <ModalContainer 
                     isOpen={isChangeModalOpen} 
+                    isSidebarOpen={isSidebarOpen}
                     onClose={closeChangeModal} 
                     onBackdropClick={handleBackdropClick}
-                    isSidebarOpen={isSidebarOpen}
                     >
                     <ModalChange
                         changeType={changeType}
@@ -617,6 +644,10 @@ const handleBackdropClick = useCallback((e) => {
                         setUser={setUser}
                         setIsModalOpen={setIsModalOpen}
                         showNotification={showNotification}
+                        siteData={siteData}
+                        setSiteData={setSiteData}
+                        fetchSites={fetchSites}
+                        createNewSite={createNewSite}
                     />
                     </ModalContainer>
                     <Notification
@@ -625,6 +656,8 @@ const handleBackdropClick = useCallback((e) => {
                     autoClose={2000} //duration of the notification in ms
                     notificationMessage={notification.message}
                     position={notification.position || 'top'}
+                    isSidebarOpen={isSidebarOpen}
+                    contentCenter={notification.contentCenter || false}
                     >
                     </Notification>
             </div>
