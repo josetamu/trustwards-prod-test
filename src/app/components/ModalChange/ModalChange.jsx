@@ -5,13 +5,18 @@ import { supabase } from '../../../supabase/supabaseClient';
 
 import { Tooltip } from '../tooltip/Tooltip';
 
-export function ModalChange({ changeType, onClose, user, setUser, showNotification }) {
+
+export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, fetchSites, createNewSite }) {
 
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [currentPassword, setCurrentPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [newSiteName, setNewSiteName] = useState(siteData?.Name);
+    const [newSiteDomain, setNewSiteDomain] = useState(siteData?.Domain);
+    const [createSiteName, setCreateSiteName] = useState('');
+    const [createSiteDomain, setCreateSiteDomain] = useState('');
     const [errors, setErrors] = useState({});
     
     //Use modalChange in the different cases we need it: to change name, email or password... The function bellow render the content of the modal based on the changeType.
@@ -38,7 +43,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             )}
                             </div>
                         </div>
-                        <div className='modalChange__actions modalChange__actions--name'>
+                        <div className='modalChange__actions modalChange__actions--right'>
                             <button className='modalChange__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
@@ -149,8 +154,79 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                         </div>
                     </>
                 );
-        }
+        
+            case 'newsite':
+                return (
+                    <>
+                        <div className='modalChange__body'>
+                            <div className='modalChange__input__wrapper'>
+                                <input 
+                                    className='modalChange__input' 
+                                    type='text'  
+                                    onChange={(e) => setCreateSiteName(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                placeholder="New site name"
+                                />
+                            </div>
+                            <div className='modalChange__input__wrapper'>
+                                <input 
+                                    type="text" 
+                                    className='modalChange__input' 
+                                    placeholder='example.com' 
+                                    onChange={(e) => setCreateSiteDomain(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                />
+                                {errors.createSiteDomain && (
+                                    <Tooltip
+                                    message={errors.createSiteDomain}
+                                    responsivePosition={{ desktop: 'left', mobile: 'left' }}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <div className='modalChange__actions modalChange__actions--right'>
+                            <button className='modalChange__button' onClick={handleSave}>Save</button>
+                        </div>
+                    </>
+                ); 
+                case 'settings':
+                    return (
+                        <>
+                            <div className='modalChange__body'>
+                                <div className='modalChange__input__wrapper'>
+                                    <input 
+                                        className='modalChange__input' 
+                                        type='text'  
+                                        value={newSiteName}
+                                        onChange={(e) => setNewSiteName(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="Site name"
+                                    />
+                                </div>
+                                <div className='modalChange__input__wrapper'>
+                                    <input 
+                                        type="text" 
+                                        className='modalChange__input' 
+                                        placeholder='example.com' 
+                                        value={newSiteDomain}
+                                        onChange={(e) => setNewSiteDomain(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                    {errors.newSiteDomain && (
+                                        <Tooltip
+                                        message={errors.newSiteDomain}
+                                        responsivePosition={{ desktop: 'left', mobile: 'left' }}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className='modalChange__actions modalChange__actions--right'>
+                                <button className='modalChange__button' onClick={handleSave}>Save</button>
+                            </div>
+                        </>
+                    );
     }
+}
 
     //Handle key down Enter to save the changes
     const handleKeyDown = (e) => {
@@ -196,6 +272,58 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 validationErrors.confirmPassword = 'Passwords do not match';
             }
         }
+        if(changeType === 'newsite'){
+            if (!createSiteDomain || createSiteDomain.trim() === '') {
+                validationErrors.createSiteDomain = 'Site domain is required';
+            } else if (!createSiteDomain.includes('.')) {
+                validationErrors.createSiteDomain = 'Site domain must contain a dot (.)';
+            }else {
+                // Check if domain already exists in the database
+                try {
+                    const { data: existingSites, error } = await supabase
+                        .from('Site')
+                        .select('Domain')
+                        .eq('Domain', createSiteDomain.trim());
+                    
+                    if (error) {
+                        console.error('Error checking domain:', error);
+                        validationErrors.createSiteDomain = 'Error checking domain availability';
+                    } else if (existingSites && existingSites.length > 0) {
+                        validationErrors.createSiteDomain = 'This domain is already in use';
+                    }
+                } catch (error) {
+                    console.error('Error checking domain:', error);
+                    validationErrors.createSiteDomain = 'Error checking domain availability';
+                }
+            }
+        } 
+        if (changeType === 'settings') {
+            if (!newSiteDomain || newSiteDomain.trim() === '') {
+                validationErrors.newSiteDomain = 'Site domain is required';
+            } else if (!newSiteDomain.includes('.')) {
+                validationErrors.newSiteDomain = 'Site domain must contain a dot (.)';
+            }else {
+                // Check if domain already exists (excluding current site)
+                try {
+                    const { data: existingSites, error } = await supabase
+                        .from('Site')
+                        .select('Domain')
+                        .eq('Domain', newSiteDomain.trim())
+                        .neq('id', siteData?.id); // Exclude current site from check
+                    
+                    if (error) {
+                        console.error('Error checking domain:', error);
+                        validationErrors.newSiteDomain = 'Error checking domain availability';
+                    } else if (existingSites && existingSites.length > 0) {
+                        validationErrors.newSiteDomain = 'This domain is already in use';
+                    }
+                } catch (error) {
+                    console.error('Error checking domain:', error);
+                    validationErrors.newSiteDomain = 'Error checking domain availability';
+                }
+            }
+        }
+
 
         //Check if the object validationErrors has any key, if it has, show the errors
         if (Object.keys(validationErrors).length > 0) {
@@ -215,6 +343,31 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 // For password changes, you might want to use Supabase Auth
                 // This is a simplified version - in production you'd want proper password hashing
                 updateData = { Password: newPassword };
+            }
+            if (changeType === 'settings') {
+                updateData = { Name: newSiteName.trim(), Domain: newSiteDomain.trim() };
+                const { data, error } = await supabase
+                    .from('Site')
+                    .update(updateData)
+                    .eq('id', siteData?.id);
+                if (error) {
+                    console.error('Error updating site:', error);
+                    setErrors({ [changeType]: 'Failed to update. Please try again.' });
+                    return;
+                }
+                const updatedSite = { ...siteData, ...updateData };
+                setSiteData(updatedSite);
+                console.log(user?.id);
+                fetchSites(user?.id);
+                if (showNotification) {
+                    showNotification('Site settings updated successfully!', 'top', true);
+                }
+                onClose();
+
+                return;
+            }
+            if (changeType === 'newsite') {
+                createNewSite(createSiteName, createSiteDomain);
             }
 
             //Update the data in the database using the object updateData
@@ -247,10 +400,20 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                     case 'password':
                         successMessage = 'We\'ve sent instructions to your new email to reset your password!';
                         break;
+                    case 'newsite':
+                        successMessage = 'Site created successfully!';
+                        break;
+                    case 'settings':
+                        successMessage = 'Site settings updated successfully!';
+                        break;
                     default:
                         successMessage = 'Updated successfully!';
                 }
-                showNotification(successMessage, 'top', false);
+                if (changeType === 'newsite') {
+                    showNotification(successMessage, 'bottom', true);
+                } else {
+                    showNotification(successMessage, 'top', false);
+                }
             }
             
             // Close the modal
@@ -287,7 +450,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         <div className='modalChange' onClick={handleBackdropClick}>
             <div className='modalChange__content' onClick={(e) => e.stopPropagation()}>
                 <div className='modalChange__header'>
-                    <h2 className='modalChange__title'>Change {changeType}</h2>
+                    <h2 className='modalChange__title'>{`${changeType === 'newsite' ? 'Create new site' : `Change ${changeType}`}`}</h2>
                 </div>
                 <div className='modalChange__divider'></div>
                 {renderContent()}
@@ -295,3 +458,4 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         </div>
     )
 }
+    

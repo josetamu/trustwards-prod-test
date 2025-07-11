@@ -54,6 +54,7 @@
     border: none;
     box-shadow: none;
     max-width: 600px;
+    margin-top: 0;
 }
 .home__installation-header{
     display: flex;
@@ -311,9 +312,12 @@
     padding: 15px;
     position: relative;
     box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    gap: 10px;
+
 }
 .home__cardInfo--analytics{
     width: 60%;
+    padding-bottom: 25px;
 }
 .home__cardInfo-header{
     display: flex;
@@ -333,7 +337,7 @@
     font-size: var(--font-size-small);
     font-weight: 700;
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--body-fresco-color);
+    color: var(--site-pro-toggle-text-color);
     background-color: var(--wrappers-fresco-color);
     padding: 5px;
     border-radius: 4px;
@@ -460,7 +464,7 @@
                     
     align-self: center;
     flex-shrink: 0;
-    margin-top: 20px
+    margin-top: 10px
     
 }
 .home__complyHealth--empty{
@@ -609,11 +613,12 @@
     .home__cardInfo{
         width: 100%;
         max-width: 500px;
-        min-height: 305px;
+        gap: 20px
+
     }
     .home__midCard{
         max-width: 500px;
-        min-height: 295px;
+
     }
 
 

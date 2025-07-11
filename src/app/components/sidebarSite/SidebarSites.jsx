@@ -5,10 +5,9 @@ import { useId, useState} from "react";
 import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../tooltip/Tooltip";
 import Link from "next/link";
-import { supabase } from "../../../supabase/supabaseClient";
 import { useDashboard } from "../../dashboard/layout";
 
-export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle}) {
+export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -34,7 +33,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
    
     
     //This is the dropdown menu
-    const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType}) => {
+    const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType, openChangeModalSettings}) => {
       return (
         <>
           <button className="dropdown__item" onClick={(e) => {
@@ -70,6 +69,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
               e.preventDefault();
               e.stopPropagation();
               setIsDropdownOpen(false);
+              openChangeModalSettings(siteData);
             }}
           >
             <span className="dropdown__icon">
@@ -154,7 +154,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                 className="sidebarSites-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
-                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} name={name} />}
+                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} name={name} openChangeModal={openChangeModal} openChangeModalSettings={openChangeModalSettings}/>}
             >
                 <div className="sidebarSites__edit" onClick={(e) => {
                     e.preventDefault();

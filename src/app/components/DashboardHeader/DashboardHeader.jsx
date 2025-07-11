@@ -24,7 +24,7 @@ import { Dropdown } from '../dropdown/Dropdown';
 
 
 function DashboardHeader() {
-    const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy} = useDashboard();
+    const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings} = useDashboard();
     const fileInputRef = useRef(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -51,7 +51,7 @@ const handleImgEditClick = () => {
     if (!siteData) {
         return null;
     }
-    const SiteMenu = ({ setIsModalOpen, setModalType, siteData, setIsDropdownOpen}) => {
+    const SiteMenu = ({ setIsModalOpen, setModalType, siteData, setIsDropdownOpen, openChangeModalSettings}) => {
         return (
           <>
             <button className="dropdown__item" onClick={(e) => {
@@ -86,7 +86,7 @@ const handleImgEditClick = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-
+                openChangeModalSettings(siteData);
                 setIsDropdownOpen(false);
               }}
             >
@@ -156,7 +156,7 @@ const handleImgEditClick = () => {
                     open={isDropdownOpen}
                     onClose={() => setIsDropdownOpen(false)}
                     menu={
-                        <SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} />
+                        <SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} openChangeModalSettings={openChangeModalSettings} />
                     }
                 >
                     <div className="dashboardHeader__dots" onClick={(e) => {
