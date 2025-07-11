@@ -5,13 +5,18 @@ import { supabase } from '../../../supabase/supabaseClient';
 
 import { Tooltip } from '../tooltip/Tooltip';
 
-export function ModalChange({ changeType, onClose, user, setUser, showNotification }) {
+
+export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, fetchSites, createNewSite }) {
 
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [currentPassword, setCurrentPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [newSiteName, setNewSiteName] = useState(siteData?.Name);
+    const [newSiteDomain, setNewSiteDomain] = useState(siteData?.Domain);
+    const [createSiteName, setCreateSiteName] = useState('');
+    const [createSiteDomain, setCreateSiteDomain] = useState('');
     const [errors, setErrors] = useState({});
     
     //Use modalChange in the different cases we need it: to change name, email or password... The function bellow render the content of the modal based on the changeType.
@@ -26,19 +31,21 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     className='modalChange__input' 
                                     type='text' 
                                     value={newName} 
-                                    onChange={(e) => setNewName(e.target.value)}
+                                    onChange={e => {
+                                        setNewName(e.target.value);
+                                        if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                     placeholder="New name"
                                 />
-                            {errors[changeType] && (
                                 <Tooltip
-                                message={errors[changeType]}
-                                responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    message={errors.name}
+                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    open={!!errors.name}
                                 />
-                            )}
                             </div>
                         </div>
-                        <div className='modalChange__actions modalChange__actions--name'>
+                        <div className='modalChange__actions modalChange__actions--right'>
                             <button className='modalChange__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
@@ -54,16 +61,18 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     className='modalChange__input' 
                                     type='email' 
                                     value={newEmail} 
-                                    onChange={(e) => setNewEmail(e.target.value)}
+                                    onChange={e => {
+                                        setNewEmail(e.target.value);
+                                        if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                 placeholder="New email"
                                 />
-                                {errors.email && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.email}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    />
-                                )}
+                                    open={!!errors.email}
+                                />
                             </div>
                             <div className='modalChange__input__wrapper'>
                                 <input 
@@ -71,15 +80,17 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     className='modalChange__input' 
                                     placeholder='Current password' 
                                     value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    onChange={e => {
+                                        setCurrentPassword(e.target.value);
+                                        if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                 />
-                                {errors.password && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.password}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    />
-                                )}
+                                    open={!!errors.password}
+                                />
                             </div>
                         </div>
                         <div className='modalChange__actions'>
@@ -99,31 +110,35 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     className='modalChange__input' 
                                     placeholder='Current password' 
                                     value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    onChange={e => {
+                                        setCurrentPassword(e.target.value);
+                                        if (errors.currentPassword) setErrors(prev => ({ ...prev, currentPassword: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                 />
-                                {errors.currentPassword && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.currentPassword}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    />
-                                )}
+                                    open={!!errors.currentPassword}
+                                />
                             </div>
                             <div className='modalChange__input__wrapper'>
                                 <input 
                                     className='modalChange__input' 
                                     type='password' 
                                     value={newPassword} 
-                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    onChange={e => {
+                                        setNewPassword(e.target.value);
+                                        if (errors.newPassword) setErrors(prev => ({ ...prev, newPassword: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                     placeholder="New password"
                                 />
-                                {errors.newPassword && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.newPassword}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    />
-                                )}
+                                    open={!!errors.newPassword}
+                                />
                             </div>
                            
                             <div className='modalChange__input__wrapper'>
@@ -132,15 +147,17 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 className='modalChange__input' 
                                 placeholder='Confirm password' 
                                 value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onChange={e => {
+                                    setConfirmPassword(e.target.value);
+                                    if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: undefined }));
+                                }}
                                 onKeyDown={handleKeyDown}
                             />
-                            {errors.confirmPassword && (
-                                <Tooltip
+                            <Tooltip
                                 message={errors.confirmPassword}
                                 responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                open={!!errors.confirmPassword}
                                 />
-                            )}
                             </div>
                         </div>
                         <div className='modalChange__actions'>
@@ -149,8 +166,79 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                         </div>
                     </>
                 );
-        }
+        
+            case 'newsite':
+                return (
+                    <>
+                        <div className='modalChange__body'>
+                            <div className='modalChange__input__wrapper'>
+                                <input 
+                                    className='modalChange__input' 
+                                    type='text'  
+                                    onChange={(e) => setCreateSiteName(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                placeholder="New site name"
+                                />
+                            </div>
+                            <div className='modalChange__input__wrapper'>
+                                <input 
+                                    type="text" 
+                                    className='modalChange__input' 
+                                    placeholder='example.com' 
+                                    onChange={(e) => setCreateSiteDomain(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                />
+                                {errors.createSiteDomain && (
+                                    <Tooltip
+                                    message={errors.createSiteDomain}
+                                    responsivePosition={{ desktop: 'left', mobile: 'left' }}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <div className='modalChange__actions modalChange__actions--right'>
+                            <button className='modalChange__button' onClick={handleSave}>Save</button>
+                        </div>
+                    </>
+                ); 
+                case 'settings':
+                    return (
+                        <>
+                            <div className='modalChange__body'>
+                                <div className='modalChange__input__wrapper'>
+                                    <input 
+                                        className='modalChange__input' 
+                                        type='text'  
+                                        value={newSiteName}
+                                        onChange={(e) => setNewSiteName(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="Site name"
+                                    />
+                                </div>
+                                <div className='modalChange__input__wrapper'>
+                                    <input 
+                                        type="text" 
+                                        className='modalChange__input' 
+                                        placeholder='example.com' 
+                                        value={newSiteDomain}
+                                        onChange={(e) => setNewSiteDomain(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                    {errors.newSiteDomain && (
+                                        <Tooltip
+                                        message={errors.newSiteDomain}
+                                        responsivePosition={{ desktop: 'left', mobile: 'left' }}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className='modalChange__actions modalChange__actions--right'>
+                                <button className='modalChange__button' onClick={handleSave}>Save</button>
+                            </div>
+                        </>
+                    );
     }
+}
 
     //Handle key down Enter to save the changes
     const handleKeyDown = (e) => {
@@ -185,7 +273,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         
         if (changeType === 'password') {
             if (!currentPassword) {
-                validationErrors.currentPassword = 'Current password is required';
+                validationErrors.currentPassword = 'Current passwordrequired';
             }
             if (!newPassword || newPassword.length < 6) {
                 validationErrors.newPassword = 'New password must be at least 6 characters';
@@ -196,6 +284,58 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 validationErrors.confirmPassword = 'Passwords do not match';
             }
         }
+        if(changeType === 'newsite'){
+            if (!createSiteDomain || createSiteDomain.trim() === '') {
+                validationErrors.createSiteDomain = 'Site domain is required';
+            } else if (!createSiteDomain.includes('.')) {
+                validationErrors.createSiteDomain = 'Site domain must contain a dot (.)';
+            }else {
+                // Check if domain already exists in the database
+                try {
+                    const { data: existingSites, error } = await supabase
+                        .from('Site')
+                        .select('Domain')
+                        .eq('Domain', createSiteDomain.trim());
+                    
+                    if (error) {
+                        console.error('Error checking domain:', error);
+                        validationErrors.createSiteDomain = 'Error checking domain availability';
+                    } else if (existingSites && existingSites.length > 0) {
+                        validationErrors.createSiteDomain = 'This domain is already in use';
+                    }
+                } catch (error) {
+                    console.error('Error checking domain:', error);
+                    validationErrors.createSiteDomain = 'Error checking domain availability';
+                }
+            }
+        } 
+        if (changeType === 'settings') {
+            if (!newSiteDomain || newSiteDomain.trim() === '') {
+                validationErrors.newSiteDomain = 'Site domain is required';
+            } else if (!newSiteDomain.includes('.')) {
+                validationErrors.newSiteDomain = 'Site domain must contain a dot (.)';
+            }else {
+                // Check if domain already exists (excluding current site)
+                try {
+                    const { data: existingSites, error } = await supabase
+                        .from('Site')
+                        .select('Domain')
+                        .eq('Domain', newSiteDomain.trim())
+                        .neq('id', siteData?.id); // Exclude current site from check
+                    
+                    if (error) {
+                        console.error('Error checking domain:', error);
+                        validationErrors.newSiteDomain = 'Error checking domain availability';
+                    } else if (existingSites && existingSites.length > 0) {
+                        validationErrors.newSiteDomain = 'This domain is already in use';
+                    }
+                } catch (error) {
+                    console.error('Error checking domain:', error);
+                    validationErrors.newSiteDomain = 'Error checking domain availability';
+                }
+            }
+        }
+
 
         //Check if the object validationErrors has any key, if it has, show the errors
         if (Object.keys(validationErrors).length > 0) {
@@ -215,6 +355,31 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 // For password changes, you might want to use Supabase Auth
                 // This is a simplified version - in production you'd want proper password hashing
                 updateData = { Password: newPassword };
+            }
+            if (changeType === 'settings') {
+                updateData = { Name: newSiteName.trim(), Domain: newSiteDomain.trim() };
+                const { data, error } = await supabase
+                    .from('Site')
+                    .update(updateData)
+                    .eq('id', siteData?.id);
+                if (error) {
+                    console.error('Error updating site:', error);
+                    setErrors({ [changeType]: 'Failed to update. Please try again.' });
+                    return;
+                }
+                const updatedSite = { ...siteData, ...updateData };
+                setSiteData(updatedSite);
+                console.log(user?.id);
+                fetchSites(user?.id);
+                if (showNotification) {
+                    showNotification('Site settings updated successfully!', 'top', true);
+                }
+                onClose();
+
+                return;
+            }
+            if (changeType === 'newsite') {
+                createNewSite(createSiteName, createSiteDomain);
             }
 
             //Update the data in the database using the object updateData
@@ -247,10 +412,20 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                     case 'password':
                         successMessage = 'We\'ve sent instructions to your new email to reset your password!';
                         break;
+                    case 'newsite':
+                        successMessage = 'Site created successfully!';
+                        break;
+                    case 'settings':
+                        successMessage = 'Site settings updated successfully!';
+                        break;
                     default:
                         successMessage = 'Updated successfully!';
                 }
-                showNotification(successMessage);
+                if (changeType === 'newsite') {
+                    showNotification(successMessage, 'bottom', true);
+                } else {
+                    showNotification(successMessage, 'top', false);
+                }
             }
             
             // Close the modal
@@ -287,7 +462,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         <div className='modalChange' onClick={handleBackdropClick}>
             <div className='modalChange__content' onClick={(e) => e.stopPropagation()}>
                 <div className='modalChange__header'>
-                    <h2 className='modalChange__title'>Change {changeType}</h2>
+                    <h2 className='modalChange__title'>{`${changeType === 'newsite' ? 'Create new site' : `Change ${changeType}`}`}</h2>
                 </div>
                 <div className='modalChange__divider'></div>
                 {renderContent()}
@@ -295,3 +470,4 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         </div>
     )
 }
+    

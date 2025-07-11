@@ -80,7 +80,7 @@
   gap: 10px;
 }
 
-.modalChange__actions--name {
+.modalChange__actions--right {
   justify-content: flex-end;
 }
 /* link of forgot password? */
@@ -109,6 +109,7 @@
 }
 .modalChange__input__wrapper {
   position: relative;
+  display: flex;
 }
 
 .modalChange__advice {

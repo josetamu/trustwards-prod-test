@@ -1,6 +1,5 @@
 import './ModalAccount.css';
 
-import { supabase } from '../../../supabase/supabaseClient';
 import { useEffect, useState } from 'react';
 import { useRef } from 'react';
 

@@ -16,9 +16,13 @@ html{
 }
 
 @media (max-width: 767px) {
-  html{
-    padding: 0;
-  }
+
+  /* Reset margins and padding to eliminate gaps */
+html, body {
+  margin: 0;
+  padding: 0;
+
+}
 }
 
 /*

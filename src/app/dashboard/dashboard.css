@@ -1,3 +1,5 @@
+
+
 .app-container {
   width: 100%;
 }
@@ -8,7 +10,7 @@
     border-radius: 10px;
     border: 1px solid var(--border-fresco-color);
     min-height: calc(100vh - 40px);
-    width: calc(100% - 90px);
+    width: calc(100% - 70px);
     height: fit-content;
     padding: 0px;
     left: var(--sidebar-width-close);
@@ -17,8 +19,7 @@
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-    
-    
+
   }
 
   /* we use this class in the elements we need to readjust when sidebar is open. with only this class we not need modifyers in every element we wanna change*/
@@ -33,18 +34,16 @@
     
 
     .app-container{
-      width: 100vw;
-      background-color: transparent;
-      
-      
+      width: 100%;      
     }
   .content__container {
-    width: calc(100vw - 0px);
+    width: 100%;
     min-height: calc(100vh - 0px);
     left: 0px;
     top: 0px;
     border: 0px;
     border-radius: 0px;
+   
    
   
   }

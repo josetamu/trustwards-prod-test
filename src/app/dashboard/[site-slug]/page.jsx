@@ -6,6 +6,7 @@ import { useDashboard } from '../layout';
 import { useState, useRef, useEffect } from 'react';
 import ScriptCopy from '../../components/ScriptCopy/ScriptCopy';
 import Scan from '@components/scan/Scan.jsx';
+import Link from 'next/link';
 
 //function to create a circle chart
 function CircleChart({data, centerText, centerLabel, centerIcon}) {
@@ -78,7 +79,7 @@ function CircleChart({data, centerText, centerLabel, centerIcon}) {
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs, checkSitePicture, SiteStyle, user, fetchSites, showNotification } = useDashboard();
+    const { webs, showNotification } = useDashboard();
     const selectedSite = webs.find(site => site.id === siteSlug);
     const [siteData, setSiteData] = useState(selectedSite);
     const [isInstalled, setIsInstalled] = useState(false);
@@ -412,7 +413,7 @@ const cookiesData = analyticsCookies.map(item => ({
                                         </div>
                                     </div>
                                     <div className="home__fullView">
-                                        <div className="home__fullView-text">To have a full view go to the <a href={`/dashboard/${siteData?.id}/scanner`} className="home__fullView-link">scanner.</a></div>
+                                        <div className="home__fullView-text">To have a full view go to the <Link href={`/dashboard/${siteData?.id}/scanner`} className="home__fullView-link">scanner.</Link></div>
                                     </div>
                                 </div>
                             )}
@@ -424,11 +425,11 @@ const cookiesData = analyticsCookies.map(item => ({
                     <div className="home__cardInfo">
                         <div className="home__cardInfo-header">
                             <span className="home__cardInfo-title">Site Usage</span>
-                            <span className="home__cardInfo-plan">{siteData?.Plan}</span>
+                            <span className="home__cardInfo-plan">{siteData?.Plan || 'Free'}</span>
                         </div>
                         {noInstalled()}
                         <div className="home__cardInfo-content">
-                            {siteData?.Plan === 'Free' && (
+                            {(siteData?.Plan === 'Free' || !siteData?.Plan) && (
                             <div className="home__cardInfo-upgrade">
                                 <span className="home__cardInfo-enjoy">Enjoy unlimited usage. <span className="home__cardInfo-enjoy--upgrade">Upgrade</span> this site to pro</span>
                             </div>
@@ -465,7 +466,7 @@ const cookiesData = analyticsCookies.map(item => ({
                                     </div>
                                 </div>
                             </div>
-                            {siteData?.Plan === 'Free' && (
+                            {(siteData?.Plan === 'Free' || !siteData?.Plan) && (
                                 <div className="home__buttonUpgrade">
                                     <span className="home__buttonUpgrade-text">Upgrade</span>
                                 </div>

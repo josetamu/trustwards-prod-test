@@ -137,15 +137,16 @@ export function Sidebar({
     setSiteData,
     siteData,
     modalType,
-    selectedSite,
     setSelectedSite,
     setIsSiteOpen,
     isSiteOpen,
-    createNewSite,
     checkProfilePicture,
     profileStyle,
     checkSitePicture,
-    SiteStyle
+    SiteStyle,
+    openChangeModal,
+    openChangeModalSettings,
+    
     }) {
     const { 'site-slug': siteSlug } = useParams();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -313,7 +314,7 @@ export function Sidebar({
                             {/* render different headers depending you are inside site or not */}
                             {isSiteOpen ? (
                                 <>
-                                    <span className='sidebar__sites__title sidebar__sites__title--site'>{selectedSite?.Name || 'SITE'}</span>
+                                    <span className='sidebar__sites__title sidebar__sites__title--site'>{siteData?.Name || 'SITE'}</span>
                                 </>
                             ) : (
                                 <>
@@ -340,7 +341,7 @@ export function Sidebar({
                                         />
                                     </div>
                                     {/* this is the + to add a newsite */}
-                                    <span className='sidebar__sites__add' onClick={() => {createNewSite()}} >
+                                    <span className='sidebar__sites__add' onClick={() => {openChangeModal('newsite')}} >
                                             <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="currentColor"/>
                                             </svg>
@@ -385,7 +386,7 @@ export function Sidebar({
                                                         <br />
                                                         Start by creating a <span className="nosites__text__span">new site.</span>
                                                     </div>
-                                                    <NewSite createNewSite={createNewSite} />
+                                                    <NewSite openChangeModal={openChangeModal} />
                                                 </div>
                                             )}
                                         </div>
@@ -414,6 +415,8 @@ export function Sidebar({
                                                         setIsSiteOpen={setIsSiteOpen}
                                                         checkSitePicture={checkSitePicture}
                                                         SiteStyle={SiteStyle}
+                                                        openChangeModal={openChangeModal}
+                                                        openChangeModalSettings={openChangeModalSettings}
                                                     />
                                                 </div>
                                             )
