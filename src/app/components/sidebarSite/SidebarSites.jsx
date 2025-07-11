@@ -1,7 +1,7 @@
 import "./SidebarSites.css";
 import "../../components/dropdown/Dropdown.css";
 
-import { useId, useState, useEffect, useRef } from "react";
+import { useId, useState} from "react";
 import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../tooltip/Tooltip";
 import Link from "next/link";
@@ -11,14 +11,11 @@ import { useDashboard } from "../../dashboard/layout";
 export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedName, setEditedName] = useState(name);
     const [isHovered, setIsHovered] = useState(false);
-    const inputRef = useRef(null);
-    const { fetchSites, user, webs, handleCopy, showNotification } = useDashboard();
+    const { handleCopy} = useDashboard();
 
     // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
-    const generateUniqueSiteName = (baseName, currentSiteId) => {
+    /* const generateUniqueSiteName = (baseName, currentSiteId) => {
         const existingNames = webs
             .filter(site => site.id !== currentSiteId) // Exclude current site from check
             .map(site => site.Name);
@@ -32,81 +29,9 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
         }
         
         return newName;
-    };
+    }; */
     
-    // function to initialize the edit mode
-    const handleEdit = () => {
-        setIsEditing(true);
-        setEditedName(name);
-        setIsDropdownOpen(false);
-    };
-
-    // function to save the edited name in the database
-    const handleSave = async () => {
-        try {
-            // Trim whitespace from the edited name
-            const trimmedName = editedName.trim();
-            
-            // If the name is empty, set it to "untitled"
-            const finalName = trimmedName === '' ? 'Untitled' : trimmedName;
-            
-            // Generate unique name if needed
-            const uniqueName = generateUniqueSiteName(finalName, siteData.id);
-            
-            // Update the site in the database
-            const { error } = await supabase
-                .from('Site')
-                .update({ Name: uniqueName })
-                .eq('id', siteData.id);
-
-            if (error) {
-                console.error('Error updating site name:', error);
-                // Revert to original name if update fails
-                setEditedName(name);
-                setIsEditing(false);
-                return;
-            }
-
-            // Update local state
-            const updatedSiteData = { ...siteData, Name: uniqueName };
-            setSiteData(updatedSiteData);
-            
-            // Refresh the global sites list
-            if (user && fetchSites) {
-                await fetchSites(user.id);
-            }
-            
-            setIsEditing(false);
-            showNotification('Site name updated successfully', 'top');
-        } catch (error) {
-            console.error('Error updating site name:', error);
-            // Revert to original name if update fails
-            setEditedName(name);
-            setIsEditing(false);
-        }
-    };
-
-    // if click outside the input, save the edited name in the database
-    const handleBlur = async () => {
-        await handleSave();
-    };
-
-    // if press enter, save the edited name in the database. If press escape, revert to the original name.
-    const handleKeyDown = async (e) => {
-        if (e.key === 'Enter') {
-            await handleSave();
-        } else if (e.key === 'Escape') {
-            setEditedName(name);
-            setIsEditing(false);
-        }
-    };
-
-    // When we enter edit mode, select the text
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.select();
-        }
-    }, [isEditing]);
+   
     
     //This is the dropdown menu
     const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType}) => {
@@ -128,7 +53,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
           <button className="dropdown__item" onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleCopy(siteData?.id, 'top');
+            handleCopy(siteData?.id, 'top', true);
             setIsDropdownOpen(false);
           }}>
             <span className="dropdown__icon">
@@ -144,7 +69,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handleEdit();
+              setIsDropdownOpen(false);
             }}
           >
             <span className="dropdown__icon">
@@ -153,7 +78,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                 <path d="M8.16602 3.5L10.4993 5.83333" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </span>
-            Rename
+            Settigns
           </button>
           <div className="dropdown__divider"></div>
           <button 
@@ -196,11 +121,6 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onClick={(e) => {
-                // Prevent navigation if in editing mode
-                if (isEditing) {
-                    e.preventDefault();
-                    return;
-                }
                 setSelectedSite(siteData);
                 setIsSiteOpen(true);
                 if(window.innerWidth < 767){
@@ -218,20 +138,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                     <img className={`sidebarSites__img ${checkSitePicture(siteData) === '' ? 'sidebarSites__img--null' : ''}`} src={siteData["Avatar URL"]}/>
                 </span>
                 <span className="sidebarSites__name">
-                    {isEditing ? (
-                        <input
-                            type="text"
-                            value={editedName}
-                            onChange={(e) => setEditedName(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            onBlur={handleBlur}
-                            autoFocus
-                            className="sidebarSites__input"
-                            ref={inputRef}
-                        />
-                    ) : (
-                        name
-                    )}
+                      {name}
                 </span> 
             </div>
             {!isSidebarOpen && window.innerWidth > 767 && isHovered &&(
@@ -247,7 +154,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                 className="sidebarSites-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
-                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} setIsEditing={setIsEditing} setEditedName={setEditedName} name={name} />}
+                menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} name={name} />}
             >
                 <div className="sidebarSites__edit" onClick={(e) => {
                     e.preventDefault();

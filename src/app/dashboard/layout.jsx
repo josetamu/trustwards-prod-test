@@ -370,11 +370,12 @@ const handleBackdropClick = useCallback((e) => {
       };
 
     //Function to show the notification
-    const showNotification = (message, position = 'top') => {
+    const showNotification = (message, position = 'top', contentCenter = false) => {
       setNotification({
         open: true,
         message: message,
         position: position,
+        contentCenter: contentCenter,
       });
     };
 
@@ -383,18 +384,20 @@ const handleBackdropClick = useCallback((e) => {
       setNotification({
         open: false,
         message: '',
+        position: '',
+        contentCenter: false,
       });
     };
 
     //Function to copy script to clipboard
-    const handleCopy = async (siteSlug, position = 'top') => {
+    const handleCopy = async (siteSlug, position = 'top', contentCenter = false) => {
         const script = `<script>https://trustwards.io/cdn/${siteSlug}.js</script>`;
         try {
             await navigator.clipboard.writeText(script);
-            showNotification("Copied script to clipboard", position);
+            showNotification("Copied script to clipboard", position, contentCenter);
         } catch (error) {
             console.error('Failed to copy text: ', error);
-            showNotification("Failed to copy script", position);
+            showNotification("Failed to copy script", position, contentCenter);
         }
     };
 
@@ -569,6 +572,7 @@ const handleBackdropClick = useCallback((e) => {
         supabase,
         isDropdownOpen,
         handleCopy,
+        setSelectedSite,
     };
 
     return (
@@ -636,6 +640,8 @@ const handleBackdropClick = useCallback((e) => {
                     autoClose={2000} //duration of the notification in ms
                     notificationMessage={notification.message}
                     position={notification.position || 'top'}
+                    isSidebarOpen={isSidebarOpen}
+                    contentCenter={notification.contentCenter || false}
                     >
                     </Notification>
             </div>

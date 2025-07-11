@@ -61,7 +61,10 @@
   font-weight: 600;
   color: var(--body-semistrong-color);
   text-align: center;
+
 }
+
+
 
 .site__footer-right {
   display: flex;
@@ -179,6 +182,8 @@
   font-size: 16px;
   font-weight: 600;
   color: var(--body-semistrong-color);
+
+
 }
 
 .site__list-right {

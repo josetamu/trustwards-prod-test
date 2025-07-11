@@ -250,7 +250,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                     default:
                         successMessage = 'Updated successfully!';
                 }
-                showNotification(successMessage);
+                showNotification(successMessage, 'top', false);
             }
             
             // Close the modal
