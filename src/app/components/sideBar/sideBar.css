@@ -287,6 +287,9 @@
 .sidebar__sitesDisplay--open{
   max-height: calc(100vh / 2.8);
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong-color) transparent;
+  scrollbar-gutter: stable;
 }
 
 .sitesDisplay__siteslinks{
