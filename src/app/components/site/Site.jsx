@@ -155,7 +155,7 @@ export const Site = ({
   // Handle dropdown toggle (only opens on click)
   const handleDropdownToggle = (e) => {
     e.stopPropagation();
-    setIsDropdownOpen(true);
+    setIsDropdownOpen((open) => !open);
   };
 
   // Handle dropdown close (only closes on click outside)

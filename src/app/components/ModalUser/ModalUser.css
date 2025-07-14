@@ -80,9 +80,13 @@
 
 @media (max-width: 767px) {
     .modalUser{
-        height: 550px;
+        height: 100%;
+        max-height: fit-content;
+        overflow: auto;
         flex-direction: column;
         width: 100%;
+        scrollbar-gutter: stable;
+        box-sizing: border-box;
     }
     .modalUser__settings{
         flex-direction: row;
@@ -103,6 +107,9 @@
         overflow-y: auto;
         padding-bottom: 20px;
         min-width: 250px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-strong-color) transparent;
+        scrollbar-gutter: stable;
     }
     .modalUser__item{
         width: 80px;

@@ -199,6 +199,9 @@
     justify-content: center;
     flex-wrap: wrap;
     max-height: 100px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong-color) transparent;
+    scrollbar-gutter: stable;
 }
 
 .modalSupport__files {

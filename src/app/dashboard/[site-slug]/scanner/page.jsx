@@ -67,12 +67,12 @@ function ResultCardArray({ results }) {
                         <th className="scanner__card-table-title">Script</th>
                       </tr>
                     </thead>
-                    <tr>
-                      <td colSpan={3}>
-                        <div className="scanner__card-divider"></div>
-                      </td>
-                    </tr>
                     <tbody>
+                      <tr>
+                        <td colSpan={3}>
+                          <div className="scanner__card-divider"></div>
+                        </td>
+                      </tr>
                       {cat.groups.map((group, gIdx) =>
                         group.map((script, sIdx) => (
                           <tr key={gIdx + '-' + sIdx}>
