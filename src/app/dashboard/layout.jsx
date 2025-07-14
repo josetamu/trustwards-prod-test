@@ -8,7 +8,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { supabase } from '../../supabase/supabaseClient';
 import { useRouter, useParams, usePathname } from 'next/navigation';
 
-import { Sidebar, otherpages } from '@components/sideBar/Sidebar'
+import { Sidebar} from '@components/sideBar/Sidebar'
 import { ModalContainer } from '@components/ModalContainer/ModalContainer'
 import { ModalDelete } from '@components/ModalDelete/ModalDelete'
 import { ModalSupport } from '@components/ModalSupport/ModalSupport'

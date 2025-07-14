@@ -2,6 +2,7 @@ import './ModalAccount.css';
 
 import { useEffect, useState } from 'react';
 import { useRef } from 'react';
+import { supabase } from '../../../supabase/supabaseClient';
 
 // Modal Account is a modal that allows the user to change their profile information.
 export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle }) {
@@ -9,6 +10,7 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
   const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
   const [errors, setErrors] = useState({});
+  const [isUploading, setIsUploading] = useState(false);
 
   //Function to open local files
   const fileInputRef = useRef(null);
@@ -22,22 +24,65 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      //file upload logic here
-      console.log('File selected:', file);
-     /*  if(!file.type.startsWith('image/')){
+      //check if file is an image
+      if(!file.type.startsWith('image/')){
         setErrors({
           file: 'The file must be an image'
         });
         return;
       }
+      //check if file is less than 5MB
       if(file.size > 5 * 1024 * 1024){
         setErrors({
           file: 'The file must be less than 5MB'
         });
         return;
-      } */
+      }
       
-      
+      setIsUploading(true);
+      setErrors({});
+
+      try {
+        //Generate a unique file name
+        const fileExtension = file.name.split('.').pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExtension}`;
+
+        //Upload file to supabase
+        const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('avatar')
+        .upload(fileName, file);
+
+        if(uploadError){
+          throw uploadError;
+        }
+        //Get public url of the file
+        const { data: { publicUrl } } = supabase.storage
+        .from('avatar')
+        .getPublicUrl(fileName);
+
+        //Update user avatar in database
+        const { data: updateData, error: updateError } = await supabase
+        .from('User')
+        .update({ "Avatar URL": publicUrl })
+        .eq('id', user.id);
+
+        if(updateError){
+          throw updateError;
+        }
+
+        
+        
+        if(fileInputRef.current){
+          fileInputRef.current.value = '';
+        }
+
+        
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        setErrors({ file: 'Failed to upload file' });
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 

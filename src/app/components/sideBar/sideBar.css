@@ -50,33 +50,28 @@
 .sidebar__logos{
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
   border-bottom: var(--border);
   padding-bottom: 10px;
   width: 31px;
   color: var(--icons-fresco-color);
+  padding: 0 10px;
+  width: 100%;
+  z-index: 1;
 }
 
 .sidebar__logos--open{
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 1;
-  padding: 0 10px;
   gap: 0;
-  width: 100%;
-  border: none;
 }
 
 .sidebar__logo{
   display: flex;
 }
 
-.sidebar__logo--open{
-  display: flex;
-}
+
 
 .sidebar__action {
   cursor: pointer;
@@ -542,11 +537,7 @@
     background-color: transparent;
   }
 
-  .sidebar__logo--open{
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
+
 
   .sidebar__sites__title{
     max-width: 100%;

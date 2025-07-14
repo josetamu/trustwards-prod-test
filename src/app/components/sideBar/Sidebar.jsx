@@ -259,7 +259,7 @@ export function Sidebar({
         <div className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
             {/* Logo and action button */}
             <div className={`sidebar__logos ${isSidebarOpen ? 'sidebar__logos--open' : ''}`}>
-                <div className={`sidebar__logo ${isSidebarOpen ? 'sidebar__logo--open' : ''}`}>
+                <div className="sidebar__logo">
                     <div className="sidebar__logo-img"></div>
                 </div>
                 <a 
