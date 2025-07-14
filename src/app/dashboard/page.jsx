@@ -24,7 +24,8 @@ function Dashboard() {
     SiteStyle,
     openChangeModalSettings,
     openChangeModal,
-  } = useDashboard();
+    showNotification,
+    } = useDashboard();
 
   return (
     <Sites 
@@ -42,6 +43,7 @@ function Dashboard() {
       SiteStyle={SiteStyle}
       openChangeModalSettings={openChangeModalSettings}
       openChangeModal={openChangeModal}
+      showNotification={showNotification}
     />
   );
 }

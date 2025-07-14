@@ -146,7 +146,8 @@ export function Sidebar({
     SiteStyle,
     openChangeModal,
     openChangeModalSettings,
-    
+    showNotification,
+   
     }) {
     const { 'site-slug': siteSlug } = useParams();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -341,7 +342,17 @@ export function Sidebar({
                                         />
                                     </div>
                                     {/* this is the + to add a newsite */}
-                                    <span className='sidebar__sites__add' onClick={() => {openChangeModal('newsite')}} >
+                                    <span className='sidebar__sites__add' onClick={() => {
+                                        if(user.Plan === 'Free' && webs.length >= 3) {
+                                            showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
+                                            setIsModalOpen(true);
+                                            setModalType('Plan');
+                                        } else {
+                                            openChangeModal('newsite');
+                                        }
+                                    }} 
+                                        
+                                    >
                                             <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="currentColor"/>
                                             </svg>
@@ -386,7 +397,7 @@ export function Sidebar({
                                                         <br />
                                                         Start by creating a <span className="nosites__text__span">new site.</span>
                                                     </div>
-                                                    <NewSite openChangeModal={openChangeModal} />
+                                                    <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
                                                 </div>
                                             )}
                                         </div>

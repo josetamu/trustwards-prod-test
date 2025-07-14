@@ -6,7 +6,7 @@ import { NewSite } from '../NewSite/NewSite';
 import Image from 'next/image';
 import './Sites.css'
 
-export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings}) => {
+export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings, showNotification}) => {
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
   const [isGridView, setIsGridView] = useState(() => {
@@ -281,7 +281,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
         <div className="sites__header-actions">
         <View isGridView={isGridView} onViewChange={handleViewChange} />
           <Sort onSortChange={handleSortChange} />
-          <NewSite openChangeModal={openChangeModal}/>
+          <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
         </div>
       </div>
 
@@ -312,7 +312,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
           <div className="sites__nosites-text">
             Add a new website
           </div>
-          <NewSite openChangeModal={openChangeModal}/>
+          <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
         </div>
       </div>
       <div className="sites__nosites-big">
@@ -324,7 +324,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
             Start by creating a <span className="sites__nosites-span">new site.</span>
           </div>
         </div>
-        <NewSite openChangeModal={openChangeModal}/>
+        <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
       </div>
     </div>
   );

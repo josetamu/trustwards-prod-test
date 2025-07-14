@@ -588,6 +588,7 @@ const handleBackdropClick = useCallback((e) => {
         setSelectedSite,
         openChangeModalSettings,
         openChangeModal,
+        showNotification,
     };
 
     return (
@@ -619,7 +620,7 @@ const handleBackdropClick = useCallback((e) => {
                     SiteStyle={SiteStyle}
                     openChangeModal={openChangeModal}
                     openChangeModalSettings={openChangeModalSettings}
-                    
+                    showNotification={showNotification}
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
                     {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}

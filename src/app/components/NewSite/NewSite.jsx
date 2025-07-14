@@ -1,9 +1,15 @@
 import './NewSite.css';
 
-export function NewSite({openChangeModal}) {
+export function NewSite({openChangeModal, user, webs, showNotification, setIsModalOpen, setModalType}) {
     return (
         <div className="newSite__button" onClick={() => {
-            openChangeModal('newsite');
+            if(user.Plan === 'Free' && webs.length >= 3) {
+                showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
+                setIsModalOpen(true);
+                setModalType('Plan');
+            } else {
+                openChangeModal('newsite');
+            }
         }}>
             <span className="newSite__text">New</span>
             <span className="newSite__svg">
