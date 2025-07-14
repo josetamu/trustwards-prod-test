@@ -2,6 +2,7 @@ import './DashboardHeader.css';
 import { useDashboard } from '../../dashboard/layout';
 import { useState, useRef,} from 'react';
 import { Dropdown } from '../dropdown/Dropdown';
+import { supabase } from '../../../supabase/supabaseClient';
 
 import { useParams } from 'next/navigation';    
 import Link from 'next/link';
@@ -11,6 +12,8 @@ function DashboardHeader() {
     const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings} = useDashboard();
     const fileInputRef = useRef(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const [errors, setErrors] = useState({});
 
     const { 'site-slug': siteSlug } = useParams();
 
@@ -26,12 +29,73 @@ const handleImgEditClick = () => {
     }
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      //file upload logic here
-      console.log('File selected:', file);
-      // file upload logic here
+      //check if file is an image
+      if(!file.type.startsWith('image/')){
+        setErrors({
+          file: 'The file must be an image'
+        });
+        return;
+      }
+      //check if file is less than 5MB
+      if(file.size > 5 * 1024 * 1024){
+        setErrors({
+          file: 'The file must be less than 5MB'
+        });
+        return;
+      }
+      
+
+      setErrors({});
+
+      try {
+        //Generate a unique file name
+        const fileExtension = file.name.split('.').pop();
+        const fileName = `${siteData.id}-${Date.now()}.${fileExtension}`;
+
+        //Upload file to supabase
+        const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('avatar')
+        .upload(fileName, file);
+
+        if(uploadError){
+          throw uploadError;
+        }
+        //Get public url of the file
+        const { data: { publicUrl } } = supabase.storage
+        .from('avatar')
+        .getPublicUrl(fileName);
+
+        //Update site avatar in database
+        const { data: updateData, error: updateError } = await supabase
+        .from('Site')
+        .update({ "Avatar URL": publicUrl })
+        .eq('id', siteData.id);
+
+        if(updateError){
+          throw updateError;
+        }
+
+        // Update the siteData state to reflect the new avatar
+        setSiteData(prev => ({
+          ...prev,
+          "Avatar URL": publicUrl
+        }));
+        
+        if(fileInputRef.current){
+          fileInputRef.current.value = '';
+        }
+
+        // Clear any previous errors
+        setErrors({});
+
+        
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        setErrors({ file: 'Failed to upload file' });
+      } 
     }
   };
 
