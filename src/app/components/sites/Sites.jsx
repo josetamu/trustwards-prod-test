@@ -6,7 +6,7 @@ import { NewSite } from '../NewSite/NewSite';
 import Image from 'next/image';
 import './Sites.css'
 
-export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, createNewSite, checkSitePicture, SiteStyle}) => {
+export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings}) => {
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
   const [isGridView, setIsGridView] = useState(() => {
@@ -281,7 +281,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
         <div className="sites__header-actions">
         <View isGridView={isGridView} onViewChange={handleViewChange} />
           <Sort onSortChange={handleSortChange} />
-          <NewSite createNewSite={createNewSite}/>
+          <NewSite openChangeModal={openChangeModal}/>
         </div>
       </div>
 
@@ -304,6 +304,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
               isGridView={isGridView}
               checkSitePicture={checkSitePicture}
               SiteStyle={SiteStyle}
+              openChangeModalSettings={openChangeModalSettings}
             />
           )
         ))}
@@ -311,7 +312,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
           <div className="sites__nosites-text">
             Add a new website
           </div>
-          <NewSite createNewSite={createNewSite}/>
+          <NewSite openChangeModal={openChangeModal}/>
         </div>
       </div>
       <div className="sites__nosites-big">
@@ -323,7 +324,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, isSidebarOpen, 
             Start by creating a <span className="sites__nosites-span">new site.</span>
           </div>
         </div>
-        <NewSite createNewSite={createNewSite}/>
+        <NewSite openChangeModal={openChangeModal}/>
       </div>
     </div>
   );

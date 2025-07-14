@@ -28,6 +28,7 @@
 
 .sidebarSites__site--open{
     overflow: visible;
+    width: 100%;
 }
 
 .sidebarSites__site:hover{

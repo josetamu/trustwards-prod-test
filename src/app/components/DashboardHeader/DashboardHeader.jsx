@@ -6,32 +6,18 @@ import { Dropdown } from '../dropdown/Dropdown';
 import { useParams } from 'next/navigation';    
 import Link from 'next/link';
 
-// If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
-/* const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
-    const existingNames = webs
-        .filter(site => site.id !== currentSiteId) // Exclude current site from check
-        .map(site => site.Name);
-    
-    let newName = baseName;
-    let counter = 1;
-    
-    while (existingNames.includes(newName)) {
-        newName = `${baseName} (${counter})`;
-        counter++;
-    }
-    
-    return newName;
-}; */
-
-
 
 function DashboardHeader() {
     const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings} = useDashboard();
     const fileInputRef = useRef(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [inputWidth, setInputWidth] = useState(0);
-    const spanRef = useRef(null);
+
     const { 'site-slug': siteSlug } = useParams();
+
+    // Don't render until siteData is available
+    if (!siteData) {
+        return null;
+    }
 
  
 const handleImgEditClick = () => {
@@ -131,7 +117,9 @@ const handleImgEditClick = () => {
                         {siteData?.Name?.charAt(0)}
                     </span> 
                     <img className={`dashboardHeader__img ${checkSitePicture(siteData) === '' ? 'dashboardHeader__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt={siteData?.Name} onClick={handleImgEditClick}/> 
-                    <span className='dashboardHeader__title'>{siteData?.Name}</span>
+                    <span className='dashboardHeader__title' onClick={() => {
+                        openChangeModalSettings(siteData);
+                    }}>{siteData?.Name}</span>
                 </div>
                 <span className={`dashboardHeader__plan ${siteData?.Plan === 'Pro' ? 'dashboardHeader__plan--pro' : ''}`} onClick={() => {
                     setModalType('Plan');

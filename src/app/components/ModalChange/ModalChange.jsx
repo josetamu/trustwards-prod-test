@@ -175,9 +175,12 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 <input 
                                     className='modalChange__input' 
                                     type='text'  
-                                    onChange={(e) => setCreateSiteName(e.target.value)}
+                                    onChange={(e) => {
+                                        setCreateSiteName(e.target.value);
+                                        if (errors.createSiteDomain) setErrors(prev => ({ ...prev, createSiteDomain: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
-                                placeholder="New site name"
+                                    placeholder="New site name"
                                 />
                             </div>
                             <div className='modalChange__input__wrapper'>
@@ -185,15 +188,17 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     type="text" 
                                     className='modalChange__input' 
                                     placeholder='example.com' 
-                                    onChange={(e) => setCreateSiteDomain(e.target.value)}
+                                    onChange={(e) => {
+                                        setCreateSiteDomain(e.target.value);
+                                        if (errors.createSiteDomain) setErrors(prev => ({ ...prev, createSiteDomain: undefined }));
+                                    }}
                                     onKeyDown={handleKeyDown}
                                 />
-                                {errors.createSiteDomain && (
-                                    <Tooltip
+                                <Tooltip
                                     message={errors.createSiteDomain}
                                     responsivePosition={{ desktop: 'left', mobile: 'left' }}
-                                    />
-                                )}
+                                    open={!!errors.createSiteDomain}
+                                />
                             </div>
                         </div>
                         <div className='modalChange__actions modalChange__actions--right'>
@@ -210,7 +215,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                         className='modalChange__input' 
                                         type='text'  
                                         value={newSiteName}
-                                        onChange={(e) => setNewSiteName(e.target.value)}
+                                        onChange={(e) => {
+                                            setNewSiteName(e.target.value);
+                                            if (errors.newSiteName) setErrors(prev => ({ ...prev, newSiteName: undefined }));
+                                        }}
                                         onKeyDown={handleKeyDown}
                                         placeholder="Site name"
                                     />
@@ -221,15 +229,17 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                         className='modalChange__input' 
                                         placeholder='example.com' 
                                         value={newSiteDomain}
-                                        onChange={(e) => setNewSiteDomain(e.target.value)}
+                                        onChange={(e) => {
+                                            setNewSiteDomain(e.target.value);
+                                            if (errors.newSiteDomain) setErrors(prev => ({ ...prev, newSiteDomain: undefined }));
+                                        }}
                                         onKeyDown={handleKeyDown}
                                     />
-                                    {errors.newSiteDomain && (
-                                        <Tooltip
+                                    <Tooltip
                                         message={errors.newSiteDomain}
                                         responsivePosition={{ desktop: 'left', mobile: 'left' }}
-                                        />
-                                    )}
+                                        open={!!errors.newSiteDomain}
+                                    />
                                 </div>
                             </div>
                             <div className='modalChange__actions modalChange__actions--right'>
@@ -287,6 +297,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         if(changeType === 'newsite'){
             if (!createSiteDomain || createSiteDomain.trim() === '') {
                 validationErrors.createSiteDomain = 'Site domain is required';
+                console.log(validationErrors.createSiteDomain);
             } else if (!createSiteDomain.includes('.')) {
                 validationErrors.createSiteDomain = 'Site domain must contain a dot (.)';
             }else {
@@ -314,7 +325,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 validationErrors.newSiteDomain = 'Site domain is required';
             } else if (!newSiteDomain.includes('.')) {
                 validationErrors.newSiteDomain = 'Site domain must contain a dot (.)';
-            }else {
+            } else {
                 // Check if domain already exists (excluding current site)
                 try {
                     const { data: existingSites, error } = await supabase
@@ -357,25 +368,56 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 updateData = { Password: newPassword };
             }
             if (changeType === 'settings') {
-                updateData = { Name: newSiteName.trim(), Domain: newSiteDomain.trim() };
+                // Get all sites to check for unique names
+                const { data: allSites, error: sitesError } = await supabase
+                    .from('Site')
+                    .select('Name, id')
+                    .eq('userid', user?.id);
+                
+                if (sitesError) {
+                    console.error('Error fetching sites:', sitesError);
+                    setErrors({ [changeType]: 'Failed to fetch sites. Please try again.' });
+                    return;
+                }
+                
+                const generateUniqueSiteName = (newSiteName) => {
+                    const existingNames = allSites
+                        .filter(site => site.id !== siteData?.id) // Exclude current site
+                        .map(site => site.Name);
+                    
+                    let newName = newSiteName;
+                    let counter = 1;
+                    
+                    while (existingNames.includes(newName)) {
+                        newName = `${newSiteName} (${counter})`;
+                        counter++;
+                    }
+                    
+                    return newName;
+                };
+                
+                const uniqueSiteName = generateUniqueSiteName(newSiteName.trim() || 'Untitled');
+                updateData = { Name: uniqueSiteName, Domain: newSiteDomain.trim() };
+                
                 const { data, error } = await supabase
                     .from('Site')
                     .update(updateData)
                     .eq('id', siteData?.id);
+                
                 if (error) {
                     console.error('Error updating site:', error);
                     setErrors({ [changeType]: 'Failed to update. Please try again.' });
                     return;
                 }
+                
                 const updatedSite = { ...siteData, ...updateData };
                 setSiteData(updatedSite);
-                console.log(user?.id);
                 fetchSites(user?.id);
+                
                 if (showNotification) {
                     showNotification('Site settings updated successfully!', 'top', true);
                 }
                 onClose();
-
                 return;
             }
             if (changeType === 'newsite') {

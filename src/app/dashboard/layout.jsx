@@ -183,7 +183,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'jose11tamu@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -295,13 +295,16 @@ const SiteStyle = (site) => {
   // Update global siteData when navigating to a specific site
   useEffect(() => {
     const siteSlug = params['site-slug'];
-    if (siteSlug && webs.length > 0) {
-      const selectedSite = webs.find(site => site.id === siteSlug);
-      if (selectedSite) {
-        setSiteData(selectedSite);
-        setIsSiteOpen(true);
+    if (siteSlug) {
+      if (webs.length > 0) {
+        const selectedSite = webs.find(site => site.id === siteSlug);
+        if (selectedSite) {
+          setSiteData(selectedSite);
+          setIsSiteOpen(true);
+        }
       }
-    } else if (!siteSlug) {
+      // Don't set siteData to null when webs is empty, wait for webs to load
+    } else {
       setSiteData(null);
       setIsSiteOpen(false);
     }
@@ -584,6 +587,7 @@ const handleBackdropClick = useCallback((e) => {
         handleCopy,
         setSelectedSite,
         openChangeModalSettings,
+        openChangeModal,
     };
 
     return (

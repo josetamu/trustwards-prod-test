@@ -22,6 +22,8 @@ function Dashboard() {
     createNewSite,
     checkSitePicture,
     SiteStyle,
+    openChangeModalSettings,
+    openChangeModal,
   } = useDashboard();
 
   return (
@@ -38,6 +40,8 @@ function Dashboard() {
       createNewSite={createNewSite}
       checkSitePicture={checkSitePicture}
       SiteStyle={SiteStyle}
+      openChangeModalSettings={openChangeModalSettings}
+      openChangeModal={openChangeModal}
     />
   );
 }
