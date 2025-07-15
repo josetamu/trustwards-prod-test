@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'next/navigation';     
+import { useParams, usePathname } from 'next/navigation';     
 
 import "./sideBar.css";
 
@@ -147,15 +147,18 @@ export function Sidebar({
     openChangeModal,
     openChangeModalSettings,
     showNotification,
-   
     }) {
     const { 'site-slug': siteSlug } = useParams();
+    const pathname = usePathname();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isActive, setIsActive] = useState('');
+
 
     //const to check if you are clicking outside the sidebar and the action button
     const sidebarContainerRef = useRef(null);
     const sidebarActionRef = useRef(null);
+    const searchContainerRef = useRef(null);
 
     // if siteSlug the sidebar content change to the site menu
     useEffect(() => {
@@ -165,6 +168,30 @@ export function Sidebar({
             setIsSiteOpen(false);
         }
     }, [siteSlug, setIsSiteOpen]);
+
+    // Update isActive based on current pathname
+    useEffect(() => {
+        if (pathname) {
+            if (pathname === `/dashboard/${siteSlug}`) {
+                setIsActive('Home');
+            } else if (pathname === `/dashboard/${siteSlug}/scanner`) {
+                setIsActive('Scanner');
+            } else if (pathname === `/dashboard/${siteSlug}/comply-map`) {
+                setIsActive('Comply Map');
+            } else if (pathname === `/dashboard/${siteSlug}/integrations`) {
+                setIsActive('Integrations');
+            } else {
+                setIsActive('');
+            }
+        }
+    }, [pathname, siteSlug]);
+
+    // Clear search query when search is closed
+    useEffect(() => {
+        if (!isSearchOpen) {
+            setSearchQuery('');
+        }
+    }, [isSearchOpen]);
 
     // function to close the sidebar when clicking outside in mobile 
     useEffect(() => {
@@ -185,6 +212,14 @@ export function Sidebar({
                     toggleSidebar();
                 }
             }
+
+            // Close search when clicking outside
+            if (isSearchOpen) {
+                const isOutsideSearch = searchContainerRef.current && !searchContainerRef.current.contains(event.target);
+                if (isOutsideSearch) {
+                    setIsSearchOpen(false);
+                }
+            }
         };
 
         // Add event listener
@@ -194,7 +229,7 @@ export function Sidebar({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen]);
+    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSearchOpen]);
 
     // Define overviewPages inside the component to access siteData
     const overviewPages = [
@@ -256,232 +291,242 @@ export function Sidebar({
     };
 
     return (
-        <div className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
-            {/* Logo and action button */}
-            <div className={`sidebar__logos ${isSidebarOpen ? 'sidebar__logos--open' : ''}`}>
-                <div className="sidebar__logo">
-                    <div className="sidebar__logo-img"></div>
+        <div className="prueba">
+            <div className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
+                {/* Logo and action button */}
+                <div className={`sidebar__logos ${isSidebarOpen ? 'sidebar__logos--open' : ''}`}>
+                    <div className="sidebar__logo">
+                        <div className="sidebar__logo-img"></div>
+                    </div>
+                    <a 
+                        ref={sidebarActionRef}
+                        className="sidebar__action" 
+                        onClick={handleToggleSidebar}
+                    >
+                        <svg className="sidebar__desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+                            <path d="M7.125 2.625V15.375" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+                            <path d="M3.75 5.25C3.75 5.25 4.43566 5.25 4.875 5.25" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M3.75 8.25H4.875" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M12.75 7.5L11.8301 8.2929C11.4434 8.6262 11.25 8.79292 11.25 9C11.25 9.20708 11.4434 9.3738 11.8301 9.7071L12.75 10.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+
+                        <svg className={`sidebar__mobile ${isSidebarOpen && window.innerWidth < 767 ? 'sidebar__mobile--closed' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M3 5C3 4.44772 3.44772 4 4 4L20 4C20.5523 4 21 4.44772 21 5C21 5.55229 20.5523 6 20 6L4 6C3.44772 6 3 5.55228 3 5Z" fill="currentColor"></path>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M3 12C3 11.4477 3.44772 11 4 11L20 11C20.5523 11 21 11.4477 21 12C21 12.5523 20.5523 13 20 13L4 13C3.44772 13 3 12.5523 3 12Z" fill="currentColor"></path>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M3 19C3 18.4477 3.44772 18 4 18L20 18C20.5523 18 21 18.4477 21 19C21 19.5523 20.5523 20 20 20L4 20C3.44772 20 3 19.5523 3 19Z" fill="currentColor"></path>
+                        </svg>
+                        <svg className={`siebar__mobile sidebar__cross ${isSidebarOpen && window.innerWidth < 767 ? 'sidebar__cross--active' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289Z" fill="currentColor"></path>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M5.29289 5.29289C4.90237 5.68342 4.90237 6.31658 5.29289 6.70711L17.2929 18.7071C17.6834 19.0976 18.3166 19.0976 18.7071 18.7071C19.0976 18.3166 19.0976 17.6834 18.7071 17.2929L6.70711 5.29289C6.31658 4.90237 5.68342 4.90237 5.29289 5.29289Z" fill="currentColor"></path>
+                        </svg>
+
+                    </a>
+                    
                 </div>
-                <a 
-                    ref={sidebarActionRef}
-                    className="sidebar__action" 
-                    onClick={handleToggleSidebar}
+                {/* Sidebar container divided in two parts: upper and lower */}
+                
+                <div 
+                    ref={sidebarContainerRef}
+                    className={`sidebar__container ${isSidebarOpen ? 'sidebar__container--open' : ''}`}
                 >
-                    <svg className="sidebar__desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                        <path d="M7.125 2.625V15.375" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                        <path d="M3.75 5.25C3.75 5.25 4.43566 5.25 4.875 5.25" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M3.75 8.25H4.875" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12.75 7.5L11.8301 8.2929C11.4434 8.6262 11.25 8.79292 11.25 9C11.25 9.20708 11.4434 9.3738 11.8301 9.7071L12.75 10.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    {/* Upper part of the sidebar */}
+                    <div className={`sidebar__upper ${isSidebarOpen ? 'sidebar__upper--open' : ''}`}>
 
-                    <svg className="sidebar__mobile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-                        <path fillRule="evenodd" clipRule="evenodd" d="M3 5C3 4.44772 3.44772 4 4 4L20 4C20.5523 4 21 4.44772 21 5C21 5.55229 20.5523 6 20 6L4 6C3.44772 6 3 5.55228 3 5Z" fill="currentColor"></path>
-                        <path fillRule="evenodd" clipRule="evenodd" d="M3 12C3 11.4477 3.44772 11 4 11L20 11C20.5523 11 21 11.4477 21 12C21 12.5523 20.5523 13 20 13L4 13C3.44772 13 3 12.5523 3 12Z" fill="currentColor"></path>
-                        <path fillRule="evenodd" clipRule="evenodd" d="M3 19C3 18.4477 3.44772 18 4 18L20 18C20.5523 18 21 18.4477 21 19C21 19.5523 20.5523 20 20 20L4 20C3.44772 20 3 19.5523 3 19Z" fill="currentColor"></path>
-                    </svg>
-
-                </a>
-            </div>
-            {/* Sidebar container divided in two parts: upper and lower */}
-            <div 
-                ref={sidebarContainerRef}
-                className={`sidebar__container ${isSidebarOpen ? 'sidebar__container--open' : ''}`}
-            >
-                {/* Upper part of the sidebar */}
-                <div className={`sidebar__upper ${isSidebarOpen ? 'sidebar__upper--open' : ''}`}>
-                    <div className="sidebar__home">
-                        <Link href={`/dashboard`} className={`sidebar__header ${!isSiteOpen ? 'sidebar__header--active' : ''}`}>
-                            <span className="sidebar__header__icon">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g clipPath="url(#clip0_209_250)">
-                                    <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                                    <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                                    <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                                    <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                                    </g>
-                                    <defs>
-                                    <clipPath id="clip0_209_250">
-                                    <rect width="12" height="12" fill="white"/>
-                                    </clipPath>
-                                    </defs>
-                                </svg>
-                            </span>
-                            <span className="sidebar__header__text">Dashboard</span>
-                        </Link>
-                    </div>
-                    <div className={`sidebar__sites ${isSidebarOpen ? 'sidebar__sites--open' : ''}`}>
-                        <div className={`sidebar__sites__header ${isSidebarOpen ? 'sidebar__sites__header--open' : ''}`}>
-                            {/* render different headers depending you are inside site or not */}
-                            {isSiteOpen ? (
-                                <>
-                                    <span className='sidebar__sites__title sidebar__sites__title--site'>{siteData?.Name || 'SITE'}</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className='sidebar__sites__title'>SITES</span>
-                                    <div className={`sidebar__sites__searcher ${isSearchOpen ? 'sidebar__sites__searcher--open' : ''}`}>
-                                        {/* here is the sidebars' search */}
-                                        <span className='sidebar__sites__search' onClick={() => {
-                                            setIsSearchOpen(!isSearchOpen);
-                                            if (isSearchOpen) {
-                                                setSearchQuery('');
-                                            }
-                                        }}>
-                                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M8.99912 8.99912L7.07031 7.07031" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
-                                                <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
-                                            </svg>
-                                        </span>
-                                        <input 
-                                            className={`sidebar__sites__input ${isSearchOpen ? 'sidebar__sites__input--open' : ''}`} 
-                                            type="text" 
-                                            placeholder='Search sites...'
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                        />
-                                    </div>
-                                    {/* this is the + to add a newsite */}
-                                    <span className='sidebar__sites__add' onClick={() => {
-                                        if(user.Plan === 'Free' && webs.length >= 3) {
-                                            showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
-                                            setIsModalOpen(true);
-                                            setModalType('Plan');
-                                        } else {
-                                            openChangeModal('newsite');
-                                        }
-                                    }} 
-                                        
-                                    >
-                                            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="currentColor"/>
-                                            </svg>
-                                    </span>
-                                </>
-                            )}
+                        <div className="sidebar__home">
+                            <div className={`sidebar__divider-top ${isSidebarOpen ? 'sidebar__divider--open' : ''}`}></div>
+                            <Link href={`/dashboard`} className={`sidebar-header ${!isSiteOpen ? 'sidebar-header--active' : ''}`}>
+                                <span className="sidebar-header__icon">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g clipPath="url(#clip0_209_250)">
+                                        <path d="M10.5 3.375C10.5 2.33947 9.66055 1.5 8.625 1.5C7.58945 1.5 6.75 2.33947 6.75 3.375C6.75 4.41053 7.58945 5.25 8.625 5.25C9.66055 5.25 10.5 4.41053 10.5 3.375Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+                                        <path d="M5.25 3.375C5.25 2.33947 4.41053 1.5 3.375 1.5C2.33947 1.5 1.5 2.33947 1.5 3.375C1.5 4.41053 2.33947 5.25 3.375 5.25C4.41053 5.25 5.25 4.41053 5.25 3.375Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+                                        <path d="M10.5 8.625C10.5 7.58945 9.66055 6.75 8.625 6.75C7.58945 6.75 6.75 7.58945 6.75 8.625C6.75 9.66055 7.58945 10.5 8.625 10.5C9.66055 10.5 10.5 9.66055 10.5 8.625Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+                                        <path d="M5.25 8.625C5.25 7.58945 4.41053 6.75 3.375 6.75C2.33947 6.75 1.5 7.58945 1.5 8.625C1.5 9.66055 2.33947 10.5 3.375 10.5C4.41053 10.5 5.25 9.66055 5.25 8.625Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+                                        </g>
+                                        <defs>
+                                        <clipPath id="clip0_209_250">
+                                        <rect width="12" height="12" fill="white"/>
+                                        </clipPath>
+                                        </defs>
+                                    </svg>
+                                </span>
+                                <span className="sidebar-header__text">Dashboard</span>
+                            </Link>
+                            <div className={`sidebar__divider`}></div>
                         </div>
-                        <div className="sidebar__sites__container">
-                            {isSiteOpen ? (
-                                // if we are inside a site, show the overviewPages
-                                <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
-                                    <div className="sitesDisplay__siteslinks">
-                                    {overviewPages.map((page) => (
-                                        <Link
-                                            href={page.href}
-                                            key={page.name}
-                                            className={`site__link`}
-                                            onClick={() => {
-
-                                                if(window.innerWidth < 767) {
-                                                    setIsSidebarOpen(false);
-                                                    toggleSidebar();
-                                                }
-                                            }}
-                                        >
-                                            <span className='site__link__icon'>{page.icon}</span>
-                                            <span className='site__link__text'>{page.name}</span>
-                                        </Link>
-                                    ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                // if we are not inside a site, show the list of sites
-                                //Also if there are no sites, show the add a new site button or if you are searching for a site that doesn't exist show a message
-                                <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
-                                    {filteredWebs.length === 0 ? (
-                                        <div className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
-                                            {searchQuery ? 'No sites found' : (
-                                                <div className="nosites__container">
-                                                    <div className="nosites__text">
-                                                        There aren't sites here yet.
-                                                        <br />
-                                                        Start by creating a <span className="nosites__text__span">new site.</span>
-                                                    </div>
-                                                    <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
-                                                </div>
-                                            )}
+                        
+                        <div className={`sidebar__sites ${isSidebarOpen ? 'sidebar__sites--open' : ''}`}>
+                            <div className={`sidebar__sites__header ${isSidebarOpen ? 'sidebar__sites__header--open' : ''}`}>
+                                {/* render different headers depending you are inside site or not */}
+                                {isSiteOpen ? (
+                                    <>
+                                        <span className='sidebar__sites__title sidebar__sites__title--site'>{siteData?.Name || 'SITE'}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className='sidebar__sites__title'>SITES</span>
+                                        <div className={`sidebar__sites__searcher ${isSearchOpen ? 'sidebar__sites__searcher--open' : ''}`} ref={searchContainerRef}>
+                                            {/* here is the sidebars' search */}
+                                            <span className='sidebar__sites__search' onClick={() => {
+                                                setIsSearchOpen(!isSearchOpen);
+                                            }}>
+                                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M8.99912 8.99912L7.07031 7.07031" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
+                                                    <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
+                                                </svg>
+                                            </span>
+                                            <input 
+                                                className={`sidebar__sites__input ${isSearchOpen ? 'sidebar__sites__input--open' : ''}`} 
+                                                type="text" 
+                                                placeholder='Search sites...'
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                            />
                                         </div>
-                                    ) : (
-                                        //Display the sites, but if sidebar is closed, show only 6 sites
-                                        (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
-                                            web.userid === user.id && (
-                                                <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}>
-                                                    <SidebarSites
-                                                        key={web.id}
-                                                        avatar={web["Avatar URL"]}
-                                                        name={web.Name}
-                                                        isSidebarOpen={isSidebarOpen}
-                                                        setIsModalOpen={setIsModalOpen}
-                                                        setModalType={setModalType}
-                                                        isModalOpen={isModalOpen}
-                                                        isDropdownOpen={isDropdownOpen}
-                                                        setIsDropdownOpen={setIsDropdownOpen}
-                                                        siteData={web}
-                                                        setSiteData={setSiteData}
-                                                        toggleSidebar={toggleSidebar}
-                                                        setIsSidebarOpen={setIsSidebarOpen}
-                                                        modalType={modalType}
-                                                        globalSiteData={siteData}
-                                                        setSelectedSite={setSelectedSite}
-                                                        setIsSiteOpen={setIsSiteOpen}
-                                                        checkSitePicture={checkSitePicture}
-                                                        SiteStyle={SiteStyle}
-                                                        openChangeModal={openChangeModal}
-                                                        openChangeModalSettings={openChangeModalSettings}
-                                                    />
-                                                </div>
-                                            )
-                                        ))
-                                    )}
-                                </div>
-                            )}
+                                        {/* this is the + to add a newsite */}
+                                        <span className='sidebar__sites__add' onClick={() => {
+                                            if(user.Plan === 'Free' && webs.length >= 3) {
+                                                showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
+                                                setIsModalOpen(true);
+                                                setModalType('Plan');
+                                            } else {
+                                                openChangeModal('newsite');
+                                            }
+                                        }} 
+                                            
+                                        >
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="currentColor"/>
+                                                </svg>
+                                        </span>
+                                    </>
+                                )}
+                            </div>
+                            <div className="sidebar__sites__container">
+                                {isSiteOpen ? (
+                                    // if we are inside a site, show the overviewPages
+                                    <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
+                                        <div className="sitesDisplay__siteslinks">
+                                        {overviewPages.map((page) => (
+                                            <Link
+                                                href={page.href}
+                                                key={page.name}
+                                                className={`site__link ${isActive === page.name ? 'site__link--active' : ''}`}
+                                                onClick={() => {
+
+                                                    if(window.innerWidth < 767) {
+                                                        setIsSidebarOpen(false);
+                                                        toggleSidebar();
+                                                    }
+                                                }}
+                                            >
+                                                <span className='site__link__icon'>{page.icon}</span>
+                                                <span className='site__link__text'>{page.name}</span>
+                                            </Link>
+                                        ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    // if we are not inside a site, show the list of sites
+                                    //Also if there are no sites, show the add a new site button or if you are searching for a site that doesn't exist show a message
+                                    <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
+                                        {filteredWebs.length === 0 ? (
+                                            <div className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
+                                                {searchQuery ? 'No sites found' : (
+                                                    <div className="nosites__container">
+                                                        <div className="nosites__text">
+                                                            There aren't sites here yet.
+                                                            <br />
+                                                            Start by creating a <span className="nosites__text__span">new site.</span>
+                                                        </div>
+                                                        <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            //Display the sites, but if sidebar is closed, show only 6 sites
+                                            (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
+                                                web.userid === user.id && (
+                                                    <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}>
+                                                        <SidebarSites
+                                                            key={web.id}
+                                                            avatar={web["Avatar URL"]}
+                                                            name={web.Name}
+                                                            isSidebarOpen={isSidebarOpen}
+                                                            setIsModalOpen={setIsModalOpen}
+                                                            setModalType={setModalType}
+                                                            isModalOpen={isModalOpen}
+                                                            isDropdownOpen={isDropdownOpen}
+                                                            setIsDropdownOpen={setIsDropdownOpen}
+                                                            siteData={web}
+                                                            setSiteData={setSiteData}
+                                                            toggleSidebar={toggleSidebar}
+                                                            setIsSidebarOpen={setIsSidebarOpen}
+                                                            modalType={modalType}
+                                                            globalSiteData={siteData}
+                                                            setSelectedSite={setSelectedSite}
+                                                            setIsSiteOpen={setIsSiteOpen}
+                                                            checkSitePicture={checkSitePicture}
+                                                            SiteStyle={SiteStyle}
+                                                            openChangeModal={openChangeModal}
+                                                            openChangeModalSettings={openChangeModalSettings}
+                                                        />
+                                                    </div>
+                                                )
+                                            ))
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-                {/* Lower part of the sidebar */}
-                <div className="sidebar__lower">
-                   <div className="sidebar__others">
-                        {/* render the other pages (support and appearance)*/}
-                        {otherpages.map((otherPage) => (
-                            <SidebarLink
-                                key={otherPage.name}
-                                icon={otherPage.icon}
-                                text={otherPage.name}
-                                modalType={modalType}
-                                onClick={() => {
-                                    if (modalType === otherPage.name && isModalOpen) {
-                                        setIsModalOpen(false);
-                                    } else {
-                                        setModalType(otherPage.name);
-                                        setIsModalOpen(true);
-                                        setUserSettings(otherPage.name);
+                    {/* Lower part of the sidebar */}
+                    <div className="sidebar__lower">
+                    <div className="sidebar__others">
+                            {/* render the other pages (support and appearance)*/}
+                            {otherpages.map((otherPage) => (
+                                <SidebarLink
+                                    key={otherPage.name}
+                                    icon={otherPage.icon}
+                                    text={otherPage.name}
+                                    modalType={modalType}
+                                    onClick={() => {
+                                        if (modalType === otherPage.name && isModalOpen) {
+                                            setIsModalOpen(false);
+                                        } else {
+                                            setModalType(otherPage.name);
+                                            setIsModalOpen(true);
+                                            setUserSettings(otherPage.name);
 
-                                    }
+                                        }
 
-                                    
-                                }}
-                            />
-                        ))}
+                                        
+                                    }}
+                                />
+                            ))}
+                        </div>
+                        {/* render the profile dropdown */}
+                        <ProfileDropdown 
+                        user={user}
+                        toggleSidebar={toggleSidebar}
+                        isSidebarOpen={isSidebarOpen} 
+                        setIsSidebarOpen={setIsSidebarOpen}
+                        setUserSettings={setUserSettings}
+                        isDropdownOpen={isDropdownOpen}
+                        setIsDropdownOpen={setIsDropdownOpen}
+                        setModalType={setModalType}
+                        setIsModalOpen={setIsModalOpen}
+                        isModalOpen={isModalOpen}
+                        modalType={modalType}
+                        checkProfilePicture={checkProfilePicture}
+                        profileStyle={profileStyle}
+                        /> 
+
                     </div>
-                    {/* render the profile dropdown */}
-                    <ProfileDropdown 
-                    user={user}
-                    toggleSidebar={toggleSidebar}
-                    isSidebarOpen={isSidebarOpen} 
-                    setIsSidebarOpen={setIsSidebarOpen}
-                    setUserSettings={setUserSettings}
-                    isDropdownOpen={isDropdownOpen}
-                    setIsDropdownOpen={setIsDropdownOpen}
-                    setModalType={setModalType}
-                    setIsModalOpen={setIsModalOpen}
-                    isModalOpen={isModalOpen}
-                    modalType={modalType}
-                    checkProfilePicture={checkProfilePicture}
-                    profileStyle={profileStyle}
-                    /> 
-
                 </div>
             </div>
         </div>
+
     );
 }

@@ -153,18 +153,7 @@
     color: var(--accent-color);
     padding: 5px;
 }
-/* .dashboardHeader__inputMirror {
-    position: absolute;
-    visibility: hidden;
-    white-space: pre;
-    font-size: var(--font-size-medium);
-    font-weight: 600;
-    letter-spacing: var(--letter-spacing-negative);
-    font-family: inherit;
-    padding: 5px;
-    box-sizing: border-box;
-    color: var(--body-strong-color);
-} */
+
 
 
 @media (max-width: 767px) {
@@ -173,11 +162,11 @@
         
     }
     .dashboardHeader__header{
-        padding-left: 40px;
+        padding-left: 30px;
         justify-content: flex-start;
     }
     .dashboardHeader__actions{
-        padding-right: 40px;
+        padding-right: 30px;
     }
 
 }

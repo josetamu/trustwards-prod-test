@@ -19,8 +19,7 @@ const ModalUpgradePlan = () => {
                                 className="modalUpgradePlan__info--underline"
                                 onMouseEnter={() => setIsHovered('freeSites')}
                                 onMouseLeave={() => setIsHovered(null)}
-                            >
-                                3 free sites
+                            > 3 free sites
                                 <Tooltip
                                     message={'All Pro plans include 3 free sites.'}
                                     responsivePosition={{ desktop: 'top', mobile: 'top' }}
@@ -368,6 +367,54 @@ const ModalUpgradePlan = () => {
                             </span>
                         </div>    
                     </div>                  
+                    <div className="modalUpgradePlan__info__container">
+                        <div className="modalUpgradePlan__site__info">
+                            <span className="modalUpgradePlan__site__tick">
+                                <svg className='modalUpgradePlan__tick__svg' width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.73519 0.259953C6.85402 0.116133 7.02428 0.0243711 7.20975 0.0041998C7.39521 -0.0159715 7.58123 0.0370411 7.72819 0.151953C7.80036 0.207847 7.8606 0.277642 7.90534 0.357213C7.95008 0.436784 7.97841 0.524516 7.98867 0.615223C7.99892 0.705931 7.99089 0.797775 7.96504 0.885325C7.9392 0.972875 7.89606 1.05436 7.83819 1.12495L4.07819 5.74495C4.01527 5.82129 3.93718 5.88374 3.84888 5.92834C3.76058 5.97295 3.66398 5.99875 3.5652 6.00411C3.46642 6.00946 3.3676 5.99426 3.27499 5.95947C3.18238 5.92467 3.098 5.87104 3.02719 5.80195L0.207192 3.03195L0.158192 2.97995C-0.0678082 2.70795 -0.0518084 2.30695 0.207192 2.05295C0.466192 1.79895 0.875192 1.78295 1.15219 2.00495L1.20519 2.05295L3.47519 4.27295L6.74519 0.262953L6.73519 0.259953Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                            <span className="modalUpgradePlan__site__info__title">All 
+                                <span className='modalUpgradePlan__site__info__title--underline'
+                                    onMouseEnter={() => setIsHovered('builderAllThemes2')}
+                                    onMouseLeave={() => setIsHovered(null)}
+                                > themes
+                                    <Tooltip
+                                        message={'Here will be a beautiful explanation.'}
+                                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                        open={isHovered === 'builderAllThemes2'}
+                                    />
+                                </span>
+                            </span>
+                        </div>
+                        <div className="modalUpgradePlan__site__info">
+                            <span className="modalUpgradePlan__site__tick">
+                                <svg className='modalUpgradePlan__tick__svg' width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.73519 0.259953C6.85402 0.116133 7.02428 0.0243711 7.20975 0.0041998C7.39521 -0.0159715 7.58123 0.0370411 7.72819 0.151953C7.80036 0.207847 7.8606 0.277642 7.90534 0.357213C7.95008 0.436784 7.97841 0.524516 7.98867 0.615223C7.99892 0.705931 7.99089 0.797775 7.96504 0.885325C7.9392 0.972875 7.89606 1.05436 7.83819 1.12495L4.07819 5.74495C4.01527 5.82129 3.93718 5.88374 3.84888 5.92834C3.76058 5.97295 3.66398 5.99875 3.5652 6.00411C3.46642 6.00946 3.3676 5.99426 3.27499 5.95947C3.18238 5.92467 3.098 5.87104 3.02719 5.80195L0.207192 3.03195L0.158192 2.97995C-0.0678082 2.70795 -0.0518084 2.30695 0.207192 2.05295C0.466192 1.79895 0.875192 1.78295 1.15219 2.00495L1.20519 2.05295L3.47519 4.27295L6.74519 0.262953L6.73519 0.259953Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                            <span className="modalUpgradePlan__site__info__title">Access to builder</span>
+                        </div>  
+                        <div className="modalUpgradePlan__site__info">
+                            <span className="modalUpgradePlan__site__tick">
+                                <svg className='modalUpgradePlan__tick__svg' width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.73519 0.259953C6.85402 0.116133 7.02428 0.0243711 7.20975 0.0041998C7.39521 -0.0159715 7.58123 0.0370411 7.72819 0.151953C7.80036 0.207847 7.8606 0.277642 7.90534 0.357213C7.95008 0.436784 7.97841 0.524516 7.98867 0.615223C7.99892 0.705931 7.99089 0.797775 7.96504 0.885325C7.9392 0.972875 7.89606 1.05436 7.83819 1.12495L4.07819 5.74495C4.01527 5.82129 3.93718 5.88374 3.84888 5.92834C3.76058 5.97295 3.66398 5.99875 3.5652 6.00411C3.46642 6.00946 3.3676 5.99426 3.27499 5.95947C3.18238 5.92467 3.098 5.87104 3.02719 5.80195L0.207192 3.03195L0.158192 2.97995C-0.0678082 2.70795 -0.0518084 2.30695 0.207192 2.05295C0.466192 1.79895 0.875192 1.78295 1.15219 2.00495L1.20519 2.05295L3.47519 4.27295L6.74519 0.262953L6.73519 0.259953Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                            <span className="modalUpgradePlan__site__info__title">
+                                <span className='modalUpgradePlan__site__info__title--underline'
+                                    onMouseEnter={() => setIsHovered('builderWatermarkAll2')}
+                                    onMouseLeave={() => setIsHovered(null)}
+                                >Watermark
+                                    <Tooltip
+                                        message={'Here will be a beautiful explanation.'}
+                                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                        open={isHovered === 'builderWatermarkAll2'}
+                                    />
+                                </span> removed
+                            </span>
+                        </div>    
+                    </div>     
                 </div>
             </div>
         </div>

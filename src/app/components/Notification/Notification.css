@@ -14,7 +14,7 @@
 
 /* Position variants */
 .notification--top {
-  top: 90px;
+  top: 20px;
   display: flex;
   justify-self: center;
   
@@ -22,7 +22,7 @@
 }
 
 .notification--bottom {
-  bottom: 90px;
+  bottom: 20px;
   top: auto;
   position: fixed;
   display: flex;

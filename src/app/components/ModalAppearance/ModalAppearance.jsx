@@ -30,9 +30,12 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
 
     //Update the theme using the theme hook from next-themes 
     const updateTheme = (newTheme) => {
+        // Update local state immediately for instant visual feedback
+        setSelected(newTheme);
         setTheme(newTheme);
         handleSave(newTheme, null, null);
     };
+
     // Save appearance settings to database
     const handleSave = async (newTheme = null, newColor = null, newReducedMotion = null) => {
         //Get the current theme from the theme hook
@@ -51,7 +54,6 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                 })
                 .eq('userid', user.id);
 
-
             if (error) {
                 console.error('Error saving appearance settings:', error);
             } else {
@@ -60,13 +62,14 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                 if (newColor !== null) setSelectedColor(newColor);
                 if (newReducedMotion !== null) setReducedMotion(newReducedMotion);
 
-                // Update global state immediately
+                // Update global state immediately, but only the specific properties that changed
                 if (setAppearanceSettings) {
                     setAppearanceSettings(prev => ({
                         ...prev,
                         'Theme': themeToSave,
                         'Accent Color': colorToSave,
                         'Reduced Motion': motionToSave
+                 
                     }));
                 }
                 
@@ -79,6 +82,9 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
 
     // Handle color selection
     const handleColorSelect = (color) => {
+        // Update local state immediately for instant visual feedback
+        setSelectedColor(color);
+        
         // Set data-color attribute on document
         if (color) {
             document.documentElement.setAttribute('data-color', color);
@@ -91,6 +97,8 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
 
     // Handle reduced motion toggle
     const handleReducedMotionToggle = (checked) => {
+        // Update local state immediately for instant visual feedback
+        setReducedMotion(checked);
         handleSave(null, null, checked);
     };
 

@@ -85,7 +85,6 @@
         overflow: auto;
         flex-direction: column;
         width: 100%;
-        scrollbar-gutter: stable;
         box-sizing: border-box;
     }
     .modalUser__settings{
@@ -98,18 +97,15 @@
         width: 100%;
         border-radius: 16px 16px 0px 0px;
         height: 60px;
-        padding: 0;
         justify-content: center;
         padding-left: 5px;
     }
     .modalUser__setting{
         border-radius: 0px 0px 16px 16px;
         overflow-y: auto;
-        padding-bottom: 20px;
         min-width: 250px;
         scrollbar-width: thin;
         scrollbar-color: var(--border-strong-color) transparent;
-        scrollbar-gutter: stable;
     }
     .modalUser__item{
         width: 80px;

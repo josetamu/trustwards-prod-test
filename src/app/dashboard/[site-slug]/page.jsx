@@ -3,14 +3,14 @@
 import './home.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '../layout';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ScriptCopy from '../../components/ScriptCopy/ScriptCopy';
 import Scan from '@components/scan/Scan.jsx';
 import Link from 'next/link';
 
 //function to create a circle chart
 function CircleChart({data, centerText, centerLabel, centerIcon}) {
-    const radius = 62;
+    const radius = 60;
     const strokeWidth = 12;
     const circumference = 2 * Math.PI * radius;
     let offset = 0;
@@ -413,7 +413,7 @@ const cookiesData = analyticsCookies.map(item => ({
                                         </div>
                                     </div>
                                     <div className="home__fullView">
-                                        <div className="home__fullView-text">To have a full view go to the <Link href={`/dashboard/${siteData?.id}/scanner`} className="home__fullView-link">scanner.</Link></div>
+                                        <span className="home__fullView-text">To have a full view go to the <Link href={`/dashboard/${siteSlug}/scanner`} className="home__fullView-link">scanner.</Link></span>
                                     </div>
                                 </div>
                             )}

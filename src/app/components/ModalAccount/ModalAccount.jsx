@@ -21,6 +21,7 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
     }
   };
 
+  //Function to upload the avatar image to supabase and update avatar url in the database
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {

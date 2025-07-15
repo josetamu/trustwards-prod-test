@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 
 function DashboardHeader() {
-    const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings} = useDashboard();
+    const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings, fetchSites, user} = useDashboard();
     const fileInputRef = useRef(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -87,6 +87,8 @@ const handleImgEditClick = () => {
         if(fileInputRef.current){
           fileInputRef.current.value = '';
         }
+
+        fetchSites(user.id);
 
         // Clear any previous errors
         setErrors({});
