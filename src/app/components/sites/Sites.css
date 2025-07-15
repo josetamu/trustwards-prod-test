@@ -544,6 +544,9 @@
   .sites__new-button {
     font-size: 12px;
   }
+  .sites__wrapper {
+    padding: 150px 17px 40px 17px;
+  }
 }
 
 /* Mobile */

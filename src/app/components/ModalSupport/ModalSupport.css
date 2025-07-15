@@ -196,9 +196,8 @@
     overflow: auto;
     width: 100%;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     flex-wrap: wrap;
-    max-height: 100px;
     scrollbar-width: thin;
     scrollbar-color: var(--border-strong-color) transparent;
     scrollbar-gutter: stable;
@@ -210,10 +209,9 @@
     padding: 5px;
     height: auto;
     cursor: pointer;
-    width: 100px;
-    justify-content: center;
+    width: 100%;
+    justify-content: start;
     align-items: center;
-    flex-wrap: wrap;
 
 }
 

@@ -2,36 +2,38 @@
 
 import './integrations.css';
 import { useParams, notFound } from 'next/navigation';
+import { useDashboard } from '../../layout';
+import { useEffect } from 'react';
 
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
+    const { webs } = useDashboard();
 
-    // This is temporary, this has to be fetched from the database
-    const availableSites = ['Noir', 'Untitled'];
     
-    // Find the selected site based on the slug
-    const selectedSite = availableSites.find(site => site.toLowerCase() === siteSlug?.toLowerCase());
+    useEffect(() => {
+        // Si webs está disponible, ya no estamos cargando
+        if (webs && webs.length > 0) {
+           
+        }
+    }, [webs]);
+    
+
+
+        // Find the selected site based on the slug (using id like the main page)
+        const selectedSite = webs.find(site => site.id === siteSlug);
+        if(!webs || webs.length === 0) {
+            return
+        }
     
     if (!selectedSite) {
         notFound();
     }
 
     return (
-        <div className='siteView'>
-            <div className='siteView__header'>
-                <div className='siteView__header__avatar'>
-                    <img className='siteView__header__img' src={selectedSite["Avatar URL"]} alt={selectedSite.Name} />
-                    <span className='siteView__header__title'>{selectedSite.Name}</span>
-                </div>
-                <span className='siteView__header__plan'>{selectedSite.Plan}</span>
-                
-
-            </div>
-            <div className='siteView__content'>
-                <div>
-                    <h1>Integrations: {selectedSite}</h1>
-                </div>
+        <div className='integrations'>
+            <div className='integrations__header'>
+                <h1>Soon</h1>
             </div>
         </div>
     );

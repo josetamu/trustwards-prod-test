@@ -2,7 +2,7 @@ import { useParams } from 'next/navigation';
 import { useDashboard } from '../../dashboard/layout';
 import './ScriptCopy.css';
 
-const ScriptCopy = ({ showNotification, position = 'bottom' }) => {
+const ScriptCopy = () => {
     const params = useParams();
     const siteSlug = params['site-slug'];
     const { handleCopy } = useDashboard();
@@ -12,7 +12,7 @@ const ScriptCopy = ({ showNotification, position = 'bottom' }) => {
     `;
 
     const handleCopyClick = () => {
-        handleCopy(siteSlug, position);
+        handleCopy(siteSlug, 'bottom', true);
     };
 
     return (

@@ -72,42 +72,6 @@ function DashboardLayout({ children }) {
     }
   }, [appearanceSettings]);
 
-
-   // function to open sidebar in desktop toggleing the .open class. Also we save the state in the database only on desktop
-   const toggleSidebar = async () => {
-    const newSidebarState = !isSidebarOpen;
-    setIsSidebarOpen(newSidebarState);
-    
-    //save in the database only on desktop
-    if (window.innerWidth > 767) {
-      await updateAppearanceSettings({ Sidebar: newSidebarState });
-    }
-
-    // we add the .open class to the content container and the user settings and the modal
-    const contentContainer = document.querySelector('.content__container');
-    const userSettings = document.querySelector('.profile');
-    const modal = document.querySelector('.modal__backdrop'); 
-    
-    if (!isSidebarOpen) {
-        contentContainer.classList.add('open');
-        if(userSettings){
-          userSettings.classList.add('open');
-        }
-        if(modal){
-          modal.classList.add('open');
-        }
-    } else {
-        contentContainer.classList.remove('open');
-        if(userSettings){
-          userSettings.classList.remove('open');
-        }
-        if(modal){
-          modal.classList.remove('open');
-        }
-
-    }
-};
-
   // Apply sidebar state saved in the database when appearance settings are loaded. if the user is in mobile, this is not applied
   useEffect(() => {
     if (appearanceSettings && appearanceSettings.Sidebar !== undefined) {
@@ -119,7 +83,29 @@ function DashboardLayout({ children }) {
         setIsSidebarOpen(appearanceSettings.Sidebar);
       }
     }
-  }, [appearanceSettings]);
+  }, [appearanceSettings?.Sidebar]);
+
+   // function to open sidebar in desktop toggleing the .open class. Also we save the state in the database only on desktop
+   const toggleSidebar = async () => {
+    const newSidebarState = !isSidebarOpen;
+    setIsSidebarOpen(newSidebarState);
+    
+    
+    //save in the database only on desktop
+    if (window.innerWidth > 767) {
+      await updateAppearanceSettings({ Sidebar: newSidebarState });
+    }
+
+    // we add the .open class to the content container and the user settings and the modal
+    const contentContainer = document.querySelector('.content__container');
+
+    
+    if (!isSidebarOpen) {
+        contentContainer.classList.add('open');
+    } else {
+        contentContainer.classList.remove('open');
+    }
+};
 
   // Avatar's colors pool
 const avatarColors = {
@@ -161,6 +147,7 @@ const ProfileStyle = (user) => {
   }
 }
 
+// Function to check if the site picture is null, undefined or empty, to know if we should show the avatar color or the avatar image
 const checkSitePicture = (site) => {
   const sitePicture = site?.["Avatar URL"];
   if(sitePicture === null || sitePicture === undefined || sitePicture === ''){
@@ -170,6 +157,7 @@ const checkSitePicture = (site) => {
   }
 }
 
+
 const SiteStyle = (site) => {
   const color = avatarColors[site?.["Avatar Color"]]?.color || '#FFFFFF';
   const backgroundColor = avatarColors[site?.["Avatar Color"]]?.backgroundColor || '#000000';
@@ -177,8 +165,7 @@ const SiteStyle = (site) => {
     color,
     backgroundColor
   }
-}
-  
+}  
   //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({

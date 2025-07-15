@@ -126,7 +126,6 @@
     padding: 30px 20px;
     position: relative;
     justify-content: space-between;
-    max-width: 420px;
     overflow: hidden;
     
 }
@@ -243,7 +242,6 @@
 /* Fade animation for scanner content */
 .home__scanner-content {
     opacity: 0;
-    pointer-events: none;
     transition: opacity 0.6s ease-out;
     will-change: opacity;
 }
@@ -608,6 +606,9 @@
 
 
 @media (max-width: 1010px) {
+    .home{
+        max-width: 100%;
+    }
 
     .home__cards{
         flex-direction: column;
@@ -622,92 +623,43 @@
     }
     .home__cardInfo{
         width: 100%;
-        max-width: 500px;
         gap: 20px
 
     }
     .home__midCard{
-        max-width: 500px;
-
+        max-width: 100%;
     }
+
+/*     .home__circleChart{
+        width: 70%;
+        height: 70%;
+    } */
+
+    .home__cookiesDisplayed{
+        width: 35%;
+    }
+    .home__analytics{
+        width: 65%;
+    }
+
 
 
     .home__installation-container{
         width: 100%;
-        max-width: 500px;
+
     }
     .home__analytics{
         padding-top: 30px;
     }
-
-
-
-
 }
 
-@media (max-width: 767px) {
-
-    .home__bottom{
-        height: fit-content;
-    }
-    .home__cards{
-        flex-direction: column;
-    }
-    .home__card{
-        max-width: 400px;
-    }
-    .home__mid{
-        flex-direction: column;
-    }
-
-    .home__midCard{
-        max-width: 400px;
-    }
-    .home__bottom{
-        flex-direction: column;
-    }
-    .home__cardInfo{
-        width: 100%;
-        max-width: 400px;
-    }
-    .home__cardInfo--analytics{
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .home__installation-container{
-        width: 100%;
-        max-width: 400px;
+ @media (max-width: 767px) {
+    .home__cookiesDisplayed{
+        width: 40%;
     }
     .home__analytics{
+        width: 60%;
         padding-top: 20px;
     }
-}
-@media (max-width: 467px) {
-    
-    .home__card{
-        max-width: 350px;
-    }
-    
-    .home__midCard{
-        max-width: 350px;
-    }
-    .home__cardInfo{
-        width: 100%;
-        max-width: 350px;
-    }
-    .home__cardInfo--analytics{
-        width: 100%;
-        max-width: 350px;
-    }
-
-    .home__installation-container{
-        width: 100%;
-        max-width: 350px;
-    }
-
-    .home__analytics{
-        padding-top: 15px;
-    }
-
-}
+ 
+} 
