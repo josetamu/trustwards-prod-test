@@ -29,6 +29,18 @@
   pointer-events: none;
   user-select: none;
 }
+.sort__title--alphabetical {
+  margin-top: 10px;
+}
+
+/* Sort divider */
+.sort__divider {
+  height: 0.8px;
+  background: var(--border-strong-color);
+  width: 100%;
+  border: none;
+  margin-bottom: 8px;
+}
 
 /* Mobile responsive */
 @media (max-width: 480px) {

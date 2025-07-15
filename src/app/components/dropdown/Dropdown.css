@@ -1,3 +1,6 @@
+.dropdown * {
+  will-change: transform;
+}
 /* Dropdown root container */
 .dropdown {
   position: static;
@@ -41,9 +44,6 @@
   font-weight: var(--font-weight);
   font-size: var(--font-size-medium);
   padding: 8px 12px;
-  cursor: pointer;
-  white-space: nowrap;
-
 }
 .dropdown__item:hover {
   background: var(--accent-bg-color);
@@ -60,8 +60,9 @@
   color: var(--warning-color);
 }
 
-/* Icon styles */
-.dropdown__icon {
+/* Icon and delete icon styles */
+.dropdown__icon,
+.dropdown__icon--delete {
   width: 16px;
   height: 16px;
   display: flex;
@@ -99,17 +100,16 @@
 
 /* Dashboard Header Dropdown */
 .dashboardHeader-dropdown .dropdown__menu {
-  transform-origin: top center;
+  transform-origin: top right;
   top: calc(100% + 4px);
   left: -150%;
   transform: translateX(50%);
 }
 
-@media (max-width: 1550px), (max-width: 992px), (max-width: 467px) {
+@media (max-width: 992px), (max-width: 467px) {
   .site-dropdown .dropdown__menu {
     right: 0;
     left: unset;
-    transform-origin: top right;
   }
 }
 
@@ -121,10 +121,10 @@
   top: calc(100% + 4px);
   left: 0;
   transform-origin: top left;
-  min-width: fit-content;
+  min-width: 130px;
 }
 
-@media (max-width: 1550px), (max-width: 992px), (max-width: 467px) {
+@media (max-width: 1280px), (max-width: 992px), (max-width: 467px) {
   .sort-dropdown .dropdown__menu {
     right: 0;
     left: unset;
@@ -140,20 +140,16 @@
   transform-origin: top left;
   min-width: fit-content;
 }
-@media (max-width: 992px), (max-width: 467px) {
-  .sidebarSites-dropdown .dropdown__menu {
-    transform-origin: top right;
-  }
-}
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-width: 467px) {
   .sidebarSites__site--open .dropdown{
       width: 100%;
       justify-content: flex-end;
       display: flex;
     } 
     .sidebarSites__site--open .dropdown__menu{
-      left: 20px;
-      width: calc(100% - 40px);
+      left: 25px;
+      width: calc(100% - 60px);
+      transform-origin: top;
     }
 
     .dashboardHeader-dropdown .dropdown__menu {
@@ -186,4 +182,3 @@
     left: 0;
   }
 }
-

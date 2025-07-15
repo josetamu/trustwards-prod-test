@@ -11,6 +11,7 @@ export function Tooltip({
   responsivePosition,
   open = false,
   width = '100px',
+  animationType = 'SCALE_TOP',
 }) {
   const tooltipId = useId();
   const defaultPosition = responsivePosition ? null : 'right';
@@ -43,7 +44,7 @@ export function Tooltip({
           aria-live="polite"
           id={tooltipId}
           style={width ? { '--tooltip-width': width } : {}}
-          {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+          {...ANIM_TYPES.find(anim => anim.name === animationType)}
         >
           <div className="tooltip__mask">
             <span className="tooltip__message">{message}</span>

@@ -41,6 +41,7 @@ export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSett
                     user={user}
                     setUser={setUser}
                     userSettings={userSettings}
+                    userPlan={user?.Plan}
                 />
         }
     }
