@@ -170,7 +170,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'darezo.2809@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -448,6 +448,9 @@ const handleBackdropClick = useCallback((e) => {
         
         // Navigate to the new site page
         router.push(`/dashboard/${data[0].id}`);
+        if(window.innerWidth < 767){
+          setIsSidebarOpen(false);
+        }
 
       } catch (error) {
         showNotification('Error creating site');
@@ -459,6 +462,29 @@ const handleBackdropClick = useCallback((e) => {
       if (!isBrowser) return false;
       return window.innerWidth <= 767 && isSidebarOpen;
     };
+
+// Add resize listener to close sidebar when switching from desktop to mobile
+useEffect(() => {
+  if (!isBrowser) return;
+
+  const handleResize = () => {
+    // If window width is now mobile (<=767px) and sidebar is open, close it
+    if (window.innerWidth <= 767 && isSidebarOpen) {
+      setIsSidebarOpen(false);
+      // Remove the 'open' class from content container
+      const contentContainer = document.querySelector('.content__container');
+      if (contentContainer) {
+        contentContainer.classList.remove('open');
+      }
+    }
+  };
+
+  window.addEventListener('resize', handleResize);
+  
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, [isBrowser, isSidebarOpen]);
 
 
 //This function is the master of the modals. It is the function that renders the modal depending on the modalType. Each modal is a component that is rendered in the ModalContainer as a child.
@@ -486,6 +512,7 @@ const handleBackdropClick = useCallback((e) => {
             openChangeModal={openChangeModal}
             checkProfilePicture={checkProfilePicture}
             profileStyle={ProfileStyle}
+            setUser={setUser}
             />
           );
         case 'DeleteSite':
@@ -608,6 +635,7 @@ const handleBackdropClick = useCallback((e) => {
                     openChangeModal={openChangeModal}
                     openChangeModalSettings={openChangeModalSettings}
                     showNotification={showNotification}
+                    isChangeModalOpen={isChangeModalOpen}
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
                     {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}

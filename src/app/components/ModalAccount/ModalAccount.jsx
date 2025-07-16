@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 
 // Modal Account is a modal that allows the user to change their profile information.
-export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle }) {
+export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle, setUser }) {
   //states to save user data
   const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
@@ -44,43 +44,55 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
       setErrors({});
 
       try {
-        //Generate a unique file name
+        //Generate a unique file name that includes the user ID
         const fileExtension = file.name.split('.').pop();
         const fileName = `${user.id}-${Date.now()}.${fileExtension}`;
 
         //Upload file to supabase
         const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('avatar')
-        .upload(fileName, file);
+          .from('avatar')
+          .upload(fileName, file, {
+            upsert: true,
+          });
 
-        if(uploadError){
-          throw uploadError;
+        if (uploadError) {
+          console.error('Error al subir el archivo:', JSON.stringify(uploadError, null, 2));
+          setErrors({ file: 'No se pudo subir el archivo. Verifica los permisos o el bucket.' });
+          setIsUploading(false);
+          return;
         }
+
         //Get public url of the file
         const { data: { publicUrl } } = supabase.storage
-        .from('avatar')
-        .getPublicUrl(fileName);
+          .from('avatar')
+          .getPublicUrl(fileName);
 
-        //Update user avatar in database
+        //Update user avatar in database with public URL
         const { data: updateData, error: updateError } = await supabase
-        .from('User')
-        .update({ "Avatar URL": publicUrl })
-        .eq('id', user.id);
+          .from('User')
+          .update({ "Avatar URL": publicUrl })
+          .eq('id', user.id);
 
         if(updateError){
           throw updateError;
         }
+        // Update local user state with the new avatar URL
+        const updatedUser = { 
+          ...user, 
+          "Avatar URL": publicUrl 
+        };
+        setUser(updatedUser);
 
-        
-        
+        // Clear the file input
         if(fileInputRef.current){
           fileInputRef.current.value = '';
         }
 
-        
+
+
       } catch (error) {
         console.error('Error uploading file:', error);
-        setErrors({ file: 'Failed to upload file' });
+        setErrors({ file: 'Failed to upload file' }); 
       } finally {
         setIsUploading(false);
       }

@@ -148,6 +148,7 @@ export function Sidebar({
     openChangeModal,
     openChangeModalSettings,
     showNotification,
+    isChangeModalOpen,
     }) {
     const { 'site-slug': siteSlug } = useParams();
     const pathname = usePathname();
@@ -200,7 +201,7 @@ export function Sidebar({
             // Only handle clicks outside on mobile devices
             if (window.innerWidth < 767 && isSidebarOpen) {
                 // Don't close sidebar if a modal is open
-                if (isModalOpen) {
+                if (isModalOpen || isChangeModalOpen) {
                     return;
                 }
                 
@@ -340,9 +341,10 @@ export function Sidebar({
                             <div className={`sidebar__divider-top ${isSidebarOpen ? 'sidebar__divider--open' : ''}`}></div>
                                 <Link
                                 href={`/dashboard`}
-                                className={`sidebar__header ${!isSiteOpen ? 'sidebar__header--active' : ''}`}
+                                className={`sidebar-header ${!isSiteOpen ? 'sidebar-header--active' : ''}`}
                                 onMouseEnter={() => setIsDashboardHovered(true)}
                                 onMouseLeave={() => setIsDashboardHovered(false)}
+                                
                             >
                                 <span className="sidebar-header__icon">
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
