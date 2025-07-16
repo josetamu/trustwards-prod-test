@@ -47,6 +47,14 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Function to handle key press events for form submission
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   // Function to handle the submit button and the back logic about the form, sending the email to the support email.
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -267,6 +275,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             className="modalSupport__input__field" 
                             value={name} 
                             onChange={(e) => handleInputEdit('name', e.target.value)} 
+                            onKeyDown={handleKeyDown}
                             aria-invalid={!!errors.name} 
                             aria-describedby={errors.name ? 'name-error' : undefined} 
                             
@@ -287,6 +296,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             className="modalSupport__input__field" 
                             value={email} 
                             onChange={(e) => handleInputEdit('email', e.target.value)} 
+                            onKeyDown={handleKeyDown}
                             aria-invalid={!!errors.email} 
                             aria-describedby={errors.email ? 'email-error' : undefined} 
                             />
@@ -309,6 +319,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 setMessage(e.target.value);
                                 if (errors.message) setErrors(prev => ({ ...prev, message: undefined }));
                             }}
+                            onKeyDown={handleKeyDown}
                             aria-invalid={!!errors.message} 
                             aria-describedby={errors.message ? 'message-error' : undefined} 
                             />

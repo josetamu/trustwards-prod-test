@@ -29,6 +29,7 @@ function DashboardLayout({ children }) {
 
   // Sidebar state && Site state
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
 

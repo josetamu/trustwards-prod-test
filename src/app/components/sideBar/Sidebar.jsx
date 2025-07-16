@@ -173,20 +173,16 @@ export function Sidebar({
 
     // Update isActive based on current pathname
     useEffect(() => {
-        if (pathname) {
-            if (pathname === `/dashboard/${siteSlug}`) {
-                setIsActive('Home');
-            } else if (pathname === `/dashboard/${siteSlug}/scanner`) {
-                setIsActive('Scanner');
-            } else if (pathname === `/dashboard/${siteSlug}/comply-map`) {
-                setIsActive('Comply Map');
-            } else if (pathname === `/dashboard/${siteSlug}/integrations`) {
-                setIsActive('Integrations');
-            } else {
-                setIsActive('');
-            }
-        }
-    }, [pathname, siteSlug]);
+        const routeMap = {
+          [`/dashboard/${siteSlug}`]: 'Home',
+          [`/dashboard/${siteSlug}/scanner`]: 'Scanner',
+          [`/dashboard/${siteSlug}/comply-map`]: 'Comply Map',
+          [`/dashboard/${siteSlug}/integrations`]: 'Integrations',
+        };
+      
+        setIsActive(routeMap[pathname] || '');
+      }, [pathname, siteSlug]);
+      
 
     // Clear search query when search is closed
     useEffect(() => {
