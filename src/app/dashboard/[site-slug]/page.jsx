@@ -535,5 +535,4 @@ const cookiesData = analyticsCookies.map(item => ({
         
     );
 }
-
 export default Home;
