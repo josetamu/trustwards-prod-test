@@ -297,7 +297,7 @@ export function Sidebar({
     const [hoveredOverviewLink, setHoveredOverviewLink] = useState(null);
 
     return (
-        <div className="prueba">
+        <div className={`${isSidebarOpen && window.innerWidth < 767 ? 'sidebar__backdrop' : ''}`}>
             <div className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
                 {/* Logo and action button */}
                 <div className={`sidebar__logos ${isSidebarOpen ? 'sidebar__logos--open' : ''}`}>
