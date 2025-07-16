@@ -8,6 +8,7 @@ import { ProfileDropdown } from '../profileDropdown/ProfileDropdown';
 import { SidebarSites } from '../sidebarSite/SidebarSites';
 import { NewSite } from '../NewSite/NewSite';
 import Link from 'next/link';
+import { Tooltip } from "../tooltip/Tooltip";
                                               
 
 // names and icons maped in the sidebar. By changing here icons and names you change sidebar items
@@ -290,6 +291,8 @@ export function Sidebar({
         setIsSearchOpen(false);
     };
 
+    const [isDashboardHovered, setIsDashboardHovered] = useState(false);
+
     return (
         <div className={`${isSidebarOpen && window.innerWidth < 767 ? 'sidebar__backdrop' : ''}`}>
             <div className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
@@ -335,7 +338,12 @@ export function Sidebar({
 
                         <div className="sidebar__home">
                             <div className={`sidebar__divider-top ${isSidebarOpen ? 'sidebar__divider--open' : ''}`}></div>
-                            <Link href={`/dashboard`} className={`sidebar-header ${!isSiteOpen ? 'sidebar-header--active' : ''}`}>
+                                <Link
+                                href={`/dashboard`}
+                                className={`sidebar__header ${!isSiteOpen ? 'sidebar__header--active' : ''}`}
+                                onMouseEnter={() => setIsDashboardHovered(true)}
+                                onMouseLeave={() => setIsDashboardHovered(false)}
+                            >
                                 <span className="sidebar-header__icon">
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clipPath="url(#clip0_209_250)">
@@ -350,6 +358,14 @@ export function Sidebar({
                                         </clipPath>
                                         </defs>
                                     </svg>
+                                    {!isSidebarOpen && (
+                                        <Tooltip
+                                            message="Dashboard"
+                                            responsivePosition={{ desktop: 'dashboard', mobile: 'top' }}
+                                            open={isDashboardHovered}
+                                            animationType="SCALE_LEFT"
+                                        />
+                                    )}
                                 </span>
                                 <span className="sidebar-header__text">Dashboard</span>
                             </Link>

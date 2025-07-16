@@ -56,6 +56,7 @@ export const Sort = ({ onSortChange }) => {
   const SortMenu = (
     <>
       <div className="sort__title">Date</div>
+      <div className="sort__divider"></div>
       <button 
         className="dropdown__item"
         onClick={(e) => { e.stopPropagation(); handleSortChange('date', false); }}
@@ -82,7 +83,8 @@ export const Sort = ({ onSortChange }) => {
           </span>
         )}
       </button>
-      <div className="sort__title">Alphabetical</div>
+      <div className="sort__title sort__title--alphabetical">Alphabetical</div>
+      <div className="sort__divider"></div>
       <button 
         className="dropdown__item"
         onClick={(e) => { e.stopPropagation(); handleSortChange('alphabetical', true); }}

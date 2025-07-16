@@ -72,8 +72,8 @@
   align-items: center;
 }
 
-/* Pro Button Styles */
-.site__pro-toggle {
+/* Plan Button Styles */
+.site__plan-toggle {
   position: relative;
   display: flex;
   align-items: center;
@@ -85,7 +85,7 @@
   overflow: hidden;
 }
 
-.site__pro-content {
+.site__plan-content {
   position: relative;
   display: flex;
   align-items: center;
@@ -96,11 +96,10 @@
   padding: 15px 20px;
 }
 
-.site__pro-label {
+.site__plan-label {
   font-size: var(--font-size-btn);
   color: var(--site-pro-toggle-text-color);
   font-weight: 500;
-  
   letter-spacing: var(--letter-spacing);
   position: absolute;
   left: 0;
@@ -110,11 +109,11 @@
   user-select: none;
 }
 
-.site__pro-label.is-hidden {
+.site__plan-label.is-hidden {
   opacity: 0;
 }
 
-.site__pro-dots {
+.site__plan-dots {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -127,11 +126,11 @@
   transform: translateY(-50%);
 }
 
-.site__pro-dots.is-visible {
+.site__plan-dots.is-visible {
   opacity: 1;
 }
 
-.site__pro-dots-item {
+.site__plan-dots-item {
   width: 14px;
   object-fit: cover;
 }

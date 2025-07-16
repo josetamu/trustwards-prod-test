@@ -3,9 +3,11 @@ import './ModalUpgradePlan.css';
 import { Tooltip } from '../tooltip/Tooltip';
 
 import { useState } from 'react';
-const ModalUpgradePlan = () => {
+const ModalUpgradePlan = ({ userPlan }) => {
     const [yearly, setYearly] = useState(false);
     const [isHovered, setIsHovered] = useState(null);
+    
+    const plan = userPlan || 'Free';
     
     return (
         <div className="modalUpgradePlan">
@@ -13,7 +15,7 @@ const ModalUpgradePlan = () => {
                 <span className="modalUpgradePlan__title">User Plan</span>
                 <div className="modalUpgradePlan__sub">
                     <div className="modalUpgradePlan__infoContainer">
-                        <span className="modalUpgradePlan__info">You are currently on a <span className="modalUpgradePlan__info--free">free</span> plan.</span>
+                        <span className="modalUpgradePlan__info">You are currently on a <span className={`modalUpgradePlan__info--${plan.toLowerCase()}`}>{plan}</span> plan.</span>
                         <span className="modalUpgradePlan__info">An account can have up to 
                             <span 
                                 className="modalUpgradePlan__info--underline"
@@ -24,6 +26,7 @@ const ModalUpgradePlan = () => {
                                     message={'All Pro plans include 3 free sites.'}
                                     responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                     open={isHovered === 'freeSites'}
+                                    animationType="SCALE_BOTTOM"
                                 />
                             </span>
                         </span>
@@ -106,6 +109,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'siteScans'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span>/month</span>
                         </div>    
@@ -142,6 +146,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'siteProScans'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span>/month</span>
                         </div>  
@@ -178,6 +183,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'siteScaleScans'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span>/month</span>
                         </div>  
@@ -238,6 +244,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'builderThemes'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span>
                             </span>
@@ -267,6 +274,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'builderWatermark'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span> removed</span>
                         </div>        
@@ -287,6 +295,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'builderAllThemes'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span>
                             </span>
@@ -314,6 +323,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'builderWatermarkAll'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span> removed
                             </span>
@@ -335,6 +345,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'builderAllThemes2'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span>
                             </span>
@@ -362,6 +373,7 @@ const ModalUpgradePlan = () => {
                                         message={'Here will be a beautiful explanation.'}
                                         responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                         open={isHovered === 'builderWatermarkAll2'}
+                                        animationType="SCALE_BOTTOM"
                                     />
                                 </span> removed
                             </span>

@@ -24,17 +24,17 @@ import { useDashboard } from '../../dashboard/layout';
 }; */
 
 
-// ProButton: Button for site actions (shows dots on hover or dropdown open)
-const ProButton = ({ onClick, isActive }) => (
+// PlanButton: Button for site actions (shows dots on hover or dropdown open)
+const PlanButton = ({ onClick, isActive, plan }) => (
   <button
-    className="site__pro-toggle"
+    className="site__plan-toggle"
     onClick={onClick}
     aria-label="Open menu"
     type="button"
   >
-    <div className="site__pro-content">
-      <span className={`site__pro-label ${isActive ? 'is-hidden' : ''}`}>Pro</span>
-      <div className={`site__pro-dots ${isActive ? 'is-visible' : ''}`}>
+    <div className="site__plan-content">
+      <span className={`site__plan-label ${isActive ? 'is-hidden' : ''}`}>{plan}</span>
+      <div className={`site__plan-dots ${isActive ? 'is-visible' : ''}`}>
         <svg width="8" height="2" viewBox="0 0 8 2" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="1" cy="1" r="1" fill="#9E9E9E"/>
           <circle cx="4" cy="1" r="1" fill="#9E9E9E"/>
@@ -107,7 +107,7 @@ const SiteMenu = ({setIsModalOpen, setModalType, isModalOpen, setSiteData, siteD
         }
       }}>
       <span className="dropdown__icon dropdown__icon--delete">
-        <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10.625 3.20898L10.1081 11.7379C10.0708 12.3537 9.56047 12.834 8.94354 12.834H3.55644C2.93951 12.834 2.42922 12.3537 2.3919 11.7379L1.875 3.20898" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M1 3.20768H3.91667M3.91667 3.20768L4.64015 1.51956C4.73207 1.30508 4.94297 1.16602 5.17632 1.16602H7.32368C7.55702 1.16602 7.76795 1.30508 7.85982 1.51956L8.58333 3.20768M3.91667 3.20768H8.58333M11.5 3.20768H8.58333" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M4.79102 9.625V6.125" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
@@ -195,9 +195,10 @@ export const Site = ({
               onClose={handleDropdownClose}
               menu={<SiteMenu onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} modalType={modalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} openChangeModalSettings={openChangeModalSettings} />}
             >
-              <ProButton
+              <PlanButton
                 isActive={isActive}
                 onClick={handleDropdownToggle}
+                plan={siteData?.Plan || 'Free'}
               />
             </Dropdown>
           </div>
@@ -238,9 +239,10 @@ export const Site = ({
           onClose={handleDropdownClose}
           menu={<SiteMenu onDelete={() => setDeleteModalOpen(true)} setIsModalOpen={setIsModalOpen} setModalType={setModalType} modalType={modalType} isModalOpen={isModalOpen} setSiteData={setSiteData} siteData={siteData} setIsDropdownOpen={setIsDropdownOpen} openChangeModalSettings={openChangeModalSettings} />}
         >
-          <ProButton
+          <PlanButton
             isActive={isActive}
             onClick={handleDropdownToggle}
+            plan={siteData?.Plan || 'Free'}
           />
         </Dropdown>
       </div>

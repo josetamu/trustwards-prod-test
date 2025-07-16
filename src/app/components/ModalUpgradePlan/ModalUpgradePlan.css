@@ -43,7 +43,8 @@
     display: block;
 }
 
-.modalUpgradePlan__info--free{
+.modalUpgradePlan__info--free,
+.modalUpgradePlan__info--pro {
     color: var(--accent-bg-color);
 }
 
