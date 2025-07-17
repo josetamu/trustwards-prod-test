@@ -9,6 +9,11 @@
     padding-right: 5px;
 }
 
+.sidebar__sites-tooltip-wrapper--mobile{
+    position: static;
+    padding-right: 5px;
+}
+
 .sidebarSites__site{
     display: flex;
     flex-direction: row;
@@ -27,6 +32,11 @@
 }
 
 .sidebarSites__site--open{
+    overflow: visible;
+    width: 100%;
+}
+
+.sidebarSites__site--mobile{
     overflow: visible;
     width: 100%;
 }
@@ -55,6 +65,11 @@
 }   
 
 .sidebarSites__site--open:hover .sidebarSites__edit{
+    opacity: 1;
+    height: 15px;
+}
+
+.sidebarSites__site--mobile:hover .sidebarSites__edit{
     opacity: 1;
     height: 15px;
 }

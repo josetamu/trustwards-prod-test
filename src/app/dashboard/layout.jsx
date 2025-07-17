@@ -16,6 +16,7 @@ import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
 import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
+import { useSidebarSettings } from '../../contexts/SidebarSettingsContext';
 
 import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
@@ -26,9 +27,11 @@ function DashboardLayout({ children }) {
   const params = useParams();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { sidebarState, setSidebarState } = useSidebarSettings();
 
   // Sidebar state && Site state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(sidebarState);
+  const [isSidebarMobile, setIsSidebarMobile] = useState(false);  
 
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
@@ -74,17 +77,17 @@ function DashboardLayout({ children }) {
   }, [appearanceSettings]);
 
   // Apply sidebar state saved in the database when appearance settings are loaded. if the user is in mobile, this is not applied
-  useEffect(() => {
-    if (appearanceSettings && appearanceSettings.Sidebar !== undefined) {
+/*   useEffect(() => {
+    if (appearanceSettings && appearanceSettings.Sidebar !== undefined) { */
       // In mobile (≤767px), always start with the sidebar closed
       // In desktop (>767px), use the saved state in the database
-      if (window.innerWidth <= 767) {
+/*       if (window.innerWidth <= 767) {
         setIsSidebarOpen(false);
       } else {
         setIsSidebarOpen(appearanceSettings.Sidebar);
       }
     }
-  }, [appearanceSettings?.Sidebar]);
+  }, [appearanceSettings?.Sidebar]); */
 
    // function to open sidebar in desktop toggleing the .open class. Also we save the state in the database only on desktop
    const toggleSidebar = async () => {
@@ -461,7 +464,7 @@ const handleBackdropClick = useCallback((e) => {
     //Function to check if the sidebar is open and the window is in mobile. Then in the return() we add the class to the content container
     const blockSidebar = () => {
       if (!isBrowser) return false;
-      return window.innerWidth <= 767 && isSidebarOpen;
+      return window.innerWidth <= 767 && isSidebarMobile;
     };
 
 // Add resize listener to close sidebar when switching from desktop to mobile
@@ -472,11 +475,18 @@ useEffect(() => {
     // If window width is now mobile (<=767px) and sidebar is open, close it
     if (window.innerWidth <= 767 && isSidebarOpen) {
       setIsSidebarOpen(false);
+      setIsDropdownOpen(false);
+    
+
       // Remove the 'open' class from content container
       const contentContainer = document.querySelector('.content__container');
       if (contentContainer) {
         contentContainer.classList.remove('open');
       }
+    }
+    if(window.innerWidth >= 767 && isSidebarMobile){
+      setIsSidebarMobile(false);
+      setIsDropdownOpen(false);
     }
   };
 
@@ -485,7 +495,7 @@ useEffect(() => {
   return () => {
     window.removeEventListener('resize', handleResize);
   };
-}, [isBrowser, isSidebarOpen]);
+}, [isBrowser, isSidebarOpen, isSidebarMobile]);
 
 
 //This function is the master of the modals. It is the function that renders the modal depending on the modalType. Each modal is a component that is rendered in the ModalContainer as a child.
@@ -637,6 +647,8 @@ useEffect(() => {
                     openChangeModalSettings={openChangeModalSettings}
                     showNotification={showNotification}
                     isChangeModalOpen={isChangeModalOpen}
+                    isSidebarMobile={isSidebarMobile}
+                    setIsSidebarMobile={setIsSidebarMobile}
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
                     {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}

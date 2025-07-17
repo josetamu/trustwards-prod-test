@@ -1,5 +1,7 @@
 import { ThemeProvider } from 'next-themes';
 import { supabase } from '../supabase/supabaseClient';
+import { SidebarSettingsProvider } from '../contexts/SidebarSettingsContext';
+
 
 export default async function RootLayout({ children }) {
     /*  Note! If you do not add suppressHydrationWarning to your <html> you will get warnings because next-themes updates that element. 
@@ -17,11 +19,19 @@ export default async function RootLayout({ children }) {
    const { data: { user } } = await supabase.auth.getUser();
    
    // Only fetch appearance data if user is authenticated
-   let initialData = null;
+   let initialSidebarState = null;
    if (user) {
-       initialData = await supabase.from('Appearance').select('*').eq('userid', user.id).single();
-       console.log(initialData);
-       console.log(initialData?.Sidebar);
+    const { data: appearance } = await supabase
+    .from('Appearance')
+    .select('*')
+    .eq('userid', user.id)
+    .single();
+
+  if (appearance) {
+    // Remove the window check from server-side
+    initialSidebarState = appearance?.Sidebar; 
+  }
+      
    }
    
     return (
@@ -31,7 +41,9 @@ export default async function RootLayout({ children }) {
             </head>
             <body>
                 <ThemeProvider> {/* Client component from next-themes */}
-                    <div data-sidebar={`${initialData?.Sidebar}`} id="root">{children}</div>
+                    <SidebarSettingsProvider initialState={initialSidebarState}>
+                        <div id="root">{children}</div>
+                    </SidebarSettingsProvider>
                 </ThemeProvider>
             </body>
         </html>

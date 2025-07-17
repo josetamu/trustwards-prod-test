@@ -149,18 +149,39 @@ export function Sidebar({
     openChangeModalSettings,
     showNotification,
     isChangeModalOpen,
+    isSidebarMobile,
+    setIsSidebarMobile,
     }) {
     const { 'site-slug': siteSlug } = useParams();
     const pathname = usePathname();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isActive, setIsActive] = useState('');
-
+    const [windowWidth, setWindowWidth] = useState(0); // Add this state
+    
 
     //const to check if you are clicking outside the sidebar and the action button
     const sidebarContainerRef = useRef(null);
     const sidebarActionRef = useRef(null);
     const searchContainerRef = useRef(null);
+
+    // Add useEffect to handle window width
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+
+        // Set initial width
+        handleResize();
+
+        // Add event listener
+        window.addEventListener('resize', handleResize);
+        
+        // Cleanup
+        return () => window.removeEventListener('resize', handleResize);
+        
+
+    }, []);
 
     // if siteSlug the sidebar content change to the site menu
     useEffect(() => {
@@ -195,7 +216,7 @@ export function Sidebar({
     useEffect(() => {
         const handleClickOutside = (event) => {
             // Only handle clicks outside on mobile devices
-            if (window.innerWidth < 767 && isSidebarOpen) {
+            if (windowWidth < 767 && isSidebarMobile) {
                 // Don't close sidebar if a modal is open
                 if (isModalOpen || isChangeModalOpen) {
                     return;
@@ -206,7 +227,7 @@ export function Sidebar({
                 const isOutsideAction = sidebarActionRef.current && !sidebarActionRef.current.contains(event.target);
                 
                 if (isOutsideContainer && isOutsideAction) {
-                    setIsSidebarOpen(false);
+                    setIsSidebarMobile(false);
                     toggleSidebar();
                 }
             }
@@ -227,7 +248,7 @@ export function Sidebar({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSearchOpen]);
+    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSearchOpen, windowWidth, isSidebarMobile]);
 
     // Define overviewPages inside the component to access siteData
     const overviewPages = [
@@ -284,8 +305,17 @@ export function Sidebar({
 
     //function to open the sidebar
     const handleToggleSidebar = () => {
-        toggleSidebar();
-        setIsSearchOpen(false);
+        if(windowWidth < 767){
+            setIsSidebarMobile(!isSidebarMobile);
+            setIsSearchOpen(false);
+        }else{
+            toggleSidebar();
+            setIsSearchOpen(false);
+        }
+        
+
+        
+
     };
 
     // State to know if the dashboard is hovered
@@ -294,10 +324,10 @@ export function Sidebar({
     const [hoveredOverviewLink, setHoveredOverviewLink] = useState(null);
 
     return (
-        <div className={`${isSidebarOpen && window.innerWidth < 767 ? 'sidebar__backdrop' : ''}`}>
-            <div className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
+        <div className={`${isSidebarMobile ? 'sidebar__backdrop' : ''}`}>
+            <div className={`sidebar ${isSidebarOpen && windowWidth > 767 ? 'sidebar--open' : ''} ${isSidebarMobile ? 'sidebar--mobile' : ''}`}>
                 {/* Logo and action button */}
-                <div className={`sidebar__logos ${isSidebarOpen ? 'sidebar__logos--open' : ''}`}>
+                <div className={`sidebar__logos ${isSidebarOpen && windowWidth > 767 ? 'sidebar__logos--open' : ''} ${isSidebarMobile ? 'sidebar__logos--mobile' : ''}`}>
                     <div className="sidebar__logo">
                         <div className="sidebar__logo-img"></div>
                     </div>
@@ -314,12 +344,12 @@ export function Sidebar({
                             <path d="M12.75 7.5L11.8301 8.2929C11.4434 8.6262 11.25 8.79292 11.25 9C11.25 9.20708 11.4434 9.3738 11.8301 9.7071L12.75 10.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
 
-                        <svg className={`sidebar__mobile ${isSidebarOpen && window.innerWidth < 767 ? 'sidebar__mobile--closed' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+                        <svg className={`sidebar__mobile ${isSidebarMobile ? 'sidebar__mobile--closed' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
                             <path fillRule="evenodd" clipRule="evenodd" d="M3 5C3 4.44772 3.44772 4 4 4L20 4C20.5523 4 21 4.44772 21 5C21 5.55229 20.5523 6 20 6L4 6C3.44772 6 3 5.55228 3 5Z" fill="currentColor"></path>
                             <path fillRule="evenodd" clipRule="evenodd" d="M3 12C3 11.4477 3.44772 11 4 11L20 11C20.5523 11 21 11.4477 21 12C21 12.5523 20.5523 13 20 13L4 13C3.44772 13 3 12.5523 3 12Z" fill="currentColor"></path>
                             <path fillRule="evenodd" clipRule="evenodd" d="M3 19C3 18.4477 3.44772 18 4 18L20 18C20.5523 18 21 18.4477 21 19C21 19.5523 20.5523 20 20 20L4 20C3.44772 20 3 19.5523 3 19Z" fill="currentColor"></path>
                         </svg>
-                        <svg className={`siebar__mobile sidebar__cross ${isSidebarOpen && window.innerWidth < 767 ? 'sidebar__cross--active' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+                        <svg className={`siebar__mobile sidebar__cross ${isSidebarMobile ? 'sidebar__cross--active' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
                             <path fillRule="evenodd" clipRule="evenodd" d="M18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289Z" fill="currentColor"></path>
                             <path fillRule="evenodd" clipRule="evenodd" d="M5.29289 5.29289C4.90237 5.68342 4.90237 6.31658 5.29289 6.70711L17.2929 18.7071C17.6834 19.0976 18.3166 19.0976 18.7071 18.7071C19.0976 18.3166 19.0976 17.6834 18.7071 17.2929L6.70711 5.29289C6.31658 4.90237 5.68342 4.90237 5.29289 5.29289Z" fill="currentColor"></path>
                         </svg>
@@ -331,16 +361,16 @@ export function Sidebar({
                 
                 <div 
                     ref={sidebarContainerRef}
-                    className={`sidebar__container ${isSidebarOpen ? 'sidebar__container--open' : ''}`}
+                    className={`sidebar__container ${isSidebarOpen && windowWidth > 767 ? 'sidebar__container--open' : ''} ${isSidebarMobile ? 'sidebar__container--mobile' : ''}`}
                 >
                     {/* Upper part of the sidebar */}
-                    <div className={`sidebar__upper ${isSidebarOpen ? 'sidebar__upper--open' : ''}`}>
+                    <div className={`sidebar__upper ${isSidebarOpen && windowWidth > 767 ? 'sidebar__upper--open' : ''} ${isSidebarMobile ? 'sidebar__upper--mobile' : ''}`}>
 
                         <div className="sidebar__home">
-                            <div className={`sidebar__divider-top ${isSidebarOpen ? 'sidebar__divider--open' : ''}`}></div>
+                            <div className={`sidebar__divider-top ${isSidebarOpen && windowWidth > 767 ? 'sidebar__divider--open' : ''} ${isSidebarMobile ? 'sidebar__divider--mobile' : ''}`}></div>
                                 <Link
                                 href={`/dashboard`}
-                                className={`sidebar-header ${!isSiteOpen ? 'sidebar-header--active' : ''}`}
+                                className={`sidebar-header ${!isSiteOpen && windowWidth > 767 ? 'sidebar-header--active' : ''} ${isSidebarMobile ? 'sidebar-header--mobile' : ''}`}
                                 onMouseEnter={() => setIsDashboardHovered(true)}
                                 onMouseLeave={() => setIsDashboardHovered(false)}
                                 
@@ -359,7 +389,7 @@ export function Sidebar({
                                         </clipPath>
                                         </defs>
                                     </svg>
-                                    {!isSidebarOpen && (
+                                    {!isSidebarOpen && !isSidebarMobile &&(
                                         <Tooltip
                                             message="Dashboard"
                                             responsivePosition={{ desktop: 'dashboard', mobile: 'top' }}
@@ -374,8 +404,8 @@ export function Sidebar({
 
                         <div className={`sidebar__divider`}></div>
                         
-                        <div className={`sidebar__sites ${isSidebarOpen ? 'sidebar__sites--open' : ''}`}>
-                            <div className={`sidebar__sites__header ${isSidebarOpen ? 'sidebar__sites__header--open' : ''}`}>
+                        <div className={`sidebar__sites ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sites--open' : ''} ${isSidebarMobile ? 'sidebar__sites--mobile': ''}`}>
+                            <div className={`sidebar__sites__header ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sites__header--open' : ''} ${isSidebarMobile ? 'sidebar__sites__header--mobile': ''}`}>
                                 {/* render different headers depending you are inside site or not */}
                                 {isSiteOpen ? (
                                     <>
@@ -424,12 +454,12 @@ export function Sidebar({
                             <div className="sidebar__sites__container">
                                 {isSiteOpen ? (
                                     // if we are inside a site, show the overviewPages
-                                    <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
+                                    <div className={`sidebar__sitesDisplay ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sitesDisplay--open' : ''} ${isSidebarMobile ? 'sidebar__sitesDisplay--mobile': ''}`}>
                                         <div className="sitesDisplay__siteslinks">
                                         {overviewPages.map((page) => (
                                             <div
                                                 key={page.name}
-                                                className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}
+                                                className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sites-tooltip-wrapper--open' : ''} ${isSidebarMobile ? 'sidebar__sites-tooltip-wrapper--mobile': ''}`}
                                                 onMouseEnter={() => setHoveredOverviewLink(page.name)}
                                                 onMouseLeave={() => setHoveredOverviewLink(null)}
                                                 style={{ position: 'relative', width: '100%' }}
@@ -438,8 +468,8 @@ export function Sidebar({
                                                     href={page.href}
                                                     className={`site__link ${isActive === page.name ? 'site__link--active' : ''}`}
                                                     onClick={() => {
-                                                        if(window.innerWidth < 767) {
-                                                            setIsSidebarOpen(false);
+                                                        if(windowWidth < 767) {
+                                                            setIsSidebarMobile(false);
                                                             toggleSidebar();
                                                         }
                                                     }}
@@ -447,7 +477,7 @@ export function Sidebar({
                                                     <span className='site__link__icon'>{page.icon}</span>
                                                     <span className='site__link__text'>{page.name}</span>
                                                 </Link>
-                                                {!isSidebarOpen && window.innerWidth > 767 && hoveredOverviewLink === page.name && (
+                                                {!isSidebarOpen && windowWidth > 767 && hoveredOverviewLink === page.name && (
                                                     <Tooltip 
                                                         message={page.name} 
                                                         responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
@@ -462,9 +492,9 @@ export function Sidebar({
                                 ) : (
                                     // if we are not inside a site, show the list of sites
                                     //Also if there are no sites, show the add a new site button or if you are searching for a site that doesn't exist show a message
-                                    <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
+                                    <div className={`sidebar__sitesDisplay ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sitesDisplay--open' : ''} ${isSidebarMobile ? 'sidebar__sitesDisplay--mobile': ''}`}>
                                         {filteredWebs.length === 0 ? (
-                                            <div className={`sitesDisplay__nosites ${isSidebarOpen ? 'sitesDisplay__nosites--open' : ''}`}>
+                                            <div className={`sitesDisplay__nosites ${isSidebarOpen && windowWidth > 767 ? 'sitesDisplay__nosites--open' : ''} ${isSidebarMobile ? 'sitesDisplay__nosites--mobile': ''}`}>
                                                 {searchQuery ? 'No sites found' : (
                                                     <div className="nosites__container">
                                                         <div className="nosites__text">
@@ -480,7 +510,7 @@ export function Sidebar({
                                             //Display the sites, but if sidebar is closed, show only 6 sites
                                             (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
                                                 web.userid === user.id && (
-                                                    <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}>
+                                                    <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sites-tooltip-wrapper--open' : ''} ${isSidebarMobile ? 'sidebar__sites-tooltip-wrapper--mobile': ''}`}>
                                                         <SidebarSites
                                                             key={web.id}
                                                             avatar={web["Avatar URL"]}
@@ -503,6 +533,9 @@ export function Sidebar({
                                                             SiteStyle={SiteStyle}
                                                             openChangeModal={openChangeModal}
                                                             openChangeModalSettings={openChangeModalSettings}
+                                                            isSidebarMobile={isSidebarMobile}
+                                                            windowWidth={windowWidth}
+                                                            setIsSidebarMobile={setIsSidebarMobile}
                                                         />
                                                     </div>
                                                 )
@@ -554,6 +587,8 @@ export function Sidebar({
                         modalType={modalType}
                         checkProfilePicture={checkProfilePicture}
                         profileStyle={profileStyle}
+                        isSidebarMobile={isSidebarMobile}
+                        windowWidth={windowWidth}
                         /> 
 
                     </div>
