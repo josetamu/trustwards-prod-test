@@ -10,7 +10,7 @@
     top: 0;
     width: 100vw;
     height: 100%;
-    background-color: var(--modal-backdrop-color);
+    background-color: transparent;
     display: flex;
     z-index: 3;
 }
@@ -466,6 +466,10 @@
     display: flex;
     z-index: 4;
     color: var(--icons-strong-color);
+  }
+
+  .sidebar__backdrop{
+    background-color: var(--modal-backdrop-color);
   }
 
   .sidebar{

@@ -7,7 +7,7 @@ import { profilePages } from '../sideBar/Sidebar';
 import { Dropdown } from '../dropdown/Dropdown';
 
 
-export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle }) => {
+export const ProfileDropdown = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle }) => {
 //Here the dropdown's menu is defined by mapping the profilePages array
     const ProfileDropdownMenu = () => {
         return(

@@ -16,6 +16,7 @@ import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
 import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
+import { useSidebarSettings } from '../../contexts/SidebarSettingsContext';
 
 import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
@@ -26,9 +27,10 @@ function DashboardLayout({ children }) {
   const params = useParams();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { sidebarState, setSidebarState } = useSidebarSettings();
 
   // Sidebar state && Site state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(sidebarState);
 
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
@@ -74,17 +76,17 @@ function DashboardLayout({ children }) {
   }, [appearanceSettings]);
 
   // Apply sidebar state saved in the database when appearance settings are loaded. if the user is in mobile, this is not applied
-  useEffect(() => {
-    if (appearanceSettings && appearanceSettings.Sidebar !== undefined) {
+/*   useEffect(() => {
+    if (appearanceSettings && appearanceSettings.Sidebar !== undefined) { */
       // In mobile (≤767px), always start with the sidebar closed
       // In desktop (>767px), use the saved state in the database
-      if (window.innerWidth <= 767) {
+/*       if (window.innerWidth <= 767) {
         setIsSidebarOpen(false);
       } else {
         setIsSidebarOpen(appearanceSettings.Sidebar);
       }
     }
-  }, [appearanceSettings?.Sidebar]);
+  }, [appearanceSettings?.Sidebar]); */
 
    // function to open sidebar in desktop toggleing the .open class. Also we save the state in the database only on desktop
    const toggleSidebar = async () => {
