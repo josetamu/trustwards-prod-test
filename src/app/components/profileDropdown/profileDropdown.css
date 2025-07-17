@@ -6,10 +6,15 @@
     width: 100%;
   }
 
-  .profileDropdown--open{
+    .profileDropdown--open{
+      height: 40px;
+      position: relative;
+    } 
+
+  .profileDropdown--mobile{
     height: 40px;
     position: relative;
-  } 
+  }
 
   .profileDropdown__profile{
     height: 40px;
@@ -26,6 +31,11 @@
   }
 
   .profileDropdown__profile--open{
+    padding-right: 3.5px;
+    transition: all 0.6s ease;
+  }
+
+  .profileDropdown__profile--mobile{
     padding-right: 3.5px;
     transition: all 0.6s ease;
   }
@@ -90,6 +100,18 @@
     white-space: nowrap;
   }
 
+  .profileDropdown__name--mobile{
+    font-size: var(--sidebar-font-size);
+    font-weight: var(--font-weight);
+    color: var(--body-strong-color);
+    letter-spacing: var(--letter-spacing-negative);
+    display: block;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .profileDropdown__icons{
     display: none;
   }
@@ -102,6 +124,13 @@
     color: var(--icons-fresco-color);
   }
 
+  .profileDropdown__icons--mobile{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    color: var(--icons-fresco-color);
+  }
   .profileDropdown__icons--down{
     display: flex;
     align-items: center;
@@ -120,20 +149,32 @@
     display: flex;
     
   }
+  
+  .profileDropdown--mobile:hover .profileDropdown__icons--up{
+    display: flex;
+    
+  }
+
 
   .profileDropdown--open:hover .profileDropdown__icons--down{
+    display: none;
+   
+  }
+  .profileDropdown--mobile:hover .profileDropdown__icons--down{
     display: none;
    
   }
 
   .profileDropdown--open:hover .profileDropdown__profile--open{
     background-color: var(--hover-fresco-color);
+  }
 
-
+  .profileDropdown--mobile:hover .profileDropdown__profile--mobile{
+    background-color: var(--hover-fresco-color);
   }
 
   @media (max-width: 767px) {
-  .profileDropdown__header__name--open{
+  .profileDropdown__header__name--mobile{
     max-width: 350px;
   }
   .profileDropdown__name{
@@ -143,7 +184,7 @@
 }
 
 @media (max-width: 467px) {
-  .profileDropdown__header__name--open{
+  .profileDropdown__header__name--mobile{
     max-width: 160px;
   }
 }

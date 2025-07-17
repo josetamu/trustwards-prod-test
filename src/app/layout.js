@@ -1,17 +1,12 @@
 import { ThemeProvider } from 'next-themes';
 import { supabase } from '../supabase/supabaseClient';
 import { SidebarSettingsProvider } from '../contexts/SidebarSettingsContext';
-import { headers } from 'next/headers';
+
 
 export default async function RootLayout({ children }) {
     /*  Note! If you do not add suppressHydrationWarning to your <html> you will get warnings because next-themes updates that element. 
         This property only applies one level deep, so it won't block hydration warnings on other elements. 
     */
-   const headersList = await headers();
-   const userAgent = headersList.get('user-agent') || '';
-   const isMobile = /Mobile|Android|iPhone|iPad|iPod/i.test(userAgent);
-
-
    //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
@@ -24,18 +19,20 @@ export default async function RootLayout({ children }) {
    const { data: { user } } = await supabase.auth.getUser();
    
    // Only fetch appearance data if user is authenticated
-   let appearance = null;
+   let initialSidebarState = null;
    if (user) {
-    const result = await supabase
+    const { data: appearance } = await supabase
     .from('Appearance')
     .select('*')
     .eq('userid', user.id)
     .single();
-    appearance = result.data;
+
+  if (appearance) {
+    // Remove the window check from server-side
+    initialSidebarState = appearance?.Sidebar; 
+  }
       
    }
-   const initialSidebarState = !isMobile && appearance?.Sidebar === true;
-
    
     return (
         <html lang="en" suppressHydrationWarning> 

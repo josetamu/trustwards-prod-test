@@ -1,36 +1,23 @@
 import "./SidebarSites.css";
 import "../../components/dropdown/Dropdown.css";
 
-import { useId, useState} from "react";
+import { useId, useState, useEffect} from "react";
 import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../tooltip/Tooltip";
 import Link from "next/link";
 import { useDashboard } from "../../dashboard/layout";
 
-export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings}) {
+export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, isSidebarMobile, windowWidth, setIsSidebarMobile}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const { handleCopy} = useDashboard();
 
-    // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
-    /* const generateUniqueSiteName = (baseName, currentSiteId) => {
-        const existingNames = webs
-            .filter(site => site.id !== currentSiteId) // Exclude current site from check
-            .map(site => site.Name);
-        
-        let newName = baseName;
-        let counter = 1;
-        
-        while (existingNames.includes(newName)) {
-            newName = `${baseName} (${counter})`;
-            counter++;
-        }
-        
-        return newName;
-    }; */
-    
-   
+    // Close dropdown when window width changes 
+    useEffect(() => {
+        setIsDropdownOpen(false);
+    }, [windowWidth]);
+
     
     //This is the dropdown menu
     const SiteMenu = ({ setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType, openChangeModalSettings}) => {
@@ -115,7 +102,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     return(
         <Link 
             href={`/dashboard/${siteData.id}`}
-            className={`sidebarSites__site ${isSidebarOpen ? 'sidebarSites__site--open' : ''}`} 
+            className={`sidebarSites__site ${isSidebarOpen && windowWidth > 767 ? 'sidebarSites__site--open' : ''} ${isSidebarMobile ? 'sidebarSites__site--mobile' : ''}`} 
             id={sidebarSitesId}
             //on mouse enter, set is hovered to true to show the tooltip
             onMouseEnter={() => setIsHovered(true)}
@@ -124,7 +111,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                 setSelectedSite(siteData);
                 setIsSiteOpen(true);
                 if(window.innerWidth < 767){
-                    setIsSidebarOpen(false);
+                    setIsSidebarMobile(false);
                 }
             }}
             
