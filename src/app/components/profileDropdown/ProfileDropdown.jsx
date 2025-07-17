@@ -64,6 +64,7 @@ export const ProfileDropdown = ({   setIsSidebarOpen,user,isDropdownOpen,setIsDr
                 className="profileDropdown-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
+                animationType="SCALE_BOTTOM"
                 menu={<ProfileDropdownMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} setIsSidebarOpen={setIsSidebarOpen} />}
             >
                 <div className={`profileDropdown__profile ${isSidebarOpen ? 'profileDropdown__profile--open' : ''}`}>

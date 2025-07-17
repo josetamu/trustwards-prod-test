@@ -4,7 +4,7 @@ import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 import './Dropdown.css';
 
 // Dropdown component for menus and actions
-export function Dropdown({ open, menu, onClose, children, className = "" }) {
+export function Dropdown({ open, menu, onClose, children, className = "", animationType = 'SCALE_TOP' }) {
   const containerRef = useRef(null);
   const menuRef = useRef(null);
   const dropdownId = useId();
@@ -64,7 +64,7 @@ export function Dropdown({ open, menu, onClose, children, className = "" }) {
       <AnimatePresence>
         {open && (
           <motion.div
-            {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+            {...ANIM_TYPES.find(anim => anim.name === animationType)}
             className="dropdown__menu"
             ref={menuRef}
             style={fixedStyle ? fixedStyle : undefined}

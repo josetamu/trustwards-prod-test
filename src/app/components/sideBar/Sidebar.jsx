@@ -370,8 +370,9 @@ export function Sidebar({
                                 </span>
                                 <span className="sidebar-header__text">Dashboard</span>
                             </Link>
-                            <div className={`sidebar__divider`}></div>
                         </div>
+
+                        <div className={`sidebar__divider`}></div>
                         
                         <div className={`sidebar__sites ${isSidebarOpen ? 'sidebar__sites--open' : ''}`}>
                             <div className={`sidebar__sites__header ${isSidebarOpen ? 'sidebar__sites__header--open' : ''}`}>
@@ -537,6 +538,7 @@ export function Sidebar({
                                 />
                             ))}
                         </div>
+                        <div className="sidebar__divider"></div>
                         {/* render the profile dropdown */}
                         <ProfileDropdown 
                         user={user}

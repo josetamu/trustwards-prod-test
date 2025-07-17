@@ -7,12 +7,10 @@
   }
 
   .profileDropdown--open{
-    height: 40px;
     position: relative;
   } 
 
   .profileDropdown__profile{
-    height: 40px;
     width: 100%;
     background-color: transparent;
     border-radius: 10px;
@@ -22,12 +20,11 @@
     justify-content: space-between;
     transition: var(--sidebar-transition);
     flex-direction: row;
-    padding-right: 3.5px;
   }
 
   .profileDropdown__profile--open{
-    padding-right: 3.5px;
     transition: all 0.6s ease;
+    padding: 8px;
   }
 
   .profileDropdown__header{
@@ -36,7 +33,6 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
-    padding: 3.5px;
   }
 
   .profileDropdown__avatar{
