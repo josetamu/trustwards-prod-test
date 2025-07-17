@@ -288,7 +288,10 @@ export function Sidebar({
         setIsSearchOpen(false);
     };
 
+    // State to know if the dashboard is hovered
     const [isDashboardHovered, setIsDashboardHovered] = useState(false);
+    // State to know if the overview link is hovered
+    const [hoveredOverviewLink, setHoveredOverviewLink] = useState(null);
 
     return (
         <div className={`${isSidebarOpen && window.innerWidth < 767 ? 'sidebar__backdrop' : ''}`}>
@@ -423,21 +426,35 @@ export function Sidebar({
                                     <div className={`sidebar__sitesDisplay ${isSidebarOpen ? 'sidebar__sitesDisplay--open' : ''}`}>
                                         <div className="sitesDisplay__siteslinks">
                                         {overviewPages.map((page) => (
-                                            <Link
-                                                href={page.href}
+                                            <div
                                                 key={page.name}
-                                                className={`site__link ${isActive === page.name ? 'site__link--active' : ''}`}
-                                                onClick={() => {
-
-                                                    if(window.innerWidth < 767) {
-                                                        setIsSidebarOpen(false);
-                                                        toggleSidebar();
-                                                    }
-                                                }}
+                                                className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen ? 'sidebar__sites-tooltip-wrapper--open' : ''}`}
+                                                onMouseEnter={() => setHoveredOverviewLink(page.name)}
+                                                onMouseLeave={() => setHoveredOverviewLink(null)}
+                                                style={{ position: 'relative', width: '100%' }}
                                             >
-                                                <span className='site__link__icon'>{page.icon}</span>
-                                                <span className='site__link__text'>{page.name}</span>
-                                            </Link>
+                                                <Link
+                                                    href={page.href}
+                                                    className={`site__link ${isActive === page.name ? 'site__link--active' : ''}`}
+                                                    onClick={() => {
+                                                        if(window.innerWidth < 767) {
+                                                            setIsSidebarOpen(false);
+                                                            toggleSidebar();
+                                                        }
+                                                    }}
+                                                >
+                                                    <span className='site__link__icon'>{page.icon}</span>
+                                                    <span className='site__link__text'>{page.name}</span>
+                                                </Link>
+                                                {!isSidebarOpen && window.innerWidth > 767 && hoveredOverviewLink === page.name && (
+                                                    <Tooltip 
+                                                        message={page.name} 
+                                                        responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
+                                                        open={true}
+                                                        animationType="SCALE_LEFT"
+                                                    />
+                                                )}
+                                            </div>
                                         ))}
                                         </div>
                                     </div>

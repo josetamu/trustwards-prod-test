@@ -204,7 +204,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         Please be as descriptive as possible. Screenshots and recordings will help us identify better your concerns.
                     </span>
                     <div className="modalSupport__choices">
-                        <div className={`modalSupport__choice ${selectedChoice === 'Bug report' ? 'modalSupport__choice--active' : ''}`} onClick={() => setSelectedChoice('Bug report')}>
+                        <div className={`modalSupport__choice ${selectedChoice === 'Bug report' ? 'modalSupport__choice--active' : ''}`} onClick={() => { setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
                             <span className="modalSupport__choice__icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
@@ -222,7 +222,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 Bug report
                             </span>
                         </div>
-                        <div className={`modalSupport__choice ${selectedChoice === 'Pre-sale questions' ? 'modalSupport__choice--active' : ''}`} onClick={() => setSelectedChoice('Pre-sale questions')}>
+                        <div className={`modalSupport__choice ${selectedChoice === 'Pre-sale questions' ? 'modalSupport__choice--active' : ''}`} onClick={() => { setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
                         <span className="modalSupport__choice__icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
@@ -240,7 +240,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 Pre-sale questions
                             </span>
                         </div>
-                        <div className={`modalSupport__choice ${selectedChoice === 'Other' ? 'modalSupport__choice--active' : ''}`} onClick={() => setSelectedChoice('Other')}>
+                        <div className={`modalSupport__choice ${selectedChoice === 'Other' ? 'modalSupport__choice--active' : ''}`} onClick={() => { setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
                         <span className="modalSupport__choice__icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
