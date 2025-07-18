@@ -4,12 +4,12 @@
     display: flex;
 }
 
-.sidebar__sites-tooltip-wrapper--open{
+.sidebar--open .sidebar__sites-tooltip-wrapper{
     position: static;
     padding-right: 5px;
 }
 
-.sidebar__sites-tooltip-wrapper--mobile{
+.sidebar--mobile .sidebar__sites-tooltip-wrapper{
     position: static;
     padding-right: 5px;
 }
@@ -31,12 +31,12 @@
     transition: background-color 0.3s ease;
 }
 
-.sidebarSites__site--open{
+.sidebar--open .sidebarSites__site{
     overflow: visible;
     width: 100%;
 }
 
-.sidebarSites__site--mobile{
+.sidebar--mobile .sidebarSites__site{
     overflow: visible;
     width: 100%;
 }
@@ -64,12 +64,12 @@
     color: var(--icons-fresco-color);
 }   
 
-.sidebarSites__site--open:hover .sidebarSites__edit{
+.sidebar--open .sidebarSites__site:hover .sidebarSites__edit{
     opacity: 1;
     height: 15px;
 }
 
-.sidebarSites__site--mobile:hover .sidebarSites__edit{
+.sidebar--mobile .sidebarSites__site:hover .sidebarSites__edit{
     opacity: 1;
     height: 15px;
 }

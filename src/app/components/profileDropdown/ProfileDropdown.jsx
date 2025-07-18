@@ -57,7 +57,7 @@ export const ProfileDropdown = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDro
 
 
     return (
-        <div className={`profileDropdown ${isSidebarOpen && windowWidth > 767 ? 'profileDropdown--open' : ''} ${isSidebarMobile ? 'profileDropdown--mobile' : ''}`} 
+        <div className="profileDropdown" 
           onMouseEnter={() => (isSidebarOpen || isSidebarMobile) && setIsDropdownOpen(true)} 
           onMouseLeave={() => (isSidebarOpen || isSidebarMobile) && setIsDropdownOpen(false)}>
              <Dropdown
@@ -67,16 +67,16 @@ export const ProfileDropdown = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDro
                 animationType="SCALE_BOTTOM"
                 menu={<ProfileDropdownMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} setIsSidebarOpen={setIsSidebarOpen} />}
             >
-                <div className={`profileDropdown__profile ${isSidebarOpen && windowWidth > 767 ? 'profileDropdown__profile--open' : ''} ${isSidebarMobile ? 'profileDropdown__profile--mobile' : ''}`}>
+                <div className="profileDropdown__profile">
                 <div className="profileDropdown__header">
                     <span className={`profileDropdown__color ${checkProfilePicture(user) === '' ? '' : 'profileDropdown__color--null'}`} 
                         style={profileStyle(user)}>
                           {user?.Name.charAt(0)}
                     </span> 
                         <img className={`profileDropdown__avatar ${checkProfilePicture(user) === '' ? 'profileDropdown__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="avatar" />
-                    <span className={`${isSidebarOpen && windowWidth > 767 ? 'profileDropdown__name--open' : 'profileDropdown__name'} ${isSidebarMobile ? 'profileDropdown__name--mobile' : ''}`}>{user?.Name || "User"}</span> 
+                    <span className="profileDropdown__name">{user?.Name || "User"}</span> 
                 </div>
-                <div className={`${isSidebarOpen && windowWidth > 767 ? 'profileDropdown__icons--open' : 'profileDropdown__icons'} ${isSidebarMobile ? 'profileDropdown__icons--mobile' : ''}`}>
+                <div className="profileDropdown__icons">
                     <span className="profileDropdown__icons--down">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3.00002 4.5C3.00002 4.5 5.20948 7.49999 6.00003 7.5C6.79058 7.5 9 4.5 9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

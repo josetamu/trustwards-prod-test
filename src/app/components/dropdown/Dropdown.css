@@ -146,14 +146,14 @@
 }
 @media (max-width: 767px), (max-width: 467px) {
   
-    .sidebarSites__site--mobile .dropdown{
+    .sidebar--mobile .sidebarSites__site .dropdown{
       width: 100%;
       justify-content: flex-end;
       display: flex;
     } 
 
     
-    .sidebarSites__site--mobile .dropdown__menu{
+    .sidebar--mobile .sidebarSites__site .dropdown__menu{
       left: 6%;
       width: 85%;
       transform-origin: top;

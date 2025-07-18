@@ -102,7 +102,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     return(
         <Link 
             href={`/dashboard/${siteData.id}`}
-            className={`sidebarSites__site ${isSidebarOpen && windowWidth > 767 ? 'sidebarSites__site--open' : ''} ${isSidebarMobile ? 'sidebarSites__site--mobile' : ''}`} 
+            className="sidebarSites__site" 
             id={sidebarSitesId}
             //on mouse enter, set is hovered to true to show the tooltip
             onMouseEnter={() => setIsHovered(true)}

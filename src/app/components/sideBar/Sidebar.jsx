@@ -325,9 +325,9 @@ export function Sidebar({
 
     return (
         <div className={`${isSidebarMobile ? 'sidebar__backdrop' : ''}`}>
-            <div className={`sidebar ${isSidebarOpen && windowWidth > 767 ? 'sidebar--open' : ''} ${isSidebarMobile ? 'sidebar--mobile' : ''}`}>
+            <div className={`${isSidebarOpen && windowWidth > 767 ? 'sidebar--open' : 'sidebar--closed'} ${isSidebarMobile ? 'sidebar--mobile' : ''}`}>
                 {/* Logo and action button */}
-                <div className={`sidebar__logos ${isSidebarOpen && windowWidth > 767 ? 'sidebar__logos--open' : ''} ${isSidebarMobile ? 'sidebar__logos--mobile' : ''}`}>
+                <div className="sidebar__logos">
                     <div className="sidebar__logo">
                         <div className="sidebar__logo-img"></div>
                     </div>
@@ -361,13 +361,13 @@ export function Sidebar({
                 
                 <div 
                     ref={sidebarContainerRef}
-                    className={`sidebar__container ${isSidebarOpen && windowWidth > 767 ? 'sidebar__container--open' : ''} ${isSidebarMobile ? 'sidebar__container--mobile' : ''}`}
+                    className="sidebar__container" 
                 >
                     {/* Upper part of the sidebar */}
-                    <div className={`sidebar__upper ${isSidebarOpen && windowWidth > 767 ? 'sidebar__upper--open' : ''} ${isSidebarMobile ? 'sidebar__upper--mobile' : ''}`}>
+                    <div className="sidebar__upper">
 
                         <div className="sidebar__home">
-                            <div className={`sidebar__divider-top ${isSidebarOpen && windowWidth > 767 ? 'sidebar__divider--open' : ''} ${isSidebarMobile ? 'sidebar__divider--mobile' : ''}`}></div>
+                            <div className="sidebar__divider-top"></div>
                                 <Link
                                 href={`/dashboard`}
                                 className={`sidebar-header ${!isSiteOpen && windowWidth > 767 ? 'sidebar-header--active' : ''} ${isSidebarMobile ? 'sidebar-header--mobile' : ''}`}
@@ -402,10 +402,10 @@ export function Sidebar({
                             </Link>
                         </div>
 
-                        <div className={`sidebar__divider`}></div>
+                        <div className="sidebar__divider"></div>
                         
-                        <div className={`sidebar__sites ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sites--open' : ''} ${isSidebarMobile ? 'sidebar__sites--mobile': ''}`}>
-                            <div className={`sidebar__sites__header ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sites__header--open' : ''} ${isSidebarMobile ? 'sidebar__sites__header--mobile': ''}`}>
+                        <div className="sidebar__sites">
+                            <div className="sidebar__sites__header">
                                 {/* render different headers depending you are inside site or not */}
                                 {isSiteOpen ? (
                                     <>
@@ -454,12 +454,12 @@ export function Sidebar({
                             <div className="sidebar__sites__container">
                                 {isSiteOpen ? (
                                     // if we are inside a site, show the overviewPages
-                                    <div className={`sidebar__sitesDisplay ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sitesDisplay--open' : ''} ${isSidebarMobile ? 'sidebar__sitesDisplay--mobile': ''}`}>
+                                    <div className="sidebar__sitesDisplay">
                                         <div className="sitesDisplay__siteslinks">
                                         {overviewPages.map((page) => (
                                             <div
                                                 key={page.name}
-                                                className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sites-tooltip-wrapper--open' : ''} ${isSidebarMobile ? 'sidebar__sites-tooltip-wrapper--mobile': ''}`}
+                                                className="sidebar__sites-tooltip-wrapper"
                                                 onMouseEnter={() => setHoveredOverviewLink(page.name)}
                                                 onMouseLeave={() => setHoveredOverviewLink(null)}
                                                 style={{ position: 'relative', width: '100%' }}
@@ -492,9 +492,9 @@ export function Sidebar({
                                 ) : (
                                     // if we are not inside a site, show the list of sites
                                     //Also if there are no sites, show the add a new site button or if you are searching for a site that doesn't exist show a message
-                                    <div className={`sidebar__sitesDisplay ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sitesDisplay--open' : ''} ${isSidebarMobile ? 'sidebar__sitesDisplay--mobile': ''}`}>
+                                    <div className="sidebar__sitesDisplay">
                                         {filteredWebs.length === 0 ? (
-                                            <div className={`sitesDisplay__nosites ${isSidebarOpen && windowWidth > 767 ? 'sitesDisplay__nosites--open' : ''} ${isSidebarMobile ? 'sitesDisplay__nosites--mobile': ''}`}>
+                                            <div className="sitesDisplay__nosites">
                                                 {searchQuery ? 'No sites found' : (
                                                     <div className="nosites__container">
                                                         <div className="nosites__text">
@@ -510,7 +510,7 @@ export function Sidebar({
                                             //Display the sites, but if sidebar is closed, show only 6 sites
                                             (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
                                                 web.userid === user.id && (
-                                                    <div key={web.id} className={`sidebar__sites-tooltip-wrapper ${isSidebarOpen && windowWidth > 767 ? 'sidebar__sites-tooltip-wrapper--open' : ''} ${isSidebarMobile ? 'sidebar__sites-tooltip-wrapper--mobile': ''}`}>
+                                                    <div key={web.id} className="sidebar__sites-tooltip-wrapper">
                                                         <SidebarSites
                                                             key={web.id}
                                                             avatar={web["Avatar URL"]}
