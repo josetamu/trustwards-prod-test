@@ -13,10 +13,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     const [isHovered, setIsHovered] = useState(false);
     const { handleCopy} = useDashboard();
 
-    // Close dropdown when window width changes 
-    useEffect(() => {
-        setIsDropdownOpen(false);
-    }, [windowWidth]);
+ 
 
     
     //This is the dropdown menu

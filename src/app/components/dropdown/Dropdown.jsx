@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useId } from 'react';
+import React, { useRef, useEffect, useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 import './Dropdown.css';
@@ -9,6 +9,7 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
   const menuRef = useRef(null);
   const dropdownId = useId();
   const [fixedStyle, setFixedStyle] = React.useState(null);
+  const [windowWidth, setWindowWidth] = useState(0);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -53,6 +54,30 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
       setFixedStyle(null);
     }
   }, [open, className]);
+
+  // Add useEffect to handle window width
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    // Set initial width
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+    
+
+  }, []);
+
+     // Close dropdown when window width changes 
+     useEffect(() => {
+      onClose && onClose();
+  }, [windowWidth]);
 
   return (
     <div
