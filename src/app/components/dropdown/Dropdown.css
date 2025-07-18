@@ -154,8 +154,8 @@
 
     
     .sidebar--mobile .sidebarSites__site .dropdown__menu{
-      left: 6%;
-      width: 85%;
+      left: 5%;
+      width: 90%;
       transform-origin: top;
     }
 

@@ -27,6 +27,18 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, onClose]);
 
+  // Close dropdown when pressing Escape
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose && onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   // Calculate fixed position for sidebarSites-dropdown
   useEffect(() => {
     if (

@@ -179,7 +179,6 @@
     border-radius: 16px;
     padding: 20px;
     height: 295px;
-    max-width: 440px;
     position: relative;
     box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
 }

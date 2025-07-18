@@ -119,7 +119,7 @@
 
 /* Sidebar and dashboard position */
 .tooltip--sidebar, .tooltip--dashboard {
-  top: 20%;
+  top: 15%;
   left: 100%;
   transform: translateX(0%);
   margin-left: 10px;

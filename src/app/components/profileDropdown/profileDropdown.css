@@ -29,12 +29,16 @@
   }
 
   .sidebar--open .profileDropdown__profile{
-    padding: 8px;
+    padding: 8px 5px;
+    transition: all 0.6s ease;
+  }
+  .sidebar--closed .profileDropdown__profile{
+    padding: 8px 5px;
     transition: all 0.6s ease;
   }
 
   .sidebar--mobile .profileDropdown__profile{
-    padding: 8px;
+    padding: 8px 5px;
     transition: all 0.6s ease;
   }
 
@@ -119,6 +123,7 @@
     align-items: center;
     justify-content: flex-end;
     color: var(--icons-fresco-color);
+    transition: all 0.6s ease;
   }
 
   .sidebar--mobile .profileDropdown__icons{

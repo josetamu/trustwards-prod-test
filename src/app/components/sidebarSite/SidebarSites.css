@@ -6,12 +6,11 @@
 
 .sidebar--open .sidebar__sites-tooltip-wrapper{
     position: static;
-    padding-right: 5px;
+    padding-right: 4px;
 }
 
 .sidebar--mobile .sidebar__sites-tooltip-wrapper{
-    position: static;
-    padding-right: 5px;
+    padding-right: 10px;
 }
 
 .sidebarSites__site{

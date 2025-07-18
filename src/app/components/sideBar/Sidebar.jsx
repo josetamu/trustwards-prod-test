@@ -365,9 +365,8 @@ export function Sidebar({
                 >
                     {/* Upper part of the sidebar */}
                     <div className="sidebar__upper">
-
+                        <div className="sidebar__divider-top"></div>
                         <div className="sidebar__home">
-                            <div className="sidebar__divider-top"></div>
                                 <Link
                                 href={`/dashboard`}
                                 className={`sidebar-header ${!isSiteOpen && windowWidth > 767 ? 'sidebar-header--active' : ''} ${isSidebarMobile ? 'sidebar-header--mobile' : ''}`}
