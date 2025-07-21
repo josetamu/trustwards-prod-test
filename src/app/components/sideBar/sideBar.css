@@ -4,6 +4,10 @@
   --sidebar-transition: all 0.3s ease;
 }
 
+.sidebar * {
+  will-change: transform;
+}
+
 .sidebar__backdrop{
     position: fixed;
     left: 0;
@@ -17,7 +21,7 @@
 /* Main sidebar container */
 .sidebar--closed{
   width: var(--sidebar-width-close);
-  padding: 32.5px 0;
+  padding: 40px 0 15px 0;
   position: fixed;
   left: 0;
   top: 0;
@@ -128,10 +132,11 @@
   margin-top: 10px;
 }
 .sidebar__divider-top{
+  height: 0.8px;
+  background: var(--border-strong-color);
   width: 100%;
-  height: 1px;
-  background-color: var(--border-strong-color);
-  margin: 0 0 15px 0;
+  border: none;
+  margin-bottom: 10px;
 }
 .sidebar--open .sidebar__divider-top{
   display: none;
@@ -145,17 +150,8 @@
 .sidebar__upper {
   display: flex;
   flex-direction: column;
-  padding: 0 20px 0 20px;
+  padding: 0 20px;
   gap: 5px;
-}
-.sidebar--open .sidebar__upper{
-  padding-right: 0;
-}
-.sidebar--mobile .sidebar__upper{
-  padding-right: 0;
-}
-.sidebar__home{
-  border-bottom: var(--border);  
 }
 .sidebar--open .sidebar__upper .sidebar__upper .sidebar__home{
   padding-right: 20px;
@@ -167,7 +163,7 @@
 
 /* Header elements */
 .sidebar-header{
-  padding: 5px;
+  padding: 6px;
   text-decoration: none;
   display: flex;
   overflow: hidden;
@@ -184,7 +180,7 @@
 .sidebar-header:hover{
   background-color: var(--hover-light-color);
   border: 1px solid var(--border-fresco-color);
-  padding: 3px;
+  padding: 6px;
 }
 
 .sidebar-header__icon{
@@ -221,19 +217,16 @@
   position: relative;
   flex-direction: column-reverse;
   gap: 20px;
-  padding-top: 20px;
 }
 
 .sidebar--open .sidebar__sites{
   flex-direction: column;
   gap: 20px;
-  padding-top: 0;
 }
 
 .sidebar--mobile .sidebar__sites{
   flex-direction: column;
   gap: 20px;
-  padding-top: 0;
 }
 
 .sidebar__sites__header{
@@ -247,12 +240,10 @@
 
 .sidebar--open .sidebar__sites__header{
   opacity: 1;
-  padding-right: 20px;
 }
 
 .sidebar--mobile .sidebar__sites__header{
   opacity: 1;
-  padding-right: 20px;
 }
 .sidebar__sites__searcher{
   width: 150px;
@@ -361,10 +352,8 @@
 }
 
 .sitesDisplay__siteslinks{
-  padding-right: 4px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .sidebar__sites__icon{
@@ -439,11 +428,12 @@
   gap: 12px;
   white-space: nowrap;
   align-items: center;
-  padding: 4px;
+  padding: 8px 7px;
   border: 1px solid transparent;
   border-radius: 10px;
   text-decoration: none;
   width: 100%;
+  transition: background-color 0.3s ease;
 }
 .site__link:hover{
   background-color: var(--hover-light-color);
@@ -548,7 +538,7 @@
 
   .sidebar--mobile .sidebar__container{
     width: 100%;
-    padding: 10px;
+    padding: 15px;
     border: 1px solid var(--border-fresco-color);
     min-height: fit-content;
     gap: 20px;

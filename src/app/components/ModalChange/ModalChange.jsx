@@ -177,10 +177,15 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     type='text'  
                                     onChange={(e) => {
                                         setCreateSiteName(e.target.value);
-                                        if (errors.createSiteDomain) setErrors(prev => ({ ...prev, createSiteDomain: undefined }));
+                                        if (errors.createSiteName) setErrors(prev => ({ ...prev, createSiteName: undefined }));
                                     }}
                                     onKeyDown={handleKeyDown}
                                     placeholder="New site name"
+                                />
+                                <Tooltip
+                                    message={errors.createSiteName}
+                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    open={!!errors.createSiteName}
                                 />
                             </div>
                             <div className='modalChange__input__wrapper'>
@@ -214,7 +219,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     <input 
                                         className='modalChange__input' 
                                         type='text'  
-                                        value={newSiteName}
+                                        value={newSiteName || ""}
                                         onChange={(e) => {
                                             setNewSiteName(e.target.value);
                                             if (errors.newSiteName) setErrors(prev => ({ ...prev, newSiteName: undefined }));
@@ -222,13 +227,18 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                         onKeyDown={handleKeyDown}
                                         placeholder="Site name"
                                     />
+                                    <Tooltip
+                                        message={errors.newSiteName}
+                                        responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                        open={!!errors.newSiteName}
+                                    />
                                 </div>
                                 <div className='modalChange__input__wrapper'>
                                     <input 
                                         type="text" 
                                         className='modalChange__input' 
                                         placeholder='example.com' 
-                                        value={newSiteDomain}
+                                        value={newSiteDomain || ""}
                                         onChange={(e) => {
                                             setNewSiteDomain(e.target.value);
                                             if (errors.newSiteDomain) setErrors(prev => ({ ...prev, newSiteDomain: undefined }));
@@ -295,6 +305,9 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             }
         }
         if(changeType === 'newsite'){
+            if (!createSiteName || createSiteName.trim() === '') {
+                validationErrors.createSiteName = 'Site name is required';
+            }
             if (!createSiteDomain || createSiteDomain.trim() === '') {
                 validationErrors.createSiteDomain = 'Site domain is required';
                 console.log(validationErrors.createSiteDomain);
@@ -321,6 +334,9 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             }
         } 
         if (changeType === 'settings') {
+            if (!newSiteName || newSiteName.trim() === '') {
+                validationErrors.newSiteName = 'Site name is required';
+            }
             if (!newSiteDomain || newSiteDomain.trim() === '') {
                 validationErrors.newSiteDomain = 'Site domain is required';
             } else if (!newSiteDomain.includes('.')) {
