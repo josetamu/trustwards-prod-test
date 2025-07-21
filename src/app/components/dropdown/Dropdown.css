@@ -167,11 +167,11 @@
     
   }
 
-/* Profile Dropdown */
-.profileDropdown-dropdown {
+/* User */
+.user-dropdown {
   width: 100%;
 }
-.profileDropdown-dropdown:hover::before{
+.user-dropdown:hover::before{
   content: "";
   position: absolute;
   top: -20px;
@@ -179,12 +179,12 @@
   width: 100%;
   height: 20px;
 }
-.profileDropdown-dropdown .dropdown__menu {
+.user-dropdown .dropdown__menu {
   bottom: calc(100% + 15px);
   transform-origin: bottom;
 }
 @media (max-width: 767px) {
-  .profileDropdown-dropdown .dropdown__menu {
+  .user-dropdown .dropdown__menu {
     width: 100%;
     left: 0;
   }

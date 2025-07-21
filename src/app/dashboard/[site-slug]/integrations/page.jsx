@@ -33,7 +33,7 @@ function Home() {
     return (
         <div className='integrations'>
             <div className='integrations__header'>
-                <h1>Soon</h1>
+                <h1>Coming soon...</h1>
             </div>
         </div>
     );

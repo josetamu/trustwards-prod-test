@@ -32,7 +32,7 @@ function Home() {
 
         <div className='comply-map'>
             <div className='comply-map__header'>
-                <h1>Soon</h1>
+                <h1>Coming soon...</h1>
             </div>
         </div>
 

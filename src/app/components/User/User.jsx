@@ -1,15 +1,17 @@
-import "./profileDropdown.css";
+import "./User.css";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 
 import { SidebarLink } from '../sidebarLink/SidebarLink';
 import { profilePages } from '../sideBar/Sidebar';
 import { Dropdown } from '../dropdown/Dropdown';
+import { UserName } from './User__Name';
+import { UserNameSkeleton } from '../Skeletons/UserNameSkeleton';
 
 
-export const ProfileDropdown = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, windowWidth, isSidebarMobile }) => {
+export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, windowWidth, isSidebarMobile }) => {
 //Here the dropdown's menu is defined by mapping the profilePages array
-    const ProfileDropdownMenu = () => {
+    const UserMenu = () => {
         return(
             <>
                             {profilePages.map((profilePage) => (
@@ -57,32 +59,34 @@ export const ProfileDropdown = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDro
 
 
     return (
-        <div className="profileDropdown" 
+        <div className="user" 
           onMouseEnter={() => (isSidebarOpen || isSidebarMobile) && setIsDropdownOpen(true)} 
           onMouseLeave={() => (isSidebarOpen || isSidebarMobile) && setIsDropdownOpen(false)}>
              <Dropdown
-                className="profileDropdown-dropdown"
+                className="user-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
                 animationType="SCALE_BOTTOM"
-                menu={<ProfileDropdownMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} setIsSidebarOpen={setIsSidebarOpen} />}
+                menu={<UserMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} setIsSidebarOpen={setIsSidebarOpen} />}
             >
-                <div className="profileDropdown__profile">
-                <div className="profileDropdown__header">
-                    <span className={`profileDropdown__color ${checkProfilePicture(user) === '' ? '' : 'profileDropdown__color--null'}`} 
+                <div className="user__profile">
+                <div className="user__header">
+                    <span className={`user__color ${checkProfilePicture(user) === '' ? '' : 'user__color--null'}`} 
                         style={profileStyle(user)}>
                           {user?.Name.charAt(0)}
                     </span> 
-                        <img className={`profileDropdown__avatar ${checkProfilePicture(user) === '' ? 'profileDropdown__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="avatar" />
-                    <span className="profileDropdown__name">{user?.Name || "User"}</span> 
+                        <img className={`user__avatar ${checkProfilePicture(user) === '' ? 'user__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="avatar" />
+                    <Suspense fallback={<UserNameSkeleton />}>
+                        <UserName user={user} />
+                    </Suspense>
                 </div>
-                <div className="profileDropdown__icons">
-                    <span className="profileDropdown__icons--down">
+                <div className="user__icons">
+                    <span className="user__icons--down">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3.00002 4.5C3.00002 4.5 5.20948 7.49999 6.00003 7.5C6.79058 7.5 9 4.5 9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </span>
-                    <span className="profileDropdown__icons--up">
+                    <span className="user__icons--up">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3.00002 7.5C3.00002 7.5 5.20948 4.50001 6.00003 4.5C6.79058 4.5 9 7.5 9 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>

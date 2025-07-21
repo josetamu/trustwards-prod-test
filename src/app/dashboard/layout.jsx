@@ -76,18 +76,7 @@ function DashboardLayout({ children }) {
     }
   }, [appearanceSettings]);
 
-  // Apply sidebar state saved in the database when appearance settings are loaded. if the user is in mobile, this is not applied
-/*   useEffect(() => {
-    if (appearanceSettings && appearanceSettings.Sidebar !== undefined) { */
-      // In mobile (≤767px), always start with the sidebar closed
-      // In desktop (>767px), use the saved state in the database
-/*       if (window.innerWidth <= 767) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(appearanceSettings.Sidebar);
-      }
-    }
-  }, [appearanceSettings?.Sidebar]); */
+
 
    // function to open sidebar in desktop toggleing the .open class. Also we save the state in the database only on desktop
    const toggleSidebar = async () => {

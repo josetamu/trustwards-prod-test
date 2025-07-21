@@ -1,4 +1,4 @@
-.profileDropdown{
+.user{
     display: block; 
     align-items: center;
     justify-content: space-between;
@@ -6,17 +6,17 @@
     width: 100%;
   }
 
-.sidebar--open .profileDropdown{
+.sidebar--open .user{
       height: 40px;
       position: relative;
     } 
 
-  .sidebar--mobile .profileDropdown{
+  .sidebar--mobile .user{
     height: 40px;
     position: relative;
   }
 
-  .profileDropdown__profile{
+  .user__profile{
     width: 100%;
     background-color: transparent;
     border-radius: 10px;
@@ -28,17 +28,17 @@
     flex-direction: row;
   }
 
-  .sidebar--open .profileDropdown__profile{
+  .sidebar--open .user__profile{
     padding: 8px;
     transition: all 0.6s ease;
   }
 
-  .sidebar--mobile .profileDropdown__profile{
+  .sidebar--mobile .user__profile{
     padding: 8px;
     transition: all 0.6s ease;
   }
 
-  .profileDropdown__header{
+  .user__header{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -46,7 +46,7 @@
     gap: 5px;
   }
 
-  .profileDropdown__avatar{
+  .user__avatar{
     width: 25px;
     height: 25px;
     border-radius: 100%;
@@ -54,11 +54,11 @@
     padding: 2px;
   }
 
-  .profileDropdown__avatar--null{
+  .user__avatar--null{
     display: none;
   }
 
-  .profileDropdown__color{
+  .user__color{
     width: 25px;
     height: 25px;
     border-radius: 100%;
@@ -73,11 +73,11 @@
     text-transform: uppercase;
   }
 
-  .profileDropdown__color--null{
+  .user__color--null{
     display: none;
   }
   
-  .profileDropdown__name{
+  .user__name{
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--sidebar-items-color);
@@ -85,7 +85,7 @@
     display: none;
   }
 
-  .sidebar--open .profileDropdown__name{
+  .sidebar--open .user__name{
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--body-strong-color);
@@ -97,7 +97,7 @@
     white-space: nowrap;
   }
 
-  .sidebar--mobile .profileDropdown__name{
+  .sidebar--mobile .user__name{
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
     color: var(--body-strong-color);
@@ -109,11 +109,11 @@
     white-space: nowrap;
   }
 
-  .profileDropdown__icons{
+  .user__icons{
     display: none;
   }
 
-  .sidebar--open .profileDropdown__icons{
+  .sidebar--open .user__icons{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -121,14 +121,14 @@
     color: var(--icons-fresco-color);
   }
 
-  .sidebar--mobile .profileDropdown__icons{
+  .sidebar--mobile .user__icons{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
     color: var(--icons-fresco-color);
   }
-  .profileDropdown__icons--down{
+  .user__icons--down{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -137,51 +137,58 @@
     transition: all 0.6s ease;
   }
 
-  .profileDropdown__icons--up{
+  .user__icons--up{
     display: none;
     transition: all 0.6s ease;
   }
 
-  .sidebar--open .profileDropdown:hover .profileDropdown__icons--up{
+  .sidebar--open .user:hover .user__icons--up{
     display: flex;
     
   }
   
-  .sidebar--mobile .profileDropdown:hover .profileDropdown__icons--up{
+  .sidebar--mobile .user:hover .user__icons--up{
     display: flex;
     
   }
 
 
-  .sidebar--open .profileDropdown:hover .profileDropdown__icons--down{
+  .sidebar--open .user:hover .user__icons--down{
     display: none;
    
   }
-  .sidebar--mobile .profileDropdown:hover .profileDropdown__icons--down{
+  .sidebar--mobile .user:hover .user__icons--down{
     display: none;
    
   }
 
-  .sidebar--open .profileDropdown:hover .profileDropdown__profile{
+  .sidebar--open .user:hover .user__profile{
     background-color: var(--hover-fresco-color);
   }
 
-  .sidebar--mobile .profileDropdown:hover .profileDropdown__profile{
+  .sidebar--mobile .user:hover .user__profile{
     background-color: var(--hover-fresco-color);
+  }
+  .user__name-skeleton {
+    width: 100px;
+    height: 20px;
+    background-color: red;
+    border-radius: 4px;
+
   }
 
   @media (max-width: 767px) {
-  .sidebar--mobile .profileDropdown__header__name{
+  .sidebar--mobile .user__header__name{
     max-width: 350px;
   }
-  .profileDropdown__name{
+  .user__name{
     display: block;
   }
 
 }
 
 @media (max-width: 467px) {
-  .sidebar--mobile .profileDropdown__header__name{
+  .sidebar--mobile .user__header__name{
     max-width: 160px;
   }
 }
