@@ -213,3 +213,71 @@
 .site__color--null {
   display: none;
 }
+
+.site-skeleton {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: relative;
+    width: 100%;
+    height: fit-content;
+  }
+  .site-skeleton__visual {
+    min-height: 120px;
+    border: 1px solid var(--border-fresco-color);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .site-skeleton__footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--site-background);
+    border: 1px solid var(--border-fresco-color);
+    border-top: none;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+  .site-skeleton__avatar {
+    width: 35px;
+    height: 35px;
+    padding: 4px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong-color);
+    position: absolute;
+    top: 107px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0px 0px 5px 0px var(--shadow-fresco-color);
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: gainsboro;
+  }
+  .site-skeleton__name {
+    width: 50px;
+    height: 10px;
+    background: gainsboro;
+    border-radius: 4px;
+  }
+  .site-skeleton__plan {
+    width: 40px;
+    height: 25px;
+    background: gainsboro;
+    border-radius: 8px;
+  }
+  .site-skeleton-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    position: relative;
+    width: 100%;
+    height: fit-content;
+    gap: 17px;
+  }

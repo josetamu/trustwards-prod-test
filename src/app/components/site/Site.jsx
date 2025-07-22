@@ -6,23 +6,6 @@ import { useState} from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import { useDashboard } from '../../dashboard/layout';
 
-// If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
-/* const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
-  const existingNames = webs
-      .filter(site => site.id !== currentSiteId) // Exclude current site from check
-      .map(site => site.Name);
-  
-  let newName = baseName;
-  let counter = 1;
-  
-  while (existingNames.includes(newName)) {
-      newName = `${baseName} (${counter})`;
-      counter++;
-  }
-  
-  return newName;
-}; */
-
 
 // PlanButton: Button for site actions (shows dots on hover or dropdown open)
 const PlanButton = ({ onClick, isActive, plan }) => (
@@ -130,6 +113,9 @@ export const Site = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
+  const { sitesResource } = useDashboard();
+  const sites = sitesResource.read();
+  const site = sites.find(s => s.id === id);
 
 
 
@@ -181,13 +167,13 @@ export const Site = ({
         <div className="site__visual" />
         <div className="site__footer">
           <div className="site__avatar">
-            <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 
-                        style={SiteStyle(siteData)}>
-                          {text.charAt(0)}
+            <span className={`site__color ${checkSitePicture(site) === '' ? '' : 'site__color--null'}`} 
+                        style={SiteStyle(site)}>
+                          {site.Name.charAt(0)}
                     </span> 
-            <img className={`site__img ${checkSitePicture(siteData) === '' ? 'site__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt="logo" />
+            <img className={`site__img ${checkSitePicture(site) === '' ? 'site__img--null' : ''}`} src={site?.["Avatar URL"]} alt="logo" />
           </div>
-          <span className="site__name">{text}</span>
+          <span className="site__name">{site.Name}</span>
           <div className="site__footer-right">
             <Dropdown
               className="site-dropdown"
@@ -198,7 +184,7 @@ export const Site = ({
               <PlanButton
                 isActive={isActive}
                 onClick={handleDropdownToggle}
-                plan={siteData?.Plan || 'Free'}
+                plan={site.Plan || 'Free'}
               />
             </Dropdown>
           </div>
@@ -224,13 +210,13 @@ export const Site = ({
     >
       <div className="site__list-left">
         <div className="site__list-avatar">
-          <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 
-                        style={SiteStyle(siteData)}>
-                          {text.charAt(0)}
+          <span className={`site__color ${checkSitePicture(site) === '' ? '' : 'site__color--null'}`} 
+                        style={SiteStyle(site)}>
+                          {site.Name.charAt(0)}
                     </span> 
-          <img className={`site__img ${checkSitePicture(siteData) === '' ? 'site__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt="logo" />
+          <img className={`site__img ${checkSitePicture(site) === '' ? 'site__img--null' : ''}`} src={site?.["Avatar URL"]} alt="logo" />
         </div>
-        <span className="site__list-name">{text}</span>
+        <span className="site__list-name">{site.Name}</span>
       </div>
       <div className="site__list-right">
         <Dropdown
@@ -242,7 +228,7 @@ export const Site = ({
           <PlanButton
             isActive={isActive}
             onClick={handleDropdownToggle}
-            plan={siteData?.Plan || 'Free'}
+            plan={site.Plan || 'Free'}
           />
         </Dropdown>
       </div>

@@ -4,7 +4,7 @@ import './dashboard-root.css'
 import './dashboard.css'
 import './[site-slug]/home.css'
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../supabase/supabaseClient';
 import { useRouter, useParams, usePathname } from 'next/navigation';
 
@@ -60,6 +60,14 @@ function DashboardLayout({ children }) {
 
   // Browser state to handle SSR
   const [isBrowser, setIsBrowser] = useState(false);
+
+  
+    //userResource keep the promise to get the user data from the database
+    const userResourceRef = useRef({ userId: null, resource: null });
+    const [userResource, setUserResource] = useState(null);
+    const [sitesResource, setSitesResource] = useState(null);
+    const sitesResourceRef = useRef({ userId: null, resource: null });
+
 
   // We set the appearance settings when they are loaded. appearanceSettings is a object with the settings of the user(database)
   // Theme is controlled with next-themes and Accent Color is an attribute of the html tag
@@ -163,7 +171,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'darezo.2809@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -173,7 +181,7 @@ const SiteStyle = (site) => {
   const getUser = async (userId) => {
     if (!userId) {
       setUser(null);
-      return;
+      return null; 
     }
     const {data: userData, error: dbError} = await supabase
     .from('User')
@@ -183,8 +191,10 @@ const SiteStyle = (site) => {
     if(dbError) {
       console.log(dbError);
       setUser(null);
+      return null; 
     } else {
       setUser(userData);
+      return userData;
     }
   };
 
@@ -217,7 +227,7 @@ const SiteStyle = (site) => {
     const fetchSites = async (userId) => {
       if (!userId) {
         setWebs([]);
-        return;
+        return [];
       }
       const { data, error } = await supabase
         .from('Site')
@@ -226,8 +236,10 @@ const SiteStyle = (site) => {
   
       if (error) {
         console.error('Error fetching sites:', error);
+        return [];
       } else {
         setWebs(data);
+        return data;
       }
     };
 
@@ -252,13 +264,30 @@ const SiteStyle = (site) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session) {
+          // Solo recrea el resource si el userId cambia
+          if (userResourceRef.current.userId !== session.user.id) {
+            const resource = createUserResource(session.user.id);
+            userResourceRef.current = { userId: session.user.id, resource };
+            setUserResource(resource);
+
+            const sitesResource = createSitesResource(session.user.id);
+            sitesResourceRef.current = { userId: session.user.id, resource: sitesResource };
+            setSitesResource(sitesResource);
+          } else {
+            setUserResource(userResourceRef.current.resource);
+            setSitesResource(sitesResourceRef.current.resource);
+          }
           getUser(session.user.id);
-          fetchSites(session.user.id); // Fetch sites when user is authenticated
-          getAppearanceSettings(session.user.id); // Fetch appearance settings when user is authenticated
+          /* fetchSites(session.user.id); */
+          getAppearanceSettings(session.user.id);
         } else {
+          userResourceRef.current = { userId: null, resource: null };
+          sitesResourceRef.current = { userId: null, resource: null };
+          setUserResource(null);
+          setSitesResource(null);
           getUser(null);
-          setWebs([]); // Clear sites when user logs out
-          setAppearanceSettings(null); // Clear appearance settings when user logs out
+          /* setWebs([]); */
+          setAppearanceSettings(null);
         }
       }
     );
@@ -266,6 +295,52 @@ const SiteStyle = (site) => {
       authListener?.subscription.unsubscribe();
     };
   }, []);
+
+      // promise to get the user data from the database
+      function createUserResource(userId) {
+        let status = 'pending';
+        let result;
+        const suspender = getUser(userId).then(
+          r => {
+            status = 'success';
+            result = r;
+          },
+          e => {
+            status = 'error';
+            result = e;
+          }
+        );
+        return {
+          read() {
+            if (status === 'pending') throw suspender;
+            if (status === 'error') throw result;
+            return result;
+          }
+        };
+      }
+
+  // promise to get the sites data from the database
+  function createSitesResource(userId) {
+    let status = 'pending';
+    let result;
+    const suspender = fetchSites(userId).then(
+      r => {
+        status = 'success';
+        result = r;
+      },
+      e => {
+        status = 'error';
+        result = e;
+      }
+    );
+    return {
+      read() {
+        if (status === 'pending') throw suspender;
+        if (status === 'error') throw result;
+        return result;
+      }
+    };
+  }
 
   // Force login (only dev mode)
   useEffect(() => {
@@ -513,6 +588,8 @@ useEffect(() => {
             checkProfilePicture={checkProfilePicture}
             profileStyle={ProfileStyle}
             setUser={setUser}
+            setUserResource={setUserResource}
+            createUserResource={createUserResource}
             />
           );
         case 'DeleteSite':
@@ -582,6 +659,9 @@ useEffect(() => {
       }
     }
 
+
+
+
     const contextProps = {
         isModalOpen,
         setIsModalOpen,
@@ -603,6 +683,8 @@ useEffect(() => {
         openChangeModalSettings,
         openChangeModal,
         showNotification,
+        userResource,
+        sitesResource,
     };
 
     return (
@@ -671,6 +753,8 @@ useEffect(() => {
                         setSiteData={setSiteData}
                         fetchSites={fetchSites}
                         createNewSite={createNewSite}
+                        setUserResource={setUserResource}
+                        createUserResource={createUserResource}
                     />
                     </ModalContainer>
                     <Notification

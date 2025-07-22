@@ -1,12 +1,14 @@
 import "./User.css";
 
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense } from 'react';
 
 import { SidebarLink } from '../sidebarLink/SidebarLink';
 import { profilePages } from '../sideBar/Sidebar';
 import { Dropdown } from '../dropdown/Dropdown';
-import { UserName } from './User__Name';
+import { UserName } from './UserName';
 import { UserNameSkeleton } from '../Skeletons/UserNameSkeleton';
+import { UserAvatar } from './UserAvatar';
+import { UserAvatarSkeleton } from '../Skeletons/UserAvatarSkeleton';
 
 
 export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, windowWidth, isSidebarMobile }) => {
@@ -71,13 +73,11 @@ export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,i
             >
                 <div className="user__profile">
                 <div className="user__header">
-                    <span className={`user__color ${checkProfilePicture(user) === '' ? '' : 'user__color--null'}`} 
-                        style={profileStyle(user)}>
-                          {user?.Name.charAt(0)}
-                    </span> 
-                        <img className={`user__avatar ${checkProfilePicture(user) === '' ? 'user__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="avatar" />
+                    <Suspense fallback={<UserAvatarSkeleton />}>
+                        <UserAvatar checkProfilePicture={checkProfilePicture} profileStyle={profileStyle}/>
+                    </Suspense>
                     <Suspense fallback={<UserNameSkeleton />}>
-                        <UserName user={user} />
+                        <UserName/>
                     </Suspense>
                 </div>
                 <div className="user__icons">

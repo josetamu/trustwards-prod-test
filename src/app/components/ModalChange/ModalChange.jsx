@@ -6,7 +6,7 @@ import { supabase } from '../../../supabase/supabaseClient';
 import { Tooltip } from '../tooltip/Tooltip';
 
 
-export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, fetchSites, createNewSite }) {
+export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, fetchSites, createNewSite, setUserResource, createUserResource }) {
 
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
@@ -266,7 +266,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             handleSave();
         }
     }
-
+    
     //Function to save the changes uploading the data to the database
     const handleSave = async () => {
         // Validate input based on different change types
@@ -456,6 +456,11 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             // Update local user state
             const updatedUser = { ...user, ...updateData };
             setUser(updatedUser);
+            setUserResource({
+                read: () => updatedUser,
+            });
+           /*  setUserResource(createUserResource(updatedUser.id)); */
+
             
             // Show success notification
             if (showNotification) {

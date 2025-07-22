@@ -6,12 +6,19 @@ import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../tooltip/Tooltip";
 import Link from "next/link";
 import { useDashboard } from "../../dashboard/layout";
+import { SidebarSiteSkeleton } from "../Skeletons/SidebarSiteSkeleton";
 
-export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, isSidebarMobile, windowWidth, setIsSidebarMobile}) {
+export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, setIsSidebarMobile, windowWidth}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const { handleCopy} = useDashboard();
+
+    const { sitesResource } = useDashboard();
+    const sites = sitesResource.read();
+    const site = sites.find(s => s.id === siteData.id);
+
+
 
  
 
@@ -36,7 +43,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
           <button className="dropdown__item" onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleCopy(siteData?.id, 'top', true);
+            handleCopy(site.id, 'top', true);
             setIsDropdownOpen(false);
           }}>
             <span className="dropdown__icon">
@@ -53,7 +60,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
               e.preventDefault();
               e.stopPropagation();
               setIsDropdownOpen(false);
-              openChangeModalSettings(siteData);
+              openChangeModalSettings(site);
             }}
           >
             <span className="dropdown__icon">
@@ -76,7 +83,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                 setIsModalOpen(true);
                 setModalType('DeleteSite');
                 setIsDropdownOpen(false);
-                setSiteData(siteData);
+                setSiteData(site);
               }
                 
             }}
@@ -98,7 +105,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
 
     return(
         <Link 
-            href={`/dashboard/${siteData.id}`}
+            href={`/dashboard/${site.id}`}
             className="sidebarSites__site" 
             id={sidebarSitesId}
             //on mouse enter, set is hovered to true to show the tooltip
@@ -107,7 +114,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             onClick={(e) => {
                 setSelectedSite(siteData);
                 setIsSiteOpen(true);
-                if(window.innerWidth < 767){
+                if(windowWidth < 767){
                     setIsSidebarMobile(false);
                 }
             }}
@@ -115,20 +122,20 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
         >
             <div className="sidebarSites__header">
                 <span className="sidebarSites__avatar">
-                    <span className={`sidebarSites__color ${checkSitePicture(siteData) === '' ? '' : 'sidebarSites__color--null'}`} 
-                        style={SiteStyle(siteData)}>
-                          {name.charAt(0)}
+                    <span className={`sidebarSites__color ${checkSitePicture(site) === '' ? '' : 'sidebarSites__color--null'}`} 
+                        style={SiteStyle(site)}>
+                          {site.Name.charAt(0)}
                     </span> 
-                    <img className={`sidebarSites__img ${checkSitePicture(siteData) === '' ? 'sidebarSites__img--null' : ''}`} src={siteData["Avatar URL"]}/>
+                    <img className={`sidebarSites__img ${checkSitePicture(site) === '' ? 'sidebarSites__img--null' : ''}`} src={site["Avatar URL"]}/>
                 </span>
                 <span className="sidebarSites__name">
-                      {name}
+                      {site.Name}
                 </span> 
             </div>
-            {!isSidebarOpen && window.innerWidth > 767 && (
+            {!isSidebarOpen && windowWidth > 767 && (
                 <Tooltip 
-                  message={name} 
-                  id={siteData.id}
+                  message={site.Name} 
+                  id={site.id}
                   responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
                   open={isHovered}
                   animationType="SCALE_LEFT"

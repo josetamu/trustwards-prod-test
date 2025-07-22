@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 
 // Modal Account is a modal that allows the user to change their profile information.
-export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle, setUser }) {
+export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle, setUser, setUserResource }) {
   //states to save user data
   const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
@@ -82,6 +82,9 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
           "Avatar URL": publicUrl 
         };
         setUser(updatedUser);
+        setUserResource({
+          read: () => updatedUser,
+        });
 
         // Clear the file input
         if(fileInputRef.current){

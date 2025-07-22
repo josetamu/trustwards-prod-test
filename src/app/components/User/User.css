@@ -4,6 +4,7 @@
     justify-content: space-between;
     transition: all 0.8s ease;
     width: 100%;
+   
   }
 
 .sidebar--open .user{
@@ -26,6 +27,7 @@
     justify-content: space-between;
     transition: var(--sidebar-transition);
     flex-direction: row;
+    padding: 8px
   }
 
   .sidebar--open .user__profile{
@@ -80,9 +82,14 @@
   .user__name{
     font-size: var(--sidebar-font-size);
     font-weight: var(--font-weight);
-    color: var(--sidebar-items-color);
+    color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
-    display: none;
+    display: block;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
   }
 
   .sidebar--open .user__name{
@@ -173,9 +180,14 @@
   .user__name-skeleton {
     width: 100px;
     height: 20px;
-    background-color: red;
+    background-color: gainsboro;
     border-radius: 4px;
-
+  }
+  .user__avatar-skeleton {
+    width: 25px;
+    height: 25px;
+    background-color: gainsboro;
+    border-radius: 100%;
   }
 
   @media (max-width: 767px) {

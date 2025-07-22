@@ -3,3 +3,4 @@ export const UserNameSkeleton = () => {
         <div className="user__name-skeleton"></div>
     )
 }
+export default UserNameSkeleton;

@@ -1,15 +1,25 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { Site } from '../site/Site';
 import { Sort } from '../sort/Sort';
 import { View } from '../view/View';
 import { NewSite } from '../NewSite/NewSite';
 import Image from 'next/image';
+import { SitesWelcome } from './SitesWelcome';
+import { UserNameSkeleton } from '../Skeletons/UserNameSkeleton';
+import { SiteSkeleton } from '../Skeletons/SiteSkeleton';
+import { useDashboard } from '../../dashboard/layout';
 import './Sites.css'
 
 export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings, showNotification}) => {
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
+  const { sitesResource } = useDashboard();
+  const sites = sitesResource ? sitesResource.read() || [] : [];
+
   const [isGridView, setIsGridView] = useState(() => {
+
+   
+    
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('viewMode');
       return saved === null ? true : JSON.parse(saved);
@@ -25,7 +35,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
 
   // Sort the sites
   const sortedSites = useMemo(() => {
-    const sorted = [...webs];
+    const sorted = [...sites];
     if (sortMode === 'alphabetical') {
       sorted.sort((a, b) => a.Name.localeCompare(b.Name));
       return isAscending ? sorted : sorted.reverse();
@@ -33,12 +43,12 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
       sorted.sort((a, b) => new Date(b.Date) - new Date(a.Date));
       return isAscending ? sorted.reverse() : sorted;
     }
-  }, [webs, sortMode, isAscending]);
+  }, [sites, sortMode, isAscending]);
   
   // Sort webs by Date
   const sortedWebs = useMemo(() => {
-    return [...webs].sort((a, b) => new Date(a.Date) - new Date(b.Date));
-  }, [webs]);
+    return [...sites].sort((a, b) => new Date(a.Date) - new Date(b.Date));
+  }, [sites]);
 
   const handleViewChange = (newView) => {
     setIsGridView(newView);
@@ -46,10 +56,11 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
   };
 
   
-
   return (
     <div className="sites__wrapper">
-      <h2 className="sites__welcome">Hello, {user?.Name || "User"}</h2>
+      <Suspense fallback={<UserNameSkeleton />}>
+          <SitesWelcome/>
+      </Suspense>
       <div className="sites__top-grid">
         <div className="sites__top-left">
           <div className="sites__top-card sites__top-card--legacy">
@@ -284,6 +295,10 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
           <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
         </div>
       </div>
+      {!sitesResource ? (
+        <SiteSkeleton />
+      ) : (
+        <>
 
       <div className={`sites__grid ${isGridView ? 'grid' : 'list'} `}> 
         {sortedSites.map(site => (
@@ -326,6 +341,8 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
         </div>
         <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
       </div>
+      </>
+      )}
     </div>
   );
 };

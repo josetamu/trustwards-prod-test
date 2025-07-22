@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, usePathname } from 'next/navigation';     
+import { Suspense } from 'react';
+import { SidebarSiteSkeleton } from '../Skeletons/SidebarSiteSkeleton';
+import { useDashboard } from '../../dashboard/layout';
 
 import "./sideBar.css";
 
@@ -9,6 +12,7 @@ import { SidebarSites } from '../sidebarSite/SidebarSites';
 import { NewSite } from '../NewSite/NewSite';
 import Link from 'next/link';
 import { Tooltip } from "../tooltip/Tooltip";
+
                                               
 
 // names and icons maped in the sidebar. By changing here icons and names you change sidebar items
@@ -164,6 +168,9 @@ export function Sidebar({
     const sidebarContainerRef = useRef(null);
     const sidebarActionRef = useRef(null);
     const searchContainerRef = useRef(null);
+    const { sitesResource } = useDashboard();
+    const sites = sitesResource ? sitesResource.read() || [] : [];
+
 
     // Add useEffect to handle window width
     useEffect(() => {
@@ -298,7 +305,7 @@ export function Sidebar({
     ];
 
     //const to know if there are no web. Also when using searching function
-    const filteredWebs = webs.filter(web => {
+    const filteredWebs = sites.filter(web => {
         return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
     }).sort((a, b) => new Date(a.Date) - new Date(b.Date)); 
     
@@ -325,7 +332,7 @@ export function Sidebar({
 
     return (
         <div className={`${isSidebarMobile ? 'sidebar__backdrop' : ''}`}>
-            <div className={`${isSidebarOpen && windowWidth > 767 ? 'sidebar--open' : 'sidebar--closed'} ${isSidebarMobile ? 'sidebar--mobile' : ''}`}>
+            <div className={`${isSidebarOpen ? 'sidebar--open' : 'sidebar--closed'} ${isSidebarMobile && windowWidth < 767 ? 'sidebar--mobile' : ''}`}>
                 {/* Logo and action button */}
                 <div className="sidebar__logos">
                     <div className="sidebar__logo">
@@ -489,10 +496,15 @@ export function Sidebar({
                                         </div>
                                     </div>
                                 ) : (
+                                    
                                     // if we are not inside a site, show the list of sites
                                     //Also if there are no sites, show the add a new site button or if you are searching for a site that doesn't exist show a message
                                     <div className="sidebar__sitesDisplay">
-                                        {filteredWebs.length === 0 ? (
+                                        {!sitesResource ? (
+                                            
+                                                <SidebarSiteSkeleton isSidebarOpen={isSidebarOpen}/>
+                                           
+                                        ) : filteredWebs.length === 0 ? (
                                             <div className="sitesDisplay__nosites">
                                                 {searchQuery ? 'No sites found' : (
                                                     <div className="nosites__container">
@@ -510,32 +522,34 @@ export function Sidebar({
                                             (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
                                                 web.userid === user.id && (
                                                     <div key={web.id} className="sidebar__sites-tooltip-wrapper">
-                                                        <SidebarSites
-                                                            key={web.id}
-                                                            avatar={web["Avatar URL"]}
-                                                            name={web.Name}
-                                                            isSidebarOpen={isSidebarOpen}
-                                                            setIsModalOpen={setIsModalOpen}
-                                                            setModalType={setModalType}
-                                                            isModalOpen={isModalOpen}
-                                                            isDropdownOpen={isDropdownOpen}
-                                                            setIsDropdownOpen={setIsDropdownOpen}
-                                                            siteData={web}
-                                                            setSiteData={setSiteData}
-                                                            toggleSidebar={toggleSidebar}
-                                                            setIsSidebarOpen={setIsSidebarOpen}
-                                                            modalType={modalType}
-                                                            globalSiteData={siteData}
-                                                            setSelectedSite={setSelectedSite}
-                                                            setIsSiteOpen={setIsSiteOpen}
-                                                            checkSitePicture={checkSitePicture}
-                                                            SiteStyle={SiteStyle}
-                                                            openChangeModal={openChangeModal}
-                                                            openChangeModalSettings={openChangeModalSettings}
-                                                            isSidebarMobile={isSidebarMobile}
-                                                            windowWidth={windowWidth}
-                                                            setIsSidebarMobile={setIsSidebarMobile}
-                                                        />
+                                                        <Suspense fallback={<SidebarSiteSkeleton isSidebarOpen={isSidebarOpen}/>}>
+                                                            <SidebarSites
+                                                                key={web.id}
+                                                                avatar={web["Avatar URL"]}
+                                                                name={web.Name}
+                                                                isSidebarOpen={isSidebarOpen}
+                                                                setIsModalOpen={setIsModalOpen}
+                                                                setModalType={setModalType}
+                                                                isModalOpen={isModalOpen}
+                                                                isDropdownOpen={isDropdownOpen}
+                                                                setIsDropdownOpen={setIsDropdownOpen}
+                                                                siteData={web}
+                                                                setSiteData={setSiteData}
+                                                                toggleSidebar={toggleSidebar}
+                                                                setIsSidebarOpen={setIsSidebarOpen}
+                                                                modalType={modalType}
+                                                                globalSiteData={siteData}
+                                                                setSelectedSite={setSelectedSite}
+                                                                setIsSiteOpen={setIsSiteOpen}
+                                                                checkSitePicture={checkSitePicture}
+                                                                SiteStyle={SiteStyle}
+                                                                openChangeModal={openChangeModal}
+                                                                openChangeModalSettings={openChangeModalSettings}
+                                                                isSidebarMobile={isSidebarMobile}
+                                                                windowWidth={windowWidth}
+                                                                setIsSidebarMobile={setIsSidebarMobile}
+                                                            />
+                                                        </Suspense>
                                                     </div>
                                                 )
                                             ))
