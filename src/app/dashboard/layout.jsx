@@ -685,6 +685,8 @@ useEffect(() => {
         showNotification,
         userResource,
         sitesResource,
+        setSitesResource,
+        createSitesResource,
     };
 
     return (
@@ -755,6 +757,8 @@ useEffect(() => {
                         createNewSite={createNewSite}
                         setUserResource={setUserResource}
                         createUserResource={createUserResource}
+                        setSitesResource={setSitesResource}
+                        createSitesResource={createSitesResource}
                     />
                     </ModalContainer>
                     <Notification
