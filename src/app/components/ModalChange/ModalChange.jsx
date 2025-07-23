@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 
 import { Tooltip } from '../tooltip/Tooltip';
-import { useDashboard } from '../../dashboard/layout';
 
-export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, fetchSites, createNewSite, setUserResource, setSitesResource, createSitesResource }) {
+export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, createNewSite, setWebs, allUserDataResource }) {
 
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
@@ -18,9 +17,6 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
     const [createSiteName, setCreateSiteName] = useState('');
     const [createSiteDomain, setCreateSiteDomain] = useState('');
     const [errors, setErrors] = useState({});
-    const { sitesResource } = useDashboard();
-    const sites = sitesResource ? sitesResource.read() || [] : [];
-    const site = sites.find(site => site.id === siteData?.id);
     
     //Use modalChange in the different cases we need it: to change name, email or password... The function bellow render the content of the modal based on the changeType.
     const renderContent = () => {
@@ -431,8 +427,13 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 
                 const updatedSite = { ...siteData, ...updateData };
                 setSiteData(updatedSite);
-                fetchSites(user?.id);
-                setSitesResource(createSitesResource(user?.id));
+                if (setWebs) {
+                    setWebs(prevWebs =>
+                      prevWebs.map(site =>
+                        site.id === updatedSite.id ? { ...site, ...updateData } : site
+                      )
+                    );
+                  }
                 
                 if (showNotification) {
                     showNotification('Site settings updated successfully!', 'top', true);
@@ -460,10 +461,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             // Update local user state
             const updatedUser = { ...user, ...updateData };
             setUser(updatedUser);
-            setUserResource({
-                read: () => updatedUser,
-            });
-           /*  setUserResource(createUserResource(updatedUser.id)); */
+            if (allUserDataResource) {
+                allUserDataResource.read().user = updatedUser;
+            }
+
 
             
             // Show success notification

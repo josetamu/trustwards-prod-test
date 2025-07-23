@@ -13,6 +13,10 @@ export const SidebarSiteSkeleton = ({isSidebarOpen}) => {
                 <div className="user__avatar-skeleton"></div>
                 <div className="user__name-skeleton"></div>
             </div>
+            <div className={`sidebar-skeleton ${isSidebarOpen ? 'sidebar-skeleton--open' : ''}`}>
+                <div className="user__avatar-skeleton"></div>
+                <div className="user__name-skeleton"></div>
+            </div>
         </>
     )
 }

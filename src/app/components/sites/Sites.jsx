@@ -1,4 +1,4 @@
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, Suspense, useEffect } from 'react';
 import { Site } from '../site/Site';
 import { Sort } from '../sort/Sort';
 import { View } from '../view/View';
@@ -6,26 +6,28 @@ import { NewSite } from '../NewSite/NewSite';
 import Image from 'next/image';
 import { SitesWelcome } from './SitesWelcome';
 import { UserNameSkeleton } from '../Skeletons/UserNameSkeleton';
-import { SiteSkeleton } from '../Skeletons/SiteSkeleton';
 import { useDashboard } from '../../dashboard/layout';
 import './Sites.css'
+import { SitesList } from './SitesList';
+import { SitesSkeleton } from '../Skeletons/SitesSkeleton';
+
 
 export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings, showNotification}) => {
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
-  const { sitesResource } = useDashboard();
-  const sites = sitesResource ? sitesResource.read() || [] : [];
+/*   const { sitesResource } = useDashboard();
+  const sites = sitesResource ? sitesResource.read() || [] : []; */
 
-  const [isGridView, setIsGridView] = useState(() => {
+  const [isGridView, setIsGridView] = useState(true);
+  const [isGridViewMounted, setIsGridViewMounted] = useState(false);
 
-   
-    
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('viewMode');
-      return saved === null ? true : JSON.parse(saved);
+  useEffect(() => {
+    setIsGridViewMounted(true);
+    const saved = localStorage.getItem('viewMode');
+    if(saved !== null) {
+      setIsGridView(JSON.parse(saved));
     }
-    return true;
-  });
+  }, []);
   
   // Handle sort change
   const handleSortChange = (mode, ascending) => {
@@ -35,7 +37,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
 
   // Sort the sites
   const sortedSites = useMemo(() => {
-    const sorted = [...sites];
+    const sorted = [...webs];
     if (sortMode === 'alphabetical') {
       sorted.sort((a, b) => a.Name.localeCompare(b.Name));
       return isAscending ? sorted : sorted.reverse();
@@ -43,12 +45,12 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
       sorted.sort((a, b) => new Date(b.Date) - new Date(a.Date));
       return isAscending ? sorted.reverse() : sorted;
     }
-  }, [sites, sortMode, isAscending]);
+  }, [webs, sortMode, isAscending]);
   
   // Sort webs by Date
   const sortedWebs = useMemo(() => {
-    return [...sites].sort((a, b) => new Date(a.Date) - new Date(b.Date));
-  }, [sites]);
+    return [...webs].sort((a, b) => new Date(a.Date) - new Date(b.Date));
+  }, [webs]);
 
   const handleViewChange = (newView) => {
     setIsGridView(newView);
@@ -295,54 +297,24 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
           <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
         </div>
       </div>
-      {!sitesResource ? (
-        <SiteSkeleton />
-      ) : (
-        <>
 
-      <div className={`sites__grid ${isGridView ? 'grid' : 'list'} `}> 
-        {sortedSites.map(site => (
-          user && site.userid === user.id && (
-            <Site
-              key={site.id}
-              id={site.id}
-              text={site.Name}
-              domain={site.Domain}
-              onRemove={() => {}}
-              setIsModalOpen={setIsModalOpen}
-              setModalType={setModalType}
-              isModalOpen={isModalOpen}
-              isDropdownOpen={isDropdownOpen}
-              setIsDropdownOpen={setIsDropdownOpen}
-              setSiteData={setSiteData}
-              siteData={site}
-              isGridView={isGridView}
-              checkSitePicture={checkSitePicture}
-              SiteStyle={SiteStyle}
-              openChangeModalSettings={openChangeModalSettings}
-            />
-          )
-        ))}
-        <div className="sites__nosites-small">
-          <div className="sites__nosites-text">
-            Add a new website
-          </div>
-          <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
-        </div>
-      </div>
-      <div className="sites__nosites-big">
-        <div className="sites__nosites-container">
-          <span className="sites__nosites-heading">No Sites</span>
-          <div className="sites__nosites-text">
-            There aren't sites here yet.
-            <br />
-            Start by creating a <span className="sites__nosites-span">new site.</span>
-          </div>
-        </div>
-        <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
-      </div>
-      </>
-      )}
+    <Suspense fallback={<SitesSkeleton/>}>
+      <SitesList
+        openChangeModal={openChangeModal}
+        setIsModalOpen={setIsModalOpen}
+        setModalType={setModalType}
+        showNotification={showNotification}
+        isModalOpen={isModalOpen}
+        isDropdownOpen={isDropdownOpen}
+        setIsDropdownOpen={setIsDropdownOpen}
+        setSiteData={setSiteData}
+        checkSitePicture={checkSitePicture}
+        SiteStyle={SiteStyle}
+        openChangeModalSettings={openChangeModalSettings}
+        sortedSites={sortedSites}
+        isGridView={isGridView}
+      />
+    </Suspense>
     </div>
   );
 };

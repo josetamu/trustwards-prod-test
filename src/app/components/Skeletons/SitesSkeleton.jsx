@@ -1,4 +1,5 @@
-export const SiteSkeleton = () => {
+export const SitesSkeleton = ({}) => {
+    
     return (
         <div className="site-skeleton-container">
             <div className="site-skeleton">
@@ -34,6 +35,7 @@ export const SiteSkeleton = () => {
                     </div>
             </div>
         </div>
-        
     )
-}
+    }
+  
+

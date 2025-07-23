@@ -1,15 +1,22 @@
 import { useDashboard } from '../../dashboard/layout'; // Ajusta el import según tu estructura
 import UserNameSkeleton from '../Skeletons/UserNameSkeleton';
 
-export const UserName = () => {
+export const SiteName = ({siteSlug}) => {
   const { allUserDataResource } = useDashboard();
 
   if (!allUserDataResource) return <UserNameSkeleton />;
 
-  const {user} = allUserDataResource.read();
+  const {webs} = allUserDataResource.read();
+
+  
+
+    
+ 
+
+  const site = webs.find(web => web.slug === siteSlug);
 
 
   return (
-    <span className="user__name">{user.Name || "User"}</span>
+    <span className='sidebar__sites__title sidebar__sites__title--site'>{site?.Name || 'SITE'}</span>
   );
 };

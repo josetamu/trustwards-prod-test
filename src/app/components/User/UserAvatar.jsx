@@ -2,11 +2,11 @@ import { useDashboard } from '../../dashboard/layout'; // Ajusta el import segú
 import UserAvatarSkeleton from '../Skeletons/UserAvatarSkeleton';
 
 export const UserAvatar = ({checkProfilePicture, profileStyle}) => {
-  const { userResource } = useDashboard();
+  const { allUserDataResource } = useDashboard();
 
-  if (!userResource) return <UserAvatarSkeleton />;
+  if (!allUserDataResource) return <UserAvatarSkeleton />;
 
-  const user = userResource.read();
+  const {user} = allUserDataResource.read();
 
 
   return (

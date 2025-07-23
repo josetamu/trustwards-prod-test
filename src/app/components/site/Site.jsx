@@ -112,10 +112,10 @@ export const Site = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-
+/* 
   const { sitesResource } = useDashboard();
   const sites = sitesResource.read();
-  const site = sites.find(s => s.id === id);
+  const site = sites.find(s => s.id === id); */
 
 
 
@@ -167,13 +167,13 @@ export const Site = ({
         <div className="site__visual" />
         <div className="site__footer">
           <div className="site__avatar">
-            <span className={`site__color ${checkSitePicture(site) === '' ? '' : 'site__color--null'}`} 
-                        style={SiteStyle(site)}>
-                          {site.Name.charAt(0)}
+            <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 
+                        style={SiteStyle(siteData)}>
+                          {siteData.Name.charAt(0)}
                     </span> 
-            <img className={`site__img ${checkSitePicture(site) === '' ? 'site__img--null' : ''}`} src={site?.["Avatar URL"]} alt="logo" />
+            <img className={`site__img ${checkSitePicture(siteData) === '' ? 'site__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt="logo" />
           </div>
-          <span className="site__name">{site.Name}</span>
+          <span className="site__name">{siteData.Name}</span>
           <div className="site__footer-right">
             <Dropdown
               className="site-dropdown"
@@ -184,7 +184,7 @@ export const Site = ({
               <PlanButton
                 isActive={isActive}
                 onClick={handleDropdownToggle}
-                plan={site.Plan || 'Free'}
+                plan={siteData.Plan || 'Free'}
               />
             </Dropdown>
           </div>
@@ -210,13 +210,13 @@ export const Site = ({
     >
       <div className="site__list-left">
         <div className="site__list-avatar">
-          <span className={`site__color ${checkSitePicture(site) === '' ? '' : 'site__color--null'}`} 
-                        style={SiteStyle(site)}>
-                          {site.Name.charAt(0)}
+          <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 
+                        style={SiteStyle(siteData)}>
+                          {siteData.Name.charAt(0)}
                     </span> 
-          <img className={`site__img ${checkSitePicture(site) === '' ? 'site__img--null' : ''}`} src={site?.["Avatar URL"]} alt="logo" />
+          <img className={`site__img ${checkSitePicture(siteData) === '' ? 'site__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt="logo" />
         </div>
-        <span className="site__list-name">{site.Name}</span>
+        <span className="site__list-name">{siteData.Name}</span>
       </div>
       <div className="site__list-right">
         <Dropdown
@@ -228,7 +228,7 @@ export const Site = ({
           <PlanButton
             isActive={isActive}
             onClick={handleDropdownToggle}
-            plan={site.Plan || 'Free'}
+            plan={siteData.Plan || 'Free'}
           />
         </Dropdown>
       </div>

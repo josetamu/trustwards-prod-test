@@ -12,6 +12,9 @@ import { SidebarSites } from '../sidebarSite/SidebarSites';
 import { NewSite } from '../NewSite/NewSite';
 import Link from 'next/link';
 import { Tooltip } from "../tooltip/Tooltip";
+import { SidebarSitesList } from './SidebarSitesList';
+import { SiteName } from './siteName';
+import UserNameSkeleton from '../Skeletons/UserNameSkeleton';
 
                                               
 
@@ -168,8 +171,8 @@ export function Sidebar({
     const sidebarContainerRef = useRef(null);
     const sidebarActionRef = useRef(null);
     const searchContainerRef = useRef(null);
-    const { sitesResource } = useDashboard();
-    const sites = sitesResource ? sitesResource.read() || [] : [];
+/*     const { sitesResource } = useDashboard();
+    const sites = sitesResource ? sitesResource.read() || [] : []; */
 
 
     // Add useEffect to handle window width
@@ -234,8 +237,8 @@ export function Sidebar({
                 const isOutsideAction = sidebarActionRef.current && !sidebarActionRef.current.contains(event.target);
                 
                 if (isOutsideContainer && isOutsideAction) {
-                    setIsSidebarMobile(false);
-                    toggleSidebar();
+                    setIsSidebarMobile(false); 
+                    
                 }
             }
 
@@ -255,7 +258,7 @@ export function Sidebar({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSearchOpen, windowWidth, isSidebarMobile]);
+    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSearchOpen, windowWidth, isSidebarMobile, setIsDropdownOpen]);
 
     // Define overviewPages inside the component to access siteData
     const overviewPages = [
@@ -305,7 +308,7 @@ export function Sidebar({
     ];
 
     //const to know if there are no web. Also when using searching function
-    const filteredWebs = sites.filter(web => {
+    const filteredWebs = webs.filter(web => {
         return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
     }).sort((a, b) => new Date(a.Date) - new Date(b.Date)); 
     
@@ -319,11 +322,9 @@ export function Sidebar({
             toggleSidebar();
             setIsSearchOpen(false);
         }
-        
-
-        
-
     };
+
+
 
     // State to know if the dashboard is hovered
     const [isDashboardHovered, setIsDashboardHovered] = useState(false);
@@ -414,9 +415,11 @@ export function Sidebar({
                             <div className="sidebar__sites__header">
                                 {/* render different headers depending you are inside site or not */}
                                 {isSiteOpen ? (
-                                    <>
-                                        <span className='sidebar__sites__title sidebar__sites__title--site'>{siteData?.Name || 'SITE'}</span>
-                                    </>
+                                    
+                                    <Suspense fallback={<UserNameSkeleton />}>
+                                        <SiteName />
+                                    </Suspense>
+                                    
                                 ) : (
                                     <>
                                         <span className='sidebar__sites__title'>SITES</span>
@@ -500,60 +503,32 @@ export function Sidebar({
                                     // if we are not inside a site, show the list of sites
                                     //Also if there are no sites, show the add a new site button or if you are searching for a site that doesn't exist show a message
                                     <div className="sidebar__sitesDisplay">
-                                        {!sitesResource ? (
-                                            
-                                                <SidebarSiteSkeleton isSidebarOpen={isSidebarOpen}/>
-                                           
-                                        ) : filteredWebs.length === 0 ? (
-                                            <div className="sitesDisplay__nosites">
-                                                {searchQuery ? 'No sites found' : (
-                                                    <div className="nosites__container">
-                                                        <div className="nosites__text">
-                                                            There aren't sites here yet.
-                                                            <br />
-                                                            Start by creating a <span className="nosites__text__span">new site.</span>
-                                                        </div>
-                                                        <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            //Display the sites, but if sidebar is closed, show only 6 sites
-                                            (isSidebarOpen ? filteredWebs : filteredWebs.slice(0, 6)).map((web) => (
-                                                web.userid === user.id && (
-                                                    <div key={web.id} className="sidebar__sites-tooltip-wrapper">
-                                                        <Suspense fallback={<SidebarSiteSkeleton isSidebarOpen={isSidebarOpen}/>}>
-                                                            <SidebarSites
-                                                                key={web.id}
-                                                                avatar={web["Avatar URL"]}
-                                                                name={web.Name}
-                                                                isSidebarOpen={isSidebarOpen}
-                                                                setIsModalOpen={setIsModalOpen}
-                                                                setModalType={setModalType}
-                                                                isModalOpen={isModalOpen}
-                                                                isDropdownOpen={isDropdownOpen}
-                                                                setIsDropdownOpen={setIsDropdownOpen}
-                                                                siteData={web}
-                                                                setSiteData={setSiteData}
-                                                                toggleSidebar={toggleSidebar}
-                                                                setIsSidebarOpen={setIsSidebarOpen}
-                                                                modalType={modalType}
-                                                                globalSiteData={siteData}
-                                                                setSelectedSite={setSelectedSite}
-                                                                setIsSiteOpen={setIsSiteOpen}
-                                                                checkSitePicture={checkSitePicture}
-                                                                SiteStyle={SiteStyle}
-                                                                openChangeModal={openChangeModal}
-                                                                openChangeModalSettings={openChangeModalSettings}
-                                                                isSidebarMobile={isSidebarMobile}
-                                                                windowWidth={windowWidth}
-                                                                setIsSidebarMobile={setIsSidebarMobile}
-                                                            />
-                                                        </Suspense>
-                                                    </div>
-                                                )
-                                            ))
-                                        )}
+                                        <Suspense fallback={<SidebarSiteSkeleton isSidebarOpen={isSidebarOpen}/>}>
+                                            <SidebarSitesList
+                                                searchQuery={searchQuery}
+                                                setIsModalOpen={setIsModalOpen}
+                                                setModalType={setModalType}
+                                                showNotification={showNotification}
+                                                isSidebarOpen={isSidebarOpen}
+                                                isModalOpen={isModalOpen}
+                                                isDropdownOpen={isDropdownOpen}
+                                                setIsDropdownOpen={setIsDropdownOpen}
+                                                siteData={siteData}
+                                                setSiteData={setSiteData}
+                                                toggleSidebar={toggleSidebar}
+                                                setIsSidebarOpen={setIsSidebarOpen}
+                                                modalType={modalType}
+                                                setSelectedSite={setSelectedSite}
+                                                setIsSiteOpen={setIsSiteOpen}
+                                                checkSitePicture={checkSitePicture}
+                                                SiteStyle={SiteStyle}
+                                                isSidebarMobile={isSidebarMobile}
+                                                windowWidth={windowWidth}
+                                                setIsSidebarMobile={setIsSidebarMobile}
+                                                filteredWebs={filteredWebs}
+                                                openChangeModal={openChangeModal}
+                                            />
+                                        </Suspense>
                                     </div>
                                 )}
                             </div>
