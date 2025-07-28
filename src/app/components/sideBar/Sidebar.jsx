@@ -417,7 +417,7 @@ export function Sidebar({
                                 {isSiteOpen ? (
                                     
                                     <Suspense fallback={<UserNameSkeleton />}>
-                                        <SiteName />
+                                        <SiteName siteSlug={siteSlug}/>
                                     </Suspense>
                                     
                                 ) : (

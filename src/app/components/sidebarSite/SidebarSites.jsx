@@ -14,11 +14,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     const [isHovered, setIsHovered] = useState(false);
     const { handleCopy} = useDashboard();
 
-    useEffect(() => {
-        if(isSidebarMobile === false && isDropdownOpen) {
-            setIsDropdownOpen(false);
-        }
-    }, [isSidebarMobile, isDropdownOpen]);
+
 
 
 

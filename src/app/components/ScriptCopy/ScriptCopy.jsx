@@ -1,11 +1,16 @@
 import { useParams } from 'next/navigation';
 import { useDashboard } from '../../dashboard/layout';
 import './ScriptCopy.css';
+import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 
 const ScriptCopy = () => {
     const params = useParams();
     const siteSlug = params['site-slug'];
     const { handleCopy } = useDashboard();
+
+    
+   
+
   
     const script = `
     <script>https://trustwards.io/cdn/${siteSlug}.js</script>

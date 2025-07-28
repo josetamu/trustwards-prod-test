@@ -84,7 +84,9 @@ function DashboardLayout({ children }) {
       setAppearanceSettings(null);
       return;
     }
+
     try {
+      await new Promise(resolve => setTimeout(resolve, 10000));
     const [userResult, sitesResult, appearanceResult] = await Promise.allSettled([
       supabase.from('User').select('*').eq('id', userId).single(),
       supabase.from('Site').select('*').eq('userid', userId),
@@ -393,6 +395,7 @@ const SiteStyle = (site) => {
         }, []); */
 
         //NEW BD CODE
+        
     useEffect(() =>{
       const { data: authListener } = supabase.auth.onAuthStateChange(
         (event, session) => {
@@ -616,7 +619,9 @@ const handleBackdropClick = useCallback((e) => {
               userid: user.id,
               'Avatar Color': randomColorKey,
               Plan: 'Free',
-              Domain: createSiteDomain
+              Domain: createSiteDomain,
+              Verified: false,
+              Scans: 0,
             }
           ])
           .select();
@@ -630,6 +635,12 @@ const handleBackdropClick = useCallback((e) => {
         setWebs(prevWebs => [...prevWebs, data[0]]);
         setSelectedSite(data[0]);
         setIsSiteOpen(true);
+
+        // Update the resource (add the new site to the webs array real time)
+        if (allUserDataResource) {
+          const currentData = allUserDataResource.read();
+          currentData.webs = [...currentData.webs, data[0]];
+        }
         
         // Navigate to the new site page
         router.push(`/dashboard/${data[0].id}`);
@@ -787,6 +798,7 @@ useEffect(() => {
         setIsModalOpen,
         user,
         webs,
+        setWebs,
         isSidebarOpen,
         setModalType,
         setSiteData,
@@ -804,12 +816,8 @@ useEffect(() => {
         openChangeModal,
         showNotification,
         allUserDataResource,
-/*         userResource,
-        sitesResource,
-        setSitesResource,
-        createSitesResource, */
     };
-
+   
     return (
         <DashboardContext.Provider value={contextProps}>
             <div className="app-container">

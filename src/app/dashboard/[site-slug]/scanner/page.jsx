@@ -2,8 +2,13 @@
 
 import './scanner.css';
 import { useParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Scan from '@components/scan/Scan.jsx';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
+import { ScanButton } from './ScanButton';
+
+
+
 
 // tridimensional array with default scan results grouped by category
 const defaultScanResults = [
@@ -138,11 +143,9 @@ function Home() {
                     <p className='scanner__paragraph'>In the scanner you can check all the scripts inserting cookies on your website.</p>
                 </div>
                 <div className='scanner__actions'>
-                    <button className="scanner__scan" onClick={startScan} disabled={isScanning || scanCount >= MAX_SCANS}>
-                        {isScanning ? (
-                            <Scan isScanning={isScanning} onlyBar key={scanSession} />
-                        ) : 'Scan'}
-                    </button>
+                    <Suspense fallback={<PlanSkeleton />}>
+                        <ScanButton isScanning={isScanning} scanCount={scanCount} startScan={startScan} scanSession={scanSession} MAX_SCANS={MAX_SCANS} />
+                    </Suspense>
                     <div className="scanner__monthly">
                         <div className='scanner__monthly-wrapper'>
                             <span className="scanner__monthly-label">Monthly Scans</span>
@@ -173,7 +176,9 @@ function Home() {
                         ) : (
                             <>
                                 <div className="scanner__main-box-text">Scan your website for the first time<br/>to see all the scripts inserting cookies</div>
-                                <button className="scanner__scan" onClick={startScan} disabled={isScanning || scanCount >= MAX_SCANS}>Scan</button>
+                                <Suspense fallback={<PlanSkeleton />}>
+                                    <ScanButton isScanning={isScanning} scanCount={scanCount} startScan={startScan} scanSession={scanSession} MAX_SCANS={MAX_SCANS} />
+                                </Suspense>
                             </>
                         )}
                     </div>

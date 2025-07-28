@@ -434,6 +434,12 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                       )
                     );
                   }
+                  if (allUserDataResource) {
+                    const currentData = allUserDataResource.read();
+                    currentData.webs = currentData.webs.map(web =>
+                        web.id === updatedSite.id ? { ...web, ...updateData } : web
+                    );
+                }
                 
                 if (showNotification) {
                     showNotification('Site settings updated successfully!', 'top', true);
@@ -490,7 +496,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                         successMessage = 'Updated successfully!';
                 }
                 if (changeType === 'newsite') {
-                    showNotification(successMessage, 'bottom', true);
+                    showNotification(successMessage, 'top', true);
                 } else {
                     showNotification(successMessage, 'top', false);
                 }

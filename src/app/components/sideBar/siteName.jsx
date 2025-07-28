@@ -8,12 +8,9 @@ export const SiteName = ({siteSlug}) => {
 
   const {webs} = allUserDataResource.read();
 
+  if(!siteSlug || !webs || !Array.isArray(webs)) return null;
   
-
-    
- 
-
-  const site = webs.find(web => web.slug === siteSlug);
+  const site = webs.find(web => web.id === siteSlug);
 
 
   return (

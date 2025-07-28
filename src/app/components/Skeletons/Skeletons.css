@@ -1,0 +1,307 @@
+/* Intallation */
+
+.installationSkeleton__container {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    border: 1px solid gainsboro;
+    padding: 20px;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.installationSkeleton__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    height: 46px;
+    width: 100%;
+}
+
+.installationSkeleton__title {
+    width: 99px;
+    height: 24px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+
+.installationSkeleton__button {
+    width: 42px;
+    height: 26px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+
+.installationSkeleton__subtitle {
+    width: 50%;
+    height: 15px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+
+.installationSkeleton__script {
+    width: 100%;
+    height: 35px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+.installationSkeleton__divider {
+    height: 1px;
+    width: 100%;
+    background-color: gainsboro;
+    margin: 10px 0;
+}
+
+.installationSkeleton__footer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.installationSkeleton__card {
+    width: 50%;
+    height: 112px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+
+/* Scanner Overview */
+
+.scannerOverviewSkeleton {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    border: 1px solid gainsboro;
+    padding: 20px;
+}
+.scannerOverviewSkeleton__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+.scannerOverviewSkeleton__title {
+    width: 118px;
+    height: 17px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+.scannerOverviewSkeleton__button {
+    width: 43px;
+    height: 26px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+.scannerOverviewSkeleton__content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 30px;
+}
+.scannerOverviewSkeleton__item {
+    width: 100%;
+    height: 15px;
+    background-color: gainsboro;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+.scannerOverviewSkeleton__footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.scannerOverviewSkeleton__scanner {
+    width: 200px;
+    height: 15px;
+    background-color: gainsboro;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* Site Usage */
+
+.siteUsageSkeleton {
+    width: 20%;
+    height: 100%;
+    border-radius: 16px;
+    border: 1px solid gainsboro;
+    padding: 15px;
+    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+   
+}
+.siteUsageSkeleton__header {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    gap: 10px;
+}
+.siteUsageSkeleton__title {
+    width: 68px;
+    height: 17px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+.siteUsageSkeleton__button {
+    width: 33px;
+    height: 22px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+
+.siteUsageSkeleton__content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+}
+.siteUsageSkeleton__content-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.siteUsageSkeleton__subtitle {
+    width: 130px;
+    height: 20px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+.siteUsageSkeleton__usage {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.siteUsageSkeleton__item {
+    width: 100%;
+    height: 15px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+.siteUsageSkeleton__footer {
+    width: 100%;
+    height: 25px;
+    background-color: gainsboro;
+    border-radius: 8px;
+}
+
+/* Comply Health */
+
+.complyHealthSkeleton {
+    width: 20%;
+    height: 100%;
+    border-radius: 16px;
+    border: 1px solid gainsboro;
+    padding: 15px;
+    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.complyHealthSkeleton__header {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    gap: 10px;
+}
+.complyHealthSkeleton__title {
+    width: 94.5px;
+    height: 17px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+.complyHealthSkeleton__content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+.complyHealthSkeleton__circle {
+    width: 96px;
+    height: 96px;
+    background-color: gainsboro;
+    border-radius: 50%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.complyHealthSkeleton__item {
+    width: 100%;
+    height: 15px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+/* Analytics */
+.analyticsSkeleton {
+    width: 60%;
+    height: 100%;
+    border-radius: 16px;
+    border: 1px solid gainsboro;
+    padding: 15px;
+    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    display: flex;
+    flex-direction: column;
+}
+.analyticsSkeleton__header {
+    display: flex;
+    height: fit-content;
+    width: 100%;
+    flex-direction: row;
+
+}
+.analyticsSkeleton__title {
+    width: 60px;
+    height: 17px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+.analyticsSkeleton__content {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+.analyticsSkeleton__analytics {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.analyticsSkeleton__circle {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border-radius: 100%;
+    border: 20px solid gainsboro;
+}
+.analyticsSkeleton__cookies {
+    padding-top: 40px;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+}
+.analyticsSkeleton__item {
+    width: 100%;
+    height: 20px;
+    background-color: gainsboro;
+    border-radius: 10px;
+}

@@ -6,11 +6,7 @@ import { SitesSkeleton } from '../Skeletons/SitesSkeleton';
 
 export function SitesList({ searchQuery, openChangeModal, setIsModalOpen, setModalType, showNotification, isSidebarOpen, isModalOpen, isDropdownOpen, setIsDropdownOpen, siteData, setSiteData, toggleSidebar, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModalSettings, isSidebarMobile, windowWidth, setIsSidebarMobile, sortedSites, isGridView }) {
     const { allUserDataResource } = useDashboard();
-    if(!allUserDataResource) {
-        return (
-                <SitesSkeleton/>
-        );
-    }
+    if(!allUserDataResource) return <SitesSkeleton/>;
     const { webs, user } = allUserDataResource.read();
 
 
