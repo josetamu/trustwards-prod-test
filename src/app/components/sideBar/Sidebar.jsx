@@ -153,7 +153,6 @@ export function Sidebar({
     checkSitePicture,
     SiteStyle,
     openChangeModal,
-    openChangeModalSettings,
     showNotification,
     isChangeModalOpen,
     isSidebarMobile,
@@ -171,8 +170,7 @@ export function Sidebar({
     const sidebarContainerRef = useRef(null);
     const sidebarActionRef = useRef(null);
     const searchContainerRef = useRef(null);
-/*     const { sitesResource } = useDashboard();
-    const sites = sitesResource ? sitesResource.read() || [] : []; */
+
 
 
     // Add useEffect to handle window width

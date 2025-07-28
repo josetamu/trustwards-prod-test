@@ -48,6 +48,7 @@ System selected: use prefers-color-scheme in CSS (data-themes will override it)
   --sidebar-width-open: 200px;
   --sidebar-width-close: 75px;
   --sidebar-font-size: 14px;
+  --skeleton-color: gainsboro;
 
   /*App*/
   --sidebar-background: #F5F5F5;
@@ -176,6 +177,7 @@ html[data-theme="dark"] {
   --wrappers-fresco-color: #202020;
   --wrappers-strong-color: #2B2B2B;
   --logo-background: #404040;
+  --skeleton-color: gray;
 
   /*Dashboard Hello Grid*/
   --dashboard-hello-grid-heading-color: #FFFFFF;

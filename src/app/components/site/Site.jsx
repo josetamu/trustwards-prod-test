@@ -112,11 +112,6 @@ export const Site = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-/* 
-  const { sitesResource } = useDashboard();
-  const sites = sitesResource.read();
-  const site = sites.find(s => s.id === id); */
-
 
 
   // Handle site delete (list mode)

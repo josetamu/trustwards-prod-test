@@ -154,12 +154,7 @@
     padding: 5px;
 }
 
-.plan-skeleton{
-    width: 50px;
-    height: 20px;
-    border-radius: 5px;
-    background-color: gainsboro;
-}
+
 
 
 @media (max-width: 767px) {

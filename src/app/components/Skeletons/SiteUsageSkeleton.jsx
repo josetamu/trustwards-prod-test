@@ -3,7 +3,7 @@ import './Skeletons.css';
 
 export const SiteUsageSkeleton = () => {
     return (
-        <div className="siteUsageSkeleton">
+        <div className="siteUsageSkeleton skeleton-animate-pulse">
             <div className="siteUsageSkeleton__header">
                 <span className="siteUsageSkeleton__title"></span>
                 <span className="siteUsageSkeleton__button"></span>

@@ -15,8 +15,7 @@ import { SitesSkeleton } from '../Skeletons/SitesSkeleton';
 export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings, showNotification}) => {
   const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
   const [isAscending, setIsAscending] = useState(true);
-/*   const { sitesResource } = useDashboard();
-  const sites = sitesResource ? sitesResource.read() || [] : []; */
+
 
   const [isGridView, setIsGridView] = useState(true);
   const [isGridViewMounted, setIsGridViewMounted] = useState(false);

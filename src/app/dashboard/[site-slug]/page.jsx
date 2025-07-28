@@ -5,11 +5,6 @@ import './scanner/scanner.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '../layout';
 import { useState, useEffect, Suspense } from 'react';
-import ScriptCopy from '../../components/ScriptCopy/ScriptCopy';
-import { ScanButton } from './scanner/ScanButton';
-import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
-import Link from 'next/link';
-import Scan from '@components/scan/Scan.jsx';
 import { supabase } from '../../../supabase/supabaseClient.js';
 import { HomeInstallation } from './homeComponents/HomeInstallation';
 import { HomeInstallationSkeleton } from '@components/Skeletons/HomeInstallationSkeleton';
@@ -139,18 +134,6 @@ const noInstalled = () => {
         )
     }
 }
-
-
-
-
-//variables for the comply health
-
-
-
-
-
-
-
 
 
     return (

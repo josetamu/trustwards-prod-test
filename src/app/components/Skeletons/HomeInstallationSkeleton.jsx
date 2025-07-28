@@ -3,7 +3,7 @@ import './Skeletons.css';
 export const HomeInstallationSkeleton = () => {
     return (
 
-        <div className='installationSkeleton__container'>
+        <div className='installationSkeleton__container skeleton-animate-pulse'>
             <div className='installationSkeleton__header'>
                 <span className='installationSkeleton__title'></span>
                 <span className='installationSkeleton__button'></span>

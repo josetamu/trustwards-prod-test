@@ -116,31 +116,6 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
     }
   }, [user]);
 
-
-  //function to reset password
-  /* const resetPassword = async () => {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: 'http://localhost:5173/reset-password'
-      });
-  } */
-
-  //function to logout
-/*   const userLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if(error) throw error;
-    setUser(null);
-    setUserSettings(null); 
-
-   
-    await supabase.auth.signOut();
-    window.location.reload(); // o redirige a login 
-
-    console.log('logout');
-    window.location.reload();
-    
-      
-  } */
-
   return (
       <>
        <div className="modalAccount">

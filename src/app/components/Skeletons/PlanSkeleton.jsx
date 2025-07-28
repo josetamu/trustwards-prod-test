@@ -1,7 +1,10 @@
-export const PlanSkeleton = ({isSidebarOpen}) => {
+import './Skeletons.css';
+
+
+export const PlanSkeleton = ({}) => {
     return (
         <>
-            <div className="plan-skeleton"></div>
+            <div className="plan-skeleton skeleton-animate-pulse"></div>
         </>
     )
 }

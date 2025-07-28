@@ -1,6 +1,6 @@
 export const ScannerOverviewSkeleton = () => {
     return (
-        <div className="scannerOverviewSkeleton">
+        <div className="scannerOverviewSkeleton skeleton-animate-pulse">
             <div className="scannerOverviewSkeleton__header">
                 <span className="scannerOverviewSkeleton__title"></span>
                 <span className="scannerOverviewSkeleton__button"></span>

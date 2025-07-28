@@ -38,10 +38,9 @@ function DashboardLayout({ children }) {
 
   // DB state
   const [userSettings, setUserSettings] = useState(null);
-/*   const [user, setUser] = useState(null); */
-  /* const [webs, setWebs] = useState([]); */
+
   const [siteData, setSiteData] = useState(null);
-/*   const [appearanceSettings, setAppearanceSettings] = useState(null); */
+
 
   // ModalChange state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,12 +60,6 @@ function DashboardLayout({ children }) {
   // Browser state to handle SSR
   const [isBrowser, setIsBrowser] = useState(false);
 
-  
-    //userResource keep the promise to get the user data from the database
-/*     const userResourceRef = useRef({ userId: null, resource: null });
-    const [userResource, setUserResource] = useState(null);
-    const [sitesResource, setSitesResource] = useState(null);
-    const sitesResourceRef = useRef({ userId: null, resource: null }); */
 
     //NEW BD CODE
     const [user, setUser] = useState(null);
@@ -86,7 +79,7 @@ function DashboardLayout({ children }) {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
     const [userResult, sitesResult, appearanceResult] = await Promise.allSettled([
       supabase.from('User').select('*').eq('id', userId).single(),
       supabase.from('Site').select('*').eq('userid', userId),
@@ -128,43 +121,6 @@ function createAllUserDataResource(userId) {
     }
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //NEW BD CODE
-
 
   // We set the appearance settings when they are loaded. appearanceSettings is a object with the settings of the user(database)
   // Theme is controlled with next-themes and Accent Color is an attribute of the html tag
@@ -274,38 +230,6 @@ const SiteStyle = (site) => {
   };
 
 
-  // We get the user data from the database
-/*   const getUser = async (userId) => {
-    if (!userId) {
-      setUser(null);
-      return null; 
-    }
-    const {data: userData, error: dbError} = await supabase
-    .from('User')
-    .select('*')
-    .eq('id', userId)
-    .single();
-    if(dbError) {
-      console.log(dbError);
-      setUser(null);
-      return null; 
-    } else {
-      setUser(userData);
-      return userData;
-    }
-  }; */
-
-
-  // We get the appearance settings from the database
-/*   const getAppearanceSettings = async (userId) => {
-    const { data, error } = await supabase
-      .from('Appearance')
-      .select('*')
-      .eq('userid', userId)
-      .single();
-    setAppearanceSettings(data);
-  }; */
-
   // Function to update the appearance settings in the database
   const updateAppearanceSettings = async (settings) => {
     if (!user?.id) return;
@@ -320,27 +244,7 @@ const SiteStyle = (site) => {
     }
   };
 
-    // Function to fetch sites from Supabase. Also used to realtime update the sites when a new site is created
-/*      const fetchSites = async (userId) => {
-      if (!userId) {
-        setWebs([]);
-        return [];
-      }
-      const { data, error } = await supabase
-        .from('Site')
-        .select('*')
-        .eq('userid', userId);
-  
-      if (error) {
-        console.error('Error fetching sites:', error);
-        return [];
-      } else {
-        setWebs(data);
-        return data;
-      }
-    };  */
-
-
+   
   // Remove a site from the webs state. 
   const handleDeleteSite = (id) => {
     setWebs(prev => prev.filter(site => site.id !== id));
@@ -356,46 +260,7 @@ const SiteStyle = (site) => {
   }, []);
 
 
-  //We get the user data from the database when the user is authenticated
-
-   /*   useEffect(() => {
-          const { data: authListener } = supabase.auth.onAuthStateChange(
-            (event, session) => {
-              if (session) {
-                // Solo recrea el resource si el userId cambia
-                if (userResourceRef.current.userId !== session.user.id) {
-                  const resource = createUserResource(session.user.id);
-                  userResourceRef.current = { userId: session.user.id, resource };
-                  setUserResource(resource);
-
-                  const sitesResource = createSitesResource(session.user.id);
-                  sitesResourceRef.current = { userId: session.user.id, resource: sitesResource };
-                  setSitesResource(sitesResource);
-                } else {
-                  setUserResource(userResourceRef.current.resource);
-                  setSitesResource(sitesResourceRef.current.resource);
-                }
-                getUser(session.user.id);
-                fetchSites(session.user.id); 
-                getAppearanceSettings(session.user.id);
-              } else {
-                userResourceRef.current = { userId: null, resource: null };
-                sitesResourceRef.current = { userId: null, resource: null };
-                setUserResource(null);
-                setSitesResource(null);
-                getUser(null);
-                setWebs([]); 
-                setAppearanceSettings(null);
-              }
-            }
-          );
-          return () => {
-            authListener?.subscription.unsubscribe();
-          };
-        }, []); */
-
-        //NEW BD CODE
-        
+  //set the user data from the database
     useEffect(() =>{
       const { data: authListener } = supabase.auth.onAuthStateChange(
         (event, session) => {
@@ -418,52 +283,6 @@ const SiteStyle = (site) => {
       };
     }, []);                                                                                                               
 
-
-      // promise to get the user data from the database
-  /*     function createUserResource(userId) {
-        let status = 'pending';
-        let result;
-        const suspender = getUser(userId).then(
-          r => {
-            status = 'success';
-            result = r;
-          },
-          e => {
-            status = 'error';
-            result = e;
-          }
-        );
-        return {
-          read() {
-            if (status === 'pending') throw suspender;
-            if (status === 'error') throw result;
-            return result;
-          }
-        };
-      } */
-
-  // promise to get the sites data from the database
- /*  function createSitesResource(userId) {
-    let status = 'pending';
-    let result;
-    const suspender = fetchSites(userId).then(
-      r => {
-        status = 'success';
-        result = r;
-      },
-      e => {
-        status = 'error';
-        result = e;
-      }
-    );
-    return {
-      read() {
-        if (status === 'pending') throw suspender;
-        if (status === 'error') throw result;
-        return result;
-      }
-    };
-  } */
 
   // Force login (only dev mode)
   useEffect(() => {
@@ -701,8 +520,6 @@ useEffect(() => {
             <ModalUser
               onClose={() => setIsModalOpen(false)}
               onSave={() => {
-                // Refresh user data after saving appearance settings
-                  /* getAppearanceSettings(user.id); // Refresh appearance settings after saving */
                   setIsModalOpen(false);
 
               
@@ -712,14 +529,12 @@ useEffect(() => {
             setAppearanceSettings={setAppearanceSettings}
             userSettings={userSettings}
             setUserSettings={setUserSettings}
-            /* getAppearanceSettings={getAppearanceSettings} */
+
             openChangeModal={openChangeModal}
             checkProfilePicture={checkProfilePicture}
             profileStyle={ProfileStyle}
             setUser={setUser}
             allUserDataResource={allUserDataResource}
-/*             setUserResource={setUserResource}
-            createUserResource={createUserResource} */
             />
           );
         case 'DeleteSite':
@@ -745,8 +560,6 @@ useEffect(() => {
           <ModalUser
             onClose={() => setIsModalOpen(false)}
             onSave={() => {
-              // Refresh user data after saving appearance settings
-                /* getAppearanceSettings(user.id); // Refresh appearance settings after saving */
                 setIsModalOpen(false);
               
             }}
@@ -757,7 +570,6 @@ useEffect(() => {
             setAppearanceSettings={setAppearanceSettings}
             userSettings={userSettings}
             setUserSettings={setUserSettings}
-            /* getAppearanceSettings={getAppearanceSettings} */
             openChangeModal={openChangeModal}
             checkProfilePicture={checkProfilePicture}
             profileStyle={ProfileStyle}
@@ -777,7 +589,6 @@ useEffect(() => {
               setAppearanceSettings={setAppearanceSettings}
               userSettings={userSettings}
               setUserSettings={setUserSettings}
-              /* getAppearanceSettings={getAppearanceSettings} */
               openChangeModal={openChangeModal}
               checkProfilePicture={checkProfilePicture}
               profileStyle={ProfileStyle}
@@ -804,7 +615,6 @@ useEffect(() => {
         setSiteData,
         siteData,
         setIsDropdownOpen,
-        /* fetchSites, */
         checkSitePicture,
         SiteStyle,
         showNotification,
@@ -882,14 +692,10 @@ useEffect(() => {
                         showNotification={showNotification}
                         siteData={siteData}
                         setSiteData={setSiteData}
-                        /* fetchSites={fetchSites} */
                         setWebs={setWebs}
                         createNewSite={createNewSite}
                         allUserDataResource={allUserDataResource}
-/*                         setUserResource={setUserResource}
-                        createUserResource={createUserResource}
-                        setSitesResource={setSitesResource}
-                        createSitesResource={createSitesResource} */
+
                     />
                     </ModalContainer>
                     <Notification

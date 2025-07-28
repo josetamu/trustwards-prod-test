@@ -3,7 +3,7 @@ import './Skeletons.css';
 
 export const ComplyHealthSkeleton = () => {
     return (
-        <div className="complyHealthSkeleton">
+        <div className="complyHealthSkeleton skeleton-animate-pulse">
             <div className="complyHealthSkeleton__header">
                 <span className="complyHealthSkeleton__title"></span>
             </div>

@@ -177,18 +177,7 @@
   .sidebar--mobile .user:hover .user__profile{
     background-color: var(--hover-fresco-color);
   }
-  .user__name-skeleton {
-    width: 100px;
-    height: 20px;
-    background-color: gainsboro;
-    border-radius: 4px;
-  }
-  .user__avatar-skeleton {
-    width: 25px;
-    height: 25px;
-    background-color: gainsboro;
-    border-radius: 100%;
-  }
+  
 
   @media (max-width: 767px) {
   .sidebar--mobile .user__header__name{
