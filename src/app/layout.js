@@ -7,7 +7,6 @@ export default async function RootLayout({ children }) {
     /*  Note! If you do not add suppressHydrationWarning to your <html> you will get warnings because next-themes updates that element. 
         This property only applies one level deep, so it won't block hydration warnings on other elements. 
     */
-   
    //Force login (only dev mode)
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
@@ -28,10 +27,10 @@ export default async function RootLayout({ children }) {
     .eq('userid', user.id)
     .single();
 
-  if (appearance) {
-    // Remove the window check from server-side
-    initialSidebarState = appearance?.Sidebar; 
-  }
+    if (appearance) {
+        // Remove the window check from server-side
+        initialSidebarState = appearance?.Sidebar; 
+    }
       
    }
    
@@ -41,7 +40,7 @@ export default async function RootLayout({ children }) {
                 <title>React App with Next.js</title>
             </head>
             <body>
-                <ThemeProvider> {/* Client component from next-themes */}
+                <ThemeProvider>
                     <SidebarSettingsProvider initialState={initialSidebarState}>
                         <div id="root">{children}</div>
                     </SidebarSettingsProvider>

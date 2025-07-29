@@ -18,7 +18,7 @@
     padding: 8px 12px;
 
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--font-size-medium);
     color: #FFFFFF;
 
     border-radius: 8px;

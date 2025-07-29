@@ -1,0 +1,11 @@
+/* Whole Builder */
+.tw-builder{
+    background-color: var(--builder-background);
+
+    display: grid;
+    grid-template-columns: var(--panels-width) 1fr var(--panels-width);
+    gap: 10px;
+
+    height: 100dvh;
+    padding: 10px;
+}

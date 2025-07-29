@@ -33,12 +33,10 @@ function DashboardHeader() {
 
 
     const SiteMenu = ({ setIsModalOpen, setModalType, siteData, setIsDropdownOpen, openChangeModalSettings}) => {
+        const router = useRouter();
         return (
           <>
-            <button className="dropdown__item" onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}>
+            <Link href={`/builder/${siteData.id}`} className="dropdown__item">
               <span className="dropdown__icon">
                 <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <path d="M0 0H14V2.72727H0V0Z" fill="currentColor"/>
@@ -47,7 +45,7 @@ function DashboardHeader() {
                 </svg>
       </span>
               Builder
-            </button>
+            </Link>
             <button className="dropdown__item" onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

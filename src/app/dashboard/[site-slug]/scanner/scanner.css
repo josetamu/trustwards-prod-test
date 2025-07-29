@@ -1,7 +1,7 @@
 .scanner__wrapper {
   width: 100%;
   max-width: 992px;
-  padding: 50px 25px 25px 25px;
+  padding: 50px 20px 25px 20px;
   gap: 20px;
   display: flex;
   flex-direction: column;
@@ -10,7 +10,7 @@
 .scanner__top-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
 .scanner__header {
@@ -20,18 +20,18 @@
 }
 
 .scanner__title {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: var(--font-heading);
+  font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
-  color: var(--body-semistrong-color);
+  color: var(--body-strong-color);
 }
 
 .scanner__paragraph {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight);
   color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing-negative);
-  max-width: 250px;
+  max-width: 300px;
 }
 
 .scanner__actions {
@@ -54,9 +54,8 @@
   box-shadow: var(--blue-button-shadow);
   border: none;
   border-radius: 8px;
-  padding: 7px 10px;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
   cursor: pointer;
 }
@@ -81,14 +80,14 @@
 }
 
 .scanner__monthly-label {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--body-fresco-color);
 }
 .scanner__monthly-count {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--body-semistrong-color);
 }
@@ -153,8 +152,8 @@
 }
 
 .scanner__main-box-text {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--body-fresco-color);
 }
@@ -177,8 +176,8 @@
 }
 
 .scanner__card-title {
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: var(--font-weight);
+  font-size: var(--font-size-big);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--body-semistrong-color);
 }
@@ -187,17 +186,19 @@
   position: absolute;
   top: 18px;
   right: 24px;
-  font-size: 10px;
-  color: var(--body-light-color);;
+
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: var(--letter-spacing-negative);
-  background: var(--wrappers-fresco-color);
-  border-radius: 4px;
-  padding: 3px;
+  color: var( --site-pro-toggle-text-color);
+  background-color: var(--view-toggle-background);
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: uppercase;
 }
 
 .scanner__card-divider {
-  height: 0.8px;
+  height: 1px;
   background: var(--border-strong-color);
   width: 100%;
   border: none;
@@ -218,8 +219,8 @@
 }
 
 .scanner__card-table-title {
-  font-weight: 600;
-  font-size: 12px;
+  font-weight: var(--font-weight);
+  font-size: var(--font-size-small);
   color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing-negative);
   padding: 8px 0;
@@ -227,22 +228,23 @@
 }
 .scanner__card-table td {
   padding: 8px 20px 8px 0;
+  white-space: nowrap;
 }
 
 .scanner__card-table-script {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight);
   color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing-negative);
 }
 
 .scanner__card-status--tracked {
   color: var(--accent-bg-color);
-  font-weight: 600;
+  font-weight: var(--font-weight);
 }
 .scanner__card-status--untracked {
   color: var(--warning-color);
-  font-weight: 600;
+  font-weight: var(--font-weight);
 }
 
 /* Fade animation for scan results */
