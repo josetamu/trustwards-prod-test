@@ -14,7 +14,7 @@ export const View = ({ isGridView, onViewChange }) => {
   return (
     <div className="view__toggle">
       <button
-        className={`view__option${isGridView ? ' active' : ''}`}
+        className={`view__option ${isGridView ? 'active' : ''}`}
         onClick={() => handleView(true)}
         aria-label="Grid view"
         type="button"
@@ -28,7 +28,7 @@ export const View = ({ isGridView, onViewChange }) => {
         </svg>
       </button>
       <button
-        className={`view__option${!isGridView ? ' active' : ''}`}
+        className={`view__option ${!isGridView ? 'active' : ''}`}
         onClick={() => handleView(false)}
         aria-label="List view"
         type="button"

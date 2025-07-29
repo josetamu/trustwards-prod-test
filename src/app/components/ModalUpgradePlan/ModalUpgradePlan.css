@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    height: 100%;
+    height: fit-content;
     padding: 20px;
 }
 
@@ -14,13 +14,13 @@
 }
 
 .modal-upgrade-plan__title{
-    font-size: var(--font-size-medium);
-    font-weight: 600;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     color: var(--body-strong-color);
 }
 
 .modal-upgrade-plan__info{
-    font-size: 10px;
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     min-width: 200px;
@@ -70,8 +70,8 @@
 }
 
 .modal-upgrade-plan__yearly-text{
-    font-size: 10px;
-    font-weight: 600;
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
     color: var(--body-light-color);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -96,9 +96,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(227, 227, 227, 1);
+    background-color: var(--body-light-color);
     border-radius: 34px;
-    transition: .4s;
+    transition: .2s;
     overflow: hidden;
 }
   
@@ -107,10 +107,10 @@
     content: "";
     height: 12px;
     width: 12px;
-    left: 3px;
+    left: 2px;
     bottom: 2px;
     background-color: white;
-    transition: .4s;
+    transition: .2s;
     border-radius: 50%;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
 }
@@ -120,11 +120,11 @@
 }
   
 .modal-upgrade-plan__input:checked + .modal-upgrade-plan__slider:before {
-    transform: translateX(8px);
+    transform: translateX(10px);
 }
 
 .modal-upgrade-plan__divider{
-    height: 0.8px;
+    height: 1px;
     background: var(--border-strong-color);
     margin: 4px 0;
     width: 100%;
@@ -132,8 +132,8 @@
 }
 
 .modal-upgrade-plan__plans{
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 10px;
 }
 
@@ -144,8 +144,10 @@
 }
 
 .modal-upgrade-plan__plan__title{
-    font-size: 13px;
-    font-weight: 600;
+    position: relative;
+    width: fit-content;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     display: flex;
     flex-direction: row;
@@ -154,47 +156,50 @@
 }
 
 .modal-upgrade-plan__plan__title--popular{
+    position: absolute;
+    left: calc(100% + 5px);
     color: var(--accent-bg-color);
-    font-size: 8px;
+    font-size: var(--font-size-mini);
     background-color: var(--upgrade-bg-popular);
     padding: 2px 3px;
     border-radius: 3px;
     align-self: center;
-    font-weight: 600;
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal-upgrade-plan__price{
     font-size: 24px;
-    font-weight: 600;
+    font-weight: var(--font-weight);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal-upgrade-plan__currency{
-    font-size: 12px;
+    font-size: var(--font-size-mini);
     color: var(--body-strong-color);
+    margin-left: 1px;
 }
 
 .modal-upgrade-plan__plan__nsites{
-    font-size: 11px;
+    font-size: var(--font-size-mini);
     color: var(--body-semistrong-color);
     letter-spacing: var(--letter-spacing-negative);
-    font-weight: 600;
+    font-weight: var(--font-weight);
 }
 
 .modal-upgrade-plan__plan__nsites--unlimited{
-    font-size: 11px;
+    font-size: var(--font-size-mini);
     color: var(--accent-bg-color);
-    font-weight: 600;
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal-upgrade-plan__plan__description{
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     color: var(--body-light-color);
     letter-spacing: var(--letter-spacing-negative);
-    font-weight: 600;
+    font-weight: var(--font-weight);
     min-width: 116px;
 }
 
@@ -209,12 +214,16 @@
     padding: 5px 0;
     border-radius: 7px;
     cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.modalUpgradePlan__subscribe:hover{
+    background-color: var(--secondary-button-border-color);
 }
 
 .modal-upgrade-plan__subscribe__title{
-    font-size: 11px;
+    font-size: var(--font-size-mini);
     color: var(--body-strong-color);
-    font-weight: 600;
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -222,6 +231,9 @@
     background-color: var(--accent-bg-color);
     box-shadow: var(--blue-button-shadow);
     border: none;
+}
+.modalUpgradePlan__subscribe--popular:hover{
+    background-color: var(--accent-bg-color);
 }
 
 .modal-upgrade-plan__subscribe__title--popular{
@@ -239,18 +251,16 @@
 }
 
 .modal-upgrade-plan__site__title{
-    font-size: 11px;
-    font-weight: 600;
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal-upgrade-plan__site__infos{
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 10px;
-    align-items: flex-start;
-    justify-content: space-between;
     width: 100%;
 }
 
@@ -266,13 +276,13 @@
     display: flex;
     flex-direction: row;
     gap: 5px;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center; 
 }
 
 .modal-upgrade-plan__site__info__title{
-    font-size: var(--font-size-small);
-    font-weight: 600;
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -310,21 +320,34 @@
 
 
 @media (max-width: 767px) {
+    .modal-upgrade-plan__header{
+        padding-bottom: 10px;
+    }
+
     .modal-upgrade-plan__plans{
-        flex-direction: column;
-        justify-content: center;
-        gap: 40px;
+        grid-template-columns: 1fr;
+        gap: 0px;
     }
 
     .modal-upgrade-plan__plan{
         border-top: 1px solid var(--border-strong-color);
-        padding-top: 20px;
+        padding: 20px 0px;
     }
 
     .modal-upgrade-plan__site{
         width: 100%;
         margin-top: 10px;
-        padding-bottom: 20px;
+        gap: 20px;
+    }
+
+    .modal-upgrade-plan__sub{
+        gap: 12px;
+    }
+
+    .modal-upgrade-plan__site__title{
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight);
+        color: var(--body-strong-color);
     }
 
     .modal-upgrade-plan__divider{
@@ -332,19 +355,23 @@
     }
 
     .modal-upgrade-plan__site__infos{
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 30px;
+        grid-template-columns: 1fr;
+        gap: 0px;
+    }
+
+    .modal-upgrade-plan__info__container{
+        padding: 20px 0;
+        width: 100%;
+        border-top: 1px solid var(--border-strong-color);
     }
 
     .modal-upgrade-plan__info__container:nth-child(1)::before{
         content: "Free";
         width: 100%;
         height: 1px;
-        margin-top: 5px;
         margin-bottom: 15px;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight);
         color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
@@ -353,10 +380,9 @@
         content: "Solo";
         width: 100%;
         height: 1px;
-        margin-top: 5px;
         margin-bottom: 15px;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight);
         color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
@@ -365,10 +391,9 @@
         content: "Scale";
         width: 100%;
         height: 1px;
-        margin-top: 5px;
         margin-bottom: 15px;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight);
         color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
@@ -377,10 +402,9 @@
         content: "Trustwards";
         width: 100%;
         height: 1px;
-        margin-top: 5px;
         margin-bottom: 15px;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight);
         color: var(--accent-bg-color);
         letter-spacing: var(--letter-spacing-negative);
     }

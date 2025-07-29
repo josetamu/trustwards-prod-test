@@ -1,9 +1,6 @@
 'use client'
 
-import './dashboard-root.css'
-
 import { Sites } from '@components/sites/Sites'  
-import './dashboard.css'
   
 
 import { useDashboard } from './layout'

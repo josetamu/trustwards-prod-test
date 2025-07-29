@@ -3,10 +3,7 @@ import { NewSite } from '../NewSite/NewSite';
 import { SidebarSites } from '../sidebarSite/SidebarSites';
 import { SidebarSiteSkeleton } from '../Skeletons/SidebarSiteSkeleton';
 
-
-
-
-export function SidebarSitesList({ searchQuery, openChangeModal, setIsModalOpen, setModalType, showNotification, isSidebarOpen, isModalOpen, isDropdownOpen, setIsDropdownOpen, siteData, setSiteData, toggleSidebar, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModalSettings, isSidebarMobile, windowWidth, setIsSidebarMobile, filteredWebs }) {
+export function SidebarSitesList({ searchQuery, openChangeModal, setIsModalOpen, setModalType, showNotification, isSidebarOpen, isModalOpen, isDropdownOpen, setIsDropdownOpen, siteData, setSiteData, toggleSidebar, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModalSettings, isSidebarMenu, setIsSidebarMenu, filteredWebs }) {
     const { allUserDataResource } = useDashboard();
 
     if(!allUserDataResource) {
@@ -61,9 +58,8 @@ export function SidebarSitesList({ searchQuery, openChangeModal, setIsModalOpen,
                             SiteStyle={SiteStyle}
                             openChangeModal={openChangeModal}
                             openChangeModalSettings={openChangeModalSettings}
-                            isSidebarMobile={isSidebarMobile}
-                            windowWidth={windowWidth}
-                            setIsSidebarMobile={setIsSidebarMobile}
+                            isSidebarMenu={isSidebarMenu}
+                            setIsSidebarMenu={setIsSidebarMenu}
                         />
                     
                 </div>

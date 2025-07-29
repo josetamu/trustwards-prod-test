@@ -1,7 +1,7 @@
 .modal-appearance__content{
     display: flex;
     flex-direction: column;
-    padding: 15px;
+    padding: 20px;
     width: 100%;
     gap: 20px;
 }
@@ -19,20 +19,20 @@
 }
 
 .modal-appearance__title{
-    font-size: 14px;
+    font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal-appearance__description{
-    font-size: 11px;
+    font-size: var(--font-size-mini);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal-appearance__divider{
-    height: 0.8px;
+    height: 1px;
     background: rgba(224, 224, 224, 1);
     margin: 4px 0;
     width: 100%;
@@ -47,9 +47,9 @@
 }
 
 .modal-appearance__mid__title{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
-    color: var(--body-strong-color);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -80,7 +80,7 @@
 }
 
 .modal-appearance__choice__title{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
@@ -163,35 +163,35 @@
     gap: 15px;
 }
 
-.modal-appearance__ancent-color{
+.modal-appearance__accent-color{
     display: flex;
     flex-direction: row;
     gap: 15px;
     justify-content: space-between;
 }
 
-.modal-appearance__ancent-color__choices{
+.modal-appearance__accent-color__choices{
     display: flex;
     flex-direction: row;
     gap: 15px;
 }
 
-.modal-appearance__ancent-color__choice{
+.modal-appearance__accent-color__choice{
     width: 15px;
     height: 15px;
     border-radius: 50%;
     cursor: pointer;
 }
 
-.modal-appearance__ancent-color__title{
-    font-size: var(--font-size-medium);
+.modal-appearance__accent-color__title{
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
-    color: var(--body-strong-color);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
     border: none;
 }
 
-.modal-appearance__ancent-color__choice--green{
+.modal-appearance__accent-color__choice--green{
     background-color: rgba(60, 184, 44, 1);
     box-shadow:
     0  1px 1px rgba(123, 216, 111, 1) inset, 
@@ -199,7 +199,7 @@
     0 -7px 4px 0 rgba(60, 184, 44, 1) inset;  
 }
 
-.modal-appearance__ancent-color__choice--purple{
+.modal-appearance__accent-color__choice--purple{
     background-color: rgba(99, 91, 255, 1);
     box-shadow:
     0 1px 1px rgba(136, 130, 255, 1) inset, 
@@ -207,7 +207,7 @@
     0 -7px 4px 0 rgba(89, 81, 235, 1) inset;  
 }
 
-.modal-appearance__ancent-color__choice--red{
+.modal-appearance__accent-color__choice--red{
     background-color: rgba(243, 61, 61, 1);
     box-shadow:
     0 1px 1px rgba(249, 116, 116, 1) inset, 
@@ -215,7 +215,7 @@
     0 -7px 4px 0 rgba(227, 27, 27, 1) inset;  
 }
 
-.modal-appearance__ancent-color__choice--orange{
+.modal-appearance__accent-color__choice--orange{
     background-color: rgba(253, 128, 63, 1);
     box-shadow:
     0 1px 1px rgba(255, 161, 112, 1) inset, 
@@ -223,7 +223,7 @@
     0 -7px 4px 0 rgba(248, 114, 44, 1) inset;  
 }
 
-.modal-appearance__ancent-color__choice--blue{
+.modal-appearance__accent-color__choice--blue{
     background-color: rgba(0, 153, 254, 1);
     box-shadow:
     0 1px 1px rgba(87, 166, 254, 1) inset, 
@@ -231,20 +231,20 @@
     0 -7px 4px 0 rgba(4, 141, 232, 1) inset;   
 }
 
-.modal-appearance__ancent-color__save{
+.modal-appearance__accent-color__save{
     display: flex;
     justify-content: flex-end;
     align-items: center;
 }
 
-.modal-appearance__ancent-color__button{
+.modal-appearance__accent-color__button{
     width: 45px;
     padding: 10px;
     background: var(--accent-bg-color);
     border: none;
     border-radius: 7px;
     letter-spacing: var(--letter-spacing-negative);
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     color: var(--accent-color);
     cursor: pointer;
@@ -256,7 +256,7 @@
     justify-content: center;
 }  
 
-.modal-appearance__ancent-color__choice--active{
+.modal-appearance__accent-color__choice--active{
     box-shadow:
     0 0 4px var(--shadow-strong-color),    
     0 0 0 2px white,               /* Borde externo blanco */
@@ -270,9 +270,9 @@
 }
 
 .modal-appearance__reduced-motion__title{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
-    color: var(--body-strong-color);
+    color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -296,9 +296,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(227, 227, 227, 1);
+    background-color: var(--body-light-color);
     border-radius: 34px;
-    transition: .4s;
+    transition: .2s;
     overflow: hidden;
   }
   
@@ -307,10 +307,10 @@
     content: "";
     height: 12px;
     width: 12px;
-    left: 3px;
+    left: 2px;
     bottom: 2px;
     background-color: white;
-    transition: .4s;
+    transition: .2s;
     border-radius: 50%;
   }
 
@@ -322,11 +322,10 @@
   
 .modal-appearance__reduced-motion__input:checked + .modal-appearance__reduced-motion__slider {
     background-color: var(--accent-bg-color);
-    box-shadow: var(--blue-button-shadow);
   }
   
 .modal-appearance__reduced-motion__input:checked + .modal-appearance__reduced-motion__slider:before {
-    transform: translateX(8px);
+    transform: translateX(10px);
 }
 
 @media (max-width: 767px) {

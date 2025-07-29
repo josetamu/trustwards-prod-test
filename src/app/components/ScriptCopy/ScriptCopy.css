@@ -7,12 +7,10 @@
     background-color: var(--view-toggle-background);
     border-radius: 10px;
     padding: 10px;
-    border: 1px solid var(--border-color);
-
 }
 
 .script-copy__script {
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: 500;
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
@@ -28,8 +26,5 @@
 @media (max-width: 767px) {
     .script-copy__script {
         max-width: 480px;
-    }
-    .script-copy__copy{
-        width: 40px;
     }
 }

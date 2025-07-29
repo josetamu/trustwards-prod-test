@@ -12,14 +12,14 @@
   position: static;
 }
 
-.sidebar--mobile .dropdown {
+.sidebar--menu .dropdown {
   position: static;
 }
 
 /* Dropdown menu styles */
 .dropdown__menu {
   position: absolute;
-  min-width: 165px;
+  min-width: fit-content;
   background: var(--dropdown-background);
   border: 1px solid var(--border-strong-color);
   border-radius: 8px;
@@ -46,8 +46,10 @@
   color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing);
   font-weight: var(--font-weight);
-  font-size: var(--font-size-medium);
+  font-size: var(--font-size-small);
+  white-space: nowrap;
   padding: 8px 12px;
+  cursor: pointer;
 }
 .dropdown__item:hover {
   background: var(--accent-bg-color);
@@ -86,7 +88,8 @@
 
 /* Divider */
 .dropdown__divider {
-  height: 0.8px;
+  height: 1px;
+  margin: 4px 0;
   background: var(--border-strong-color);
   width: 100%;
   border: none;
@@ -136,24 +139,39 @@
   }
 }
 
+/* Sites list Dropdown */
+.site__list-right .dropdown__menu {
+  transform-origin: top right;
+  right: 0;
+  left: unset;
+}
+
+/* Sites grid Dropdown */
+@media (max-width: 992px) {
+  .sites__grid .dropdown__menu {
+    transform-origin: top right;
+    right: 0;
+    left: unset;
+  }
+}
+
 /* Sidebar Dropdown */
 .sidebar-sites-dropdown {
   position: relative;
 }
 .sidebar-sites-dropdown .dropdown__menu {
   transform-origin: top left;
-  min-width: fit-content;
 }
 @media (max-width: 767px), (max-width: 467px) {
   
-    .sidebar--mobile .sidebarSites__site .dropdown{
+    .sidebar--menu .sidebarSites__site .dropdown{
       width: 100%;
       justify-content: flex-end;
       display: flex;
     } 
 
     
-    .sidebar--mobile .sidebarSites__site .dropdown__menu{
+    .sidebar--menu .sidebarSites__site .dropdown__menu{
       left: 5%;
       width: 90%;
       transform-origin: top;
@@ -180,7 +198,8 @@
   height: 20px;
 }
 .user-dropdown .dropdown__menu {
-  bottom: calc(100% + 15px);
+  width: 100%;
+  bottom: calc(100% + 5px);
   transform-origin: bottom;
 }
 @media (max-width: 767px) {
@@ -188,4 +207,14 @@
     width: 100%;
     left: 0;
   }
+}
+
+/* Dashboard Header */
+.dashboardHeader-dropdown{
+  position: relative;
+}
+.dashboardHeader-dropdown .dropdown__menu{
+  transform-origin: top right;
+  left: unset;
+  right: 0;
 }

@@ -14,10 +14,10 @@
   gap: 5px;
 }
 .scan__progress-text {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
-  color: var(--body-semistrong-color);
+  color: var(--body-fresco-color);
 }
 .scan__progress-icon {
   color: var(--body-semistrong-color);

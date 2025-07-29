@@ -3,14 +3,15 @@
     position: fixed;
     left: 0;
     top: 0;
-    min-height: 100vh;
-    width: 100vw;
-    height: fit-content;
+    height: 100dvh;
+    width: 100%;
     background-color: var(--modal-backdrop-color);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+
+    padding: 20px;
 }
 
 
@@ -25,7 +26,11 @@
     gap: 25px;
     align-items: center;
     position: relative;
-    max-height: 493px;
+
+    overflow: hidden;
+    height: 100%;
+    max-height: fit-content;
+    will-change: opacity, transform;
 }
 
 /* Remove gap for edit actions */
@@ -34,11 +39,8 @@
 }
 
 @media (max-width: 767px) {
-    .open {
-        left: 0;
-        width: 100vw;
-    }
     .modal{
+        height: fit-content;
         max-height: 550px;
         max-width: 350px;
     }
