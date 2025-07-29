@@ -12,8 +12,8 @@ export const DashboardHeaderBuilder = ({siteSlug}) => {
 
 
     return (
-        <div className="dashboardHeader__builder">
-            <Link href={`/builder/${siteSlug}`} className="dashboardHeader__builder-text">Builder</Link>
+        <div className="dashboard-header__builder">
+            <Link href={`/builder/${siteSlug}`} className="dashboard-header__builder-text">Builder</Link>
         </div>
     );
 }

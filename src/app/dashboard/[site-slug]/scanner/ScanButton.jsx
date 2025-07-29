@@ -3,7 +3,7 @@ import PlanSkeleton from '../../../components/Skeletons/PlanSkeleton';
 import Scan from '../../../components/scan/Scan';
 import { supabase } from '../../../../supabase/supabaseClient';
 
-export const ScanButton = ({isScanning, scanCount, scanSession, MAX_SCANS, setScanDone, setScanCount, setIsScanning, setScanSession, siteSlug}) => {
+export const ScanButton = ({isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug}) => {
     const { allUserDataResource, setWebs } = useDashboard();
     if(!allUserDataResource) return <PlanSkeleton />;
     const { webs } = allUserDataResource.read();
@@ -12,10 +12,9 @@ export const ScanButton = ({isScanning, scanCount, scanSession, MAX_SCANS, setSc
     const currentScanCount = site?.Scans;
 
     const startScan = () => {
-        if (isScanning || scanCount >= MAX_SCANS) return;
+        if (isScanning || currentScanCount >= MAX_SCANS) return;
         setScanDone(false);
         setIsScanning(true);
-        setScanSession(prev => prev + 1);
     };
 
     const handleScanFinish = async () => {
@@ -30,7 +29,7 @@ export const ScanButton = ({isScanning, scanCount, scanSession, MAX_SCANS, setSc
                 .single();
 
             if (error) {
-                console.error('Error updating scan count:', error);
+                console.error('Error updating scan count:', error, siteSlug,currentScanCount,newScanCount);
                 return;
             }
 
@@ -50,7 +49,7 @@ export const ScanButton = ({isScanning, scanCount, scanSession, MAX_SCANS, setSc
 
             setIsScanning(false);
             setScanDone(true);
-            setScanCount(newScanCount);
+
             
 
         } catch (error) {
@@ -60,9 +59,9 @@ export const ScanButton = ({isScanning, scanCount, scanSession, MAX_SCANS, setSc
     };
 
     return (
-        <button className="scanner__scan" onClick={startScan} disabled={isScanning || scanCount >= MAX_SCANS}>
+        <button className={`scanner__scan ${currentScanCount >= MAX_SCANS ? 'scanner__scan--disabled' : ''}`} onClick={startScan} disabled={isScanning || currentScanCount >= MAX_SCANS}>
             {isScanning ? (
-                <Scan isScanning={isScanning} onlyBar key={scanSession} onFinish={handleScanFinish} />
+                <Scan isScanning={isScanning} onlyBar onFinish={handleScanFinish} />
             ) : 'Scan'}
         </button>
     );

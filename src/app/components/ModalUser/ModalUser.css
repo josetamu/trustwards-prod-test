@@ -1,4 +1,4 @@
-.modalUser{
+.modal-user{
     display: flex;
     flex-direction: row;
     gap: 5px;
@@ -7,13 +7,13 @@
     max-height: 350px;
     width: 100%;
 }
-.modalUser--upgrade{
+.modal-user--upgrade{
     max-height: fit-content;
 }
 .modal:has(> .modalUser--upgrade){
     width: 100%;
 }
-.modalUser__aside{
+.modal-user__aside{
     display: flex;
     flex-direction: column;
     min-width: 157px;
@@ -21,23 +21,23 @@
     background-color: var(--modal-sidebar-background);
     border-radius: 16px 0px 0px 16px;
     padding: 15px;
-
     overflow: auto;
 }
-.modalUser__aside::-webkit-scrollbar {
+.modal-user__aside::-webkit-scrollbar {
     width: 4px;
     height: 4px;
 }
-.modalUser__aside::-webkit-scrollbar-thumb {
+.modal-user__aside::-webkit-scrollbar-thumb {
     background: var(--body-light-color);
     border-radius: 10px;
 }
-.modalUser__settings{
+
+.modal-user__settings{
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
-.modalUser__item{
+.modal-user__item{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -46,31 +46,31 @@
     height: 26px;
     padding: 0 10px;
 }
-.modalUser__item--active{
+.modal-user__item--active{
     background-color: var(--hover-strong-color);
     border-radius: 8px;
 }
-.modalUser__item:hover{
+.modal-user__item:hover{
     background-color: var(--hover-strong-color);
     border-radius: 8px;
     cursor: pointer;
 }
-.modalUser__item__span{
+.modal-user__item__span{
     color: var(--body-fresco-color);
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
-.modalUser__item__span--upgrade{
+.modal-user__item__span--upgrade{
     color: var(--accent-bg-color);
     white-space: nowrap;
 }
-.modalUser__item__icon{
+.modal-user__item__icon{
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.modalUser__setting{
+.modal-user__setting{
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -89,7 +89,7 @@
     background: var(--body-light-color);
     border-radius: 10px;
 }
-.modalUser__divider{
+.modal-user__divider{
     height: 1px;
     background: var(--border-strong-color);
     width: 100%;
@@ -100,7 +100,7 @@
 }
 
 @media (max-width: 767px) {
-    .modalUser{
+    .modal-user{
         height: 100%;
         max-height: fit-content;
         overflow: auto;
@@ -108,34 +108,34 @@
         width: 100%;
         box-sizing: border-box;
     }
-    .modalUser__settings{
+    .modal-user__settings{
         flex-direction: row;
         align-items: center;
         justify-content: start;
         gap: 5px;
     }
-    .modalUser__aside{
+    .modal-user__aside{
         width: 100%;
         border-radius: 16px 16px 0px 0px;
         justify-content: center;
         min-height: 56px;
         overflow: hidden;
     }
-    .modalUser__setting{
+    .modal-user__setting{
         border-radius: 0px 0px 16px 16px;
         overflow-y: auto;
         min-width: 250px;
         scrollbar-width: thin;
         scrollbar-color: var(--border-strong-color) transparent;
     }
-    .modalUser__item{
+    .modal-user__item{
         justify-content: center;
         width: fit-content;
     }
-    .modalUser__divider{
+    .modal-user__divider{
         display: none;
     }
-    .modalUser__item--upgrade{
+    .modal-user__item--upgrade{
         gap: 2px;
     }
 }

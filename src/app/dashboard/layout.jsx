@@ -59,6 +59,11 @@ function DashboardLayout({ children }) {
   // Browser state to handle SSR
   const [isBrowser, setIsBrowser] = useState(false);
 
+  // Scan state
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanDone, setScanDone] = useState(false);
+  const MAX_SCANS = 3;
+
 
     //NEW BD CODE
     const [user, setUser] = useState(null);
@@ -78,7 +83,7 @@ function DashboardLayout({ children }) {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
     const [userResult, sitesResult, appearanceResult] = await Promise.allSettled([
       supabase.from('User').select('*').eq('id', userId).single(),
       supabase.from('Site').select('*').eq('userid', userId),
@@ -223,7 +228,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'oscar.abad.brickscore@gmail.com',  
+      email: 'darezo.2809@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -642,6 +647,11 @@ useEffect(() => {
         openChangeModalSettings,
         openChangeModal,
         allUserDataResource,
+        isScanning,
+        setIsScanning,
+        scanDone,
+        setScanDone,
+        MAX_SCANS,
     };
    
     return (

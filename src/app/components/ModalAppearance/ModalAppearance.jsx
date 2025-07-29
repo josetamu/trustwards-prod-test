@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import { useTheme } from 'next-themes';
 
-
-
 export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSettings}) => {
     const { theme, setTheme } = useTheme();
     const [selected, setSelected] = useState('');
@@ -102,18 +100,16 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
         handleSave(null, null, checked);
     };
 
-    
-
     return (
-        <div className={`modalAppearance__content ${isInitialized ? 'modalAppearance__content--initialized' : ''}`}>
-            <div className="modalAppearance__mid">
-                    <span className="modalAppearance__mid__title">
+        <div className={`modal-appearance__content ${isInitialized ? 'modal-appearance__content--initialized' : ''}`}>
+            <div className="modal-appearance__mid">
+                    <span className="modal-appearance__mid__title">
                         Theme
                     </span>
-                    <div className="modalAppearance__choices">
-                        <div className="modalAppearance__choice" onClick={() => updateTheme('light')}>
-                            <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--light ${selected === 'light' ? 'modalAppearance__choice--active' : ''}`}>
-                                <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className="modal-appearance__choices">
+                        <div className="modal-appearance__choice" onClick={() => updateTheme('light')}>
+                            <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--light ${selected === 'light' ? 'modal-appearance__choice--active' : ''}`}>
+                                <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_350)">
                                     <path d="M4 6C4 3.79086 5.79086 2 8 2H109V64C109 66.7614 106.761 69 104 69H4V6Z" fill="white"/>
                                     </g>
@@ -145,11 +141,11 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                     </defs>
                                 </svg>
 
-                                <span className="modalAppearence__choice__icon">
+                                <span className="modal-appearance__choice__icon">
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g clipPath="url(#clip0_254_2015)">
                                         <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                        <path className="modalAppearence__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
+                                        <path className="modal-appearance__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                         </g>
                                         <defs>
                                         <clipPath id="clip0_254_2015">
@@ -159,13 +155,13 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                     </svg>
                                 </span> 
                             </div>
-                            <span className="modalAppearance__choice__title">
+                            <span className="modal-appearance__choice__title">
                                 Light
                             </span>
                         </div>
-                        <div className="modalAppearance__choice" onClick={() => updateTheme('dark')}>
-                            <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--dark ${selected === 'dark' ? 'modalAppearance__choice--active' : ''}`}>
-                                <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <div className="modal-appearance__choice" onClick={() => updateTheme('dark')}>
+                            <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--dark ${selected === 'dark' ? 'modal-appearance__choice--active' : ''}`}>
+                                <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_351)">
                                     <path d="M4 6C4 3.79086 5.79086 2 8 2H109V64C109 66.7614 106.761 69 104 69H4V6Z" fill="#555555"/>
                                     </g>
@@ -197,11 +193,11 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                     </defs>
                                 </svg>
 
-                                    <span className="modalAppearence__choice__icon">
+                                    <span className="modal-appearance__choice__icon">
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clipPath="url(#clip0_254_2015)">
                                             <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                            <path className="modalAppearence__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
+                                            <path className="modal-appearance__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                             </g>
                                             <defs>
                                             <clipPath id="clip0_254_2015">
@@ -211,14 +207,14 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                         </svg>
                                     </span> 
                             </div>
-                            <span className="modalAppearance__choice__title">
+                            <span className="modal-appearance__choice__title">
                                 Dark
                             </span>
                         </div>
-                        <div className="modalAppearance__choice" onClick={() => updateTheme('system')}>
-                            <div className="modalAppearance__imgWrapper modalAppearance__imgWrapper--system">
-                                <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--light ${selected === 'system' ? 'modalAppearance__choice--active' : ''}`}>
-                                    <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <div className="modal-appearance__choice" onClick={() => updateTheme('system')}>
+                            <div className="modal-appearance__img-wrapper modal-appearance__img-wrapper--system">
+                                <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--light ${selected === 'system' ? 'modal-appearance__choice--active' : ''}`}>
+                                    <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g filter="url(#filter0_d_410_350)">
                                         <path d="M4 6C4 3.79086 5.79086 2 8 2H109V64C109 66.7614 106.761 69 104 69H4V6Z" fill="white"/>
                                         </g>
@@ -249,11 +245,11 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                         </filter>
                                         </defs>
                                     </svg>
-                                    <span className="modalAppearence__choice__icon">
+                                    <span className="modal-appearance__choice__icon">
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clipPath="url(#clip0_254_2015)">
                                             <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
-                                            <path className="modalAppearence__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
+                                            <path className="modal-appearance__tick" fillRule="evenodd" clipRule="evenodd" d="M5.875 11.25C2.90647 11.25 0.5 8.84355 0.5 5.875C0.5 2.90647 2.90647 0.5 5.875 0.5C8.84355 0.5 11.25 2.90647 11.25 5.875C11.25 8.84355 8.84355 11.25 5.875 11.25ZM8.2591 4.69509C8.4359 4.48295 8.40725 4.16767 8.1951 3.99089C7.98295 3.81411 7.66765 3.84276 7.4909 4.0549L5.3414 6.6343L4.22856 5.52145C4.03329 5.3262 3.71671 5.3262 3.52145 5.52145C3.32618 5.7167 3.32618 6.0333 3.52145 6.22855L5.02145 7.72855C5.1208 7.8279 5.2573 7.88085 5.39765 7.8745C5.538 7.8681 5.6692 7.803 5.7591 7.6951L8.2591 4.69509Z" fill="currentColor"/>
                                             </g>
                                             <defs>
                                             <clipPath id="clip0_254_2015">
@@ -263,8 +259,8 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                         </svg>
                                     </span>
                                 </div>
-                                <div className={`modalAppearance__imgWrapper modalAppearance__imgWrapper--dark ${selected === 'system' ? 'modalAppearance__choice--active' : ''}`}>
-                                    <svg className='modalAppearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--dark ${selected === 'system' ? 'modal-appearance__choice--active' : ''}`}>
+                                    <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g filter="url(#filter0_d_410_351)">
                                         <path d="M4 6C4 3.79086 5.79086 2 8 2H109V64C109 66.7614 106.761 69 104 69H4V6Z" fill="#555555"/>
                                         </g>
@@ -298,41 +294,41 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                 </div>
                                 
                             </div>
-                            <span className="modalAppearance__choice__title">
+                            <span className="modal-appearance__choice__title">
                                 System
                             </span>
                         </div>
                     </div>
-                    <div className="modalAppearance__divider"></div>
+                    <div className="modal-appearance__divider"></div>
             
             </div>
-            <div className="modalAppearance__bottom">
-                <div className="modalAppearance__accentColor">
-                    <span className="modalAppearance__accentColor__title">
+            <div className="modal-appearance__bottom">
+                <div className="modal-appearance__accent-color">
+                    <span className="modal-appearance__accent-color__title">
                         Accent color
                     </span>
-                    <div className="modalAppearance__accentColor__choices">
-                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--green ${selectedColor === 'green' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('green')}></div>
-                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--purple ${selectedColor === 'purple' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('purple')}></div>
-                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--red ${selectedColor === 'red' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('red')}></div>
-                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--orange ${selectedColor === 'orange' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('orange')}></div>
-                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--blue ${selectedColor === 'blue' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('blue')}></div>    
+                    <div className="modal-appearance__accent-color__choices">
+                        <div className={`modal-appearance__accent-color__choice modal-appearance__accent-color__choice--green ${selectedColor === 'green' ? 'modal-appearance__accent-color__choice--active' : ''}`} onClick={() => handleColorSelect('green')}></div>
+                        <div className={`modal-appearance__accent-color__choice modal-appearance__accent-color__choice--purple ${selectedColor === 'purple' ? 'modal-appearance__accent-color__choice--active' : ''}`} onClick={() => handleColorSelect('purple')}></div>
+                        <div className={`modal-appearance__accent-color__choice modal-appearance__accent-color__choice--red ${selectedColor === 'red' ? 'modal-appearance__accent-color__choice--active' : ''}`} onClick={() => handleColorSelect('red')}></div>
+                        <div className={`modal-appearance__accent-color__choice modal-appearance__accent-color__choice--orange ${selectedColor === 'orange' ? 'modal-appearance__accent-color__choice--active' : ''}`} onClick={() => handleColorSelect('orange')}></div>
+                        <div className={`modal-appearance__accent-color__choice modal-appearance__accent-color__choice--blue ${selectedColor === 'blue' ? 'modal-appearance__accent-color__choice--active' : ''}`} onClick={() => handleColorSelect('blue')}></div>    
                     </div>
                     
                 </div>
-                <div className="modalAppearance__divider"></div>
-                <div className="modalAppearance__ReducedMotion">
-                    <span className="modalAppearance__ReducedMotion__title">
+                <div className="modal-appearance__divider"></div>
+                <div className="modal-appearance__reduced-motion">
+                    <span className="modal-appearance__reduced-motion__title">
                         Reduced motion
                     </span>
-                    <label className="modalAppearance__ReducedMotion__label">
+                    <label className="modal-appearance__reduced-motion__label">
                         <input 
-                            className="modalAppearance__ReducedMotion__input"
+                            className="modal-appearance__reduced-motion__input"
                             type="checkbox" 
                             checked={reducedMotion}
                             onChange={(e) => handleReducedMotionToggle(e.target.checked)}
                         />
-                        <span className="modalAppearance__ReducedMotion__slider"></span>
+                        <span className="modal-appearance__reduced-motion__slider"></span>
                     </label>
                 </div>
             </div>
