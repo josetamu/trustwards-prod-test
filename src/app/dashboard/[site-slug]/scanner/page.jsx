@@ -3,7 +3,6 @@
 import './scanner.css';
 import { useParams } from 'next/navigation';
 import React, { useState, Suspense } from 'react';
-import Scan from '@components/scan/Scan.jsx';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import { ScanButton } from './ScanButton';
 import { MonthlyScans } from './MonthlyScans';

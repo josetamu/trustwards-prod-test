@@ -1,4 +1,4 @@
-import { Scan } from "@components/scan/Scan";
+import  Scan  from "@components/scan/Scan";
 import { ScanButton } from "./ScanButton";
 import { ScanResultSkeleton } from "@components/Skeletons/ScanResultSkeleton";
 import { Suspense, useState } from "react";
