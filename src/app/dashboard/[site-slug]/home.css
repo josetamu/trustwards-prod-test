@@ -349,6 +349,7 @@
     border-radius: 5px;
     cursor: pointer;
     text-transform: uppercase;
+    cursor: pointer;
 }
 .home__cardInfo-content{
     display: flex;

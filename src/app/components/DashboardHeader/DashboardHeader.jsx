@@ -1,105 +1,36 @@
 import './DashboardHeader.css';
 import { useDashboard } from '../../dashboard/layout';
-import { useState, useRef,} from 'react';
+import { useState, useRef, Suspense} from 'react';
 import { Dropdown } from '../dropdown/Dropdown';
 import { supabase } from '../../../supabase/supabaseClient';
 
 import { useParams } from 'next/navigation';    
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { DashboardHeaderName } from './DashboardHeaderName';
+import UserNameSkeleton from '../Skeletons/UserNameSkeleton';
+import { DashboardAvatar } from './DashboardAvatar';
+import UserAvatarSkeleton from '../Skeletons/UserAvatarSkeleton';
+import { DashboardHeaderPlan } from './DashboardHeaderPlan';
+import PlanSkeleton from '../Skeletons/PlanSkeleton';
+import { DashboardHeaderBuilder } from './DashboardHeaderBuilder';
+
 
 function DashboardHeader() {
-    const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings, fetchSites, user} = useDashboard();
+    const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings} = useDashboard();
     const fileInputRef = useRef(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const [errors, setErrors] = useState({});
+
 
     const { 'site-slug': siteSlug } = useParams();
 
     // Don't render until siteData is available
-    if (!siteData) {
+/*     if (!siteData) {
         return null;
-    }
+    }  */
 
  
-const handleImgEditClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click(); // Open local files
-    }
-  };
 
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      //check if file is an image
-      if(!file.type.startsWith('image/')){
-        setErrors({
-          file: 'The file must be an image'
-        });
-        return;
-      }
-      //check if file is less than 5MB
-      if(file.size > 5 * 1024 * 1024){
-        setErrors({
-          file: 'The file must be less than 5MB'
-        });
-        return;
-      }
-      
-
-      setErrors({});
-
-      try {
-        //Generate a unique file name
-        const fileExtension = file.name.split('.').pop();
-        const fileName = `${siteData.id}-${Date.now()}.${fileExtension}`;
-
-        //Upload file to supabase
-        const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('avatar')
-        .upload(fileName, file);
-
-        if(uploadError){
-          throw uploadError;
-        }
-        //Get public url of the file
-        const { data: { publicUrl } } = supabase.storage
-        .from('avatar')
-        .getPublicUrl(fileName);
-
-        //Update site avatar in database
-        const { data: updateData, error: updateError } = await supabase
-        .from('Site')
-        .update({ "Avatar URL": publicUrl })
-        .eq('id', siteData.id);
-
-        if(updateError){
-          throw updateError;
-        }
-
-        // Update the siteData state to reflect the new avatar
-        setSiteData(prev => ({
-          ...prev,
-          "Avatar URL": publicUrl
-        }));
-        
-        if(fileInputRef.current){
-          fileInputRef.current.value = '';
-        }
-
-        fetchSites(user.id);
-
-        // Clear any previous errors
-        setErrors({});
-
-        
-      } catch (error) {
-        console.error('Error uploading file:', error);
-        setErrors({ file: 'Failed to upload file' });
-      } 
-    }
-  };
 
     const SiteMenu = ({ setIsModalOpen, setModalType, siteData, setIsDropdownOpen, openChangeModalSettings}) => {
         const router = useRouter();
@@ -171,34 +102,22 @@ const handleImgEditClick = () => {
         );
       };
   
-    
+
     return (  
         <div className='dashboardHeader'>
             <div className='dashboardHeader__header'>
                 <div className='dashboardHeader__avatar'>
-                <span className={`dashboardHeader__color ${checkSitePicture(siteData) === '' ? '' : 'dashboardHeader__color--null'}`} 
-                        style={SiteStyle(siteData)} onClick={handleImgEditClick} >
-                        {siteData?.Name?.charAt(0)}
-                    </span> 
-                    <img className={`dashboardHeader__img ${checkSitePicture(siteData) === '' ? 'dashboardHeader__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt={siteData?.Name} onClick={handleImgEditClick}/> 
-                    <span className='dashboardHeader__title' onClick={() => {
-                        openChangeModalSettings(siteData);
-                    }}>{siteData?.Name}</span>
+                    <Suspense fallback={<UserAvatarSkeleton />}> 
+                      <DashboardAvatar siteSlug={siteSlug} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} setSiteData={setSiteData} />
+                    </Suspense>
+                    <Suspense fallback={<UserNameSkeleton />}>
+                        <DashboardHeaderName siteSlug={siteSlug} openChangeModalSettings={openChangeModalSettings} />
+                    </Suspense>
                 </div>
-                <span className={`dashboardHeader__plan ${siteData?.Plan === 'Pro' ? 'dashboardHeader__plan--pro' : ''}`} onClick={() => {
-                    setModalType('Plan');
-                    setIsModalOpen(true);
-                }}>
-                    {siteData?.Plan || 'Free'}
-                </span>
-                {/* Hidden input to open file selector */}
-                <input className='dashboardHeader__fileInput'
-                type="file"
-                ref={fileInputRef} 
-                onChange={handleFileChange} 
-                accept="image/*"
-                
-            />
+                <Suspense fallback={<PlanSkeleton />}>
+                    <DashboardHeaderPlan siteSlug={siteSlug} setModalType={setModalType} setIsModalOpen={setIsModalOpen} />
+                </Suspense>
+
             </div>
             <div className="dashboardHeader__actions">
                 <Dropdown
@@ -219,9 +138,9 @@ const handleImgEditClick = () => {
                         <div className="dashboardHeader__dots-dot"></div>
                     </div>
                 </Dropdown>
-                    <div className="dashboardHeader__builder">
-                        <Link href={`/builder/${siteSlug}`} className="dashboardHeader__builder-text">Builder</Link>
-                    </div>
+                <Suspense fallback={<PlanSkeleton />}>
+                    <DashboardHeaderBuilder siteSlug={siteSlug} />
+                </Suspense>
                 </div>
             </div>
     );

@@ -83,9 +83,14 @@
   .user__name{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
-    color: var(--sidebar-items-color);
+    color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
-    display: none;
+    display: block;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
   }
 
   .sidebar--open .user__name{
@@ -173,13 +178,7 @@
   .sidebar--menu .user:hover .user__profile{
     background-color: var(--hover-fresco-color);
   }
-  .user__name-skeleton {
-    width: 100px;
-    height: 20px;
-    background-color: red;
-    border-radius: 4px;
-
-  }
+  
 
   @media (max-width: 767px) {
   .sidebar--menu .user__header__name{

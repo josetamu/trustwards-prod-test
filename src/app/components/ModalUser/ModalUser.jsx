@@ -4,7 +4,7 @@ import { ModalAccount } from '@components/ModalAccount/ModalAccount';
 import { ModalAppearance } from '../ModalAppearance/ModalAppearance';
 import ModalUpgradePlan from '../ModalUpgradePlan/ModalUpgradePlan';
 
-export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings, getAppearanceSettings, openChangeModal, avatarColors, checkProfilePicture, profileStyle }) {
+export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings, openChangeModal, avatarColors, checkProfilePicture, profileStyle, allUserDataResource }) {
 //Modal User is a modal that allows the user to change their account settings, appearance settings, and upgrade plan.
 //In this function we render the content of the modal based on the userSettings state.
     const renderContent = () => {
@@ -20,16 +20,12 @@ export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSett
                     avatarColors={avatarColors}                    
                     checkProfilePicture={checkProfilePicture}
                     profileStyle={profileStyle}
+                    allUserDataResource={allUserDataResource}
                 />
             case 'Appearance':
                 return <ModalAppearance 
                     user={user}
                     onClose={() => setIsModalOpen(false)}
-                    onSave={() => {
-                    // Refresh user data after saving appearance settings
-                        getAppearanceSettings(user.id); // Refresh appearance settings after saving
-                    
-                    }}
                     appearanceSettings={appearanceSettings}
                     setAppearanceSettings={setAppearanceSettings}
                     userSettings={userSettings}

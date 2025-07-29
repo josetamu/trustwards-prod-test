@@ -5,8 +5,7 @@ import { supabase } from '../../../supabase/supabaseClient';
 
 import { Tooltip } from '../tooltip/Tooltip';
 
-
-export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, fetchSites, createNewSite }) {
+export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, createNewSite, setWebs, allUserDataResource }) {
 
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
@@ -266,7 +265,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             handleSave();
         }
     }
-
+    
     //Function to save the changes uploading the data to the database
     const handleSave = async () => {
         // Validate input based on different change types
@@ -427,7 +426,19 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 
                 const updatedSite = { ...siteData, ...updateData };
                 setSiteData(updatedSite);
-                fetchSites(user?.id);
+                if (setWebs) {
+                    setWebs(prevWebs =>
+                      prevWebs.map(site =>
+                        site.id === updatedSite.id ? { ...site, ...updateData } : site
+                      )
+                    );
+                  }
+                  if (allUserDataResource) {
+                    const currentData = allUserDataResource.read();
+                    currentData.webs = currentData.webs.map(web =>
+                        web.id === updatedSite.id ? { ...web, ...updateData } : web
+                    );
+                }
                 
                 if (showNotification) {
                     showNotification('Site settings updated successfully!', 'top', true);
@@ -455,6 +466,11 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             // Update local user state
             const updatedUser = { ...user, ...updateData };
             setUser(updatedUser);
+            if (allUserDataResource) {
+                allUserDataResource.read().user = updatedUser;
+            }
+
+
             
             // Show success notification
             if (showNotification) {
@@ -479,7 +495,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                         successMessage = 'Updated successfully!';
                 }
                 if (changeType === 'newsite') {
-                    showNotification(successMessage, 'bottom', true);
+                    showNotification(successMessage, 'top', true);
                 } else {
                     showNotification(successMessage, 'top', false);
                 }

@@ -52,6 +52,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --sidebar-icon-size: 16px;
   --sidebar-icon-main-size: 16px;
   --sidebar-transition: all 0.3s ease;
+  --skeleton-color: gainsboro;
 
   /*App*/
   --sidebar-background: #F5F5F5;
@@ -183,6 +184,7 @@ html[data-theme="dark"] {
   --wrappers-fresco-color: #202020;
   --wrappers-strong-color: #2B2B2B;
   --logo-background: #404040;
+  --skeleton-color: gray;
 
   /*Dashboard Hello Grid*/
   --dashboard-hello-grid-heading-color: #FFFFFF;

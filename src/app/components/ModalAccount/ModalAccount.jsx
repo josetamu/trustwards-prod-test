@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 
 // Modal Account is a modal that allows the user to change their profile information.
-export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle, setUser }) {
+export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle, setUser, allUserDataResource }) {
   //states to save user data
   const [Name, setName] = useState(user?.Name);
   const [email, setEmail] = useState(user?.Email);
@@ -82,6 +82,9 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
           "Avatar URL": publicUrl 
         };
         setUser(updatedUser);
+        if (allUserDataResource) {
+            allUserDataResource.read().user = updatedUser;
+        }
 
         // Clear the file input
         if(fileInputRef.current){
@@ -112,31 +115,6 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
       setErrors({});
     }
   }, [user]);
-
-
-  //function to reset password
-  /* const resetPassword = async () => {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: 'http://localhost:5173/reset-password'
-      });
-  } */
-
-  //function to logout
-/*   const userLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if(error) throw error;
-    setUser(null);
-    setUserSettings(null); 
-
-   
-    await supabase.auth.signOut();
-    window.location.reload(); // o redirige a login 
-
-    console.log('logout');
-    window.location.reload();
-    
-      
-  } */
 
   return (
       <>
