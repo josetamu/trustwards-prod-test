@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState, useRef } from 'react';
 import { useParams, usePathname } from 'next/navigation';     
 import { Suspense } from 'react';
@@ -505,7 +507,7 @@ export function Sidebar({
                                                     <span className='site__link__icon'>{page.icon}</span>
                                                     <span className='site__link__text'>{page.name}</span>
                                                 </Link>
-                                                {!isSidebarOpen && window.innerWidth > 767 && hoveredOverviewLink === page.name && (
+                                                {!isSidebarOpen && (typeof window !== 'undefined' && window.innerWidth > 767) && hoveredOverviewLink === page.name && (
                                                     <Tooltip 
                                                         message={page.name} 
                                                         responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}

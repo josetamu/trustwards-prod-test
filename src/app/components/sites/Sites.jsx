@@ -10,6 +10,7 @@ import { useDashboard } from '../../dashboard/layout';
 import './Sites.css'
 import { SitesList } from './SitesList';
 import { SitesSkeleton } from '../Skeletons/SitesSkeleton';
+import { PlanSkeleton } from '../Skeletons/PlanSkeleton';
 
 
 export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings, showNotification}) => {
@@ -291,9 +292,13 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
       <div className="sites__header">
         <h2 className="sites__title">Sites</h2>
         <div className="sites__header-actions">
-        <View isGridView={isGridView} onViewChange={handleViewChange} />
+          <Suspense fallback={<PlanSkeleton/>}>
+            <View isGridView={isGridView} onViewChange={handleViewChange} />
+          </Suspense>
           <Sort onSortChange={handleSortChange} />
-          <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
+          <Suspense fallback={<PlanSkeleton/>}>
+            <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
+          </Suspense>
         </div>
       </div>
 

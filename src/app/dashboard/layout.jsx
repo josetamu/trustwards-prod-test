@@ -58,7 +58,8 @@ function DashboardLayout({ children }) {
   // Browser state to handle SSR
   const [isBrowser, setIsBrowser] = useState(false);
 
-  // Scan state
+  //Home and scanner states
+  const [isInstalled, setIsInstalled] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanDone, setScanDone] = useState(false);
   const MAX_SCANS = 3;
@@ -621,6 +622,10 @@ useEffect(() => {
         scanDone,
         setScanDone,
         MAX_SCANS,
+        isInstalled,
+        setIsInstalled,
+        appearanceSettings,
+        setAppearanceSettings,
     };
    
     return (

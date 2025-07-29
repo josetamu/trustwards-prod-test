@@ -1,14 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './View.css';
+import { useDashboard } from '@dashboard/layout';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
+import { supabase } from '../../../supabase/supabaseClient';
 
 // View: Toggle component for switching between grid and list view
 export const View = ({ isGridView, onViewChange }) => {
+  const {allUserDataResource, setAppearanceSettings} = useDashboard();
   const [isGrid, setIsGrid] = useState(true); // true = grid (horizontal), false = list (vertical)
+  if(!allUserDataResource) return <PlanSkeleton/>;
+  const {appearance, user} = allUserDataResource.read();
+  const userView = appearance['View Sites'];
+  
+  // Function to update appearance settings in database
+  const updateAppearanceSettings = async (settings) => {
+    if (!user?.id) return;
+    
+    const { error } = await supabase
+      .from('Appearance')
+      .update(settings)
+      .eq('userid', user.id);
+    
+    if (error) {
+      console.error('Error updating appearance settings:', error);
+    }
+  };
+
+ 
 
   // Handle view toggle between grid and list
-  const handleView = (view) => {
+  const handleView = async (view) => {
     setIsGrid(view);
     onViewChange(view);
+    // Update local appearance settings state
+    const newSettings = { ...appearance, 'View Sites': view ? 'grid' : 'list' };
+    setAppearanceSettings(newSettings);
+    
+    // Persist to database
+    await updateAppearanceSettings({ 'View Sites': view ? 'grid' : 'list' });
   };
 
   return (

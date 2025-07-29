@@ -9,7 +9,8 @@ export const MonthlyScans = ({siteSlug, MAX_SCANS}) => {
     if(!allUserDataResource) return <MonthlyScansSkeleton />;
     const {webs} = allUserDataResource.read();
     const site = webs.find(web => web.id === siteSlug);
-    const scanCount = site.Scans;
+    const scanCount = site?.Scans;
+
 
     return (
         <div className="scanner__monthly">

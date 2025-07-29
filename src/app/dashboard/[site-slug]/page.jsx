@@ -28,9 +28,9 @@ import { Analytics } from './homeComponents/Analytics';
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs, showNotification, setModalType, setIsModalOpen,setWebs,allUserDataResource, isScanning, setIsScanning, scanDone, setScanDone, MAX_SCANS } = useDashboard();
+    const { webs, showNotification, setModalType, setIsModalOpen,setWebs,allUserDataResource, isScanning, setIsScanning, scanDone, setScanDone, MAX_SCANS, isInstalled, setIsInstalled } = useDashboard();
     const [siteData, setSiteData] = useState(null);
-    const [isInstalled, setIsInstalled] = useState(null);
+    
 
 
 
