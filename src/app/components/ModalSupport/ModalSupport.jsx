@@ -188,9 +188,9 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
   };
 
     return (
-        <div className="modalSupport__content">
-            <div className="modalSupport__header">
-                <span className="modalSupport__icon">
+        <div className="modal-support__content">
+            <div className="modal-support__header">
+                <span className="modal-support__icon">
                     <svg width="15" height="11" viewBox="0 0 15 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0 0H15V3H0V0Z" fill="#A3A3A3"/>
                         <path d="M4 11V5H10L4 11Z" fill="#A3A3A3"/>
@@ -198,14 +198,14 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                     </svg>
                 </span>
             </div>
-            <div className="modalSupport__form">
-                <div className="modalSupport__top">
-                    <span className="modalSupport__description">
+            <div className="modal-support__form">
+                <div className="modal-support__top">
+                    <span className="modal-support__description">
                         Please be as descriptive as possible. Screenshots and recordings will help us identify better your concerns.
                     </span>
-                    <div className="modalSupport__choices">
-                        <div className={`modalSupport__choice ${selectedChoice === 'Bug report' ? 'modalSupport__choice--active' : ''}`} onClick={() => { setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
-                            <span className="modalSupport__choice__icon">
+                    <div className="modal-support__choices">
+                        <div className={`modal-support__choice ${selectedChoice === 'Bug report' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
+                            <span className="modal-support__choice__icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
@@ -218,12 +218,12 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                     </defs>
                                 </svg>
                             </span>
-                            <span className="modalSupport__choice__text">
+                            <span className="modal-support__choice__text">
                                 Bug report
                             </span>
                         </div>
-                        <div className={`modalSupport__choice ${selectedChoice === 'Pre-sale questions' ? 'modalSupport__choice--active' : ''}`} onClick={() => { setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
-                        <span className="modalSupport__choice__icon">
+                        <div className={`modal-support__choice ${selectedChoice === 'Pre-sale questions' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
+                        <span className="modal-support__choice__icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
@@ -236,12 +236,12 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                     </defs>
                                 </svg>
                             </span>
-                            <span className="modalSupport__choice__text">
+                            <span className="modal-support__choice__text">
                                 Pre-sale questions
                             </span>
                         </div>
-                        <div className={`modalSupport__choice ${selectedChoice === 'Other' ? 'modalSupport__choice--active' : ''}`} onClick={() => { setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
-                        <span className="modalSupport__choice__icon">
+                        <div className={`modal-support__choice ${selectedChoice === 'Other' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
+                        <span className="modal-support__choice__icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
@@ -254,7 +254,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                     </defs>
                                 </svg>
                             </span>
-                            <span className="modalSupport__choice__text">
+                            <span className="modal-support__choice__text">
                                 Other
                             </span>
                         </div>
@@ -266,13 +266,13 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         />
                     </div>
                 </div>
-                <div className="modalSupport__mid">
-                    <div className="modalSupport__input">
-                        <span className="modalSupport__input__title">Name</span>
-                        <div className="modalSupport__input__container">
+                <div className="modal-support__mid">
+                    <div className="modal-support__input">
+                        <span className="modal-support__input__title">Name</span>
+                        <div className="modal-support__input__container">
                             <input 
                             type="text" 
-                            className="modalSupport__input__field" 
+                            className="modal-support__input__field" 
                             value={name} 
                             onChange={(e) => handleInputEdit('name', e.target.value)} 
                             onKeyDown={handleKeyDown}
@@ -288,12 +288,12 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         </div>
                         
                     </div>
-                    <div className="modalSupport__input">
-                        <span className="modalSupport__input__title">Email</span>
-                        <div className="modalSupport__input__container">
+                    <div className="modal-support__input">
+                        <span className="modal-support__input__title">Email</span>
+                        <div className="modal-support__input__container">
                             <input 
                             type="text" 
-                            className="modalSupport__input__field" 
+                            className="modal-support__input__field" 
                             value={email} 
                             onChange={(e) => handleInputEdit('email', e.target.value)} 
                             onKeyDown={handleKeyDown}
@@ -307,12 +307,12 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             />
                         </div>
                     </div>
-                    <div className="modalSupport__input">
-                        <span className="modalSupport__input__title">Message</span>
-                        <div className="modalSupport__input__container">
+                    <div className="modal-support__input">
+                        <span className="modal-support__input__title">Message</span>
+                        <div className="modal-support__input__container">
                             <textarea 
                             type="text-area" 
-                            className="modalSupport__input__field modalSupport__input__field--textarea" 
+                            className="modal-support__input__field modal-support__input__field--textarea" 
                             placeholder='...' 
                             value={message} 
                             onChange={(e) => {
@@ -331,7 +331,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         </div>
                     </div>
                 </div>
-                <div className="modalSupport__dropZone"
+                <div className="modal-support__dropZone"
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDragOver={handleDragOver}
@@ -343,22 +343,22 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                 }}
                 >
                     {/* input to upload files hidden*/}
-                    <input className='modalSupport__input--hidden'
+                    <input className='modal-support__input--hidden'
                         type="file"
                         multiple
                         onChange={handleFileChange}
                         id="fileInput"
                         onClick={(e) => e.stopPropagation()}
                     />
-                    <span className={`modalSupport__dropZone__icon ${files.length > 0 ? 'modalSupport__dropZone__icon--none' : ''}`}>
+                    <span className={`modal-support__dropZone__icon ${files.length > 0 ? 'modal-support__dropZone__icon--none' : ''}`}>
                         <svg width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fillRule="evenodd" clipRule="evenodd" d="M3 1C2.17155 1 1.5 1.67158 1.5 2.5V3H0.5V2.5C0.5 1.11929 1.61929 0 3 0C4.3807 0 5.5 1.11929 5.5 2.5V8C5.5 9.3807 4.3807 10.5 3 10.5C1.61929 10.5 0.5 9.3807 0.5 8V5.75C0.5 4.7835 1.2835 4 2.25 4C3.2165 4 4 4.7835 4 5.75V7H3V5.75C3 5.3358 2.6642 5 2.25 5C1.83579 5 1.5 5.3358 1.5 5.75V8C1.5 8.82845 2.17155 9.5 3 9.5C3.82845 9.5 4.5 8.82845 4.5 8V2.5C4.5 1.67158 3.82845 1 3 1Z" fill="#666666"/>
                         </svg>
                     </span>
-                    <span className={`modalSupport__dropZone__span ${files.length > 0 ? 'modalSupport__dropZone__span--none' : ''}`}>Select or drop files from your device</span>
+                    <span className={`modal-support__dropZone__span ${files.length > 0 ? 'modal-support__dropZone__span--none' : ''}`}>Select or drop files from your device</span>
                     {files.length > 0 && (
-                        <div className="modalSupport__files__container">
-                            <div className="modalSupport__files" 
+                        <div className="modal-support__files__container">
+                            <div className="modal-support__files" 
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     handleDropzoneClick(e);
@@ -366,10 +366,10 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             >
                                 {/* map the files and show them in the modal. with removeFile function to remove the file */}
                                 {files.map((file, index) => (
-                                    <div key={index} className="modalSupport__file">
-                                        <span className="modalSupport__file__name">{file.name}</span>
+                                    <div key={index} className="modal-support__file">
+                                        <span className="modal-support__file__name">{file.name}</span>
                                         <button 
-                                            className="modalSupport__file__remove"
+                                            className="modal-support__file__remove"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -386,8 +386,8 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         </div>
                     )}
                 </div>
-                <div className="modalSupport__bottom">
-                    <button className="modalSupport__button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Send'}</button>
+                <div className="modal-support__bottom">
+                    <button className="modal-support__button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Send'}</button>
                 </div>
             </div>
         </div>

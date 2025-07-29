@@ -37,7 +37,7 @@ export default async function RootLayout({ children }) {
     return (
         <html lang="en" suppressHydrationWarning> 
             <head>
-                <title>React App with Next.js</title>
+                <title>Dashboard</title>
             </head>
             <body>
                 <ThemeProvider>

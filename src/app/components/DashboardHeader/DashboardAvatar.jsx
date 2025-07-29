@@ -108,13 +108,13 @@ export const DashboardAvatar = ({siteSlug, checkSitePicture, SiteStyle, setSiteD
 
     return (
         <>
-        <span className={`dashboardHeader__color ${checkSitePicture(site) === '' ? '' : 'dashboardHeader__color--null'}`} 
+        <span className={`dashboard-header__color ${checkSitePicture(site) === '' ? '' : 'dashboard-header__color--null'}`} 
                         style={SiteStyle(site)} onClick={handleImgEditClick} >
                         {site?.Name?.charAt(0)}
                     </span> 
-                    <img className={`dashboardHeader__img ${checkSitePicture(site) === '' ? 'dashboardHeader__img--null' : ''}`} src={site?.["Avatar URL"]} alt={site?.Name} onClick={handleImgEditClick}/> 
+                    <img className={`dashboard-header__img ${checkSitePicture(site) === '' ? 'dashboard-header__img--null' : ''}`} src={site?.["Avatar URL"]} alt={site?.Name} onClick={handleImgEditClick}/> 
                                     {/* Hidden input to open file selector */}
-                <input className='dashboardHeader__fileInput'
+                <input className='dashboard-header__file-input'
                 type="file"
                 ref={fileInputRef} 
                 onChange={handleFileChange} 

@@ -1,4 +1,4 @@
-.modalSupport__content {
+.modal-support__content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8,11 +8,11 @@
     max-height: fit-content;
 }
 
-.modal:has(.modalSupport__content) {
+.modal:has(.modal-support__content) {
     max-width: 344px;
 }
 
-.modalSupport__header {
+.modal-support__header {
     min-height: 49px;
     width: 100%;
     display: flex;
@@ -21,44 +21,43 @@
     background-color: var(--support-header-background);
 }
 
-.modalSupport__icon {
+.modal-support__icon {
     width: 15px;
     height: 15px;
 }
 
-.modalSupport__form {
+.modal-support__form {
     padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    width: 100%;
-
+    width: 100%;    
     overflow: auto;
 }
-.modalSupport__form::-webkit-scrollbar {
+.modal-support__form::-webkit-scrollbar {
     width: 4px;
     height: 4px;
 }
-.modalSupport__form::-webkit-scrollbar-thumb {
+.modal-support__form::-webkit-scrollbar-thumb {
     background: var(--body-light-color);
     border-radius: 10px;
 }
 
-.modalSupport__top {
+.modal-support__top {
     max-width: 100%;
     display: flex;
     gap: 20px;
     flex-direction: column;
 }
 
-.modalSupport__description {
+.modal-support__description {
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modalSupport__choices {
+.modal-support__choices {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -66,7 +65,7 @@
     position: relative;
 }
 
-.modalSupport__choice {
+.modal-support__choice {
     background-color: var(--support-choice-background);
     border: 1.5px solid var(--border-strong-color);
     border-radius: 8px;
@@ -81,23 +80,23 @@
     position: relative;
 }
 
-.modalSupport__choice__icon {
+.modal-support__choice__icon {
     display: none;
 }
 
-.modalSupport__choice__text {
+.modal-support__choice__text {
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 
-.modalSupport__choice--active {
+.modal-support__choice--active {
     color: var(--accent-bg-color);
     border: 1.5px solid var(--accent-bg-color);
 }
 
-.modalSupport__choice--active .modalSupport__choice__icon {
+.modal-support__choice--active .modal-support__choice__icon {
     display: flex;
     position: absolute;
     right: -5px;
@@ -105,37 +104,37 @@
     color: var(--accent-bg-color);
 }
 
-.modalSupport__choice--active .modalSupport__choice__text {
+.modal-support__choice--active .modal-support__choice__text {
     color: var(--accent-bg-color);
 }
 
-.modalSupport__mid {
+.modal-support__mid {
     width: 100%;
     display: flex;
     gap: 10px;
     flex-direction: column;
 }
 
-.modalSupport__input {
+.modal-support__input {
     display: flex;
     flex-direction: column;
     gap: 10px;
     max-width: 100%;
 }
 
-.modalSupport__input__container {
+.modal-support__input__container {
     position: relative;
     display: flex;
 }
 
-.modalSupport__input__title {
+.modal-support__input__title {
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
 
-.modalSupport__input__field {
+.modal-support__input__field {
     width: 100%;
     height: 34px;
     border: 1px solid var(--border-strong-color);
@@ -148,16 +147,16 @@
     background: transparent;
 }
 
-.modalSupport__input__field:focus {
+.modal-support__input__field:focus {
     outline: none;
 }
 
-.modalSupport__input__field--textarea {
+.modal-support__input__field--textarea {
     height: 69px;
     resize: none;
 }
 
-.modalSupport__dropZone {
+.modal-support__dropZone {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -172,14 +171,14 @@
     overflow: hidden;
 }
 
-.modalSupport__dropZone__span {
+.modal-support__dropZone__span {
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 
-.modalSupport__button {
+.modal-support__button {
     width: 100%;
     height: 25px;
     border-radius: 8px;
@@ -193,15 +192,15 @@
     box-shadow: var(--blue-button-shadow);
 }
 
-.modalSupport__dropZone__icon--none {
+.modal-support__dropZone__icon--none {
     display: none;
 }
 
-.modalSupport__dropZone__span--none {
+.modal-support__dropZone__span--none {
     display: none;
 }
 
-.modalSupport__files__container {
+.modal-support__files__container {
     display: flex;
     overflow: auto;
     width: 100%;
@@ -212,7 +211,7 @@
     scrollbar-color: var(--border-strong-color) transparent;
 }
 
-.modalSupport__files {
+.modal-support__files {
     display: flex;
     gap: 5px;
     padding: 5px;
@@ -224,7 +223,7 @@
 
 }
 
-.modalSupport__file {
+.modal-support__file {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -240,14 +239,14 @@
     border: 1px solid var(--border-strong-color);
 }
 
-.modalSupport__file__name {
+.modal-support__file__name {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
 }
 
-.modalSupport__file__remove {
+.modal-support__file__remove {
     padding: 0px 0px;
     background-color: transparent;
     border: none;
@@ -260,6 +259,6 @@
     align-items: center;
 }
 
-.modalSupport__input--hidden {
+.modal-support__input--hidden {
     display: none;
 }

@@ -118,37 +118,37 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
 
   return (
       <>
-       <div className="modalAccount">
-        <div className="modalAccount__aside">
-          <div className="modalAccount__header">
-            <span className={`modalAccount__color ${checkProfilePicture(user) === '' ? '' : 'modalAccount__color--null'}`} 
+       <div className="modal-account">
+        <div className="modal-account__aside">
+          <div className="modal-account__header">
+            <span className={`modal-account__color ${checkProfilePicture(user) === '' ? '' : 'modal-account__color--null'}`} 
               style={profileStyle(user)}>
               {user?.Name.charAt(0)}
             </span>
-            <img className={`modalAccount__avatar ${checkProfilePicture(user) === '' ? 'modalAccount__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="logo" />
-            <span className='modalAccount__edit' onClick={handleEditClick}>Edit</span>
+            <img className={`modal-account__avatar ${checkProfilePicture(user) === '' ? 'modal-account__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="logo" />
+            <span className='modal-account__edit' onClick={handleEditClick}>Edit</span>
           </div>
         </div>
-        <div className="modalAccount__main">
-          <div className="modalAccount__section">
-            <span className='modalAccount__title'>Name</span>  
-            <span className='modalAccount__field'>{user?.Name}</span>
-            <span className='modalAccount__change' onClick={() => handleChangeType('name')}>Change name</span>
+        <div className="modal-account__main">
+          <div className="modal-account__section">
+            <span className='modal-account__title'>Name</span>  
+            <span className='modal-account__field'>{user?.Name}</span>
+            <span className='modal-account__change' onClick={() => handleChangeType('name')}>Change name</span>
           </div>
-          <div className="modalAccount__divider"></div>
-          <div className="modalAccount__section">
-            <span className='modalAccount__title'>Email</span>  
-            <span className='modalAccount__field'>{user?.Email}</span>
-            <span className='modalAccount__change' onClick={() => handleChangeType('email')}>Change email</span>
+          <div className="modal-account__divider"></div>
+          <div className="modal-account__section">
+            <span className='modal-account__title'>Email</span>  
+            <span className='modal-account__field'>{user?.Email}</span>
+            <span className='modal-account__change' onClick={() => handleChangeType('email')}>Change email</span>
           </div>
-          <div className="modalAccount__divider"></div>
-          <div className="modalAccount__section">
-            <span className='modalAccount__title'>Password</span>  
-            <span className='modalAccount__change' onClick={() => handleChangeType('password')}>Change password</span>
+          <div className="modal-account__divider"></div>
+          <div className="modal-account__section">
+            <span className='modal-account__title'>Password</span>  
+            <span className='modal-account__change' onClick={() => handleChangeType('password')}>Change password</span>
           </div>
         </div>
         {/* Hidden input to open file selector */}
-        <input className='modalAccount__fileInput'
+        <input className='modal-account__fileInput'
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}

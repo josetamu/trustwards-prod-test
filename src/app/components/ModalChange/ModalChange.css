@@ -1,4 +1,4 @@
-.modalChange {
+.modal-change {
   width: 100%;
   height: 100%;
   max-height: fit-content;
@@ -10,7 +10,7 @@
   border-radius: 16px;
 }
 
-.modalChange__content {
+.modal-change__content {
   box-shadow: 0 4px 20px var(--shadow-strong-color);
   background-color: var(--modal-background);
   border-radius: 16px;
@@ -23,21 +23,21 @@
   gap: 5px;
 }
 
-.modalChange__header {
+.modal-change__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 15px 5px 15px;
 }
 
-.modalChange__title {
+.modal-change__title {
   font-size: var(--font-size-small);
   color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing-negative);
   font-weight: var(--font-weight);
 }
 
-.modalChange__divider {
+.modal-change__divider {
   height: 1px;
   background: var(--border-strong-color);
   margin: 4px 0;
@@ -45,25 +45,24 @@
   border: none;
 }
 
-.modalChange__body {
+.modal-change__body {
   padding: 5px 15px 15px 15px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-width: 331px;
-
   overflow: auto;
 }
-.modalChange__body::-webkit-scrollbar {
+.modal-change__body::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
-.modalChange__body::-webkit-scrollbar-thumb {
+.modal-change__body::-webkit-scrollbar-thumb {
   background: var(--body-light-color);
   border-radius: 10px;
 }
 
-.modalChange__input {
+.modal-change__input {
   border: 1px solid var(--border-strong-color);
   background: transparent;
   height: 34px;
@@ -76,33 +75,33 @@
   width: 100%;
 }
 
-.modalChange__input:focus {
+.modal-change__input:focus {
   outline: none;
 }
 
-.modalChange__input::placeholder {
+.modal-change__input::placeholder {
   color: var(--body-light-color);
 }
 
-.modalChange__actions {
+.modal-change__actions {
   padding: 0 15px 15px 15px;
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-.modalChange__actions--right {
+.modal-change__actions--right {
   justify-content: flex-end;
 }
 /* link of forgot password? */
-.modalChange__forgot {
+.modal-change__forgot {
   font-size: var(--font-size-small);
   font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--accent-bg-color);
   text-decoration: none;
 }
-.modalChange__button {
+.modal-change__button {
     width: 43px;
     height: 26px;
     background: var(--accent-bg-color);
@@ -118,12 +117,12 @@
     align-items: center;
     justify-content: center;
 }
-.modalChange__input__wrapper {
+.modal-change__input-wrapper {
   position: relative;
   display: flex;
 }
 
-.modalChange__advice {
+.modal-change__advice {
   font-size: var(--font-size-mini);
   color: var(--body-fresco-color);
   font-weight: var(--font-weight);
@@ -133,7 +132,7 @@
 
 
 @media (max-width: 767px) {
-  .modalChange__content {
+  .modal-change__content {
     min-width: 330px;
     max-width: 400px;
   }

@@ -11,7 +11,7 @@ export function NewSite({openChangeModal, showNotification, setIsModalOpen, setM
     
 
     return (
-        <div className="newSite__button" onClick={() => {
+        <div className="new-site__button" onClick={() => {
             if(user.Plan === 'Free' && webs.length >= 3) {
                 showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
                 setIsModalOpen(true);

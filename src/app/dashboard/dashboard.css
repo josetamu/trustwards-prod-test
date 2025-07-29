@@ -10,7 +10,7 @@
     border-radius: 10px;
     border: 1px solid var(--border-fresco-color);
     min-height: calc(100vh - 40px);
-    width: calc(100% - 70px);
+    width: calc(100% - var(--sidebar-width-close));
     height: fit-content;
     padding: 0px;
     left: var(--sidebar-width-close);
