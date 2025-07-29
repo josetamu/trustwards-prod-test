@@ -2,7 +2,6 @@
 
 import './dashboard-root.css'
 import './dashboard.css'
-
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../supabase/supabaseClient';
 import { useRouter, useParams, usePathname } from 'next/navigation';
@@ -228,41 +227,13 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'darezo.2809@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
 
 
-  // We get the user data from the database
-  const getUser = async (userId) => {
-    if (!userId) {
-      setUser(null);
-      return;
-    }
-    const {data: userData, error: dbError} = await supabase
-    .from('User')
-    .select('*')
-    .eq('id', userId)
-    .single();
-    if(dbError) {
-      setUser(null);
-    } else {
-      setUser(userData);
-    }
-  };
-
-
-  // We get the appearance settings from the database
-  const getAppearanceSettings = async (userId) => {
-    const { data, error } = await supabase
-      .from('Appearance')
-      .select('*')
-      .eq('userid', userId)
-      .single();
-    setAppearanceSettings(data);
-  };
-
+  
   // Function to update the appearance settings in the database
   const updateAppearanceSettings = async (settings) => {
     if (!user?.id) return;
@@ -689,6 +660,7 @@ useEffect(() => {
                     setIsSidebarMenu={setIsSidebarMenu}
                     isContentBlocked={blockContent}
                     setBlockContent={setBlockContent}
+                    
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockContent ? 'content__container--blocked' : ''}`}>
                     {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}
