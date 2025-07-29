@@ -232,8 +232,6 @@ const SiteStyle = (site) => {
     });
   };
 
-
-  
   // Function to update the appearance settings in the database
   const updateAppearanceSettings = async (settings) => {
     if (!user?.id) return;

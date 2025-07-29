@@ -159,6 +159,7 @@ export function Sidebar({
     setIsSidebarMenu,
     isContentBlocked,
     setBlockContent,
+    openChangeModalSettings,
     }) {
     const { 'site-slug': siteSlug } = useParams();
     const pathname = usePathname();
@@ -545,6 +546,7 @@ export function Sidebar({
                                                     setIsSidebarMenu={setIsSidebarMenu}
                                                     filteredWebs={filteredWebs}
                                                     openChangeModal={openChangeModal}
+                                                    openChangeModalSettings={openChangeModalSettings}
                                                 />
                                             </Suspense>
                                         </div>
