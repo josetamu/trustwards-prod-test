@@ -41,30 +41,40 @@ export const ScannerOverview = ({ isScanning, MAX_SCANS, setIsScanning, setScanD
                                 </div>
                             ) : (
                                 
-                                <div className={`home__scanner home__scanner-content ${scans > 0 ? 'home__scanner-content--visible' : ''}`}>
-                                    <div className="home__scannerItems">
-                                        <div className="home__scannerItem">
-                                            <span className="home__scannerItem-text">General</span>
-                                            <span className="home__scannerItem-text">{general}</span>
+                                <div className={`home__scanner home__scanner-content`}>
+                                    {scans === 0 ? (
+                                        <div className="home__noScans">
+                                            <span className="home__noScans-text">Scan your website for the first time
+                                            to see all the scripts inserting cookies</span>
                                         </div>
-                                        <div className="home__scannerItem">
-                                            <span className="home__scannerItem-text">Analytics</span>
-                                            <span className="home__scannerItem-text">{analytics}</span>
+                                    ) : (
+                                    <>
+                                        <div className="home__scannerItems">
+                                            <div className="home__scannerItem">
+                                                <span className="home__scannerItem-text">General</span>
+                                                <span className="home__scannerItem-text">{general}</span>
+                                            </div>
+                                            <div className="home__scannerItem">
+                                                <span className="home__scannerItem-text">Analytics</span>
+                                                <span className="home__scannerItem-text">{analytics}</span>
+                                            </div>
+                                            <div className="home__scannerItem">
+                                                <span className="home__scannerItem-text">Marketing</span>
+                                                <span className="home__scannerItem-text">{marketing}</span>
+                                            </div>
+                                            <div className="home__scannerItem">
+                                                <span className="home__scannerItem-text">Other</span>
+                                                <span className="home__scannerItem-text">{other}</span>
+                                            </div>
                                         </div>
-                                        <div className="home__scannerItem">
-                                            <span className="home__scannerItem-text">Marketing</span>
-                                            <span className="home__scannerItem-text">{marketing}</span>
+                                        <div className="home__fullView">
+                                            <span className="home__fullView-text">To have a full view go to the <Link href={`/dashboard/${siteSlug}/scanner`} className="home__fullView-link">scanner.</Link></span>
                                         </div>
-                                        <div className="home__scannerItem">
-                                            <span className="home__scannerItem-text">Other</span>
-                                            <span className="home__scannerItem-text">{other}</span>
-                                        </div>
-                                    </div>
-                                    <div className="home__fullView">
-                                        <span className="home__fullView-text">To have a full view go to the <Link href={`/dashboard/${siteSlug}/scanner`} className="home__fullView-link">scanner.</Link></span>
-                                    </div>
+                                    </>
+                                )}
                                 </div>
-                            )}
+                                )}
+                            
                         </div>
                     </div>
     )
