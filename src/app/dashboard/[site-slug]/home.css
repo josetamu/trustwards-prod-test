@@ -182,6 +182,7 @@
     height: 295px;
     position: relative;
     box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    gap: 30px;
 }
 .home__midCard-header{
     display: flex;
@@ -231,7 +232,7 @@
     height: 100%;
     align-items: center;
     justify-content: space-between;
-    padding-top: 30px;
+   
 }
 
 .home__scanner--scanning{
@@ -241,7 +242,7 @@
 
 /* Fade animation for scanner content */
 .home__scanner-content {
-    opacity: 0;
+    opacity: 1;
 
 }
 
@@ -266,6 +267,7 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
+    animation: scannerFadeIn 0.6s ease-out;
 }
 .home__scannerItem{
     display: flex;
@@ -289,7 +291,24 @@
     align-items: center;
     justify-content: center;
     padding-top: 20px;
-
+    animation: scannerFadeIn 0.6s ease-out;
+}
+.home__noScans{
+    background: var(--wrappers-fresco-color);
+    border-radius: 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    width: 100%;
+}
+.home__noScans-text{
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--body-fresco-color);
+    text-align: center;
 }
 .home__fullView-text{
     font-size: var(--font-size-small);
@@ -302,6 +321,7 @@
     color: var(--accent-bg-color);
     text-decoration: none;
 }
+
 .home__bottom{
     display: flex;
     flex-direction: row;
