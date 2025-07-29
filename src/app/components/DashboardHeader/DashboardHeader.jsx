@@ -13,6 +13,7 @@ import UserAvatarSkeleton from '../Skeletons/UserAvatarSkeleton';
 import { DashboardHeaderPlan } from './DashboardHeaderPlan';
 import PlanSkeleton from '../Skeletons/PlanSkeleton';
 import { DashboardHeaderBuilder } from './DashboardHeaderBuilder';
+import { useRouter } from 'next/navigation';
 
 
 function DashboardHeader() {
