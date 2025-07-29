@@ -312,7 +312,8 @@ export function Sidebar({
 
     //function to open the sidebar
     const handleToggleSidebar = () => {
-        if(windowWidth === 0) return;
+      
+        if(window.innerWidth === 0) return;
         
         if(window.innerWidth <= 767){
             setIsSidebarMenu(!isSidebarMenu);
