@@ -1,22 +1,36 @@
 .modalUser{
     display: flex;
     flex-direction: row;
-    height: 362px;
-    max-width: 800px;
     gap: 5px;
+
+    height: 100%;
+    max-height: 350px;
+    width: 100%;
 }
 .modalUser--upgrade{
-    height: 493px;
+    max-height: fit-content;
+}
+.modal:has(> .modalUser--upgrade){
+    width: 100%;
 }
 .modalUser__aside{
     display: flex;
     flex-direction: column;
-    height: 362px;
-    width: 157px;
+    min-width: 157px;
     height: 100%;
     background-color: var(--modal-sidebar-background);
     border-radius: 16px 0px 0px 16px;
     padding: 15px;
+
+    overflow: auto;
+}
+.modalUser__aside::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+.modalUser__aside::-webkit-scrollbar-thumb {
+    background: var(--body-light-color);
+    border-radius: 10px;
 }
 .modalUser__settings{
     display: flex;
@@ -43,8 +57,8 @@
 }
 .modalUser__item__span{
     color: var(--body-fresco-color);
-    font-size: var(--font-size-medium);
-    font-weight: 600;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modalUser__item__span--upgrade{
@@ -64,15 +78,22 @@
     border-radius: 0px 16px 16px 0px;
     align-items: center;
     min-width: 403px;
+
+    overflow: auto;
+}
+.modalUser__setting::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+.modalUser__setting::-webkit-scrollbar-thumb {
+    background: var(--body-light-color);
+    border-radius: 10px;
 }
 .modalUser__divider{
-    height: 0.8px;
+    height: 1px;
     background: var(--border-strong-color);
     width: 100%;
     border: none;
-}
-.modalUser__item--upgrade{
-    padding-right: 25px;
 }
 .modalUser__tick{
     color: var(--accent-bg-color);
@@ -96,9 +117,9 @@
     .modalUser__aside{
         width: 100%;
         border-radius: 16px 16px 0px 0px;
-        height: 60px;
         justify-content: center;
-        padding-left: 5px;
+        min-height: 56px;
+        overflow: hidden;
     }
     .modalUser__setting{
         border-radius: 0px 0px 16px 16px;
@@ -108,14 +129,13 @@
         scrollbar-color: var(--border-strong-color) transparent;
     }
     .modalUser__item{
-        width: 80px;
         justify-content: center;
+        width: fit-content;
     }
     .modalUser__divider{
         display: none;
     }
     .modalUser__item--upgrade{
-        width: 120px;
         gap: 2px;
     }
 }

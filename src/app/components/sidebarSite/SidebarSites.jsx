@@ -6,13 +6,14 @@ import { Dropdown } from "../dropdown/Dropdown";
 import { Tooltip } from "../tooltip/Tooltip";
 import Link from "next/link";
 import { useDashboard } from "../../dashboard/layout";
+import { useRouter } from "next/navigation";
 
-export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, isSidebarMobile, windowWidth, setIsSidebarMobile}) {
+export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, isSidebarMenu, windowWidth, setIsSidebarMobile}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const { handleCopy} = useDashboard();
-
+    const router = useRouter();
  
 
     
@@ -23,6 +24,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
           <button className="dropdown__item" onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            router.push(`/builder/${siteData.id}`);
           }}>
             <span className="dropdown__icon">
               <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +32,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                 <path d="M3.73333 10V4.54545H9.33333L3.73333 10Z" fill="currentColor"/>
                 <path d="M7.46667 10V4.54545H12.1333L7.46667 10Z" fill="currentColor"/>
               </svg>
-    </span>
+            </span>
             Builder
           </button>
           <button className="dropdown__item" onClick={(e) => {

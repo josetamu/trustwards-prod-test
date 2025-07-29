@@ -58,8 +58,8 @@
 
 .site__name {
   letter-spacing: var(--letter-spacing);
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight);
   color: var(--body-semistrong-color);
   text-align: center;
 
@@ -97,7 +97,7 @@
 }
 
 .site__plan-label {
-  font-size: var(--font-size-btn);
+  font-size: var(--font-size-medium);
   color: var(--site-pro-toggle-text-color);
   font-weight: 500;
   letter-spacing: var(--letter-spacing);
@@ -179,8 +179,8 @@
 
 .site__list-name {
   letter-spacing: var(--letter-spacing);
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight);
   color: var(--body-semistrong-color);
 
 
@@ -204,7 +204,7 @@
   justify-content: center;
   text-transform: uppercase;
   font-weight: 500;
-  font-size: 15px;
+  font-size: var(--font-size-medium);
 
   
 

@@ -59,7 +59,6 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
           position: 'fixed',
           top: toggleRect.bottom + 4,
           left: toggleRect.left,
-          width: toggleRect.width,
         });
       }
     } else {

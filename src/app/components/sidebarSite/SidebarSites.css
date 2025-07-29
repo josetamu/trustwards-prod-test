@@ -1,16 +1,6 @@
 .sidebar__sites-tooltip-wrapper{
-    position: relative;
     width: 100%;
     display: flex;
-}
-
-.sidebar--open .sidebar__sites-tooltip-wrapper{
-    position: static;
-    padding-right: 4px;
-}
-
-.sidebar--mobile .sidebar__sites-tooltip-wrapper{
-    padding-right: 10px;
 }
 
 .sidebarSites__site{
@@ -25,7 +15,8 @@
     white-space: nowrap;
     border: 1px solid transparent;
     gap: 10px;
-    padding: 8px 5px;
+    padding: 6px;
+    padding-right: 0;
     border-radius: 10px;
     transition: background-color 0.3s ease;
 }
@@ -35,7 +26,7 @@
     width: 100%;
 }
 
-.sidebar--mobile .sidebarSites__site{
+.sidebar--menu .sidebarSites__site{
     overflow: visible;
     width: 100%;
 }
@@ -68,7 +59,7 @@
     height: 15px;
 }
 
-.sidebar--mobile .sidebarSites__site:hover .sidebarSites__edit{
+.sidebar--menu .sidebarSites__site:hover .sidebarSites__edit{
     opacity: 1;
     height: 15px;
 }
@@ -102,7 +93,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 5px var(--shadow-fresco-color);
-    font-size: 12px;
+    font-size: var(--font-size-mini);
     font-weight: 500;
     padding-left: 1px;
     padding-top: 1px;
@@ -118,7 +109,7 @@
     max-width: 92px;
     overflow: hidden;
     white-space: nowrap;
-    font-size: var(--sidebar-font-size);
+    font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
@@ -134,7 +125,7 @@
     width: 100%;
     padding: 0;
     margin: 0;
-    font-size: var(--sidebar-font-size);
+    font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }

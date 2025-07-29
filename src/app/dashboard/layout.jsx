@@ -2,7 +2,6 @@
 
 import './dashboard-root.css'
 import './dashboard.css'
-import './[site-slug]/home.css'
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../supabase/supabaseClient';
@@ -31,8 +30,8 @@ function DashboardLayout({ children }) {
 
   // Sidebar state && Site state
   const [isSidebarOpen, setIsSidebarOpen] = useState(sidebarState);
-  const [isSidebarMobile, setIsSidebarMobile] = useState(false);  
-
+  const [isSidebarMenu, setIsSidebarMobile] = useState(false);  
+  const [blockContent, setBlockContent] = useState(false);
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(false);
 
@@ -181,7 +180,6 @@ const SiteStyle = (site) => {
     .eq('id', userId)
     .single();
     if(dbError) {
-      console.log(dbError);
       setUser(null);
     } else {
       setUser(userData);
@@ -441,50 +439,39 @@ const handleBackdropClick = useCallback((e) => {
         
         // Navigate to the new site page
         router.push(`/dashboard/${data[0].id}`);
-        if(window.innerWidth < 767){
-          setIsSidebarOpen(false);
-        }
 
       } catch (error) {
         showNotification('Error creating site');
       }
     }
 
-    //Function to check if the sidebar is open and the window is in mobile. Then in the return() we add the class to the content container
-    const blockSidebar = () => {
-      if (!isBrowser) return false;
-      return window.innerWidth <= 767 && isSidebarMobile;
-    };
-
 // Add resize listener to close sidebar when switching from desktop to mobile
 useEffect(() => {
   if (!isBrowser) return;
 
   const handleResize = () => {
-    // If window width is now mobile (<=767px) and sidebar is open, close it
-    if (window.innerWidth <= 767 && isSidebarOpen) {
-      setIsSidebarOpen(false);
-      setIsDropdownOpen(false);
-    
+    //Close dropdown if open when resizing
+    setIsDropdownOpen(false);
 
-      // Remove the 'open' class from content container
-      const contentContainer = document.querySelector('.content__container');
-      if (contentContainer) {
-        contentContainer.classList.remove('open');
-      }
+    const contentContainer = document.querySelector('.content__container');
+    if(isSidebarOpen && contentContainer){
+      contentContainer.classList.add('open');
+    }else if(contentContainer){
+      contentContainer.classList.remove('open');
     }
-    if(window.innerWidth >= 767 && isSidebarMobile){
+
+    if(window.innerWidth > 767){
       setIsSidebarMobile(false);
-      setIsDropdownOpen(false);
     }
   };
 
   window.addEventListener('resize', handleResize);
   
+  //Cleanup
   return () => {
     window.removeEventListener('resize', handleResize);
   };
-}, [isBrowser, isSidebarOpen, isSidebarMobile]);
+}, [isBrowser, isSidebarOpen, isSidebarMenu]);
 
 
 //This function is the master of the modals. It is the function that renders the modal depending on the modalType. Each modal is a component that is rendered in the ModalContainer as a child.
@@ -636,10 +623,12 @@ useEffect(() => {
                     openChangeModalSettings={openChangeModalSettings}
                     showNotification={showNotification}
                     isChangeModalOpen={isChangeModalOpen}
-                    isSidebarMobile={isSidebarMobile}
+                    isSidebarMenu={isSidebarMenu}
                     setIsSidebarMobile={setIsSidebarMobile}
+                    isContentBlocked={blockContent}
+                    setBlockContent={setBlockContent}
                 />
-                <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockSidebar() ? 'content__container--blocked' : ''}`}>
+                <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockContent ? 'content__container--blocked' : ''}`}>
                     {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}
                     {children}
 

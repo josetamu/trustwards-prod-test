@@ -9,7 +9,7 @@ import { UserName } from './User__Name';
 import { UserNameSkeleton } from '../Skeletons/UserNameSkeleton';
 
 
-export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, windowWidth, isSidebarMobile }) => {
+export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, windowWidth, isSidebarMenu }) => {
 //Here the dropdown's menu is defined by mapping the profilePages array
     const UserMenu = () => {
         return(
@@ -60,8 +60,8 @@ export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,i
 
     return (
         <div className="user" 
-          onMouseEnter={() => (isSidebarOpen || isSidebarMobile) && setIsDropdownOpen(true)} 
-          onMouseLeave={() => (isSidebarOpen || isSidebarMobile) && setIsDropdownOpen(false)}>
+          onMouseEnter={() => (isSidebarOpen || isSidebarMenu) && setIsDropdownOpen(true)} 
+          onMouseLeave={() => (isSidebarOpen || isSidebarMenu) && setIsDropdownOpen(false)}>
              <Dropdown
                 className="user-dropdown"
                 open={isDropdownOpen}

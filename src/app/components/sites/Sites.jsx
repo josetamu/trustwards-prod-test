@@ -90,7 +90,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
             </svg>
             <div className="sites__top-card-content">
               <h3 className="sites__top-card-title">Changelog</h3>
-              <p className="sites__top-card-text">Learn about the latest Trustwards updates.</p>
+              <p className="sites__top-card-text">Learn about latest Trustwards updates.</p>
             </div>
           </div>
         </div>

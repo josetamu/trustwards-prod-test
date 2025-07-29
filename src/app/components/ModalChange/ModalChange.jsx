@@ -310,7 +310,6 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             }
             if (!createSiteDomain || createSiteDomain.trim() === '') {
                 validationErrors.createSiteDomain = 'Site domain is required';
-                console.log(validationErrors.createSiteDomain);
             } else if (!createSiteDomain.includes('.')) {
                 validationErrors.createSiteDomain = 'Site domain must contain a dot (.)';
             }else {

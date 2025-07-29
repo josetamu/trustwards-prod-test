@@ -12,8 +12,8 @@
 .home__noInstalled{
     display: flex;
     flex-direction: column;
-    width: 99.5%;
-    height: 99.7%;
+    width: 100%;
+    height: 100%;
     align-items: center;
     justify-content: center;
     position: absolute;
@@ -29,11 +29,12 @@
 }
 
 .home__noInstalled-text{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: 500;
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
     width: 100px;
+    text-align: center;
 }
 .home__installation-container{
     display: flex;
@@ -64,11 +65,10 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 10px;
 }
 .home__installation-title{
-    font-size: 20px;
-    font-weight: 600;
+    font-size: var(--font-heading);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
@@ -84,8 +84,8 @@
     border: 1px solid var(--border-strong-color);
 }
 .home__verify-text{
-    font-size: 11px;
-    font-weight: 600;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -97,8 +97,9 @@
     gap: 20px;
 }
 .home__paste{
-    font-size: 12px;
-    font-weight: 400;
+    margin-top: 10px;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -138,13 +139,13 @@
     gap: 5px;
 }
 .home__card-title{
-    font-size: 14px;
-    font-weight: 600;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--home-subtitle-color);
 }
 .home__card-text{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: 400;
     letter-spacing: var(--letter-spacing-negative);
     width: 175px;
@@ -191,10 +192,10 @@
     z-index: 3;
 }
 .home__midCard-title{
-    font-size: 14px;
-    font-weight: 600;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--body-semistrong-color);
+    color: var(--body-strong-color);
 }
 .home__midCard-content{
     display: flex;
@@ -218,7 +219,7 @@
     cursor: pointer;
 }
 .home__scan-text{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: 500;
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
@@ -272,8 +273,8 @@
     padding: 10px;
 }
 .home__scannerItem-text{
-    font-size: var(--font-size-medium);
-    font-weight: 600;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -289,8 +290,8 @@
 
 }
 .home__fullView-text{
-    font-size: var(--font-size-medium);
-    font-weight: 600;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 
@@ -304,23 +305,22 @@
     flex-direction: row;
     width: 100%;
     height: 100%;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
-    height: 303px;
     gap: 15px;
 }
 .home__cardInfo{
     display: flex;
     flex-direction: column;
     width: 20%;
-    height: 100%;
+    min-height: 100%;
     border: 1px solid var(--border-strong-color);
     border-radius: 16px;
     padding: 15px;
     position: relative;
     box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
     gap: 10px;
-
+    overflow: hidden;
 }
 .home__cardInfo--analytics{
     width: 60%;
@@ -335,19 +335,19 @@
     z-index: 3;
 }
 .home__cardInfo-title{
-    font-size: 14px;
-    font-weight: 600;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
 .home__cardInfo-plan{
-    font-size: var(--font-size-small);
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: var(--letter-spacing-negative);
-    color: var(--site-pro-toggle-text-color);
-    background-color: var(--wrappers-fresco-color);
+    color: var( --site-pro-toggle-text-color);
+    background-color: var(--view-toggle-background);
     padding: 5px;
-    border-radius: 4px;
+    border-radius: 5px;
+    cursor: pointer;
     text-transform: uppercase;
 }
 .home__cardInfo-content{
@@ -363,7 +363,7 @@
     width: 130px;
 }
 .home__cardInfo-enjoy{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
@@ -394,13 +394,13 @@
     justify-content: space-between;
 }
 .home__usage-title{
-    font-size: var(--font-size-medium);
-    font-weight: 600;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 .home__usage-value{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
@@ -452,7 +452,7 @@
     cursor: pointer;
 }
 .home__buttonUpgrade-text{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
@@ -485,7 +485,7 @@
 }
 .home__complyHealth-text{
     font-size: 32px;
-    font-weight: 600;
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--home-complyHealth-status-color);
 }
@@ -505,13 +505,13 @@
     justify-content: space-between;
 }
 .home__complyHealth-region{
-    font-size: var(--font-size-medium);
-    font-weight: 600;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 .home__complyHealth-value{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
@@ -582,13 +582,13 @@
     align-items: center;
 }
 .home__cookie-title{
-    font-size: var(--font-size-medium);
-    font-weight: 600;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 .home__cookie-value{
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);

@@ -307,16 +307,16 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
             
             </div>
             <div className="modalAppearance__bottom">
-                <div className="modalAppearance__ancentColor">
-                    <span className="modalAppearance__ancentColor__title">
+                <div className="modalAppearance__accentColor">
+                    <span className="modalAppearance__accentColor__title">
                         Accent color
                     </span>
-                    <div className="modalAppearance__ancentColor__choices">
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--green ${selectedColor === 'green' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('green')}></div>
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--purple ${selectedColor === 'purple' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('purple')}></div>
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--red ${selectedColor === 'red' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('red')}></div>
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--orange ${selectedColor === 'orange' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('orange')}></div>
-                        <div className={`modalAppearance__ancentColor__choice modalAppearance__ancentColor__choice--blue ${selectedColor === 'blue' ? 'modalAppearance__ancentColor__choice--active' : ''}`} onClick={() => handleColorSelect('blue')}></div>    
+                    <div className="modalAppearance__accentColor__choices">
+                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--green ${selectedColor === 'green' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('green')}></div>
+                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--purple ${selectedColor === 'purple' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('purple')}></div>
+                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--red ${selectedColor === 'red' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('red')}></div>
+                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--orange ${selectedColor === 'orange' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('orange')}></div>
+                        <div className={`modalAppearance__accentColor__choice modalAppearance__accentColor__choice--blue ${selectedColor === 'blue' ? 'modalAppearance__accentColor__choice--active' : ''}`} onClick={() => handleColorSelect('blue')}></div>    
                     </div>
                     
                 </div>

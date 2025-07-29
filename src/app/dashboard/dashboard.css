@@ -19,20 +19,17 @@
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-
   }
 
   /* we use this class in the elements we need to readjust when sidebar is open. with only this class we not need modifyers in every element we wanna change*/
   .open{
     left: var(--sidebar-width-open);
-    width: calc(100% - 200px);
+    width: calc(100% - var(--sidebar-width-open));
   } 
 
 
 
   @media (max-width: 767px) {
-    
-
     .app-container{
       width: 100%;      
     }
@@ -43,13 +40,6 @@
     top: 0px;
     border: 0px;
     border-radius: 0px;
-   
-   
-  
-  }
-  .open{
-    left: 0px;
-    width: 100%;
   }
     /* Block content when sidebar is open and we are in mobile by hiding overflow*/
     .content__container--blocked{

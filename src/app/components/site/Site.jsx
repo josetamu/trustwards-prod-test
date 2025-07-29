@@ -5,6 +5,8 @@ import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
 import { useState} from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import { useDashboard } from '../../dashboard/layout';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 // If name is already taken, generate a unique name adding a number to the end (name(1), name(2), etc.)
 /* const generateUniqueSiteName = (baseName, currentSiteId, webs, ) => {
@@ -48,9 +50,10 @@ const PlanButton = ({ onClick, isActive, plan }) => (
 // SiteMenu: Dropdown menu for site actions
 const SiteMenu = ({setIsModalOpen, setModalType, isModalOpen, setSiteData, siteData, setIsDropdownOpen, modalType, openChangeModalSettings}) => {
   const { handleCopy } = useDashboard();
+  const router = useRouter();
   return (
   <>
-    <button className="dropdown__item">
+    <Link href={`/builder/${siteData.id}`} className="dropdown__item">
       <span className="dropdown__icon">
         <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 0H14V2.72727H0V0Z" fill="currentColor"/>
@@ -59,7 +62,7 @@ const SiteMenu = ({setIsModalOpen, setModalType, isModalOpen, setSiteData, siteD
         </svg>
       </span>
       Builder
-    </button>
+    </Link>
     <button className="dropdown__item" onClick={() => {
       handleCopy(siteData?.id, 'top');
       setIsDropdownOpen(false);
@@ -101,7 +104,6 @@ const SiteMenu = ({setIsModalOpen, setModalType, isModalOpen, setSiteData, siteD
         }
         // Handle mobile sidebar/dropdown state
         if (window.innerWidth <= 767) {
-          if (window.setIsSidebarOpen) window.setIsSidebarOpen(false);
           if (window.toggleSidebar) window.toggleSidebar();
           if (window.toggleDropdown) window.toggleDropdown();
         }

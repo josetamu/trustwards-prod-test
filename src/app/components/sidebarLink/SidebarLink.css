@@ -1,7 +1,7 @@
 .sidebar__link {
     text-decoration: none;
     color: var(--body-fresco-color);
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     display: flex;

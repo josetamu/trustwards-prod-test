@@ -7,7 +7,7 @@
     padding: 6px;
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing);
-    font-size: 12px;
+    font-size: var(--font-size-medium);
     font-weight: 500;
     border: 1px solid var(--secondary-button-border-color);
     border-radius: 8px;
@@ -21,7 +21,7 @@
 
 /* Sort title */
 .sort__title {
-  font-size: 11px;
+  font-size: var(--font-size-mini);
   font-weight: 500;
   letter-spacing: var(--letter-spacing);
   color: var(--body-fresco-color);
@@ -35,7 +35,7 @@
 
 /* Sort divider */
 .sort__divider {
-  height: 0.8px;
+  height: 1px;
   background: var(--border-strong-color);
   width: 100%;
   border: none;
@@ -45,7 +45,7 @@
 /* Mobile responsive */
 @media (max-width: 480px) {
     .sort__button {
-      font-size: 12px;
+      font-size: var(--font-size-mini);
     }
     .sort__button svg {
       width: 12px;

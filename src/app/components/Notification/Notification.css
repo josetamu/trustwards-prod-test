@@ -46,7 +46,7 @@
 
 /* Notification Message */
 .notification__message {
-  font-size: var(--font-size-medium);
+  font-size: var(--font-size-small);
   color: var(--notification-color);
   font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
@@ -55,6 +55,6 @@
 
 @media (max-width: 767px) {
     .notification__message{
-        font-size: var(--font-size-medium);
+        font-size: var(--font-size-small);
     }
 }
