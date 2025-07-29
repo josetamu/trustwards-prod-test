@@ -233,36 +233,6 @@ const SiteStyle = (site) => {
     });
   };
 
-
-  // We get the user data from the database
-  const getUser = async (userId) => {
-    if (!userId) {
-      setUser(null);
-      return;
-    }
-    const {data: userData, error: dbError} = await supabase
-    .from('User')
-    .select('*')
-    .eq('id', userId)
-    .single();
-    if(dbError) {
-      setUser(null);
-    } else {
-      setUser(userData);
-    }
-  };
-
-
-  // We get the appearance settings from the database
-  const getAppearanceSettings = async (userId) => {
-    const { data, error } = await supabase
-      .from('Appearance')
-      .select('*')
-      .eq('userid', userId)
-      .single();
-    setAppearanceSettings(data);
-  };
-
   // Function to update the appearance settings in the database
   const updateAppearanceSettings = async (settings) => {
     if (!user?.id) return;
