@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useDashboard } from '../../layout';
 import { ScannerOverviewSkeleton } from '@components/Skeletons/ScannerOverviewSkeleton';
 
-export const ScannerOverview = ({ isScanning, scanCount, scanSession, MAX_SCANS, startScan, handleScanFinish, isContentVisible, siteSlug, noInstalled}) => {
+export const ScannerOverview = ({ isScanning, MAX_SCANS, setIsScanning, setScanDone, scanDone, siteSlug, noInstalled}) => {
     const {allUserDataResource } = useDashboard();
 
     if(!allUserDataResource) return <ScannerOverviewSkeleton />;
@@ -15,6 +15,7 @@ export const ScannerOverview = ({ isScanning, scanCount, scanSession, MAX_SCANS,
 
     const site = webs.find(web => web.id === siteSlug);
     const isInstalled = site?.Verified;
+    const scans = site?.Scans;
     //variables for the scanner overview
     const general = /* scanGeneral || */ 0;
     const analytics = /* scanAnalytics || */ 0;
@@ -29,17 +30,18 @@ export const ScannerOverview = ({ isScanning, scanCount, scanSession, MAX_SCANS,
                         <div className="home__midCard-header">
                             <span className="home__midCard-title">Scanner Overview</span>
                             {isInstalled && (
-                                    <ScanButton isScanning={isScanning} scanCount={scanCount} startScan={startScan} scanSession={scanSession} MAX_SCANS={MAX_SCANS} />
+                                    <ScanButton isScanning={isScanning} MAX_SCANS={MAX_SCANS} setIsScanning={setIsScanning} setScanDone={setScanDone} scanDone={scanDone} siteSlug={siteSlug}/>
                             )}
                         </div>
                         {noInstalled()}
                         <div className="home__midCard-content">
                             {isScanning ? (
                                 <div className="home__scanner home__scanner--scanning">
-                                    <Scan isScanning={isScanning} onFinish={handleScanFinish} />
+                                    <Scan isScanning={isScanning} />
                                 </div>
                             ) : (
-                                <div className={`home__scanner home__scanner-content ${isContentVisible ? 'home__scanner-content--visible' : ''}`}>
+                                
+                                <div className={`home__scanner home__scanner-content ${scans > 0 ? 'home__scanner-content--visible' : ''}`}>
                                     <div className="home__scannerItems">
                                         <div className="home__scannerItem">
                                             <span className="home__scannerItem-text">General</span>

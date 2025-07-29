@@ -28,15 +28,11 @@ import { Analytics } from './homeComponents/Analytics';
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs, showNotification, setModalType, setIsModalOpen,setWebs,allUserDataResource } = useDashboard();
+    const { webs, showNotification, setModalType, setIsModalOpen,setWebs,allUserDataResource, isScanning, setIsScanning, scanDone, setScanDone, MAX_SCANS } = useDashboard();
     const [siteData, setSiteData] = useState(null);
     const [isInstalled, setIsInstalled] = useState(null);
 
-    const [isScanning, setIsScanning] = useState(false);
-    const [scanSession, setScanSession] = useState(0);
-    const [isContentVisible, setIsContentVisible] = useState(true);
-    const MAX_SCANS = 3;
-    const [scanCount, setScanCount] = useState(0);
+
 
     //update site data when the selected site changes
     useEffect(() => {
@@ -50,22 +46,6 @@ function Home() {
 
     }, [webs, siteSlug]);
 
- // scan functions
-    // start the scan
-    const startScan = () => {
-        if (isScanning) return;
-        setIsContentVisible(false);
-        setIsScanning(true);
-        setScanSession(prev => prev + 1);
-    };
-    // finish the scan
-    const handleScanFinish = () => {
-        setIsScanning(false);
-        // Trigger fade-in animation after a short delay
-        setTimeout(() => {
-            setIsContentVisible(true);
-        }, 100);
-    }; 
 
 
 
@@ -145,7 +125,7 @@ const noInstalled = () => {
                 <div className="home__mid">
                     <div className="home__midCard"></div>
                     <Suspense fallback={<ScannerOverviewSkeleton />}>
-                        <ScannerOverview siteSlug={siteSlug} showNotification={showNotification} verify={verify} noInstalled={noInstalled} isScanning={isScanning} scanCount={scanCount} scanSession={scanSession} MAX_SCANS={MAX_SCANS} startScan={startScan} handleScanFinish={handleScanFinish} isContentVisible={isContentVisible} />
+                        <ScannerOverview siteSlug={siteSlug} showNotification={showNotification} verify={verify} noInstalled={noInstalled} isScanning={isScanning} MAX_SCANS={MAX_SCANS} setIsScanning={setIsScanning} setScanDone={setScanDone} scanDone={scanDone} />
                     </Suspense>
                 </div>
                 <div className="home__bottom">

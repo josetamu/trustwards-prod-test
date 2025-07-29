@@ -6,7 +6,7 @@ import { supabase } from '../../../supabase/supabaseClient';
 export const DashboardAvatar = ({siteSlug, checkSitePicture, SiteStyle, setSiteData}) => {
     const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
-    const { allUserDataResource } = useDashboard();
+    const { allUserDataResource, setWebs } = useDashboard();
 
     if(!allUserDataResource) return <UserAvatarSkeleton />;
 
@@ -78,10 +78,14 @@ export const DashboardAvatar = ({siteSlug, checkSitePicture, SiteStyle, setSiteD
               ...prev,
               "Avatar URL": publicUrl
             }));
-            
+            // Clear the file input
             if(fileInputRef.current){
               fileInputRef.current.value = '';
             }
+
+            // Update the webs array
+            setWebs(prev => prev.map(web => web.id === site.id ? { ...web, ...updateData } : web));
+            
             // Update the resource (change the avatar url in the webs array real time)
             if (allUserDataResource) {
               const currentData = allUserDataResource.read();

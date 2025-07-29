@@ -9,23 +9,17 @@ import { MonthlyScans } from './MonthlyScans';
 import { MonthlyScansSkeleton } from '@components/Skeletons/MonthlyScansSkeleton';
 import { ScanResult } from './ScanResult';
 import { ScanResultSkeleton } from '@components/Skeletons/ScanResultSkeleton';
-
-
-
-
-
+import { useDashboard } from '../../layout';
 
 // Manages scan state, triggers scans, and displays results
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
+    const {isScanning, setIsScanning, scanDone, setScanDone, MAX_SCANS} = useDashboard();
+    
 
-    const [scanCount, setScanCount] = useState(0);
-    const [isScanning, setIsScanning] = useState(false);
-    const [scanDone, setScanDone] = useState(false);
-    const MAX_SCANS = 3;
 
-    const [scanSession, setScanSession] = useState(0);
+
 
 
 
@@ -39,7 +33,7 @@ function Home() {
                 </div>
                 <div className='scanner__actions'>
                     <Suspense fallback={<PlanSkeleton />}>
-                        <ScanButton isScanning={isScanning} scanCount={scanCount} scanSession={scanSession} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setScanCount={setScanCount} setIsScanning={setIsScanning} setScanSession={setScanSession} siteSlug={siteSlug} />
+                        <ScanButton isScanning={isScanning}  MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug} />
                     </Suspense>
                     <Suspense fallback={<MonthlyScansSkeleton />}>
                         <MonthlyScans siteSlug={siteSlug} MAX_SCANS={MAX_SCANS} />
@@ -47,7 +41,7 @@ function Home() {
                 </div>
             </div>
             <Suspense fallback={<ScanResultSkeleton />}>
-                <ScanResult scanDone={scanDone} isScanning={isScanning} scanSession={scanSession} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setScanCount={setScanCount} setIsScanning={setIsScanning} setScanSession={setScanSession} siteSlug={siteSlug} />
+                <ScanResult scanDone={scanDone} isScanning={isScanning} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug} />
             </Suspense>
         </div>
     );
