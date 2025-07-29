@@ -106,7 +106,7 @@ const defaultScanResults = [
     );
   }
 
-export const ScanResult = ({scanDone, isScanning, scanSession, MAX_SCANS, setScanDone, setScanCount, setIsScanning, setScanSession, siteSlug}) => {
+export const ScanResult = ({scanDone, isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug}) => {
     const [scanResults, setScanResults] = useState(defaultScanResults);
     const {allUserDataResource } = useDashboard();
     if(!allUserDataResource) return <ScanResultSkeleton />;
@@ -129,7 +129,7 @@ export const ScanResult = ({scanDone, isScanning, scanSession, MAX_SCANS, setSca
                         <>
                             <div className="scanner__main-box-text">Scan your website for the first time<br/>to see all the scripts inserting cookies</div>
                             <Suspense fallback={<ScanResultSkeleton />}>
-                                <ScanButton isScanning={isScanning} scanCount={scanCount} scanSession={scanSession} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setScanCount={setScanCount} setIsScanning={setIsScanning} setScanSession={setScanSession} siteSlug={siteSlug} />
+                                <ScanButton isScanning={isScanning} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug} />
                             </Suspense>
                         </>
                     )}

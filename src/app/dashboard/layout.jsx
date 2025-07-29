@@ -60,6 +60,11 @@ function DashboardLayout({ children }) {
   // Browser state to handle SSR
   const [isBrowser, setIsBrowser] = useState(false);
 
+  // Scan state
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanDone, setScanDone] = useState(false);
+  const MAX_SCANS = 3;
+
 
     //NEW BD CODE
     const [user, setUser] = useState(null);
@@ -79,7 +84,7 @@ function DashboardLayout({ children }) {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
     const [userResult, sitesResult, appearanceResult] = await Promise.allSettled([
       supabase.from('User').select('*').eq('id', userId).single(),
       supabase.from('Site').select('*').eq('userid', userId),
@@ -626,6 +631,11 @@ useEffect(() => {
         openChangeModal,
         showNotification,
         allUserDataResource,
+        isScanning,
+        setIsScanning,
+        scanDone,
+        setScanDone,
+        MAX_SCANS,
     };
    
     return (

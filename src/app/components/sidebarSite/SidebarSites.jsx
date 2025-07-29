@@ -130,7 +130,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                       {siteData.Name}
                 </span> 
             </div>
-            {!isSidebarOpen && windowWidth > 767 && (
+            {!isSidebarOpen && window.innerWidth > 767 && (
                 <Tooltip 
                   message={siteData.Name} 
                   id={siteData.id}

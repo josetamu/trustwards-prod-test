@@ -313,6 +313,9 @@ export function Sidebar({
 
     //function to open the sidebar
     const handleToggleSidebar = () => {
+
+        if(windowWidth === 0) return;
+
         if(windowWidth < 767){
             setIsSidebarMobile(!isSidebarMobile);
             setIsSearchOpen(false);

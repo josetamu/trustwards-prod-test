@@ -241,20 +241,22 @@
 /* Fade animation for scanner content */
 .home__scanner-content {
     opacity: 0;
-    transition: opacity 0.6s ease-out;
-    will-change: opacity;
+
 }
 
 .home__scanner-content--visible {
     opacity: 1;
+    animation: scannerFadeIn 0.6s ease-out;
   } 
 
 @keyframes scannerFadeIn {
     from {
         opacity: 0;
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -629,11 +631,6 @@
     .home__midCard{
         max-width: 100%;
     }
-
-/*     .home__circleChart{
-        width: 70%;
-        height: 70%;
-    } */
 
     .home__cookiesDisplayed{
         width: 35%;

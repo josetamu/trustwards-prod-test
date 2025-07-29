@@ -6,7 +6,7 @@ import { SidebarSiteSkeleton } from '../Skeletons/SidebarSiteSkeleton';
 
 
 
-export function SidebarSitesList({ searchQuery, openChangeModal, setIsModalOpen, setModalType, showNotification, isSidebarOpen, isModalOpen, isDropdownOpen, setIsDropdownOpen, siteData, setSiteData, toggleSidebar, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModalSettings, isSidebarMobile, windowWidth, setIsSidebarMobile, filteredWebs }) {
+export function SidebarSitesList({ searchQuery, openChangeModal, setIsModalOpen, setModalType, showNotification, isSidebarOpen, isModalOpen, isDropdownOpen, setIsDropdownOpen, siteData, setSiteData, toggleSidebar, setIsSidebarOpen, modalType, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModalSettings, isSidebarMobile, windowWidth, setIsSidebarMobile, filteredWebs }) {
     const { allUserDataResource } = useDashboard();
 
     if(!allUserDataResource) {
