@@ -9,7 +9,6 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
   const menuRef = useRef(null);
   const dropdownId = useId();
   const [fixedStyle, setFixedStyle] = React.useState(null);
-  const [windowWidth, setWindowWidth] = useState(0);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -66,29 +65,15 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
     }
   }, [open, className]);
 
-  // Add useEffect to handle window width
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    // Set initial width
-    handleResize();
-
-    // Add event listener
-    window.addEventListener('resize', handleResize);
-    
-    // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
-    
-
-  }, []);
-
-     // Close dropdown when window width changes 
-     useEffect(() => {
-      onClose && onClose();
-  }, [windowWidth]);
+    // Close dropdown when window width changes 
+    useEffect(() => {
+      const handleResize = () => {
+        onClose && onClose();
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
   return (
     <div

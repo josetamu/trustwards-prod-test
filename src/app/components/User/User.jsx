@@ -11,7 +11,7 @@ import { UserAvatar } from './UserAvatar';
 import { UserAvatarSkeleton } from '../Skeletons/UserAvatarSkeleton';
 
 
-export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, windowWidth, isSidebarMenu }) => {
+export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, isSidebarMenu }) => {
 //Here the dropdown's menu is defined by mapping the profilePages array
     const UserMenu = () => {
         return(

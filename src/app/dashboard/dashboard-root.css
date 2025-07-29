@@ -35,13 +35,14 @@ System selected: will fallback to root or html[data-theme="dark"]
   --input-padding: 12px;
   --letter-spacing: -0.03em;
 
-  --backdrop-blur: 20px;
+  --backdrop-blur: 7px;
   --heading-font-size: 18px;
   --font-weight: 500;
   --letter-spacing-negative: -0.03em;
 
   --sidebar-width-open: 230px;
   --sidebar-width-close: 65px;
+  --sidebar-menu-backdrop-color: rgba(255, 255, 255, 0.35);
 
   --font-size-mini: 12px;
   --font-size-small: 13px;
@@ -160,6 +161,8 @@ System selected: will fallback to root or html[data-theme="dark"]
 }
 
 html[data-theme="dark"] {
+  --sidebar-menu-backdrop-color: rgba(0, 0, 0, 0.5);
+
   /*App*/
   --sidebar-background: #202020;
   --content-background: #191919;

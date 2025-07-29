@@ -156,7 +156,7 @@ export function Sidebar({
     showNotification,
     isChangeModalOpen,
     isSidebarMenu,
-    setIsSidebarMobile,
+    setIsSidebarMenu,
     isContentBlocked,
     setBlockContent,
     }) {
@@ -165,34 +165,16 @@ export function Sidebar({
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isActive, setIsActive] = useState('');
-    const [windowWidth, setWindowWidth] = useState(0); // Add this state
     const [hasSitesOverflow, setHasSitesOverflow] = useState(false);
+    const [windowResizedWidth, setWindowResizedWidth] = useState(0);
 
     //const to check if you are clicking outside the sidebar and the action button
     const sidebarContainerRef = useRef(null);
     const sidebarActionRef = useRef(null);
     const searchContainerRef = useRef(null);
     const sitesDisplayRef = useRef(null);
-
-    // Add useEffect to handle window width
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-        };
-
-        // Set initial width
-        handleResize();
-
-        // Add event listener
-        window.addEventListener('resize', handleResize);
-        
-        // Cleanup
-        return () => window.removeEventListener('resize', handleResize);
-        
-
-    }, []);
-
     // if siteSlug the sidebar content change to the site menu
+
     useEffect(() => {
         if(siteSlug) {
             setIsSiteOpen(true);
@@ -225,7 +207,7 @@ export function Sidebar({
     useEffect(() => {
         const handleClickOutside = (event) => {
             // Only handle clicks outside on mobile devices
-            if (windowWidth < 767 && isSidebarMenu) {
+            if (window.innerWidth < 767 && isSidebarMenu) {
                 // Don't close sidebar if a modal is open
                 if (isModalOpen || isChangeModalOpen) {
                     return;
@@ -236,7 +218,7 @@ export function Sidebar({
                 const isOutsideAction = sidebarActionRef.current && !sidebarActionRef.current.contains(event.target);
                 
                 if (isOutsideContainer && isOutsideAction) {
-                    setIsSidebarMobile(false);
+                    setIsSidebarMenu(false);
                     setBlockContent(!isContentBlocked);
                 }
             }
@@ -251,13 +233,13 @@ export function Sidebar({
         };
         const handleEscape = (event) => {
             // Only handle clicks outside on mobile devices
-            if (event.key === 'Escape' && windowWidth < 767 && isSidebarMenu) {
+            if (event.key === 'Escape' && window.innerWidth < 767 && isSidebarMenu) {
                 // Don't close sidebar if a modal is open
                 if (isModalOpen || isChangeModalOpen) {
                     return;
                 }
                 
-                setIsSidebarMobile(false);
+                setIsSidebarMenu(false);
                 setBlockContent(!isContentBlocked);
                 setIsSearchOpen(false);
             }
@@ -273,7 +255,7 @@ export function Sidebar({
             document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('keydown', handleEscape);
         };
-    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSearchOpen, windowWidth, isSidebarMenu]);
+    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSearchOpen, isSidebarMenu]);
 
     // Define overviewPages inside the component to access siteData
     const overviewPages = [
@@ -330,8 +312,8 @@ export function Sidebar({
 
     //function to open the sidebar
     const handleToggleSidebar = () => {
-        if(windowWidth <= 767){
-            setIsSidebarMobile(!isSidebarMenu);
+        if(window.innerWidth <= 767){
+            setIsSidebarMenu(!isSidebarMenu);
             setBlockContent(!isContentBlocked);
             setIsSearchOpen(false);
         }else{
@@ -346,22 +328,28 @@ export function Sidebar({
     const [hoveredOverviewLink, setHoveredOverviewLink] = useState(null);
 
     useEffect(() => {
-        const checkOverflow = () => {
+        const checkOverflowAndWindowResize = () => {
             if (sitesDisplayRef.current) {
                 const el = sitesDisplayRef.current;
                 setHasSitesOverflow(el.scrollHeight > el.clientHeight);
             }
+
+            setWindowResizedWidth(window.innerWidth);
+
+            if(window.innerWidth >= 767){
+                setBlockContent(false);
+            }
         };
 
-        checkOverflow();                  // inicial
-        window.addEventListener('resize', checkOverflow);
+        checkOverflowAndWindowResize();
+        window.addEventListener('resize', checkOverflowAndWindowResize);
 
-        return () => window.removeEventListener('resize', checkOverflow);
+        return () => window.removeEventListener('resize', checkOverflowAndWindowResize);
     }, [filteredWebs, isSiteOpen]);
 
     return (
         <div className={`${isSidebarMenu ? 'sidebar__backdrop' : ''}`}>
-            <div className={`sidebar ${windowWidth <= 767 ? 'sidebar--mobile' : (isSidebarOpen ? 'sidebar--open' : 'sidebar--closed')} ${isSidebarMenu ? 'sidebar--menu' : ''}`}>
+            <div className={`sidebar ${(isSidebarOpen ? 'sidebar--open' : 'sidebar--closed')} ${isSidebarMenu ? 'sidebar--menu' : ''}`}>
                 {/* Logo and action button */}
                 <div className="sidebar__logos">
                     <div className="sidebar__logo">
@@ -404,10 +392,10 @@ export function Sidebar({
                         <div className="sidebar__home">
                                 <Link
                                 href={`/dashboard`}
-                                className={`sidebar-header ${!isSiteOpen && windowWidth > 767 ? 'sidebar-header--active' : ''} ${isSidebarMenu ? 'sidebar-header--mobile' : ''}`}
+                                className={`sidebar-header ${pathname === '/dashboard' ? 'sidebar-header--active' : ''} ${isSidebarMenu ? 'sidebar-header--mobile' : ''}`}
                                 onMouseEnter={() => setIsDashboardHovered(true)}
                                 onMouseLeave={() => setIsDashboardHovered(false)}
-                                onClick={() => setIsSidebarMobile(false)}
+                                onClick={() => setIsSidebarMenu(false)}
                             >
                                 <span className="sidebar-header__icon">
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -504,8 +492,8 @@ export function Sidebar({
                                                     href={page.href}
                                                     className={`site__link ${isActive === page.name ? 'site__link--active' : ''}`}
                                                     onClick={() => {
-                                                        if(windowWidth < 767) {
-                                                            setIsSidebarMobile(false);
+                                                        if(window.innerWidth < 767) {
+                                                            setIsSidebarMenu(false);
                                                             toggleSidebar();
                                                         }
                                                     }}
@@ -513,7 +501,7 @@ export function Sidebar({
                                                     <span className='site__link__icon'>{page.icon}</span>
                                                     <span className='site__link__text'>{page.name}</span>
                                                 </Link>
-                                                {!isSidebarOpen && windowWidth > 767 && hoveredOverviewLink === page.name && (
+                                                {!isSidebarOpen && window.innerWidth > 767 && hoveredOverviewLink === page.name && (
                                                     <Tooltip 
                                                         message={page.name} 
                                                         responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
@@ -550,9 +538,8 @@ export function Sidebar({
                                                     setIsSiteOpen={setIsSiteOpen}
                                                     checkSitePicture={checkSitePicture}
                                                     SiteStyle={SiteStyle}
-                                                    isSidebarMobile={isSidebarMobile}
-                                                    windowWidth={windowWidth}
-                                                    setIsSidebarMobile={setIsSidebarMobile}
+                                                    isSidebarMenu={isSidebarMenu}
+                                                    setIsSidebarMenu={setIsSidebarMenu}
                                                     filteredWebs={filteredWebs}
                                                     openChangeModal={openChangeModal}
                                                 />
@@ -605,7 +592,6 @@ export function Sidebar({
                         checkProfilePicture={checkProfilePicture}
                         profileStyle={profileStyle}
                         isSidebarMenu={isSidebarMenu}
-                        windowWidth={windowWidth}
                         /> 
 
                     </div>

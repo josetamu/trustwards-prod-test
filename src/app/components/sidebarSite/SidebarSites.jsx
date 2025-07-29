@@ -9,7 +9,7 @@ import { useDashboard } from "../../dashboard/layout";
 import { useRouter } from "next/navigation";
 import { SidebarSiteSkeleton } from "../Skeletons/SidebarSiteSkeleton";
 
-export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, isSidebarMobile, windowWidth, setIsSidebarMobile}) {
+export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, isSidebarMenu, setIsSidebarMenu}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -110,8 +110,8 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             onClick={(e) => {
                 setSelectedSite(siteData);
                 setIsSiteOpen(true);
-                if(windowWidth < 767){
-                    setIsSidebarMobile(false);
+                if(window.innerWidth < 767){
+                    setIsSidebarMenu(false);
                 }
             }}
             
@@ -128,7 +128,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                       {siteData.Name}
                 </span> 
             </div>
-            {!isSidebarOpen && windowWidth > 767 && (
+            {!isSidebarOpen && window.innerWidth > 767 && (
                 <Tooltip 
                   message={siteData.Name} 
                   id={siteData.id}

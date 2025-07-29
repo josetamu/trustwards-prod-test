@@ -30,7 +30,7 @@ function DashboardLayout({ children }) {
 
   // Sidebar state && Site state
   const [isSidebarOpen, setIsSidebarOpen] = useState(sidebarState);
-  const [isSidebarMenu, setIsSidebarMobile] = useState(false);  
+  const [isSidebarMenu, setIsSidebarMenu] = useState(false);  
   const [blockContent, setBlockContent] = useState(false);
   const [selectedSite, setSelectedSite] = useState(null);
   const [isSiteOpen, setIsSiteOpen] = useState(!!params['site-slug']);
@@ -78,7 +78,7 @@ function DashboardLayout({ children }) {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     const [userResult, sitesResult, appearanceResult] = await Promise.allSettled([
       supabase.from('User').select('*').eq('id', userId).single(),
       supabase.from('Site').select('*').eq('userid', userId),
@@ -513,7 +513,7 @@ useEffect(() => {
     }
 
     if(window.innerWidth > 767){
-      setIsSidebarMobile(false);
+      setIsSidebarMenu(false);
     }
   };
 
@@ -641,7 +641,6 @@ useEffect(() => {
         setSelectedSite,
         openChangeModalSettings,
         openChangeModal,
-        showNotification,
         allUserDataResource,
     };
    
@@ -677,7 +676,7 @@ useEffect(() => {
                     showNotification={showNotification}
                     isChangeModalOpen={isChangeModalOpen}
                     isSidebarMenu={isSidebarMenu}
-                    setIsSidebarMobile={setIsSidebarMobile}
+                    setIsSidebarMenu={setIsSidebarMenu}
                     isContentBlocked={blockContent}
                     setBlockContent={setBlockContent}
                 />
