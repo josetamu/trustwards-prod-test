@@ -11,7 +11,7 @@ export function NewSite({openChangeModal, showNotification, setIsModalOpen, setM
     
 
     return (
-        <div className="newSite__button" onClick={() => {
+        <div className="new-site__button" onClick={() => {
             if(user.Plan === 'Free' && webs.length >= 3) {
                 showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
                 setIsModalOpen(true);
@@ -20,9 +20,9 @@ export function NewSite({openChangeModal, showNotification, setIsModalOpen, setM
                 openChangeModal('newsite');
             }
         }}>
-            <span className="newSite__text">New</span>
-            <span className="newSite__svg">
-            <svg className="newSite__svg" width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <span className="new-site__text">New</span>
+            <span className="new-site__svg">
+            <svg className="new-site__svg" width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_371_406)">
                 <path d="M0.75 4.5C0.75 6.57105 2.42893 8.25 4.5 8.25C6.57105 8.25 8.25 6.57105 8.25 4.5C8.25 2.42893 6.57105 0.75 4.5 0.75" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M4.5 3V6M6 4.5H3" stroke="white" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"/>

@@ -1,14 +1,14 @@
-.modalUser{
+.modal-user{
     display: flex;
     flex-direction: row;
     height: 362px;
     max-width: 800px;
     gap: 5px;
 }
-.modalUser--upgrade{
+.modal-user--upgrade{
     height: 493px;
 }
-.modalUser__aside{
+.modal-user__aside{
     display: flex;
     flex-direction: column;
     height: 362px;
@@ -18,12 +18,12 @@
     border-radius: 16px 0px 0px 16px;
     padding: 15px;
 }
-.modalUser__settings{
+.modal-user__settings{
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
-.modalUser__item{
+.modal-user__item{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -32,31 +32,31 @@
     height: 26px;
     padding: 0 10px;
 }
-.modalUser__item--active{
+.modal-user__item--active{
     background-color: var(--hover-strong-color);
     border-radius: 8px;
 }
-.modalUser__item:hover{
+.modal-user__item:hover{
     background-color: var(--hover-strong-color);
     border-radius: 8px;
     cursor: pointer;
 }
-.modalUser__item__span{
+.modal-user__item__span{
     color: var(--body-fresco-color);
     font-size: var(--font-size-medium);
     font-weight: 600;
     letter-spacing: var(--letter-spacing-negative);
 }
-.modalUser__item__span--upgrade{
+.modal-user__item__span--upgrade{
     color: var(--accent-bg-color);
     white-space: nowrap;
 }
-.modalUser__item__icon{
+.modal-user__item__icon{
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.modalUser__setting{
+.modal-user__setting{
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -65,21 +65,21 @@
     align-items: center;
     min-width: 403px;
 }
-.modalUser__divider{
+.modal-user__divider{
     height: 0.8px;
     background: var(--border-strong-color);
     width: 100%;
     border: none;
 }
-.modalUser__item--upgrade{
+.modal-user__item--upgrade{
     padding-right: 25px;
 }
-.modalUser__tick{
+.modal-user__tick{
     color: var(--accent-bg-color);
 }
 
 @media (max-width: 767px) {
-    .modalUser{
+    .modal-user{
         height: 100%;
         max-height: fit-content;
         overflow: auto;
@@ -87,34 +87,34 @@
         width: 100%;
         box-sizing: border-box;
     }
-    .modalUser__settings{
+    .modal-user__settings{
         flex-direction: row;
         align-items: center;
         justify-content: start;
         gap: 5px;
     }
-    .modalUser__aside{
+    .modal-user__aside{
         width: 100%;
         border-radius: 16px 16px 0px 0px;
         height: 60px;
         justify-content: center;
         padding-left: 5px;
     }
-    .modalUser__setting{
+    .modal-user__setting{
         border-radius: 0px 0px 16px 16px;
         overflow-y: auto;
         min-width: 250px;
         scrollbar-width: thin;
         scrollbar-color: var(--border-strong-color) transparent;
     }
-    .modalUser__item{
+    .modal-user__item{
         width: 80px;
         justify-content: center;
     }
-    .modalUser__divider{
+    .modal-user__divider{
         display: none;
     }
-    .modalUser__item--upgrade{
+    .modal-user__item--upgrade{
         width: 120px;
         gap: 2px;
     }

@@ -10,7 +10,7 @@ export const DashboardHeaderPlan = ({siteSlug, setModalType, setIsModalOpen}) =>
     const site = webs.find(web => web.id === siteSlug);
 
     return (
-        <span className={`dashboardHeader__plan ${site?.Plan === 'Pro' ? 'dashboardHeader__plan--pro' : ''}`} onClick={() => {
+        <span className={`dashboard-header__plan ${site?.Plan === 'Pro' ? 'dashboard-header__plan--pro' : ''}`} onClick={() => {
             setModalType('Plan');
             setIsModalOpen(true);
         }}>

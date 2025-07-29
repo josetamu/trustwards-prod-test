@@ -24,10 +24,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             case 'name':
                 return (
                     <>
-                        <div className='modalChange__body'>
-                            <div className='modalChange__input__wrapper'>
+                        <div className='modal-change__body'>
+                            <div className='modal-change__input__wrapper'>
                                 <input 
-                                    className='modalChange__input' 
+                                    className='modal-change__input' 
                                     type='text' 
                                     value={newName} 
                                     onChange={e => {
@@ -44,8 +44,8 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 />
                             </div>
                         </div>
-                        <div className='modalChange__actions modalChange__actions--right'>
-                            <button className='modalChange__button' onClick={handleSave}>Save</button>
+                        <div className='modal-change__actions modal-change__actions--right'>
+                            <button className='modal-change__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
                 );
@@ -53,11 +53,11 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             case 'email':
                 return (
                     <>
-                        <div className='modalChange__body'>
-                            <span className='modalChange__advice'>We'll send an email to your new adress to confirm the change.</span>
-                            <div className='modalChange__input__wrapper'>
+                        <div className='modal-change__body'>
+                            <span className='modal-change__advice'>We'll send an email to your new adress to confirm the change.</span>
+                            <div className='modal-change__input__wrapper'>
                                 <input 
-                                    className='modalChange__input' 
+                                    className='modal-change__input' 
                                     type='email' 
                                     value={newEmail} 
                                     onChange={e => {
@@ -73,10 +73,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     open={!!errors.email}
                                 />
                             </div>
-                            <div className='modalChange__input__wrapper'>
+                            <div className='modal-change__input__wrapper'>
                                 <input 
                                     type="password" 
-                                    className='modalChange__input' 
+                                    className='modal-change__input' 
                                     placeholder='Current password' 
                                     value={currentPassword}
                                     onChange={e => {
@@ -92,9 +92,9 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 />
                             </div>
                         </div>
-                        <div className='modalChange__actions'>
-                            <a href="#" className='modalChange__forgot'>Forgot password?</a>
-                            <button className='modalChange__button' onClick={handleSave}>Save</button>
+                        <div className='modal-change__actions'>
+                            <a href="#" className='modal-change__forgot'>Forgot password?</a>
+                            <button className='modal-change__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
                 );
@@ -102,11 +102,11 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             case 'password':
                 return (
                     <>
-                        <div className='modalChange__body'>
-                            <div className='modalChange__input__wrapper'>
+                        <div className='modal-change__body'>
+                            <div className='modal-change__input__wrapper'>
                                 <input 
                                     type="password" 
-                                    className='modalChange__input' 
+                                    className='modal-change__input' 
                                     placeholder='Current password' 
                                     value={currentPassword}
                                     onChange={e => {
@@ -121,9 +121,9 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     open={!!errors.currentPassword}
                                 />
                             </div>
-                            <div className='modalChange__input__wrapper'>
+                            <div className='modal-change__input__wrapper'>
                                 <input 
-                                    className='modalChange__input' 
+                                    className='modal-change__input' 
                                     type='password' 
                                     value={newPassword} 
                                     onChange={e => {
@@ -140,10 +140,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 />
                             </div>
                            
-                            <div className='modalChange__input__wrapper'>
+                            <div className='modal-change__input__wrapper'>
                             <input 
                                 type="password" 
-                                className='modalChange__input' 
+                                className='modal-change__input' 
                                 placeholder='Confirm password' 
                                 value={confirmPassword}
                                 onChange={e => {
@@ -159,9 +159,9 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 />
                             </div>
                         </div>
-                        <div className='modalChange__actions'>
-                            <a href="#" className='modalChange__forgot'>Forgot password?</a>
-                            <button className='modalChange__button' onClick={handleSave}>Save</button>
+                        <div className='modal-change__actions'>
+                            <a href="#" className='modal-change__forgot'>Forgot password?</a>
+                            <button className='modal-change__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
                 );
@@ -169,10 +169,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             case 'newsite':
                 return (
                     <>
-                        <div className='modalChange__body'>
-                            <div className='modalChange__input__wrapper'>
+                        <div className='modal-change__body'>
+                            <div className='modal-change__input__wrapper'>
                                 <input 
-                                    className='modalChange__input' 
+                                    className='modal-change__input' 
                                     type='text'  
                                     onChange={(e) => {
                                         setCreateSiteName(e.target.value);
@@ -187,10 +187,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     open={!!errors.createSiteName}
                                 />
                             </div>
-                            <div className='modalChange__input__wrapper'>
+                            <div className='modal-change__input__wrapper'>
                                 <input 
                                     type="text" 
-                                    className='modalChange__input' 
+                                    className='modal-change__input' 
                                     placeholder='example.com' 
                                     onChange={(e) => {
                                         setCreateSiteDomain(e.target.value);
@@ -205,18 +205,18 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 />
                             </div>
                         </div>
-                        <div className='modalChange__actions modalChange__actions--right'>
-                            <button className='modalChange__button' onClick={handleSave}>Save</button>
+                        <div className='modal-change__actions modal-change__actions--right'>
+                            <button className='modal-change__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
                 ); 
                 case 'settings':
                     return (
                         <>
-                            <div className='modalChange__body'>
-                                <div className='modalChange__input__wrapper'>
+                            <div className='modal-change__body'>
+                                <div className='modal-change__input__wrapper'>
                                     <input 
-                                        className='modalChange__input' 
+                                        className='modal-change__input' 
                                         type='text'  
                                         value={newSiteName || ""}
                                         onChange={(e) => {
@@ -232,10 +232,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                         open={!!errors.newSiteName}
                                     />
                                 </div>
-                                <div className='modalChange__input__wrapper'>
+                                <div className='modal-change__input__wrapper'>
                                     <input 
                                         type="text" 
-                                        className='modalChange__input' 
+                                        className='modal-change__input' 
                                         placeholder='example.com' 
                                         value={newSiteDomain || ""}
                                         onChange={(e) => {
@@ -251,8 +251,8 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     />
                                 </div>
                             </div>
-                            <div className='modalChange__actions modalChange__actions--right'>
-                                <button className='modalChange__button' onClick={handleSave}>Save</button>
+                            <div className='modal-change__actions modal-change__actions--right'>
+                                <button className='modal-change__button' onClick={handleSave}>Save</button>
                             </div>
                         </>
                     );
@@ -527,18 +527,18 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
 
     // Handle click outside to close modal
     const handleBackdropClick = (e) => {
-        if (e.target.className === 'modalChange') {
+        if (e.target.className === 'modal-change') {
             onClose();
         }
     };
 
     return (
-        <div className='modalChange' onClick={handleBackdropClick}>
-            <div className='modalChange__content' onClick={(e) => e.stopPropagation()}>
-                <div className='modalChange__header'>
-                    <h2 className='modalChange__title'>{`${changeType === 'newsite' ? 'Create new site' : `Change ${changeType}`}`}</h2>
+        <div className='modal-change' onClick={handleBackdropClick}>
+            <div className='modal-change__content' onClick={(e) => e.stopPropagation()}>
+                <div className='modal-change__header'>
+                    <h2 className='modal-change__title'>{`${changeType === 'newsite' ? 'Create new site' : `Change ${changeType}`}`}</h2>
                 </div>
-                <div className='modalChange__divider'></div>
+                <div className='modal-change__divider'></div>
                 {renderContent()}
             </div>
         </div>

@@ -13,7 +13,7 @@ export const DashboardHeaderName = ({siteSlug, openChangeModalSettings}) => {
     const site = webs.find(web => web.id === siteSlug);
 
     return (
-        <span className='dashboardHeader__title' onClick={() => {
+        <span className='dashboard-header__title' onClick={() => {
             openChangeModalSettings(site);
         }}>{site?.Name || 'SITE'}</span>
     );

@@ -1,4 +1,4 @@
-.scriptCopy {
+.script-copy {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -11,7 +11,7 @@
 
 }
 
-.scriptCopy__script {
+.script-copy__script {
     font-size: var(--font-size-medium);
     font-weight: 500;
     color: var(--body-fresco-color);
@@ -21,15 +21,15 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.scriptCopy__copy {
+.script-copy__copy {
     cursor: pointer;
 }
 
 @media (max-width: 767px) {
-    .scriptCopy__script {
+    .script-copy__script {
         max-width: 480px;
     }
-    .scriptCopy__copy{
+    .script-copy__copy{
         width: 40px;
     }
 }

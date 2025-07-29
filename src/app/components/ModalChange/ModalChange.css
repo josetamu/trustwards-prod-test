@@ -1,4 +1,4 @@
-.modalChange {
+.modal-change {
   position: fixed;
   top: 0;
   left: 0;
@@ -12,7 +12,7 @@
   border-radius: 16px;
 }
 
-.modalChange__content {
+.modal-change__content {
   background-color: var(--modal-background);
   border-radius: 16px;
   max-width: 372px;
@@ -22,21 +22,21 @@
   gap: 5px;
 }
 
-.modalChange__header {
+.modal-change__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 15px 5px 15px;
 }
 
-.modalChange__title {
+.modal-change__title {
   font-size: var(--font-size-medium);
   color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing-negative);
   font-weight: 600;
 }
 
-.modalChange__divider {
+.modal-change__divider {
   height: 0.8px;
   background: var(--border-strong-color);
   margin: 4px 0;
@@ -44,7 +44,7 @@
   border: none;
 }
 
-.modalChange__body {
+.modal-change__body {
   padding: 5px 15px 15px 15px;
   display: flex;
   flex-direction: column;
@@ -52,7 +52,7 @@
   min-width: 331px;
 }
 
-.modalChange__input {
+.modal-change__input {
   border: 1px solid var(--border-strong-color);
   background: transparent;
   height: 34px;
@@ -65,33 +65,33 @@
   width: 100%;
 }
 
-.modalChange__input:focus {
+.modal-change__input:focus {
   outline: none;
 }
 
-.modalChange__input::placeholder {
+.modal-change__input::placeholder {
   color: var(--body-light-color);
 }
 
-.modalChange__actions {
+.modal-change__actions {
   padding: 0 15px 15px 15px;
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-.modalChange__actions--right {
+.modal-change__actions--right {
   justify-content: flex-end;
 }
 /* link of forgot password? */
-.modalChange__forgot {
+.modal-change__forgot {
   font-size: var(--font-size-medium);
   font-weight: var(--font-weight);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--accent-bg-color);
   text-decoration: none;
 }
-.modalChange__button {
+.modal-change__button {
     width: 43px;
     height: 26px;
     background: var(--accent-bg-color);
@@ -107,12 +107,12 @@
     align-items: center;
     justify-content: center;
 }
-.modalChange__input__wrapper {
+.modal-change__input-wrapper {
   position: relative;
   display: flex;
 }
 
-.modalChange__advice {
+.modal-change__advice {
   font-size: var(--font-size-medium);
   color: var(--body-fresco-color);
   font-weight: var(--font-weight);
@@ -122,7 +122,7 @@
 
 
 @media (max-width: 767px) {
-  .modalChange__content {
+  .modal-change__content {
     min-width: 330px;
     max-width: 400px;
   }

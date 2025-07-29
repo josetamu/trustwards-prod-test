@@ -1,4 +1,4 @@
-.modalAppearance__content{
+.modal-appearance__content{
     display: flex;
     flex-direction: column;
     padding: 15px;
@@ -6,32 +6,32 @@
     gap: 20px;
 }
 
-.modalAppearance__top{
+.modal-appearance__top{
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.modalAppearance__header{
+.modal-appearance__header{
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.modalAppearance__title{
+.modal-appearance__title{
     font-size: 14px;
     font-weight: var(--font-weight);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modalAppearance__description{
+.modal-appearance__description{
     font-size: 11px;
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modalAppearance__divider{
+.modal-appearance__divider{
     height: 0.8px;
     background: rgba(224, 224, 224, 1);
     margin: 4px 0;
@@ -40,20 +40,20 @@
     background-color: var(--border-strong-color);
 }
 
-.modalAppearance__mid{
+.modal-appearance__mid{
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.modalAppearance__mid__title{
+.modal-appearance__mid__title{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modalAppearance__choices{
+.modal-appearance__choices{
     display: flex;
     width: 100%;
     justify-content: space-between;
@@ -62,7 +62,7 @@
     gap: 10px;
 }
 
-.modalAppearance__choice{
+.modal-appearance__choice{
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -71,7 +71,7 @@
     cursor: pointer;
 }
 
-.modalAppearance__imgWrapper{
+.modal-appearance__img-wrapper{
     height: 80px;
     width: 111px;
     border-radius: 6px;
@@ -79,20 +79,20 @@
     overflow: hidden;
 }
 
-.modalAppearance__choice__title{
+.modal-appearance__choice__title{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modalAppearance__imgWrapper--light{
+.modal-appearance__img-wrapper--light{
     background-color: var(--appearance-light-theme);
     border: 2px solid var(--appearance-light-theme-border);
     
 }
 
-.modalAppearance__img{
+.modal-appearance__img{
     width: 100%;
     height: 100%;
     position: absolute;
@@ -100,27 +100,27 @@
     left: 15px;
 }
 
-.modalAppearence__choice__icon{
+.modal-appearance__choice__icon{
     display: none;
 }
 
-.modalAppearance__choice--active .modalAppearence__choice__icon { 
+.modal-appearance__choice--active .modal-appearance__choice__icon { 
     display: block;
     position: absolute;
     top: 55px;
     left: 5px;
 }
 
-.modalAppearence__tick{
+.modal-appearance__tick{
     color: var(--accent-bg-color);
 }
 
-.modalAppearance__imgWrapper--dark{
+.modal-appearance__img-wrapper--dark{
     background-color: var(--appearance-dark-theme);
     border: 2px solid var(--appearance-dark-theme-border);
 }
 
-.modalAppearance__imgWrapper--system{
+.modal-appearance__img-wrapper--system{
     height: 80px;
     width: 111px;
     border-radius: 6px;
@@ -130,60 +130,60 @@
     grid-template-columns: 1fr 1fr;
 }
 
-.modalAppearance__imgWrapper--system .modalAppearance__imgWrapper--dark {
+.modal-appearance__img-wrapper--system .modal-appearance__img-wrapper--dark {
     width: 50%; 
 }
 
-.modalAppearance__imgWrapper--system .modalAppearance__imgWrapper--dark .modalAppearance__img{
+.modal-appearance__img-wrapper--system .modal-appearance__img-wrapper--dark .modal-appearance__img{
     width: 200%;
 }
 
-.modalAppearance__imgWrapper--system .modalAppearance__imgWrapper--dark{
+.modal-appearance__img-wrapper--system .modal-appearance__img-wrapper--dark{
     position: absolute;
     left: 50%;
     border-left: none;
     border-radius: 0 6px 6px 0;
 }
 
-.modalAppearance__choice--active{
+.modal-appearance__choice--active{
     border: 2px solid var(--accent-bg-color);
 }
 
-.modalAppearance__choice > .modalAppearance__choice--active + .modalAppearance__choice__title{
+.modal-appearance__choice > .modal-appearance__choice--active + .modal-appearance__choice__title{
     color: var(--accent-bg-color);
 }
 
-.modalAppearance__imgWrapper--system:has(.modalAppearance__choice--active) ~ .modalAppearance__choice__title {
+.modal-appearance__img-wrapper--system:has(.modal-appearance__choice--active) ~ .modal-appearance__choice__title {
     color: var(--accent-bg-color);
 }
 
-.modalAppearance__bottom{
+.modal-appearance__bottom{
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.modalAppearance__ancentColor{
+.modal-appearance__ancent-color{
     display: flex;
     flex-direction: row;
     gap: 15px;
     justify-content: space-between;
 }
 
-.modalAppearance__ancentColor__choices{
+.modal-appearance__ancent-color__choices{
     display: flex;
     flex-direction: row;
     gap: 15px;
 }
 
-.modalAppearance__ancentColor__choice{
+.modal-appearance__ancent-color__choice{
     width: 15px;
     height: 15px;
     border-radius: 50%;
     cursor: pointer;
 }
 
-.modalAppearance__ancentColor__title{
+.modal-appearance__ancent-color__title{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     color: var(--body-strong-color);
@@ -191,7 +191,7 @@
     border: none;
 }
 
-.modalAppearance__ancentColor__choice--green{
+.modal-appearance__ancent-color__choice--green{
     background-color: rgba(60, 184, 44, 1);
     box-shadow:
     0  1px 1px rgba(123, 216, 111, 1) inset, 
@@ -199,7 +199,7 @@
     0 -7px 4px 0 rgba(60, 184, 44, 1) inset;  
 }
 
-.modalAppearance__ancentColor__choice--purple{
+.modal-appearance__ancent-color__choice--purple{
     background-color: rgba(99, 91, 255, 1);
     box-shadow:
     0 1px 1px rgba(136, 130, 255, 1) inset, 
@@ -207,7 +207,7 @@
     0 -7px 4px 0 rgba(89, 81, 235, 1) inset;  
 }
 
-.modalAppearance__ancentColor__choice--red{
+.modal-appearance__ancent-color__choice--red{
     background-color: rgba(243, 61, 61, 1);
     box-shadow:
     0 1px 1px rgba(249, 116, 116, 1) inset, 
@@ -215,7 +215,7 @@
     0 -7px 4px 0 rgba(227, 27, 27, 1) inset;  
 }
 
-.modalAppearance__ancentColor__choice--orange{
+.modal-appearance__ancent-color__choice--orange{
     background-color: rgba(253, 128, 63, 1);
     box-shadow:
     0 1px 1px rgba(255, 161, 112, 1) inset, 
@@ -223,7 +223,7 @@
     0 -7px 4px 0 rgba(248, 114, 44, 1) inset;  
 }
 
-.modalAppearance__ancentColor__choice--blue{
+.modal-appearance__ancent-color__choice--blue{
     background-color: rgba(0, 153, 254, 1);
     box-shadow:
     0 1px 1px rgba(87, 166, 254, 1) inset, 
@@ -231,13 +231,13 @@
     0 -7px 4px 0 rgba(4, 141, 232, 1) inset;   
 }
 
-.modalAppearance__ancentColor__save{
+.modal-appearance__ancent-color__save{
     display: flex;
     justify-content: flex-end;
     align-items: center;
 }
 
-.modalAppearance__ancentColor__button{
+.modal-appearance__ancent-color__button{
     width: 45px;
     padding: 10px;
     background: var(--accent-bg-color);
@@ -256,40 +256,40 @@
     justify-content: center;
 }  
 
-.modalAppearance__ancentColor__choice--active{
+.modal-appearance__ancent-color__choice--active{
     box-shadow:
     0 0 4px var(--shadow-strong-color),    
     0 0 0 2px white,               /* Borde externo blanco */
     0 0 0 3px #0094ff;             /* Borde externo azul */
 }
 
-.modalAppearance__ReducedMotion{
+.modal-appearance__reduced-motion{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-.modalAppearance__ReducedMotion__title{
+.modal-appearance__reduced-motion__title{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modalAppearance__ReducedMotion__label {
+.modal-appearance__reduced-motion__label {
     position: relative;
     display: inline-block;
     width: 26px;
     height: 16px;
   }
   
-.modalAppearance__ReducedMotion__input {
+.modal-appearance__reduced-motion__input {
     opacity: 0;
     width: 0;
     height: 0;
   }
   
-.modalAppearance__ReducedMotion__slider {
+.modal-appearance__reduced-motion__slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -302,7 +302,7 @@
     overflow: hidden;
   }
   
-.modalAppearance__ReducedMotion__slider:before {
+.modal-appearance__reduced-motion__slider:before {
     position: absolute;
     content: "";
     height: 12px;
@@ -315,33 +315,33 @@
   }
 
  /* Disable transitions and animations of slider during initial load */
-.modalAppearance__content:not(.modalAppearance__content--initialized) .modalAppearance__ReducedMotion__slider,
-.modalAppearance__content:not(.modalAppearance__content--initialized) .modalAppearance__ReducedMotion__slider:before {
+.modal-appearance__content:not(.modal-appearance__content--initialized) .modal-appearance__reduced-motion__slider,
+.modal-appearance__content:not(.modal-appearance__content--initialized) .modal-appearance__reduced-motion__slider:before {
     transition: none;
   }
   
-.modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider {
+.modal-appearance__reduced-motion__input:checked + .modal-appearance__reduced-motion__slider {
     background-color: var(--accent-bg-color);
     box-shadow: var(--blue-button-shadow);
   }
   
-.modalAppearance__ReducedMotion__input:checked + .modalAppearance__ReducedMotion__slider:before {
+.modal-appearance__reduced-motion__input:checked + .modal-appearance__reduced-motion__slider:before {
     transform: translateX(8px);
 }
 
 @media (max-width: 767px) {
-    .modalAppearance__content{
+    .modal-appearance__content{
      gap: 10px;
      width: 350px;
     }
-    .modalAppearance__choices{
+    .modal-appearance__choices{
         flex-direction: column;
         justify-content: center;
     }
-    .modalAppearance__mid{
+    .modal-appearance__mid{
         gap: 5px;
     }
-    .modalAppearance__bottom{
+    .modal-appearance__bottom{
         gap: 10px;
     }
 }

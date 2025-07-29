@@ -44,7 +44,7 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
   useEffect(() => {
     if (
       open &&
-      className.includes('sidebarSites-dropdown') &&
+      className.includes('sidebar-sites-dropdown') &&
       containerRef.current &&
       menuRef.current
     ) {

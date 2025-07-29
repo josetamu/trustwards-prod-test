@@ -1,4 +1,4 @@
-.newSite__button{
+.new-site__button{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -11,7 +11,7 @@
     border-radius: 8px;
     box-shadow: var(--blue-button-shadow);
   }
-  .newSite__text{
+  .new-site__text{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -20,7 +20,7 @@
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
   }
-  .newSite__svg{
+  .new-site__svg{
     width: 9px;
     height: 9px;
     display: flex;

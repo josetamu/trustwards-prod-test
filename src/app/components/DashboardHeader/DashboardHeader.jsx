@@ -106,9 +106,9 @@ function DashboardHeader() {
   
 
     return (  
-        <div className='dashboardHeader'>
-            <div className='dashboardHeader__header'>
-                <div className='dashboardHeader__avatar'>
+        <div className='dashboard-header'>
+            <div className='dashboard-header__header'>
+                <div className='dashboard-header__avatar'>
                     <Suspense fallback={<UserAvatarSkeleton />}> 
                       <DashboardAvatar siteSlug={siteSlug} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} setSiteData={setSiteData} />
                     </Suspense>
@@ -121,23 +121,23 @@ function DashboardHeader() {
                 </Suspense>
 
             </div>
-            <div className="dashboardHeader__actions">
+            <div className="dashboard-header__actions">
                 <Dropdown
-                    className="dashboardHeader-dropdown"
+                    className="dashboard-header-dropdown"
                     open={isDropdownOpen}
                     onClose={() => setIsDropdownOpen(false)}
                     menu={
                         <SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} openChangeModalSettings={openChangeModalSettings} />
                     }
                 >
-                    <div className="dashboardHeader__dots" onClick={(e) => {
+                    <div className="dashboard-header__dots" onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         setIsDropdownOpen(!isDropdownOpen);
                     }}>
-                        <div className="dashboardHeader__dots-dot"></div>
-                        <div className="dashboardHeader__dots-dot"></div>
-                        <div className="dashboardHeader__dots-dot"></div>
+                        <div className="dashboard-header__dots-dot"></div>
+                        <div className="dashboard-header__dots-dot"></div>
+                        <div className="dashboard-header__dots-dot"></div>
                     </div>
                 </Dropdown>
                 <Suspense fallback={<PlanSkeleton />}>
