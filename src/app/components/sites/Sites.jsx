@@ -14,50 +14,8 @@ import { PlanSkeleton } from '../Skeletons/PlanSkeleton';
 
 
 export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings, showNotification}) => {
-  const [sortMode, setSortMode] = useState('alphabetical'); // 'alphabetical' or 'date'
-  const [isAscending, setIsAscending] = useState(true);
 
 
-  const [isGridView, setIsGridView] = useState(true);
-  const [isGridViewMounted, setIsGridViewMounted] = useState(false);
-
-  useEffect(() => {
-    setIsGridViewMounted(true);
-    const saved = localStorage.getItem('viewMode');
-    if(saved !== null) {
-      setIsGridView(JSON.parse(saved));
-    }
-  }, []);
-  
-  // Handle sort change
-  const handleSortChange = (mode, ascending) => {
-    setSortMode(mode);
-    setIsAscending(ascending);
-  };
-
-  // Sort the sites
-  const sortedSites = useMemo(() => {
-    const sorted = [...webs];
-    if (sortMode === 'alphabetical') {
-      sorted.sort((a, b) => a.Name.localeCompare(b.Name));
-      return isAscending ? sorted : sorted.reverse();
-    } else {
-      sorted.sort((a, b) => new Date(b.Date) - new Date(a.Date));
-      return isAscending ? sorted.reverse() : sorted;
-    }
-  }, [webs, sortMode, isAscending]);
-  
-  // Sort webs by Date
-  const sortedWebs = useMemo(() => {
-    return [...webs].sort((a, b) => new Date(a.Date) - new Date(b.Date));
-  }, [webs]);
-
-  const handleViewChange = (newView) => {
-    setIsGridView(newView);
-    localStorage.setItem('viewMode', JSON.stringify(newView));
-  };
-
-  
   return (
     <div className="sites__wrapper">
       <Suspense fallback={<UserNameSkeleton />}>
@@ -293,9 +251,11 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
         <h2 className="sites__title">Sites</h2>
         <div className="sites__header-actions">
           <Suspense fallback={<PlanSkeleton/>}>
-            <View isGridView={isGridView} onViewChange={handleViewChange} />
+            <View/>
           </Suspense>
-          <Sort onSortChange={handleSortChange} />
+          <Suspense fallback={<PlanSkeleton/>}>
+            <Sort/>
+          </Suspense>
           <Suspense fallback={<PlanSkeleton/>}>
             <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
           </Suspense>
@@ -314,9 +274,7 @@ export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, i
         setSiteData={setSiteData}
         checkSitePicture={checkSitePicture}
         SiteStyle={SiteStyle}
-        openChangeModalSettings={openChangeModalSettings}
-        sortedSites={sortedSites}
-        isGridView={isGridView}
+        openChangeModalSettings={openChangeModalSettings}   
       />
     </Suspense>
     </div>

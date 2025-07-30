@@ -142,8 +142,8 @@ function DashboardHeader() {
                 <Suspense fallback={<PlanSkeleton />}>
                     <DashboardHeaderBuilder siteSlug={siteSlug} />
                 </Suspense>
-                </div>
             </div>
+        </div>
     );
 }
 export default DashboardHeader;

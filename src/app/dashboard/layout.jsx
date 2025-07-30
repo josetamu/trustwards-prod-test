@@ -233,19 +233,21 @@ const SiteStyle = (site) => {
     });
   };
 
-  // Function to update the appearance settings in the database
-  const updateAppearanceSettings = async (settings) => {
-    if (!user?.id) return;
-    
-    const { error } = await supabase
-      .from('Appearance')
-      .update(settings)
-      .eq('userid', user.id);
-    
-    if (error) {
-      console.error('Error updating appearance settings:', error);
-    }
-  };
+    // Function to update the appearance settings in the database
+    const updateAppearanceSettings = async (settings) => {
+      if (!user?.id) return;
+      
+      const { error } = await supabase
+        .from('Appearance')
+        .update(settings)
+        .eq('userid', user.id);
+      
+      if (error) {
+        console.error('Error updating appearance settings:', error);
+      }
+    };
+  
+
 
    
   // Remove a site from the webs state. 
@@ -354,8 +356,6 @@ const handleBackdropClick = useCallback((e) => {
     const closeModal = () => {
         setIsModalOpen(false);
         setModalType(null);
-        
-      
     };
 
     // Function to open the ModalChange modal
@@ -584,7 +584,7 @@ useEffect(() => {
               openChangeModal={openChangeModal}
               checkProfilePicture={checkProfilePicture}
               profileStyle={ProfileStyle}
-              allUserDataResource={allUserDataResource}
+          
             />
           )
         
@@ -675,14 +675,12 @@ useEffect(() => {
                         isOpen={isModalOpen} 
                         onClose={closeModal} 
                         onBackdropClick={handleBackdropClick}
-                        isSidebarOpen={isSidebarOpen}
                     >
                         {renderModal()}
-                    </ModalContainer>
+                </ModalContainer>
                     {/* ModalChange as independent modal */}
                     <ModalContainer 
                     isOpen={isChangeModalOpen} 
-                    isSidebarOpen={isSidebarOpen}
                     onClose={closeChangeModal} 
                     onBackdropClick={handleBackdropClick}
                     >
@@ -698,7 +696,6 @@ useEffect(() => {
                         setWebs={setWebs}
                         createNewSite={createNewSite}
                         allUserDataResource={allUserDataResource}
-
                     />
                     </ModalContainer>
                     <Notification

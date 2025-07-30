@@ -7,7 +7,6 @@ import { supabase } from '../../../supabase/supabaseClient';
 // View: Toggle component for switching between grid and list view
 export const View = ({ isGridView, onViewChange }) => {
   const {allUserDataResource, setAppearanceSettings} = useDashboard();
-  const [isGrid, setIsGrid] = useState(true); // true = grid (horizontal), false = list (vertical)
   if(!allUserDataResource) return <PlanSkeleton/>;
   const {appearance, user} = allUserDataResource.read();
   const userView = appearance['View Sites'];
@@ -30,21 +29,28 @@ export const View = ({ isGridView, onViewChange }) => {
 
   // Handle view toggle between grid and list
   const handleView = async (view) => {
-    setIsGrid(view);
-    onViewChange(view);
+    const viewValue = view==='grid' ? 'grid' : 'list';
+
     // Update local appearance settings state
-    const newSettings = { ...appearance, 'View Sites': view ? 'grid' : 'list' };
+    const newSettings = { ...appearance, 'View Sites': viewValue };
     setAppearanceSettings(newSettings);
+
+
+    if(allUserDataResource) {
+      const currentData = allUserDataResource.read();
+      currentData.appearance['View Sites'] = viewValue;
+    }
     
     // Persist to database
-    await updateAppearanceSettings({ 'View Sites': view ? 'grid' : 'list' });
+    await updateAppearanceSettings({ 'View Sites': viewValue });
+
   };
 
   return (
     <div className="view__toggle">
       <button
-        className={`view__option ${isGridView ? 'active' : ''}`}
-        onClick={() => handleView(true)}
+        className={`view__option ${userView === 'grid' ? 'active' : ''}`}
+        onClick={() => handleView('grid')}
         aria-label="Grid view"
         type="button"
       >
@@ -57,8 +63,8 @@ export const View = ({ isGridView, onViewChange }) => {
         </svg>
       </button>
       <button
-        className={`view__option ${!isGridView ? 'active' : ''}`}
-        onClick={() => handleView(false)}
+        className={`view__option ${userView === 'list' ? 'active' : ''}`}
+        onClick={() => handleView('list')}
         aria-label="List view"
         type="button"
       >

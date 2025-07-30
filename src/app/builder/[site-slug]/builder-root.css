@@ -31,7 +31,59 @@ System selected: will fallback to root or html[data-theme="dark"]
 
     --border-light-color: #E6E6E6;
     --shadow-light-color: #00000010;
+
+    --font-size-mini: 10px;
+    --font-size-small: 12px;
+    --letter-spacing-negative: -0.03em;
+    --letter-spacing-positive: 0.03em;
+    --logo-background: #FFFFFF;
+    --border-strong-color: #E0E0E0;
+    --hover-strong-color: #E3E3E3;
+
+
+    --header-plan-background: #E3E3E3;
+    --header-plan-color: #999999;
+
+
+    --modal-backdrop-color: rgba(0, 0, 0, 0.5);
+    --modal-background: #FFFFFF;
+    --modal-sidebar-background: #F2F2F2;
+
+    --accent-color: #FFFFFF;
+    --accent-bg-color: #0099FE;
+  
+    
+    --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+
 }
+
+
+/* Button color variables using data-color */
+html[data-color="blue"] {
+    --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+    --accent-bg-color: #0099FE;
+  }
+  
+  html[data-color="green"] {
+    --blue-button-shadow: 0px -4px 4px 0px #3CB82C inset, 0px 0px 0px 1px #2FB11F, 0px 0px 0px 1px #7BD86F inset;
+    --accent-bg-color: #4EC93E
+  }
+  
+  html[data-color="purple"] {
+    --blue-button-shadow: 0px -4px 4px 0px #5951EB inset, 0px 0px 0px 1px #554DFD, 0px 0px 0px 1px #8882FF inset;
+    --accent-bg-color: #635BFF
+  }
+  
+  html[data-color="orange"] {
+    --blue-button-shadow: 0px -4px 4px 0px #F8722C inset, 0px 0px 0px 1px #FF6A1D, 0px 0px 0px 1px #FFA170 inset;
+    --accent-bg-color: #FD803F;
+  }
+  
+  html[data-color="red"] {
+    --blue-button-shadow: 0px -4px 4px 0px #E31B1B inset, 0px 0px 0px 1px #F91212, 0px 0px 0px 1px #F97474 inset;
+    --accent-bg-color: #F33D3D;
+  }
+
 html[data-theme="dark"]{
     --builder-background: #202020;
 }
