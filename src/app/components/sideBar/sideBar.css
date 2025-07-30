@@ -340,13 +340,14 @@
 .sidebar__site-link-badge {
   position: absolute;
   top: 2px;
-  right: 20px;
-  font-weight: 600;
-  color: var(--warning-color);
-  font-size: var(--font-size-medium);
+  left: 115px;
+  letter-spacing: 10px;
+  font-weight: 700;
+  color: #ff6000;
+  font-size: 8px;
   z-index: 2;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-negative);
+  letter-spacing: 0.05em;
 }
 
 .sidebar__user-avatar {

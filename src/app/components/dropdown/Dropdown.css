@@ -156,10 +156,10 @@
 }
 
 /* Sidebar Dropdown */
-.sidebar-sites-dropdown {
+.sidebar__sites-dropdown {
   position: relative;
 }
-.sidebar-sites-dropdown .dropdown__menu {
+.sidebar__sites-dropdown .dropdown__menu {
   transform-origin: top left;
 }
 @media (max-width: 767px), (max-width: 467px) {
