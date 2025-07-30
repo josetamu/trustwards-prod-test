@@ -8,13 +8,26 @@
 
     min-height: 100%;
 }
+
 .tw-builder__header{
     height: 40px;
     width: 100%;
-
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
+}
+.tw-builder__handlebars-canvas-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    max-width: var(--canvas-max-width);
 }
 .tw-builder__handlebars-canvas-wrapper{
     display: flex;

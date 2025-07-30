@@ -7,6 +7,7 @@
     padding: 20px;
 }
 
+/* Header section */
 .modal-upgrade-plan__header{
     display: flex;
     flex-direction: column;
@@ -19,13 +20,32 @@
     color: var(--body-strong-color);
 }
 
+/* Info Wrapper and yearly wrapper */
+.modal-upgrade-plan__sub{
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+/* Info container */
+.modal-upgrade-plan__info-container{
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
 .modal-upgrade-plan__info{
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     min-width: 200px;
 }
-
+.modal-upgrade-plan__info--free,
+.modal-upgrade-plan__info--pro {
+    color: var(--accent-bg-color);
+}
 .modal-upgrade-plan__info--underline{
     text-decoration: underline dotted;
     text-decoration-thickness: .5px;
@@ -43,26 +63,8 @@
     display: block;
 }
 
-.modal-upgrade-plan__info--free,
-.modal-upgrade-plan__info--pro {
-    color: var(--accent-bg-color);
-}
-
-.modal-upgrade-plan__sub{
-    display: flex;
-    flex-direction: row;
-    gap: 50px;
-    align-items: flex-end;
-    justify-content: space-between;
-}
-
-.modal-upgrade-plan__infoContainer{
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.modal-upgrade-plan__yearly{
+/* Yearly wrapper */
+.modal-upgrade-plan__yearly-wrapper{
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -101,7 +103,6 @@
     transition: .2s;
     overflow: hidden;
 }
-  
 .modal-upgrade-plan__slider:before {
     position: absolute;
     content: "";
@@ -118,7 +119,6 @@
 .modal-upgrade-plan__input:checked + .modal-upgrade-plan__slider {
     background-color: var(--accent-bg-color);
 }
-  
 .modal-upgrade-plan__input:checked + .modal-upgrade-plan__slider:before {
     transform: translateX(10px);
 }
@@ -131,6 +131,7 @@
     border: none;
 }
 
+/* Plans section */
 .modal-upgrade-plan__plans{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -143,7 +144,7 @@
     gap: 5px;
 }
 
-.modal-upgrade-plan__plan__title{
+.modal-upgrade-plan__plan-title{
     position: relative;
     width: fit-content;
     font-size: var(--font-size-small);
@@ -154,8 +155,7 @@
     gap: 5px;
     letter-spacing: var(--letter-spacing-negative);
 }
-
-.modal-upgrade-plan__plan__title--popular{
+.modal-upgrade-plan__plan-title--popular{
     position: absolute;
     left: calc(100% + 5px);
     color: var(--accent-bg-color);
@@ -168,41 +168,42 @@
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modal-upgrade-plan__price{
+.modal-upgrade-plan__plan-price{
     font-size: 24px;
     font-weight: var(--font-weight);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modal-upgrade-plan__currency{
+.modal-upgrade-plan__plan-currency{
     font-size: var(--font-size-mini);
     color: var(--body-strong-color);
     margin-left: 1px;
 }
 
-.modal-upgrade-plan__plan__nsites{
+.modal-upgrade-plan__plan-nsites{
     font-size: var(--font-size-mini);
     color: var(--body-semistrong-color);
     letter-spacing: var(--letter-spacing-negative);
     font-weight: var(--font-weight);
 }
 
-.modal-upgrade-plan__plan__nsites--unlimited{
+.modal-upgrade-plan__plan-nsites--unlimited{
     font-size: var(--font-size-mini);
     color: var(--accent-bg-color);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modal-upgrade-plan__plan__description{
+.modal-upgrade-plan__plan-description{
     font-size: var(--font-size-mini);
     color: var(--body-light-color);
     letter-spacing: var(--letter-spacing-negative);
     font-weight: var(--font-weight);
-    min-width: 116px;
+    min-width: 138px;
 }
 
+/* Subscribe button */
 .modal-upgrade-plan__subscribe{
     display: flex;
     flex-direction: row;
@@ -220,7 +221,7 @@
     background-color: var(--secondary-button-border-color);
 }
 
-.modal-upgrade-plan__subscribe__title{
+.modal-upgrade-plan__subscribe-title{
     font-size: var(--font-size-mini);
     color: var(--body-strong-color);
     font-weight: var(--font-weight);
@@ -236,11 +237,12 @@
     background-color: var(--accent-bg-color);
 }
 
-.modal-upgrade-plan__subscribe__title--popular{
+.modal-upgrade-plan__subscribe-title--popular{
     color: #fff;
     
 }
 
+/* Site section */
 .modal-upgrade-plan__site{
     display: flex;
     flex-direction: column;
@@ -250,21 +252,21 @@
     width: 100%;
 }
 
-.modal-upgrade-plan__site__title{
+.modal-upgrade-plan__site-title{
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modal-upgrade-plan__site__infos{
+.modal-upgrade-plan__site-infos{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 10px;
     width: 100%;
 }
 
-.modal-upgrade-plan__info__container{
+.modal-upgrade-plan__info-container{
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -272,7 +274,7 @@
     justify-content: center;
 }
 
-.modal-upgrade-plan__site__info{
+.modal-upgrade-plan__site-info{
     display: flex;
     flex-direction: row;
     gap: 5px;
@@ -280,14 +282,14 @@
     justify-content: center; 
 }
 
-.modal-upgrade-plan__site__info__title{
+.modal-upgrade-plan__site-info-title{
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
-.modal-upgrade-plan__site__tick{
+.modal-upgrade-plan__site-tick{
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -295,25 +297,24 @@
     color: var(--body-fresco-color);
 }
 
-.modal-upgrade-plan__site__tick--cross{
+.modal-upgrade-plan__site-tick--cross{
     color: var(--body-light-color);
 }
 
-.modal-upgrade-plan__site__info__title--underline{
+.modal-upgrade-plan__site-info-title--underline{
     text-decoration: underline dotted;
     text-decoration-thickness: .5px;
     text-decoration-style: dotted;
     text-underline-offset: 2px;
     cursor: default;
     position: relative;
-
 }
 
-.modal-upgrade-plan__site__info__title--underline:hover .tooltip{
+.modal-upgrade-plan__site-info-title--underline:hover .tooltip{
     display: block;
 }
 
-.modal-upgrade-plan__site__info__title--noincluded{
+.modal-upgrade-plan__site-info-title--noincluded{
     color: var(--body-light-color);
 }
 
@@ -344,7 +345,7 @@
         gap: 12px;
     }
 
-    .modal-upgrade-plan__site__title{
+    .modal-upgrade-plan__site-title{
         font-size: var(--font-size-small);
         font-weight: var(--font-weight);
         color: var(--body-strong-color);
@@ -354,18 +355,18 @@
         display: none;
     }
 
-    .modal-upgrade-plan__site__infos{
+    .modal-upgrade-plan__site-infos{
         grid-template-columns: 1fr;
         gap: 0px;
     }
 
-    .modal-upgrade-plan__info__container{
+    .modal-upgrade-plan__info-container{
         padding: 20px 0;
         width: 100%;
         border-top: 1px solid var(--border-strong-color);
     }
 
-    .modal-upgrade-plan__info__container:nth-child(1)::before{
+    .modal-upgrade-plan__info-container:nth-child(1)::before{
         content: "Free";
         width: 100%;
         height: 1px;
@@ -376,7 +377,7 @@
         letter-spacing: var(--letter-spacing-negative);
     }
 
-    .modal-upgrade-plan__info__container:nth-child(2)::before{
+    .modal-upgrade-plan__info-container:nth-child(2)::before{
         content: "Solo";
         width: 100%;
         height: 1px;
@@ -387,7 +388,7 @@
         letter-spacing: var(--letter-spacing-negative);
     }
 
-    .modal-upgrade-plan__info__container:nth-child(3)::before{
+    .modal-upgrade-plan__info-container:nth-child(3)::before{
         content: "Scale";
         width: 100%;
         height: 1px;
@@ -398,7 +399,7 @@
         letter-spacing: var(--letter-spacing-negative);
     }
     
-    .modal-upgrade-plan__info__container:nth-child(4)::before{
+    .modal-upgrade-plan__info-container:nth-child(4)::before{
         content: "Trustwards";
         width: 100%;
         height: 1px;

@@ -18,8 +18,8 @@ const PlanButton = ({ onClick, isActive, plan }) => (
     type="button"
   >
     <div className="site__plan-content">
-      <span className={`site__plan-label ${isActive ? 'is-hidden' : ''}`}>{plan}</span>
-      <div className={`site__plan-dots ${isActive ? 'is-visible' : ''}`}>
+      <span className={`site__plan-label ${isActive ? 'site__plan-label--hidden' : ''}`}>{plan}</span>
+      <div className={`site__plan-dots ${isActive ? 'site__plan-dots--visible' : ''}`}>
         <svg width="8" height="2" viewBox="0 0 8 2" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="1" cy="1" r="1" fill="#9E9E9E"/>
           <circle cx="4" cy="1" r="1" fill="#9E9E9E"/>
@@ -108,7 +108,7 @@ const SiteMenu = ({setIsModalOpen, setModalType, isModalOpen, setSiteData, siteD
 // Site: Card/list for a single site
 export const Site = ({
   id, text, onRemove, setIsModalOpen, setModalType,
-  isModalOpen, modalType, setSiteData, siteData, isGridView, checkSitePicture, SiteStyle, openChangeModalSettings
+  isModalOpen, modalType, setSiteData, siteData, view, checkSitePicture, SiteStyle, openChangeModalSettings
 }) => {
   // State for delete modal and dropdown
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -153,7 +153,7 @@ export const Site = ({
 
 
 
-  if (isGridView) {
+  if (view === 'grid') {
     // Grid view
     return (
       <div

@@ -6,8 +6,6 @@
     align-items: center;
     border-bottom: 1px solid var(--border-strong-color);
     justify-content: center;
-    
-    
 }
 
 .dashboard-header__header{
@@ -19,6 +17,7 @@
     gap: 5px;
     justify-content: center;
 }
+
 .dashboard-header__avatar{
     display: flex;
     flex-direction: row;
@@ -39,6 +38,7 @@
 .dashboard-header__img--null{
     display: none;
 }
+
 .dashboard-header__color{
     width: 23px;
     height: 23px;

@@ -12,7 +12,7 @@ function Home() {
 
     
     useEffect(() => {
-        // Si webs está disponible, ya no estamos cargando
+        // If webs is available, we are not loading
         if (webs && webs.length > 0) {
            
         }

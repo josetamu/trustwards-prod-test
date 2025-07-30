@@ -26,15 +26,15 @@ export const ScannerOverview = ({ isScanning, MAX_SCANS, setIsScanning, setScanD
 
 
     return (
-        <div className="home__midCard">
-                        <div className="home__midCard-header">
-                            <span className="home__midCard-title">Scanner Overview</span>
+        <div className="home__mid-card">
+                        <div className="home__mid-card-header">
+                            <span className="home__mid-card-title">Scanner Overview</span>
                             {isInstalled && (
                                     <ScanButton isScanning={isScanning} MAX_SCANS={MAX_SCANS} setIsScanning={setIsScanning} setScanDone={setScanDone} scanDone={scanDone} siteSlug={siteSlug}/>
                             )}
                         </div>
                         {noInstalled()}
-                        <div className="home__midCard-content">
+                        <div className="home__mid-card-content">
                             {isScanning ? (
                                 <div className="home__scanner home__scanner--scanning">
                                     <Scan isScanning={isScanning} />
@@ -43,32 +43,32 @@ export const ScannerOverview = ({ isScanning, MAX_SCANS, setIsScanning, setScanD
                                 
                                 <div className={`home__scanner home__scanner-content`}>
                                     {scans === 0 ? (
-                                        <div className="home__noScans">
-                                            <span className="home__noScans-text">Scan your website for the first time
+                                        <div className="home__no-scans">
+                                            <span className="home__no-scans-text">Scan your website for the first time
                                             to see all the scripts inserting cookies</span>
                                         </div>
                                     ) : (
                                     <>
-                                        <div className="home__scannerItems">
-                                            <div className="home__scannerItem">
-                                                <span className="home__scannerItem-text">General</span>
-                                                <span className="home__scannerItem-text">{general}</span>
+                                        <div className="home__scanner-items">
+                                            <div className="home__scanner-item">
+                                                <span className="home__scanner-item-text">General</span>
+                                                <span className="home__scanner-item-text">{general}</span>
                                             </div>
-                                            <div className="home__scannerItem">
-                                                <span className="home__scannerItem-text">Analytics</span>
-                                                <span className="home__scannerItem-text">{analytics}</span>
+                                            <div className="home__scanner-item">
+                                                <span className="home__scanner-item-text">Analytics</span>
+                                                <span className="home__scanner-item-text">{analytics}</span>
                                             </div>
-                                            <div className="home__scannerItem">
-                                                <span className="home__scannerItem-text">Marketing</span>
-                                                <span className="home__scannerItem-text">{marketing}</span>
+                                            <div className="home__scanner-item">
+                                                <span className="home__scanner-item-text">Marketing</span>
+                                                <span className="home__scanner-item-text">{marketing}</span>
                                             </div>
-                                            <div className="home__scannerItem">
-                                                <span className="home__scannerItem-text">Other</span>
-                                                <span className="home__scannerItem-text">{other}</span>
+                                            <div className="home__scanner-item">
+                                                <span className="home__scanner-item-text">Other</span>
+                                                <span className="home__scanner-item-text">{other}</span>
                                             </div>
                                         </div>
-                                        <div className="home__fullView">
-                                            <span className="home__fullView-text">To have a full view go to the <Link href={`/dashboard/${siteSlug}/scanner`} className="home__fullView-link">scanner.</Link></span>
+                                        <div className="home__full-view">
+                                            <span className="home__full-view-text">To have a full view go to the <Link href={`/dashboard/${siteSlug}/scanner`} className="home__full-view-link">scanner.</Link></span>
                                         </div>
                                     </>
                                 )}

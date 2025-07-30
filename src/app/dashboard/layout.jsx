@@ -2,7 +2,6 @@
 
 import './dashboard-root.css'
 import './dashboard.css'
-
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../supabase/supabaseClient';
 import { useRouter, useParams, usePathname } from 'next/navigation';
@@ -59,7 +58,8 @@ function DashboardLayout({ children }) {
   // Browser state to handle SSR
   const [isBrowser, setIsBrowser] = useState(false);
 
-  // Scan state
+  //Home and scanner states
+  const [isInstalled, setIsInstalled] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanDone, setScanDone] = useState(false);
   const MAX_SCANS = 3;
@@ -232,19 +232,21 @@ const SiteStyle = (site) => {
     });
   };
 
-  // Function to update the appearance settings in the database
-  const updateAppearanceSettings = async (settings) => {
-    if (!user?.id) return;
-    
-    const { error } = await supabase
-      .from('Appearance')
-      .update(settings)
-      .eq('userid', user.id);
-    
-    if (error) {
-      console.error('Error updating appearance settings:', error);
-    }
-  };
+    // Function to update the appearance settings in the database
+    const updateAppearanceSettings = async (settings) => {
+      if (!user?.id) return;
+      
+      const { error } = await supabase
+        .from('Appearance')
+        .update(settings)
+        .eq('userid', user.id);
+      
+      if (error) {
+        console.error('Error updating appearance settings:', error);
+      }
+    };
+  
+
 
    
   // Remove a site from the webs state. 
@@ -353,8 +355,6 @@ const handleBackdropClick = useCallback((e) => {
     const closeModal = () => {
         setIsModalOpen(false);
         setModalType(null);
-        
-      
     };
 
     // Function to open the ModalChange modal
@@ -583,7 +583,7 @@ useEffect(() => {
               openChangeModal={openChangeModal}
               checkProfilePicture={checkProfilePicture}
               profileStyle={ProfileStyle}
-              allUserDataResource={allUserDataResource}
+          
             />
           )
         
@@ -621,6 +621,10 @@ useEffect(() => {
         scanDone,
         setScanDone,
         MAX_SCANS,
+        isInstalled,
+        setIsInstalled,
+        appearanceSettings,
+        setAppearanceSettings,
     };
    
     return (
@@ -658,6 +662,7 @@ useEffect(() => {
                     setIsSidebarMenu={setIsSidebarMenu}
                     isContentBlocked={blockContent}
                     setBlockContent={setBlockContent}
+                    
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockContent ? 'content__container--blocked' : ''}`}>
                     {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}
@@ -669,14 +674,12 @@ useEffect(() => {
                         isOpen={isModalOpen} 
                         onClose={closeModal} 
                         onBackdropClick={handleBackdropClick}
-                        isSidebarOpen={isSidebarOpen}
                     >
                         {renderModal()}
-                    </ModalContainer>
+                </ModalContainer>
                     {/* ModalChange as independent modal */}
                     <ModalContainer 
                     isOpen={isChangeModalOpen} 
-                    isSidebarOpen={isSidebarOpen}
                     onClose={closeChangeModal} 
                     onBackdropClick={handleBackdropClick}
                     >
@@ -692,7 +695,6 @@ useEffect(() => {
                         setWebs={setWebs}
                         createNewSite={createNewSite}
                         allUserDataResource={allUserDataResource}
-
                     />
                     </ModalContainer>
                     <Notification

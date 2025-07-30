@@ -9,7 +9,7 @@ import { useDashboard } from "../../dashboard/layout";
 import { useRouter } from "next/navigation";
 import { SidebarSiteSkeleton } from "../Skeletons/SidebarSiteSkeleton";
 
-export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, isSidebarMenu, setIsSidebarMenu}) {
+export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, setIsSidebarMenu}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -102,7 +102,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     return(
         <Link 
             href={`/dashboard/${siteData.id}`}
-            className="sidebarSites__site" 
+            className="sidebar-sites__site" 
             id={sidebarSitesId}
             //on mouse enter, set is hovered to true to show the tooltip
             onMouseEnter={() => setIsHovered(true)}
@@ -116,15 +116,15 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             }}
             
         >
-            <div className="sidebarSites__header">
-                <span className="sidebarSites__avatar">
-                    <span className={`sidebarSites__color ${checkSitePicture(siteData) === '' ? '' : 'sidebarSites__color--null'}`} 
+            <div className="sidebar-sites__header">
+                <span className="sidebar-sites__avatar">
+                    <span className={`sidebar-sites__color ${checkSitePicture(siteData) === '' ? '' : 'sidebar-sites__color--null'}`} 
                         style={SiteStyle(siteData)}>
                           {siteData.Name.charAt(0)}
                     </span> 
-                    <img className={`sidebarSites__img ${checkSitePicture(siteData) === '' ? 'sidebarSites__img--null' : ''}`} src={siteData["Avatar URL"]}/>
+                    <img className={`sidebar-sites__img ${checkSitePicture(siteData) === '' ? 'sidebar-sites__img--null' : ''}`} src={siteData["Avatar URL"]}/>
                 </span>
-                <span className="sidebarSites__name">
+                <span className="sidebar-sites__name">
                       {siteData.Name}
                 </span> 
             </div>
@@ -139,12 +139,12 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             )} 
             
             <Dropdown
-                className="sidebarSites-dropdown"
+                className="sidebar__sites-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
                 menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} name={name} openChangeModal={openChangeModal} openChangeModalSettings={openChangeModalSettings}/>}
             >
-                <div className="sidebarSites__edit" onClick={(e) => {
+                <div className="sidebar-sites__edit" onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     setIsDropdownOpen(v => !v);

@@ -28,9 +28,9 @@ import { Analytics } from './homeComponents/Analytics';
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs, showNotification, setModalType, setIsModalOpen,setWebs,allUserDataResource, isScanning, setIsScanning, scanDone, setScanDone, MAX_SCANS } = useDashboard();
+    const { webs, showNotification, setModalType, setIsModalOpen,setWebs,allUserDataResource, isScanning, setIsScanning, scanDone, setScanDone, MAX_SCANS, isInstalled, setIsInstalled } = useDashboard();
     const [siteData, setSiteData] = useState(null);
-    const [isInstalled, setIsInstalled] = useState(null);
+    
 
 
 
@@ -104,10 +104,10 @@ function Home() {
 const noInstalled = () => {
     if(!isInstalled){
         return (
-        <div className="home__noInstalled">
-            <span className="home__noInstalled-text">Install Trustwards on your site first.
+        <div className="home__verify-container">
+            <span className="home__verify-heading">Install Trustwards on your site first.
             </span>
-            <div className="home__verify">
+            <div className="home__verify-button">
                 <span className="home__verify-text" onClick={verify}>Verify</span>
             </div>
         </div>
@@ -123,7 +123,7 @@ const noInstalled = () => {
                     <HomeInstallation siteSlug={siteSlug} showNotification={showNotification} verify={verify} />
                 </Suspense>
                 <div className="home__mid">
-                    <div className="home__midCard"></div>
+                    <div className="home__mid-card"></div>
                     <Suspense fallback={<ScannerOverviewSkeleton />}>
                         <ScannerOverview siteSlug={siteSlug} showNotification={showNotification} verify={verify} noInstalled={noInstalled} isScanning={isScanning} MAX_SCANS={MAX_SCANS} setIsScanning={setIsScanning} setScanDone={setScanDone} scanDone={scanDone} />
                     </Suspense>

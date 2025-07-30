@@ -39,19 +39,19 @@ const usages = [
 ]
 
     return (
-        <div className="home__cardInfo">
-        <div className="home__cardInfo-header">
-            <span className="home__cardInfo-title">Site Usage</span>
-            <span className="home__cardInfo-plan" onClick={() => {
+        <div className="home__info-card">
+        <div className="home__info-card-header">
+            <span className="home__info-card-title">Site Usage</span>
+            <span className="home__info-card-plan" onClick={() => {
                 setModalType('Plan');
                 setIsModalOpen(true);
             }}>{site?.Plan || 'Free'}</span>
         </div>
         {noInstalled()}
-        <div className="home__cardInfo-content">
+        <div className="home__info-card-content">
             {(site?.Plan === 'Free' || !site?.Plan) && (
-            <div className="home__cardInfo-upgrade">
-                <span className="home__cardInfo-enjoy">Enjoy unlimited usage. <span className="home__cardInfo-enjoy--upgrade" onClick={() => {
+            <div className="home__info-card-upgrade">
+                <span className="home__info-card-enjoy">Enjoy unlimited usage. <span className="home__info-card-enjoy--upgrade" onClick={() => {
                     setModalType('Plan');
                     setIsModalOpen(true);
                 }}>Upgrade</span> this site to pro</span>
@@ -63,9 +63,9 @@ const usages = [
                         <span className="home__usage-title">Pages</span>
                         <span className="home__usage-value">{usages[0].current}/{usages[0].total}</span>
                     </div>
-                    <div className="home__pagesBar">
-                        <div className="home__pagesBar-fill"></div>
-                        <div className="home__pagesBar-fill--color" style={{width: `${usages[0].percentage * 100}%`}}></div>
+                    <div className="home__pages-bar">
+                        <div className="home__pages-bar-fill"></div>
+                        <div className="home__pages-bar-fill--color" style={{width: `${usages[0].percentage * 100}%`}}></div>
                     </div>
                 </div>
                 <div className="home__usage">
@@ -73,9 +73,9 @@ const usages = [
                         <span className="home__usage-title">Monthly scans</span>
                         <span className="home__usage-value">{usages[1].current}/{usages[1].total}</span>
                     </div>
-                    <div className="home__pagesBar">
-                        <div className="home__pagesBar-fill"></div>
-                        <div className="home__pagesBar-fill--color" style={{width: `${usages[1].percentage * 100}%`}}></div>
+                    <div className="home__pages-bar">
+                        <div className="home__pages-bar-fill"></div>
+                        <div className="home__pages-bar-fill--color" style={{width: `${usages[1].percentage * 100}%`}}></div>
                     </div>
                 </div>
                 <div className="home__usage">
@@ -83,15 +83,15 @@ const usages = [
                             <span className="home__usage-title">Monthly Visitors</span>
                             <span className="home__usage-value">{usages[2].current}/{usages[2].total}</span>
                     </div>
-                    <div className="home__pagesBar">
-                        <div className="home__pagesBar-fill"></div>
-                        <div className="home__pagesBar-fill--color" style={{width: `${usages[2].percentage * 100}%`}}></div>
+                    <div className="home__pages-bar">
+                        <div className="home__pages-bar-fill"></div>
+                        <div className="home__pages-bar-fill--color" style={{width: `${usages[2].percentage * 100}%`}}></div>
                     </div>
                 </div>
             </div>
             {(site?.Plan === 'Free' || !site?.Plan) && (
-                <div className="home__buttonUpgrade">
-                    <span className="home__buttonUpgrade-text" onClick={() => {
+                <div className="home__button-upgrade">
+                    <span className="home__button-upgrade-text" onClick={() => {
                         setModalType('Plan');
                         setIsModalOpen(true);
                     }}>Upgrade</span>

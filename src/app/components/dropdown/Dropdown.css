@@ -210,10 +210,10 @@
 }
 
 /* Dashboard Header */
-.dashboardHeader-dropdown{
+.dashboard-header-dropdown{
   position: relative;
 }
-.dashboardHeader-dropdown .dropdown__menu{
+.dashboard-header-dropdown .dropdown__menu{
   transform-origin: top right;
   left: unset;
   right: 0;
