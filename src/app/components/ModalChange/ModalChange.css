@@ -62,6 +62,12 @@
   border-radius: 10px;
 }
 
+/* Input wrapper */
+.modal-change__input-wrapper {
+  position: relative;
+  display: flex;
+}
+
 .modal-change__input {
   border: 1px solid var(--border-strong-color);
   background: transparent;
@@ -74,25 +80,24 @@
   font-weight: var(--font-weight);
   width: 100%;
 }
-
 .modal-change__input:focus {
   outline: none;
 }
-
 .modal-change__input::placeholder {
   color: var(--body-light-color);
 }
 
+/* Bottom wrapper */
 .modal-change__actions {
   padding: 0 15px 15px 15px;
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
-
 .modal-change__actions--right {
   justify-content: flex-end;
 }
+
 /* link of forgot password? */
 .modal-change__forgot {
   font-size: var(--font-size-small);
@@ -101,6 +106,8 @@
   color: var(--accent-bg-color);
   text-decoration: none;
 }
+
+/* Save button */
 .modal-change__button {
     width: 43px;
     height: 26px;
@@ -116,10 +123,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}
-.modal-change__input-wrapper {
-  position: relative;
-  display: flex;
 }
 
 .modal-change__advice {

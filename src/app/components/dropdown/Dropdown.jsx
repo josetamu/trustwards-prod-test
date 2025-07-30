@@ -39,11 +39,11 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, onClose]);
 
-  // Calculate fixed position for sidebarSites-dropdown
+  // Calculate fixed position for sidebar__sites-dropdown
   useEffect(() => {
     if (
       open &&
-      className.includes('sidebar-sites-dropdown') &&
+      className.includes('sidebar__sites-dropdown') &&
       containerRef.current &&
       menuRef.current
     ) {

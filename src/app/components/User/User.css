@@ -15,6 +15,7 @@
     position: relative;
   }
 
+  /* Sidebar lower content (user profile) */
   .user__profile{
     width: 100%;
     background-color: transparent;
@@ -25,7 +26,6 @@
     justify-content: space-between;
     transition: background 0.6s ease;
     flex-direction: row;
-
     cursor: default;
   }
 
@@ -41,6 +41,7 @@
     padding: 8px;
   }
 
+  /* User header (Icon and name) */
   .user__header{
     display: flex;
     flex-direction: row;
@@ -49,6 +50,7 @@
     gap: 5px;
   }
 
+  /* User avatar */
   .user__avatar{
     width: 25px;
     height: 25px;
@@ -56,7 +58,6 @@
     border: 1px solid var(--border-strong-color);
     padding: 2px;
   }
-
   .user__avatar--null{
     display: none;
   }
@@ -75,11 +76,11 @@
     background-color: var(--avatar-background);
     text-transform: uppercase;
   }
-
   .user__color--null{
     display: none;
   }
   
+  /* User name */
   .user__name{
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight);
@@ -117,6 +118,7 @@
     white-space: nowrap;
   }
 
+  /* Arrow icon */
   .user__icons{
     display: none;
   }
@@ -158,9 +160,7 @@
   
   .sidebar--menu .user:hover .user__icons--up{
     display: flex;
-    
   }
-
 
   .sidebar--open .user:hover .user__icons--down{
     display: none;
@@ -168,7 +168,6 @@
   }
   .sidebar--menu .user:hover .user__icons--down{
     display: none;
-   
   }
 
   .sidebar--open .user:hover .user__profile{
@@ -181,17 +180,16 @@
   
 
   @media (max-width: 767px) {
-  .sidebar--menu .user__header__name{
+  .sidebar--menu .user__name{
     max-width: 350px;
   }
   .user__name{
     display: block;
   }
-
 }
 
 @media (max-width: 467px) {
-  .sidebar--menu .user__header__name{
+  .sidebar--menu .user__name{
     max-width: 160px;
   }
 }

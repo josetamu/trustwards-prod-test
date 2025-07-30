@@ -15,7 +15,7 @@ function CircleChart({data, centerText, centerLabel, centerIcon}) {
 
     const totalValue = data.reduce((sum, d) => sum + d.value, 0);
     return (
-    <svg className="home__circleChart" viewBox="0 0 140 140">
+    <svg className="home__circle-chart" viewBox="0 0 140 140">
       <g transform="translate(70,70)">
         {data.map((d, i) => {
           const value = d.value;
@@ -121,13 +121,13 @@ const cookiesData = analyticsCookies.map(item => ({
 
 
     return (
-<div className="home__cardInfo home__cardInfo--analytics">
-                        <div className="home__cardInfo-header home__cardInfo-header--analytics">
-                            <span className="home__cardInfo-title">Analytics</span>
+<div className="home__info-card home__info-card--analytics">
+                        <div className="home__info-card-header">
+                            <span className="home__info-card-title">Analytics</span>
                         </div>
                         {noInstalled()}
-                        <div className="home__cardInfo-content home__cardInfo-content--analytics">
-                            <div className="home__cookiesDisplayed"> 
+                        <div className="home__info-card-content home__info-card-content--analytics">
+                            <div className="home__cookies-displayed"> 
                                 <CircleChart 
                                 data={cookiesData} 
                                 centerText={
@@ -137,7 +137,7 @@ const cookiesData = analyticsCookies.map(item => ({
                                 centerIcon={
                                     <g transform="translate(-2.5, -20)">
                                         {/* Cookie icon - simple circle with dots */}
-                                        <svg className="home__circleChart-icon" width="75" height="100" viewBox="0 0 102 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg className="home__circle-chart-icon" width="75" height="100" viewBox="0 0 102 75" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M0 0H102V20.4545H0V0Z" fill="currentColor"/>
                                             <path d="M27.2 75V34.0909H68L27.2 75Z" fill="currentColor"/>
                                             <path d="M54.4 75V34.0909H88.4L54.4 75Z" fill="currentColor"/>

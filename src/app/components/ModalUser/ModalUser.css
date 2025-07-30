@@ -32,6 +32,7 @@
     border-radius: 10px;
 }
 
+/* Settings section (Account, Appearance, Plan options) */
 .modal-user__settings{
     display: flex;
     flex-direction: column;
@@ -55,21 +56,23 @@
     border-radius: 8px;
     cursor: pointer;
 }
-.modal-user__item__span{
+.modal-user__item-span{
     color: var(--body-fresco-color);
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
-.modal-user__item__span--upgrade{
+.modal-user__item-span--upgrade{
     color: var(--accent-bg-color);
     white-space: nowrap;
 }
-.modal-user__item__icon{
+.modal-user__item-icon{
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
+/* Setting section (Account, Appearance, Plan view) */
 .modal-user__setting{
     display: flex;
     flex-direction: column;

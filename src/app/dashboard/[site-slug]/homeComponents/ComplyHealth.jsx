@@ -10,21 +10,21 @@ export const ComplyHealth = ({ siteSlug, noInstalled }) => {
 // If complyHealthStatus is 0 or 100, use the corresponding class.
 // Otherwise, set a CSS variable with the complyHealthStatus value.
 const gradientHandle = (complyHealthStatus) => {
-    const circle = document.querySelector('.home__complyHealth');
+    const circle = document.querySelector('.home__comply-health');
     if(!circle){
         setTimeout(() => gradientHandle(complyHealthStatus), 100);
         return;
     }
 
     // Remove all possible gradient classes first
-    circle.classList.remove('home__complyHealth--empty', 'home__complyHealth--full', 'home__complyHealth--gradient');
+    circle.classList.remove('home__comply-health--empty', 'home__comply-health--full', 'home__comply-health--gradient');
 
     if (complyHealthStatus === 0) {
-        circle.classList.add('home__complyHealth--empty');
+        circle.classList.add('home__comply-health--empty');
     } else if (complyHealthStatus === 100) {
-        circle.classList.add('home__complyHealth--full');
+        circle.classList.add('home__comply-health--full');
     } else {
-        circle.classList.add('home__complyHealth--gradient');
+        circle.classList.add('home__comply-health--gradient');
         // Set the CSS variable for complyHealthStatus
         circle.style.setProperty('--comply-health-status', complyHealthStatus + '%');
     }
@@ -79,20 +79,20 @@ const gradientHandle = (complyHealthStatus) => {
         },
     ]
     return (
-        <div className="home__cardInfo">
-                        <div className="home__cardInfo-header">
-                            <span className="home__cardInfo-title">Comply Health</span>
+        <div className="home__info-card">
+                        <div className="home__info-card-header">
+                            <span className="home__info-card-title">Comply Health</span>
                         </div>
                         {noInstalled()}
-                        <div className="home__cardInfo-content">
-                            <div className="home__complyHealth">
-                                <span className="home__complyHealth-text">{complyHealthStatus}</span>
+                        <div className="home__info-card-content">
+                            <div className="home__comply-health">
+                                <span className="home__comply-health-text">{complyHealthStatus}</span>
                             </div>
-                            <div className="home__complyHealth-datas">
+                            <div className="home__comply-health-datas">
                                     {complyHealth.map((item, index) => (
-                                        <div className="home__complyHealth-data" key={index}>
-                                            <span className="home__complyHealth-region">{item.region}</span>
-                                            <span className="home__complyHealth-value">{item.current}/{item.total}</span>
+                                        <div className="home__comply-health-data" key={index}>
+                                            <span className="home__comply-health-region">{item.region}</span>
+                                            <span className="home__comply-health-value">{item.current}/{item.total}</span>
                                         </div>
                                     ))}
                             </div>

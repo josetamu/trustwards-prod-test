@@ -135,7 +135,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   /*Home*/
   --home-subtitle-color: #FFFFFF;
   --home-text-color: #FFFFFFB3;
-  --home-noInstalled-bg: #FFFFFFB3;
+  --home-verify-container-bg: #FFFFFFB3;
   --home-bar-color: #EEEEEE;
   --home-complyHealth-status-color: #FFFFFF;
   --comply-health-percentage: 80;
@@ -240,7 +240,7 @@ html[data-theme="dark"] {
     /*Home*/
     --home-subtitle-color: #FFFFFF;
     --home-text-color: #FFFFFFB3;
-    --home-noInstalled-bg: #191919b3;
+    --home-verify-container-bg: #191919b3;
     --home-bar-color: #666666;
     --home-complyHealth-status-color: #FFFFFF;
     --home-chart-color: #FFFFFF;

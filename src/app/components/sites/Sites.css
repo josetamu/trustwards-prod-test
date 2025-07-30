@@ -115,7 +115,6 @@
 }
 
 /* Top Right Grid*/
-
 .sites__top-right-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -128,7 +127,6 @@
   background: linear-gradient(355deg, #009AFF -24.13%, #000 67.45%);
   position: relative;
   display: flex;
-
 }
 .sites__top-card--trustwards .sites__trustwards-svg {
   position: absolute;
@@ -219,7 +217,6 @@
   background: linear-gradient(119deg, #A100FF -11.71%, #FF681A 117.26%);
   position: relative;
   display: flex;
-
 }
 .sites__top-card--builder .sites__builder-svg {
   position: absolute;
@@ -258,7 +255,7 @@
 }
 
 /* Bottom Grid */
-.sites__grid.grid {
+.sites__grid--grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 17px;
@@ -266,20 +263,14 @@
 .sites__grid:empty {
   display: none;
 }
-.sites__grid.list:not(:has(.site)) {
+.sites__grid--list:not(:has(.site)) {
   display: none;
 }
 
-.sites__grid.list {
+.sites__grid--list {
   display: flex;
   flex-direction: column;
 }
-
-.sites__nosites-big {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
 
 /* HEADER */
 .sites__header {
@@ -328,9 +319,11 @@
 }
 
 /* No Sites - Add a new site */
-.sites__nosites-big {
+.sites__add-site--big {
   position: relative;
+  flex: 1 1 auto;
   width: 100%;
+  min-height: 0;
   height: 100%;
   border-radius: 16px;
   display: flex;
@@ -342,7 +335,7 @@
   padding: 60px;
 }
 
-.sites__nosites-container {
+.sites__add-site-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -350,7 +343,7 @@
   gap: 10px;
 }
 
-.sites__nosites-heading {
+.sites__add-site-heading {
   font-size: var(--font-size-big);
   letter-spacing: var(--letter-spacing-negative);
   font-weight: var(--font-weight);
@@ -358,7 +351,7 @@
   text-align: center;
 }
 
-.sites__nosites-text {
+.sites__add-site-text {
   font-size: var(--font-size-medium);
   letter-spacing: var(--letter-spacing-negative);
   font-weight: 500;
@@ -366,13 +359,13 @@
   text-align: center;
 }
 
-.sites__nosites-span {
+.sites__add-site-span {
   color: var(--accent-bg-color);
 }
 
 
 /* At least one site - Add a new site */
-.sites__nosites-small {
+.sites__add-site--small {
   min-height: 180px;
   display: flex;
   flex-direction: column;
@@ -386,26 +379,26 @@
 /* :has() */
 
 /* At least one site */
-.sites__grid:has(.site) + .sites__nosites-big {
+.sites__grid:has(.site) + .sites__add-site--big {
   display: none;
 }
 /* No sites */
-.sites__grid:not(:has(.site)) .sites__nosites-small {
+.sites__grid:not(:has(.site)) .sites__add-site--small {
   display: none;
 }
 
 /* Hide the 'Add a new website' box in list mode */
-.sites__grid.list .sites__nosites-small {
+.sites__grid--list .sites__add-site--small {
   display: none !important;
 }
 
 /* Show the 'Add a new website' box in grid view if there is at least one .site */
-.sites__grid.grid:has(.site) .sites__nosites-small {
+.sites__grid--grid:has(.site) .sites__add-site--small {
   display: flex;
 }
 
 /* Hide the 'Add a new website' box if there are no .sites */
-.sites__grid:not(:has(.site)) .sites__nosites-small {
+.sites__grid:not(:has(.site)) .sites__add-site--small {
   display: none;
 }
 
@@ -419,7 +412,7 @@
   .sites__top-grid {
     grid-template-columns: 1fr;
   }
-  .sites__grid.grid {
+  .sites__grid--grid {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -448,7 +441,7 @@
   .sites__top-right-grid {
     grid-template-columns: 1fr;
   }
-  .sites__grid.grid {
+  .sites__grid--grid {
     grid-template-columns: 1fr;
   }
 }

@@ -148,7 +148,7 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
           </div>
         </div>
         {/* Hidden input to open file selector */}
-        <input className='modal-account__fileInput'
+        <input className='modal-account__file-input'
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}

@@ -14,7 +14,7 @@ export function SitesList({ searchQuery, openChangeModal, setIsModalOpen, setMod
 
     return (
         <>
-        <div className={`sites__grid ${isGridView ? 'grid' : 'list'} `}> 
+        <div className={`sites__grid ${isGridView ? 'sites__grid--grid' : 'sites__grid--list'}`}> 
         {sortedSites.map(site => (
           user && site.userid === user.id && (
             <Site
@@ -37,20 +37,20 @@ export function SitesList({ searchQuery, openChangeModal, setIsModalOpen, setMod
             />
           )
         ))}
-        <div className="sites__nosites-small">
-          <div className="sites__nosites-text">
+        <div className="sites__add-site--small">
+          <div className="sites__add-site-text">
             Add a new website
           </div>
           <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
         </div>
       </div>
-      <div className="sites__nosites-big">
-        <div className="sites__nosites-container">
-          <span className="sites__nosites-heading">No Sites</span>
-          <div className="sites__nosites-text">
+      <div className="sites__add-site--big">
+        <div className="sites__add-site-container">
+          <span className="sites__add-site-heading">No Sites</span>
+          <div className="sites__add-site-text">
             There aren't sites here yet.
             <br />
-            Start by creating a <span className="sites__nosites-span">new site.</span>
+            Start by creating a <span className="sites__add-site-span">new site.</span>
           </div>
         </div>
         <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
