@@ -3,26 +3,55 @@
     display: grid;
     justify-items: center;
     align-items: center;
-    grid-template-rows: var(--header-height) 1fr var(--toolbar-height);
+    grid-template-rows: auto 1fr auto;
     gap: 12px;
+
+    min-height: 100%;
 }
 .tw-builder__header{
-    height: 100%;
+    height: 40px;
     width: 100%;
 
     display: flex;
     align-items: center;
     justify-content: center;
 }
+.tw-builder__handlebars-canvas-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    max-width: var(--canvas-max-width);
+}
 .tw-builder__canvas{
-    background-color: var(--panels-background);
-    border-radius: var(--panels-radius);
+    background-color: var(--canvas-background);
+    border-radius: 0; /* To prevent actives outline from being cut by the overflow on the radius */
     border: 1px solid var(--border-light-color);
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
 
     height: 100%;
-    width: 100%;
-    max-width: var(--canvas-max-width);
+    min-height: 100%;
+    min-width: var(--canvas-min-width); /* Handlebar will never go below this width */
+    width: 100%; /* Handlebars will never go above parent width (the parent canvas wrapper width) */
+    max-width: 100%; /* Handlebars will change this to fixed px */ 
+
+    padding: 1px; /* To prevent actives outline from being cut by the overflow */
+    overflow: auto;
+}
+.tw-builder__canvas::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+}
+.tw-builder__canvas::-webkit-scrollbar-thumb {
+    background: var(--scrollbars-color);
+    border-radius: 10px;
+
+    border: 3px solid var(--canvas-background);
 }
 .tw-builder__toolbar{
     background-color: var(--panels-background);
@@ -30,10 +59,35 @@
     border: 1px solid var(--border-light-color);
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
 
-    min-height: 50px;
+    margin: 10px 0;
+
     height: 100%;
     max-height: fit-content;
-    min-width: 225px;
     width: 100%;
     max-width: fit-content;
+
+    padding: 12px;
+}
+
+/* Handlebars */
+.trustwards-builder--is-dragging *{
+    user-select: none;
+}
+.tw-builder__handlebar{
+    background-color: var(--handlebars-color);
+    height: 40px;
+    min-width: 5px;
+
+    border-radius: 10px;
+    cursor: e-resize;
+
+    transition: height 0.2s ease, background-color 0.2s ease;
+}
+.tw-builder__handlebar:hover{
+    height: 80px;
+    background-color: var(--handlebars-color-active);
+}
+.tw-builder__handlebar.tw-builder__handlebar--active{
+    height: 60px;
+    background-color: var(--handlebars-color-active);
 }

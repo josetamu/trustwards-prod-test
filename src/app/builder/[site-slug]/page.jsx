@@ -9,7 +9,7 @@ import BuilderRightPanel from './builderRightPanel/builderRightPanel'
 import { useEffect } from 'react';
 
 function Builder() {
-  //Remove padding from html from the dashboard
+  //Remove padding on the html coming from the dashboard
   useEffect(() => {
     document.documentElement.classList.add('trustwards-builder')
 

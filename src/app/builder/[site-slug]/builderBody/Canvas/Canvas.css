@@ -1,0 +1,9 @@
+.tw-builder__canvas *{
+    cursor: default;
+}
+.tw-builder__active:not(#tw-root){
+    outline: 1px solid #0099FE;
+}
+#tw-root{
+    height: 100%;
+}

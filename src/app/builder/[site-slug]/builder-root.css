@@ -20,17 +20,21 @@ System selected: will fallback to root or html[data-theme="dark"]
 */
 :root {
     --panels-width: 200px;
+    --canvas-min-width: 350px;
     --canvas-max-width: 1480px;
-    --header-height: 40px;
-    --toolbar-height: 75px;
 
     --panels-radius: 8px;
 
     --builder-background: #F5F5F5;
     --panels-background: #FFFFFF;
+    --canvas-background: #FFFFFF;
 
     --border-light-color: #E6E6E6;
     --shadow-light-color: #00000010;
+
+    --scrollbars-color: #E6E6E6;
+    --handlebars-color: #D9D9D9;
+    --handlebars-color-active: #AAAAAA;
 }
 html[data-theme="dark"]{
     --builder-background: #202020;

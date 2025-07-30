@@ -490,7 +490,6 @@ export function Sidebar({
                                                 className="sidebar__sites-tooltip-wrapper"
                                                 onMouseEnter={() => setHoveredOverviewLink(page.name)}
                                                 onMouseLeave={() => setHoveredOverviewLink(null)}
-                                                style={{ position: 'relative', width: '100%' }}
                                             >
                                                 <Link
                                                     href={page.href}
@@ -505,11 +504,11 @@ export function Sidebar({
                                                     <span className='site__link__icon'>{page.icon}</span>
                                                     <span className='site__link__text'>{page.name}</span>
                                                 </Link>
-                                                {!isSidebarOpen && window.innerWidth > 767 && hoveredOverviewLink === page.name && (
+                                                {!isSidebarOpen && !isSidebarMenu &&(
                                                     <Tooltip 
                                                         message={page.name} 
                                                         responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
-                                                        open={true}
+                                                        open={hoveredOverviewLink === page.name}
                                                         animationType="SCALE_LEFT"
                                                     />
                                                 )}

@@ -21,6 +21,7 @@
     "paths": {
       "@dashboard/*": ["app/dashboard/*"],
       "@components/*": ["app/components/*"],
+      "@contexts/*": ["contexts/*"],
     },
     "plugins": [
       {
