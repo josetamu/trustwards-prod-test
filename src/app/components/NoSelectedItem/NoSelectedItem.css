@@ -1,0 +1,22 @@
+.no-selected-item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #F5F5F5;
+    gap: 15px;
+    border-radius: var(--panels-radius);
+    padding: 15px;
+}
+.no-selected-item__text{
+    font-size: var(--font-size-mini);
+    font-weight: 500;
+    color: #5E5E5E;
+    width: 90px;
+    letter-spacing: var(--letter-spacing-negative);
+    text-align: center;
+}
+.no-selected-item__icon{
+    width: 24px;
+    height: 24px;
+}
