@@ -108,7 +108,7 @@ const SiteMenu = ({setIsModalOpen, setModalType, isModalOpen, setSiteData, siteD
 // Site: Card/list for a single site
 export const Site = ({
   id, text, onRemove, setIsModalOpen, setModalType,
-  isModalOpen, modalType, setSiteData, siteData, isGridView, checkSitePicture, SiteStyle, openChangeModalSettings
+  isModalOpen, modalType, setSiteData, siteData, view, checkSitePicture, SiteStyle, openChangeModalSettings
 }) => {
   // State for delete modal and dropdown
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -153,7 +153,7 @@ export const Site = ({
 
 
 
-  if (isGridView) {
+  if (view === 'grid') {
     // Grid view
     return (
       <div

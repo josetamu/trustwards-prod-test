@@ -151,6 +151,11 @@
   border-right: 6px solid var(--sidebar-tooltip-background);
   filter: drop-shadow(-1px 0 1px rgba(0,0,0,0.1));
 }
+/* @media (max-width: 767px) {
+.sidebar .tooltip{
+  display: none;
+}
+} */
 
 /* Mobile responsive styles */
 @media (max-width: 480px) {

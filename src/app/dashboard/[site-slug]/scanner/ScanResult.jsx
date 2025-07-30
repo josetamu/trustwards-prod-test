@@ -4,6 +4,7 @@ import { ScanResultSkeleton } from "@components/Skeletons/ScanResultSkeleton";
 import { Suspense, useState } from "react";
 import { useDashboard } from "../../layout";
 import './scanner.css';
+import '../home.css';
 import React from "react";
 
 // tridimensional array with default scan results grouped by category
@@ -106,7 +107,7 @@ const defaultScanResults = [
     );
   }
 
-export const ScanResult = ({scanDone, isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug}) => {
+export const ScanResult = ({scanDone, isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug, noInstalled}) => {
     const [scanResults, setScanResults] = useState(defaultScanResults);
     const {allUserDataResource } = useDashboard();
     if(!allUserDataResource) return <ScanResultSkeleton />;
@@ -127,6 +128,7 @@ export const ScanResult = ({scanDone, isScanning, MAX_SCANS, setScanDone, setIsS
                         <Scan isScanning={isScanning}/>
                     ) : (
                         <>
+                            {noInstalled()}
                             <div className="scanner__main-box-text">Scan your website for the first time<br/>to see all the scripts inserting cookies</div>
                             <Suspense fallback={<ScanResultSkeleton />}>
                                 <ScanButton isScanning={isScanning} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug} />

@@ -121,42 +121,42 @@ const cookiesData = analyticsCookies.map(item => ({
 
 
     return (
-<div className="home__info-card home__info-card--analytics">
-                        <div className="home__info-card-header">
-                            <span className="home__info-card-title">Analytics</span>
-                        </div>
-                        {noInstalled()}
-                        <div className="home__info-card-content home__info-card-content--analytics">
-                            <div className="home__cookies-displayed"> 
-                                <CircleChart 
-                                data={cookiesData} 
-                                centerText={
-                                    (cookiesData[0].value + cookiesData[1].value + cookiesData[3].value).toLocaleString()
-                                }
-                                centerLabel="Cookies displayed"
-                                centerIcon={
-                                    <g transform="translate(-2.5, -20)">
-                                        {/* Cookie icon - simple circle with dots */}
-                                        <svg className="home__circle-chart-icon" width="75" height="100" viewBox="0 0 102 75" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M0 0H102V20.4545H0V0Z" fill="currentColor"/>
-                                            <path d="M27.2 75V34.0909H68L27.2 75Z" fill="currentColor"/>
-                                            <path d="M54.4 75V34.0909H88.4L54.4 75Z" fill="currentColor"/>
-                                        </svg>
-                                    </g>
-                                } />
-                            </div>
-                            <div className="home__analytics">
-                                {analyticsCookies.map((item, index) => (
-                                    <div className="home__cookie" key={index}>
-                                        <div className={`home__color home__color--${item.color}`}></div>
-                                        <div className="home__cookie-text">
-                                            <span className="home__cookie-title">{item.title}</span>
-                                            <span className="home__cookie-value">{item.value}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+            <div className="home__info-card home__info-card--analytics">
+                <div className="home__info-card-header">
+                    <span className="home__info-card-title">Analytics</span>
+                </div>
+                {noInstalled()}
+                <div className="home__info-card-content home__info-card-content--analytics">
+                    <div className="home__cookies-displayed"> 
+                        <CircleChart 
+                        data={cookiesData} 
+                        centerText={
+                            (cookiesData[0].value + cookiesData[1].value + cookiesData[3].value).toLocaleString()
+                        }
+                        centerLabel="Cookies displayed"
+                        centerIcon={
+                            <g transform="translate(-2.5, -20)">
+                                {/* Cookie icon - simple circle with dots */}
+                                <svg className="home__circle-chart-icon" width="75" height="100" viewBox="0 0 102 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0H102V20.4545H0V0Z" fill="currentColor"/>
+                                    <path d="M27.2 75V34.0909H68L27.2 75Z" fill="currentColor"/>
+                                    <path d="M54.4 75V34.0909H88.4L54.4 75Z" fill="currentColor"/>
+                                </svg>
+                            </g>
+                        } />
                     </div>
+                    <div className="home__analytics">
+                        {analyticsCookies.map((item, index) => (
+                            <div className="home__cookie" key={index}>
+                                <div className={`home__color home__color--${item.color}`}></div>
+                                <div className="home__cookie-text">
+                                    <span className="home__cookie-title">{item.title}</span>
+                                    <span className="home__cookie-value">{item.value}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
     )
 }

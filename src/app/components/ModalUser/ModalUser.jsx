@@ -7,6 +7,7 @@ import ModalUpgradePlan from '../ModalUpgradePlan/ModalUpgradePlan';
 export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings, openChangeModal, avatarColors, checkProfilePicture, profileStyle, allUserDataResource }) {
 //Modal User is a modal that allows the user to change their account settings, appearance settings, and upgrade plan.
 //In this function we render the content of the modal based on the userSettings state.
+
     const renderContent = () => {
         switch (userSettings) {
             case 'Account':

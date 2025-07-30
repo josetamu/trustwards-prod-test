@@ -1,44 +1,46 @@
 import { useState, useRef, useEffect } from 'react';
 import './Sort.css';
 import { Dropdown } from '../dropdown/Dropdown';
+import {useDashboard} from '@dashboard/layout';
+import PlanSkeleton from '../Skeletons/PlanSkeleton';
+import { supabase } from '../../../supabase/supabaseClient';
 
 // Sort: Dropdown component for sorting sites by date or alphabetically
-export const Sort = ({ onSortChange }) => {
-  // Get initial sort mode from localStorage or default to alphabetical
-  const getInitialSortMode = () => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      return localStorage.getItem('sortMode') || 'alphabetical';
-    }
-    return 'alphabetical';
-  };
-
-  // Get initial sort direction from localStorage or default to ascending
-  const getInitialAscending = () => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const stored = localStorage.getItem('sortAscending');
-      return stored === null ? true : stored === 'true';
-    }
-    return true;
-  };
-
-  const [sortMode, setSortMode] = useState(getInitialSortMode);
-  const [ascending, setAscending] = useState(getInitialAscending);
+export const Sort = ({ }) => {
+  const {allUserDataResource, setAppearanceSettings} = useDashboard();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
+  if(!allUserDataResource) return <PlanSkeleton/>;
+  const {appearance, user} = allUserDataResource.read();
+  const userSort = appearance['Sort Sites'];
 
-  // Initialize sort on component mount
-  useEffect(() => {
-    onSortChange(sortMode, ascending);
-  }, []);
+
+
+
+    // Function to update appearance settings in database
+    const updateAppearanceSettings = async (settings) => {
+      if (!user?.id) return;
+      
+      const { error } = await supabase
+        .from('Appearance')
+        .update(settings)
+        .eq('userid', user.id);
+      
+      if (error) {
+        console.error('Error updating appearance settings:', error);
+      }
+    };
 
   // Handle sort option selection
-  const handleSortChange = (mode, direction) => {
-    setSortMode(mode);
-    setAscending(direction);
-    localStorage.setItem('sortMode', mode);
-    localStorage.setItem('sortAscending', direction);
-    onSortChange(mode, direction);
-    setOpen(false);
+  const handleSortChange = (mode) => {
+    const newSettings = { ...appearance, 'Sort Sites': mode };
+    setAppearanceSettings(newSettings);
+
+    if(allUserDataResource) {
+      const currentData = allUserDataResource.read();
+      currentData.appearance['Sort Sites'] = mode;
+    }
+    updateAppearanceSettings(newSettings);
   };
 
   // Sort button trigger
@@ -59,10 +61,10 @@ export const Sort = ({ onSortChange }) => {
       <div className="sort__divider"></div>
       <button 
         className="dropdown__item"
-        onClick={(e) => { e.stopPropagation(); handleSortChange('date', false); }}
+        onClick={(e) => { e.stopPropagation(); handleSortChange('newest'); }}
       >
         Newer
-        {sortMode === 'date' && !ascending && (
+         {userSort === 'newest' && (
           <span className="dropdown__icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
               <path fillRule="evenodd" clipRule="evenodd" d="M19.9378 5.65241C20.1299 6.1702 19.8659 6.7457 19.3481 6.93782C18.2893 7.33068 17.1276 8.14841 15.9516 9.22885C14.7868 10.299 13.6643 11.574 12.6796 12.8107C11.6968 14.0449 10.8633 15.2254 10.2753 16.0981C9.98166 16.5339 9.75008 16.8917 9.59261 17.1394C9.51389 17.2632 9.45374 17.3594 9.41368 17.424L9.36885 17.4966L9.35809 17.5142L9.35569 17.5182C9.16686 17.8294 8.82329 18.0143 8.45951 17.9994C8.09567 17.9846 7.76866 17.7732 7.60581 17.4475C6.92848 16.0928 6.15935 15.3411 5.59956 14.934C5.31727 14.7287 5.08223 14.6067 4.93004 14.5391C4.85386 14.5052 4.79837 14.485 4.76806 14.4747C4.75528 14.4703 4.74701 14.4678 4.74357 14.4668C4.2162 14.3269 3.89733 13.7888 4.03009 13.2577C4.16404 12.7219 4.70698 12.3962 5.24277 12.5301C5.26751 12.5366 5.24397 12.5304 5.24397 12.5304L5.24521 12.5307L5.24783 12.5314L5.25365 12.5329L5.26751 12.5366C5.27773 12.5394 5.28991 12.5428 5.30396 12.5469C5.33206 12.5551 5.36767 12.5662 5.41014 12.5805C5.49507 12.6093 5.60755 12.6516 5.74231 12.7115C6.01199 12.8313 6.37071 13.0218 6.77591 13.3165C7.31867 13.7113 7.93487 14.2857 8.52893 15.1112C8.55757 15.0684 8.58683 15.0249 8.6167 14.9805C9.22537 14.0772 10.0905 12.8515 11.115 11.5648C12.1376 10.2807 13.3313 8.92028 14.5985 7.75607C15.8545 6.60213 17.2406 5.58653 18.6524 5.06272C19.1702 4.87061 19.7457 5.13462 19.9378 5.65241Z" fill="currentColor" />
@@ -72,10 +74,10 @@ export const Sort = ({ onSortChange }) => {
       </button>
       <button 
         className="dropdown__item"
-        onClick={(e) => { e.stopPropagation(); handleSortChange('date', true); }}
+        onClick={(e) => { e.stopPropagation(); handleSortChange('oldest'); }}
       >
         Older
-        {sortMode === 'date' && ascending && (
+        {userSort === 'oldest' && (
           <span className="dropdown__icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
               <path fillRule="evenodd" clipRule="evenodd" d="M19.9378 5.65241C20.1299 6.1702 19.8659 6.7457 19.3481 6.93782C18.2893 7.33068 17.1276 8.14841 15.9516 9.22885C14.7868 10.299 13.6643 11.574 12.6796 12.8107C11.6968 14.0449 10.8633 15.2254 10.2753 16.0981C9.98166 16.5339 9.75008 16.8917 9.59261 17.1394C9.51389 17.2632 9.45374 17.3594 9.41368 17.424L9.36885 17.4966L9.35809 17.5142L9.35569 17.5182C9.16686 17.8294 8.82329 18.0143 8.45951 17.9994C8.09567 17.9846 7.76866 17.7732 7.60581 17.4475C6.92848 16.0928 6.15935 15.3411 5.59956 14.934C5.31727 14.7287 5.08223 14.6067 4.93004 14.5391C4.85386 14.5052 4.79837 14.485 4.76806 14.4747C4.75528 14.4703 4.74701 14.4678 4.74357 14.4668C4.2162 14.3269 3.89733 13.7888 4.03009 13.2577C4.16404 12.7219 4.70698 12.3962 5.24277 12.5301C5.26751 12.5366 5.24397 12.5304 5.24397 12.5304L5.24521 12.5307L5.24783 12.5314L5.25365 12.5329L5.26751 12.5366C5.27773 12.5394 5.28991 12.5428 5.30396 12.5469C5.33206 12.5551 5.36767 12.5662 5.41014 12.5805C5.49507 12.6093 5.60755 12.6516 5.74231 12.7115C6.01199 12.8313 6.37071 13.0218 6.77591 13.3165C7.31867 13.7113 7.93487 14.2857 8.52893 15.1112C8.55757 15.0684 8.58683 15.0249 8.6167 14.9805C9.22537 14.0772 10.0905 12.8515 11.115 11.5648C12.1376 10.2807 13.3313 8.92028 14.5985 7.75607C15.8545 6.60213 17.2406 5.58653 18.6524 5.06272C19.1702 4.87061 19.7457 5.13462 19.9378 5.65241Z" fill="currentColor" />
@@ -87,10 +89,10 @@ export const Sort = ({ onSortChange }) => {
       <div className="sort__divider"></div>
       <button 
         className="dropdown__item"
-        onClick={(e) => { e.stopPropagation(); handleSortChange('alphabetical', true); }}
+        onClick={(e) => { e.stopPropagation(); handleSortChange('a-z'); }}
       >
         A-Z
-        {sortMode === 'alphabetical' && ascending && (
+        {userSort === 'a-z' && (
           <span className="dropdown__icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
               <path fillRule="evenodd" clipRule="evenodd" d="M19.9378 5.65241C20.1299 6.1702 19.8659 6.7457 19.3481 6.93782C18.2893 7.33068 17.1276 8.14841 15.9516 9.22885C14.7868 10.299 13.6643 11.574 12.6796 12.8107C11.6968 14.0449 10.8633 15.2254 10.2753 16.0981C9.98166 16.5339 9.75008 16.8917 9.59261 17.1394C9.51389 17.2632 9.45374 17.3594 9.41368 17.424L9.36885 17.4966L9.35809 17.5142L9.35569 17.5182C9.16686 17.8294 8.82329 18.0143 8.45951 17.9994C8.09567 17.9846 7.76866 17.7732 7.60581 17.4475C6.92848 16.0928 6.15935 15.3411 5.59956 14.934C5.31727 14.7287 5.08223 14.6067 4.93004 14.5391C4.85386 14.5052 4.79837 14.485 4.76806 14.4747C4.75528 14.4703 4.74701 14.4678 4.74357 14.4668C4.2162 14.3269 3.89733 13.7888 4.03009 13.2577C4.16404 12.7219 4.70698 12.3962 5.24277 12.5301C5.26751 12.5366 5.24397 12.5304 5.24397 12.5304L5.24521 12.5307L5.24783 12.5314L5.25365 12.5329L5.26751 12.5366C5.27773 12.5394 5.28991 12.5428 5.30396 12.5469C5.33206 12.5551 5.36767 12.5662 5.41014 12.5805C5.49507 12.6093 5.60755 12.6516 5.74231 12.7115C6.01199 12.8313 6.37071 13.0218 6.77591 13.3165C7.31867 13.7113 7.93487 14.2857 8.52893 15.1112C8.55757 15.0684 8.58683 15.0249 8.6167 14.9805C9.22537 14.0772 10.0905 12.8515 11.115 11.5648C12.1376 10.2807 13.3313 8.92028 14.5985 7.75607C15.8545 6.60213 17.2406 5.58653 18.6524 5.06272C19.1702 4.87061 19.7457 5.13462 19.9378 5.65241Z" fill="currentColor" />
@@ -100,10 +102,10 @@ export const Sort = ({ onSortChange }) => {
       </button>
       <button 
         className="dropdown__item"
-        onClick={(e) => { e.stopPropagation(); handleSortChange('alphabetical', false); }}
+        onClick={(e) => { e.stopPropagation(); handleSortChange('z-a'); }}
       >
         Z-A
-        {sortMode === 'alphabetical' && !ascending && (
+        {userSort === 'z-a' && (
           <span className="dropdown__icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
               <path fillRule="evenodd" clipRule="evenodd" d="M19.9378 5.65241C20.1299 6.1702 19.8659 6.7457 19.3481 6.93782C18.2893 7.33068 17.1276 8.14841 15.9516 9.22885C14.7868 10.299 13.6643 11.574 12.6796 12.8107C11.6968 14.0449 10.8633 15.2254 10.2753 16.0981C9.98166 16.5339 9.75008 16.8917 9.59261 17.1394C9.51389 17.2632 9.45374 17.3594 9.41368 17.424L9.36885 17.4966L9.35809 17.5142L9.35569 17.5182C9.16686 17.8294 8.82329 18.0143 8.45951 17.9994C8.09567 17.9846 7.76866 17.7732 7.60581 17.4475C6.92848 16.0928 6.15935 15.3411 5.59956 14.934C5.31727 14.7287 5.08223 14.6067 4.93004 14.5391C4.85386 14.5052 4.79837 14.485 4.76806 14.4747C4.75528 14.4703 4.74701 14.4678 4.74357 14.4668C4.2162 14.3269 3.89733 13.7888 4.03009 13.2577C4.16404 12.7219 4.70698 12.3962 5.24277 12.5301C5.26751 12.5366 5.24397 12.5304 5.24397 12.5304L5.24521 12.5307L5.24783 12.5314L5.25365 12.5329L5.26751 12.5366C5.27773 12.5394 5.28991 12.5428 5.30396 12.5469C5.33206 12.5551 5.36767 12.5662 5.41014 12.5805C5.49507 12.6093 5.60755 12.6516 5.74231 12.7115C6.01199 12.8313 6.37071 13.0218 6.77591 13.3165C7.31867 13.7113 7.93487 14.2857 8.52893 15.1112C8.55757 15.0684 8.58683 15.0249 8.6167 14.9805C9.22537 14.0772 10.0905 12.8515 11.115 11.5648C12.1376 10.2807 13.3313 8.92028 14.5985 7.75607C15.8545 6.60213 17.2406 5.58653 18.6524 5.06272C19.1702 4.87061 19.7457 5.13462 19.9378 5.65241Z" fill="currentColor" />

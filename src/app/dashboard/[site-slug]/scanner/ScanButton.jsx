@@ -4,7 +4,7 @@ import Scan from '../../../components/scan/Scan';
 import { supabase } from '../../../../supabase/supabaseClient';
 
 export const ScanButton = ({isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug}) => {
-    const { allUserDataResource, setWebs } = useDashboard();
+    const { allUserDataResource, setWebs, isInstalled } = useDashboard();
     if(!allUserDataResource) return <PlanSkeleton />;
     const { webs } = allUserDataResource.read();
     const site = webs.find(web => web.id === siteSlug);
@@ -59,7 +59,7 @@ export const ScanButton = ({isScanning, MAX_SCANS, setScanDone, setIsScanning, s
     };
 
     return (
-        <button className={`scanner__scan ${currentScanCount >= MAX_SCANS ? 'scanner__scan--disabled' : ''}`} onClick={startScan} disabled={isScanning || currentScanCount >= MAX_SCANS}>
+        <button className={`scanner__scan ${currentScanCount >= MAX_SCANS ? 'scanner__scan--disabled' : ''}`} onClick={startScan} disabled={isScanning || currentScanCount >= MAX_SCANS || !isInstalled}>
             {isScanning ? (
                 <Scan isScanning={isScanning} onlyBar onFinish={handleScanFinish} />
             ) : 'Scan'}

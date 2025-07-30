@@ -1,21 +1,56 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './View.css';
+import { useDashboard } from '@dashboard/layout';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
+import { supabase } from '../../../supabase/supabaseClient';
 
 // View: Toggle component for switching between grid and list view
 export const View = ({ isGridView, onViewChange }) => {
-  const [isGrid, setIsGrid] = useState(true); // true = grid (horizontal), false = list (vertical)
+  const {allUserDataResource, setAppearanceSettings} = useDashboard();
+  if(!allUserDataResource) return <PlanSkeleton/>;
+  const {appearance, user} = allUserDataResource.read();
+  const userView = appearance['View Sites'];
+  
+  // Function to update appearance settings in database
+  const updateAppearanceSettings = async (settings) => {
+    if (!user?.id) return;
+    
+    const { error } = await supabase
+      .from('Appearance')
+      .update(settings)
+      .eq('userid', user.id);
+    
+    if (error) {
+      console.error('Error updating appearance settings:', error);
+    }
+  };
+
+ 
 
   // Handle view toggle between grid and list
-  const handleView = (view) => {
-    setIsGrid(view);
-    onViewChange(view);
+  const handleView = async (view) => {
+    const viewValue = view==='grid' ? 'grid' : 'list';
+
+    // Update local appearance settings state
+    const newSettings = { ...appearance, 'View Sites': viewValue };
+    setAppearanceSettings(newSettings);
+
+
+    if(allUserDataResource) {
+      const currentData = allUserDataResource.read();
+      currentData.appearance['View Sites'] = viewValue;
+    }
+    
+    // Persist to database
+    await updateAppearanceSettings({ 'View Sites': viewValue });
+
   };
 
   return (
     <div className="view__toggle">
       <button
-        className={`view__option ${isGridView ? 'active' : ''}`}
-        onClick={() => handleView(true)}
+        className={`view__option ${userView === 'grid' ? 'active' : ''}`}
+        onClick={() => handleView('grid')}
         aria-label="Grid view"
         type="button"
       >
@@ -28,8 +63,8 @@ export const View = ({ isGridView, onViewChange }) => {
         </svg>
       </button>
       <button
-        className={`view__option ${!isGridView ? 'active' : ''}`}
-        onClick={() => handleView(false)}
+        className={`view__option ${userView === 'list' ? 'active' : ''}`}
+        onClick={() => handleView('list')}
         aria-label="List view"
         type="button"
       >

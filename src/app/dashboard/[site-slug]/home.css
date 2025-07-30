@@ -323,6 +323,7 @@
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
     text-align: center;
+    width: 70%;
 }
 .home__full-view-text{
     font-size: var(--font-size-small);
