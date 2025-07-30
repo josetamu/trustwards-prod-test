@@ -492,7 +492,6 @@ export function Sidebar({
                                                 className="sidebar__sites-tooltip-wrapper"
                                                 onMouseEnter={() => setHoveredOverviewLink(page.name)}
                                                 onMouseLeave={() => setHoveredOverviewLink(null)}
-                                                style={{ position: 'relative', width: '100%' }}
                                             >
                                                 {page.name === 'Comply Map' ? (
                                                     <div
@@ -523,7 +522,7 @@ export function Sidebar({
                                                     <Tooltip 
                                                         message={page.name} 
                                                         responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
-                                                        open={true}
+                                                        open={hoveredOverviewLink === page.name}
                                                         animationType="SCALE_LEFT"
                                                     />
                                                 )}
