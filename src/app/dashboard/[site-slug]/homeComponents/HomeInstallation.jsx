@@ -30,7 +30,7 @@ export const HomeInstallation = ({ siteSlug, showNotification, verify}) => {
                             <span className='home__verify-text'>Verify</span>
                         </div>
                     </div>
-                    <div className='home__installation-body'>
+                    <div className='home__installation-content'>
                         <span className='home__paste'>Paste the following snippet as high as possible in the &lt;head&gt; part of your website.</span>
                         <ScriptCopy showNotification={showNotification}/>
                         <div className="home__divider"></div>

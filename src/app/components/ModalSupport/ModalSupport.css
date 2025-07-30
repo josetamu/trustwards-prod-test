@@ -12,6 +12,7 @@
     max-width: 344px;
 }
 
+/* Top Section */
 .modal-support__header {
     min-height: 49px;
     width: 100%;
@@ -26,6 +27,7 @@
     height: 15px;
 }
 
+/* Bottom Section */
 .modal-support__form {
     padding: 10px;
     display: flex;
@@ -43,6 +45,7 @@
     border-radius: 10px;
 }
 
+/* Top Wrapper of the form */
 .modal-support__top {
     max-width: 100%;
     display: flex;
@@ -80,11 +83,11 @@
     position: relative;
 }
 
-.modal-support__choice__icon {
+.modal-support__choice-icon {
     display: none;
 }
 
-.modal-support__choice__text {
+.modal-support__choice-text {
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
@@ -96,7 +99,7 @@
     border: 1.5px solid var(--accent-bg-color);
 }
 
-.modal-support__choice--active .modal-support__choice__icon {
+.modal-support__choice--active .modal-support__choice-icon {
     display: flex;
     position: absolute;
     right: -5px;
@@ -104,7 +107,7 @@
     color: var(--accent-bg-color);
 }
 
-.modal-support__choice--active .modal-support__choice__text {
+.modal-support__choice--active .modal-support__choice-text {
     color: var(--accent-bg-color);
 }
 
@@ -122,19 +125,19 @@
     max-width: 100%;
 }
 
-.modal-support__input__container {
+.modal-support__input-container {
     position: relative;
     display: flex;
 }
 
-.modal-support__input__title {
+.modal-support__input-title {
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
 
-.modal-support__input__field {
+.modal-support__input-field {
     width: 100%;
     height: 34px;
     border: 1px solid var(--border-strong-color);
@@ -147,16 +150,17 @@
     background: transparent;
 }
 
-.modal-support__input__field:focus {
+.modal-support__input-field:focus {
     outline: none;
 }
 
-.modal-support__input__field--textarea {
+.modal-support__input-field--textarea {
     height: 69px;
     resize: none;
 }
 
-.modal-support__dropZone {
+/* Bottom wrapper of the form */
+.modal-support__bottom {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -171,32 +175,18 @@
     overflow: hidden;
 }
 
-.modal-support__dropZone__span {
+.modal-support__bottom-span {
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 
-.modal-support__button {
-    width: 100%;
-    height: 25px;
-    border-radius: 8px;
-    background-color: var(--accent-bg-color);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
-    letter-spacing: var(--letter-spacing-negative);
-    color: var(--accent-color);
-    cursor: pointer;
-    border: none;
-    box-shadow: var(--blue-button-shadow);
-}
-
-.modal-support__dropZone__icon--none {
+.modal-support__bottom-icon--none {
     display: none;
 }
 
-.modal-support__dropZone__span--none {
+.modal-support__bottom-span--none {
     display: none;
 }
 
@@ -239,14 +229,14 @@
     border: 1px solid var(--border-strong-color);
 }
 
-.modal-support__file__name {
+.modal-support__file-name {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
 }
 
-.modal-support__file__remove {
+.modal-support__file-remove {
     padding: 0px 0px;
     background-color: transparent;
     border: none;
@@ -261,4 +251,18 @@
 
 .modal-support__input--hidden {
     display: none;
+}
+
+.modal-support__button {
+    width: 100%;
+    height: 30px;
+    border-radius: 8px;
+    background-color: var(--accent-bg-color);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--accent-color);
+    cursor: pointer;
+    border: none;
+    box-shadow: var(--blue-button-shadow);
 }

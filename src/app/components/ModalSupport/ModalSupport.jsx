@@ -205,7 +205,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                     </span>
                     <div className="modal-support__choices">
                         <div className={`modal-support__choice ${selectedChoice === 'Bug report' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
-                            <span className="modal-support__choice__icon">
+                            <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
@@ -218,12 +218,12 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                     </defs>
                                 </svg>
                             </span>
-                            <span className="modal-support__choice__text">
+                            <span className="modal-support__choice-text">
                                 Bug report
                             </span>
                         </div>
                         <div className={`modal-support__choice ${selectedChoice === 'Pre-sale questions' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
-                        <span className="modal-support__choice__icon">
+                        <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
@@ -236,12 +236,12 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                     </defs>
                                 </svg>
                             </span>
-                            <span className="modal-support__choice__text">
+                            <span className="modal-support__choice-text">
                                 Pre-sale questions
                             </span>
                         </div>
                         <div className={`modal-support__choice ${selectedChoice === 'Other' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
-                        <span className="modal-support__choice__icon">
+                        <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
                                     <rect width="12" height="12" rx="6" fill="#F3F3F3"/>
@@ -254,25 +254,25 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                     </defs>
                                 </svg>
                             </span>
-                            <span className="modal-support__choice__text">
+                            <span className="modal-support__choice-text">
                                 Other
                             </span>
                         </div>
                         <Tooltip 
                             message={errors.selectedChoice} 
                             id="selectedChoice-error"
-                            responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                            responsivePosition={{ desktop: 'top', mobile: 'top' }}
                             open={!!errors.selectedChoice}
                         />
                     </div>
                 </div>
                 <div className="modal-support__mid">
                     <div className="modal-support__input">
-                        <span className="modal-support__input__title">Name</span>
-                        <div className="modal-support__input__container">
+                        <span className="modal-support__input-title">Name</span>
+                        <div className="modal-support__input-container">
                             <input 
                             type="text" 
-                            className="modal-support__input__field" 
+                            className="modal-support__input-field" 
                             value={name} 
                             onChange={(e) => handleInputEdit('name', e.target.value)} 
                             onKeyDown={handleKeyDown}
@@ -282,18 +282,18 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             />
                             <Tooltip
                                 message={errors.name}
-                                responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                 open={!!errors.name}
                             />
                         </div>
                         
                     </div>
                     <div className="modal-support__input">
-                        <span className="modal-support__input__title">Email</span>
-                        <div className="modal-support__input__container">
+                        <span className="modal-support__input-title">Email</span>
+                        <div className="modal-support__input-container">
                             <input 
                             type="text" 
-                            className="modal-support__input__field" 
+                            className="modal-support__input-field" 
                             value={email} 
                             onChange={(e) => handleInputEdit('email', e.target.value)} 
                             onKeyDown={handleKeyDown}
@@ -302,17 +302,17 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             />
                             <Tooltip
                                 message={errors.email}
-                                responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                 open={!!errors.email}
                             />
                         </div>
                     </div>
                     <div className="modal-support__input">
-                        <span className="modal-support__input__title">Message</span>
-                        <div className="modal-support__input__container">
+                        <span className="modal-support__input-title">Message</span>
+                        <div className="modal-support__input-container">
                             <textarea 
                             type="text-area" 
-                            className="modal-support__input__field modal-support__input__field--textarea" 
+                            className="modal-support__input-field modal-support__input-field--textarea" 
                             placeholder='...' 
                             value={message} 
                             onChange={(e) => {
@@ -325,13 +325,13 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             />
                         <Tooltip
                             message={errors.message}
-                            responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                            responsivePosition={{ desktop: 'top', mobile: 'top' }}
                             open={!!errors.message}
                         />
                         </div>
                     </div>
                 </div>
-                <div className="modal-support__dropZone"
+                <div className="modal-support__bottom"
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDragOver={handleDragOver}
@@ -350,14 +350,14 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         id="fileInput"
                         onClick={(e) => e.stopPropagation()}
                     />
-                    <span className={`modal-support__dropZone__icon ${files.length > 0 ? 'modal-support__dropZone__icon--none' : ''}`}>
+                    <span className={`modal-support__bottom-icon ${files.length > 0 ? 'modal-support__bottom-icon--none' : ''}`}>
                         <svg width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fillRule="evenodd" clipRule="evenodd" d="M3 1C2.17155 1 1.5 1.67158 1.5 2.5V3H0.5V2.5C0.5 1.11929 1.61929 0 3 0C4.3807 0 5.5 1.11929 5.5 2.5V8C5.5 9.3807 4.3807 10.5 3 10.5C1.61929 10.5 0.5 9.3807 0.5 8V5.75C0.5 4.7835 1.2835 4 2.25 4C3.2165 4 4 4.7835 4 5.75V7H3V5.75C3 5.3358 2.6642 5 2.25 5C1.83579 5 1.5 5.3358 1.5 5.75V8C1.5 8.82845 2.17155 9.5 3 9.5C3.82845 9.5 4.5 8.82845 4.5 8V2.5C4.5 1.67158 3.82845 1 3 1Z" fill="#666666"/>
                         </svg>
                     </span>
-                    <span className={`modal-support__dropZone__span ${files.length > 0 ? 'modal-support__dropZone__span--none' : ''}`}>Select or drop files from your device</span>
+                    <span className={`modal-support__bottom-span ${files.length > 0 ? 'modal-support__bottom-span--none' : ''}`}>Select or drop files from your device</span>
                     {files.length > 0 && (
-                        <div className="modal-support__files__container">
+                        <div className="modal-support__files-container">
                             <div className="modal-support__files" 
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -367,9 +367,9 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 {/* map the files and show them in the modal. with removeFile function to remove the file */}
                                 {files.map((file, index) => (
                                     <div key={index} className="modal-support__file">
-                                        <span className="modal-support__file__name">{file.name}</span>
+                                        <span className="modal-support__file-name">{file.name}</span>
                                         <button 
-                                            className="modal-support__file__remove"
+                                            className="modal-support__file-remove"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -386,9 +386,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         </div>
                     )}
                 </div>
-                <div className="modal-support__bottom">
-                    <button className="modal-support__button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Send'}</button>
-                </div>
+                <button className="modal-support__button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Send'}</button>
             </div>
         </div>
     );

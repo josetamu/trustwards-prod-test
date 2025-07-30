@@ -1,18 +1,18 @@
 export const ScannerOverviewSkeleton = () => {
     return (
-        <div className="scannerOverviewSkeleton skeleton-animate-pulse">
-            <div className="scannerOverviewSkeleton__header">
-                <span className="scannerOverviewSkeleton__title"></span>
-                <span className="scannerOverviewSkeleton__button"></span>
+        <div className="skeleton-scanner-overview skeleton-animate-pulse">
+            <div className="skeleton-scanner-overview__header">
+                <span className="skeleton-scanner-overview__title"></span>
+                <span className="skeleton-scanner-overview__button"></span>
             </div>
-            <div className="scannerOverviewSkeleton__content">
-                <span className="scannerOverviewSkeleton__item"></span>
-                <span className="scannerOverviewSkeleton__item"></span>
-                <span className="scannerOverviewSkeleton__item"></span>
-                <span className="scannerOverviewSkeleton__item"></span>
+            <div className="skeleton-scanner-overview__content">
+                <span className="skeleton-scanner-overview__item"></span>
+                <span className="skeleton-scanner-overview__item"></span>
+                <span className="skeleton-scanner-overview__item"></span>
+                <span className="skeleton-scanner-overview__item"></span>
             </div>
-            <div className="scannerOverviewSkeleton__footer">
-                <span className="scannerOverviewSkeleton__scanner"></span>
+            <div className="skeleton-scanner-overview__footer">
+                <span className="skeleton-scanner-overview__scanner"></span>
             </div>
         </div>
     )

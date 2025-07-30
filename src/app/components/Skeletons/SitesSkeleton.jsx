@@ -3,37 +3,37 @@ import './Skeletons.css';
 export const SitesSkeleton = ({}) => {
     
     return (
-        <div className="site-skeleton-container">
-            <div className="site-skeleton skeleton-animate-pulse">
-                <div className="site-skeleton__visual"></div>
-                <div className="site-skeleton__footer">
-                    <div className="site-skeleton__avatar"></div>
-                    <div className="site-skeleton__name"></div>
-                    <div className="site-skeleton__plan"></div>
+        <div className="skeleton-site-container">
+            <div className="skeleton-site skeleton-animate-pulse">
+                <div className="skeleton-site__visual"></div>
+                <div className="skeleton-site__footer">
+                    <div className="skeleton-site__avatar"></div>
+                    <div className="skeleton-site__name"></div>
+                    <div className="skeleton-site__plan"></div>
                 </div>
             </div>
-            <div className="site-skeleton skeleton-animate-pulse">
-                <div className="site-skeleton__visual"></div>
-                <div className="site-skeleton__footer">
-                    <div className="site-skeleton__avatar"></div>
-                    <div className="site-skeleton__name"></div>
-                    <div className="site-skeleton__plan"></div>
+            <div className="skeleton-site skeleton-animate-pulse">
+                <div className="skeleton-site__visual"></div>
+                <div className="skeleton-site__footer">
+                    <div className="skeleton-site__avatar"></div>
+                    <div className="skeleton-site__name"></div>
+                    <div className="skeleton-site__plan"></div>
                 </div>
             </div>
-            <div className="site-skeleton skeleton-animate-pulse">
-                    <div className="site-skeleton__visual"></div>
-                    <div className="site-skeleton__footer">
-                        <div className="site-skeleton__avatar"></div>
-                        <div className="site-skeleton__name"></div>
-                        <div className="site-skeleton__plan"></div>
+            <div className="skeleton-site skeleton-animate-pulse">
+                    <div className="skeleton-site__visual"></div>
+                    <div className="skeleton-site__footer">
+                        <div className="skeleton-site__avatar"></div>
+                        <div className="skeleton-site__name"></div>
+                        <div className="skeleton-site__plan"></div>
                     </div>
             </div>
-            <div className="site-skeleton skeleton-animate-pulse">
-                    <div className="site-skeleton__visual"></div>
-                    <div className="site-skeleton__footer">
-                        <div className="site-skeleton__avatar"></div>
-                        <div className="site-skeleton__name"></div>
-                        <div className="site-skeleton__plan"></div>
+            <div className="skeleton-site skeleton-animate-pulse">
+                    <div className="skeleton-site__visual"></div>
+                    <div className="skeleton-site__footer">
+                        <div className="skeleton-site__avatar"></div>
+                        <div className="skeleton-site__name"></div>
+                        <div className="skeleton-site__plan"></div>
                     </div>
             </div>
         </div>

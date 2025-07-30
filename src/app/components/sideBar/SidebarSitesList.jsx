@@ -41,13 +41,13 @@ export function SidebarSitesList({ searchQuery, openChangeModal, setIsModalOpen,
     const { webs, user } = allUserDataResource.read();
     if(filteredWebs.length === 0) {
         return (
-        <div className="sitesDisplay__nosites">
+        <div className="sidebar__sites-display--none">
             {searchQuery ? 'No sites found' : (
-                <div className="nosites__container">
-                    <div className="nosites__text">
+                <div className="sidebar__sites-display-container">
+                    <div className="sidebar__sites-display-text">
                         There aren't sites here yet.
                         <br />
-                        Start by creating a <span className="nosites__text__span">new site.</span>
+                        Start by creating a <span className="sidebar__sites-display-span">new site.</span>
                     </div>
                     <NewSite openChangeModal={openChangeModal} user={user} webs={webs} showNotification={showNotification} setIsModalOpen={setIsModalOpen} setModalType={setModalType}/>
                 </div>

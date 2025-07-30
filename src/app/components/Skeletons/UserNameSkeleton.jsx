@@ -2,7 +2,7 @@ import './Skeletons.css';
 
 export const UserNameSkeleton = () => {
     return (
-        <div className="user__name-skeleton skeleton-animate-pulse"></div>
+        <div className="skeleton-user-name skeleton-animate-pulse"></div>
     )
 }
 export default UserNameSkeleton;
