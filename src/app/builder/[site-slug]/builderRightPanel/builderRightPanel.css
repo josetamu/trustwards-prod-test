@@ -5,3 +5,17 @@
     border: 1px solid var(--border-light-color);
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
 }
+
+.tw-builder__right-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px;
+    height: 49px;
+    border-bottom: 1px solid var(--border-light-color);
+}
+.prueba{
+    width: 10px;
+    height: 10px;
+    background-color: red;
+}
