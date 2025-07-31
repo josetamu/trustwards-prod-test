@@ -89,7 +89,7 @@ export default function BuilderHeader({site, setSite, setModalType, setIsModalOp
                     </span> 
                     <img className={`tw-builder__header-img ${checkSitePicture(site) === '' ? 'tw-builder__header-img--null' : ''}`} src={site?.["Avatar URL"]} alt={site?.Name} onClick={handleImgEditClick}/> 
                                     {/* Hidden input to open file selector */}
-                <input className='tw-builder__header-file-input'
+                <input className='tw-builder__header-input'
                 type="file"
                 ref={fileInputRef} 
                 onChange={handleFileChange} 

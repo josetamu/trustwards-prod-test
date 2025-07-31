@@ -16,10 +16,10 @@ function BuilderBody({site, setSite, setModalType, setIsModalOpen, checkSitePict
                 <BuilderHeader site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
             </div>
 
-            <CanvasProvider>
+           
                 <Canvas/>
                 <Toolbar/>
-            </CanvasProvider>
+            
         </div>
     )
 }

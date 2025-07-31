@@ -4,12 +4,13 @@ import Scan from '../../../components/scan/Scan';
 import { supabase } from '../../../../supabase/supabaseClient';
 
 export const ScanButton = ({isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug}) => {
-    const { allUserDataResource, setWebs, isInstalled } = useDashboard();
+    const { allUserDataResource, setWebs } = useDashboard();
     if(!allUserDataResource) return <PlanSkeleton />;
     const { webs } = allUserDataResource.read();
     const site = webs.find(web => web.id === siteSlug);
-    
+    const isInstalled = site.Verified;
     const currentScanCount = site?.Scans;
+
 
     const startScan = () => {
         if (isScanning || currentScanCount >= MAX_SCANS) return;
@@ -30,6 +31,7 @@ export const ScanButton = ({isScanning, MAX_SCANS, setScanDone, setIsScanning, s
 
             if (error) {
                 console.error('Error updating scan count:', error, siteSlug,currentScanCount,newScanCount);
+                setIsScanning(false);
                 return;
             }
 

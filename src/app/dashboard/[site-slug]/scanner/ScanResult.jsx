@@ -107,13 +107,31 @@ const defaultScanResults = [
     );
   }
 
-export const ScanResult = ({scanDone, isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug, noInstalled}) => {
+export const ScanResult = ({scanDone, isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug}) => {
     const [scanResults, setScanResults] = useState(defaultScanResults);
     const {allUserDataResource } = useDashboard();
     if(!allUserDataResource) return <ScanResultSkeleton />;
     const {webs} = allUserDataResource.read();
     const site = webs.find(web => web.id === siteSlug);
     const scanCount = site.Scans;
+    const isInstalled = site.Verified;
+
+    //function to show the no installed message on cards
+const noInstalled = () => {
+  if(!isInstalled){
+      return (
+      <div className="scanner__noInstalled">
+          <span className="scanner__noInstalled-text">Install Trustwards on your site first.
+          </span>
+          <div className="scanner__verify">
+              <span className="scanner__verify-text" onClick={verify}>Verify</span>
+          </div>
+      </div>
+      )
+  }
+}
+
+
     
     return (
         (scanDone || scanCount > 0) ? (

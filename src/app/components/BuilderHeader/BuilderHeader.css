@@ -44,22 +44,10 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.tw-builder__header-file-input{
+.tw-builder__header-input{
     display: none;
 }
-.tw-builder__header-input{
-    background: transparent;
-    border: none;
-    outline: none;
-    color: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    letter-spacing: inherit;
-    box-sizing: border-box;
-    text-decoration: none;
-    overflow: hidden;
 
-}
 .tw-builder__header-plan{
     font-size: var(--font-size-mini);
     font-weight: 700;

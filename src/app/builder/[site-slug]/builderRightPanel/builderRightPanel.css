@@ -4,17 +4,17 @@
     border-radius: var(--panels-radius);
     border: 1px solid var(--border-light-color);
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
-    padding: 10px;
+    
 }
 
 .tw-builder__right-header{
     display: flex;
     justify-content: space-between;
-    /* align-items: center; */
-    
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-light-color);
 }
-.prueba{
-    width: 10px;
-    height: 10px;
-    background-color: red;
+
+.tw-builder__right-body{
+    padding: 10px;
 }

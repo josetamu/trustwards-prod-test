@@ -137,3 +137,15 @@
 .modal-account__file-input{
   display: none;
 }
+
+@media (max-width: 767px) {
+  .modal-account__avatar{
+    width: 45px;
+    height: 45px;
+  }
+  .modal-account__color{
+    width: 45px;
+    height: 45px;
+  }
+
+}
