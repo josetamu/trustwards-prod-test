@@ -88,3 +88,20 @@ html[data-color="blue"] {
 html[data-theme="dark"]{
     --builder-background: #202020;
 }
+
+.tw-builder__logo{
+  background: url('/assets/logo-light-mode.svg');
+  background-size: cover;
+  width: 25px;
+  height: 18px;
+}
+.tw-builder--open .tw-builder__logo{
+  margin-left: 0px;
+}
+
+html[data-theme="dark"] .tw-builder__logo{
+  background: url('/assets/logo-dark-mode.svg');
+  background-size: cover;
+  width: 25px;
+  height: 18px;
+}

@@ -37,10 +37,10 @@ export function Tooltip({
     return () => window.removeEventListener('resize', handleResize);
   }, [responsivePosition]);
 
-  // Lógica de posicionamiento fixed para sidebar
+  // Positioning logic for sidebar
   useEffect(() => {
     if (open && finalPosition === 'sidebar' && tooltipRef.current) {
-      // Busca el padre con la clase .sidebarSites__site
+      // Find the parent with the class .sidebarSites__site
       let parent = tooltipRef.current.closest('.sidebarSites__site');
       let rect;
       if (parent) {

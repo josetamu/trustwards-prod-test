@@ -261,7 +261,8 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         <Tooltip 
                             message={errors.selectedChoice} 
                             id="selectedChoice-error"
-                            responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                            responsivePosition={{ desktop: 'modal-support', mobile: 'modal-support' }}
+                            width="150px"
                             open={!!errors.selectedChoice}
                         />
                     </div>
@@ -282,7 +283,8 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             />
                             <Tooltip
                                 message={errors.name}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                responsivePosition={{ desktop: 'modal-support', mobile: 'modal-support' }}
+                                width="150px"
                                 open={!!errors.name}
                             />
                         </div>
@@ -302,7 +304,8 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             />
                             <Tooltip
                                 message={errors.email}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                responsivePosition={{ desktop: 'modal-support', mobile: 'modal-support' }}
+                                width="150px"
                                 open={!!errors.email}
                             />
                         </div>
@@ -325,7 +328,8 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             />
                         <Tooltip
                             message={errors.message}
-                            responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                            responsivePosition={{ desktop: 'modal-support', mobile: 'modal-support' }}
+                            width="150px"
                             open={!!errors.message}
                         />
                         </div>

@@ -25,7 +25,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 return (
                     <>
                         <div className='modal-change__body'>
-                            <div className='modal-change__input__wrapper'>
+                            <div className='modal-change__input-wrapper'>
                                 <input 
                                     className='modal-change__input' 
                                     type='text' 
@@ -55,7 +55,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                     <>
                         <div className='modal-change__body'>
                             <span className='modal-change__advice'>We'll send an email to your new adress to confirm the change.</span>
-                            <div className='modal-change__input__wrapper'>
+                            <div className='modal-change__input-wrapper'>
                                 <input 
                                     className='modal-change__input' 
                                     type='email' 
@@ -70,10 +70,11 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 <Tooltip
                                     message={errors.email}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    width="150px"
                                     open={!!errors.email}
                                 />
                             </div>
-                            <div className='modal-change__input__wrapper'>
+                            <div className='modal-change__input-wrapper'>
                                 <input 
                                     type="password" 
                                     className='modal-change__input' 
@@ -88,6 +89,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 <Tooltip
                                     message={errors.password}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    width="150px"
                                     open={!!errors.password}
                                 />
                             </div>
@@ -103,7 +105,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 return (
                     <>
                         <div className='modal-change__body'>
-                            <div className='modal-change__input__wrapper'>
+                            <div className='modal-change__input-wrapper'>
                                 <input 
                                     type="password" 
                                     className='modal-change__input' 
@@ -118,10 +120,11 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 <Tooltip
                                     message={errors.currentPassword}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    width="150px"
                                     open={!!errors.currentPassword}
                                 />
                             </div>
-                            <div className='modal-change__input__wrapper'>
+                            <div className='modal-change__input-wrapper'>
                                 <input 
                                     className='modal-change__input' 
                                     type='password' 
@@ -136,11 +139,12 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 <Tooltip
                                     message={errors.newPassword}
                                     responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                    width="150px"
                                     open={!!errors.newPassword}
                                 />
                             </div>
                            
-                            <div className='modal-change__input__wrapper'>
+                            <div className='modal-change__input-wrapper'>
                             <input 
                                 type="password" 
                                 className='modal-change__input' 
@@ -155,6 +159,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             <Tooltip
                                 message={errors.confirmPassword}
                                 responsivePosition={{ desktop: 'left', mobile: 'top' }}
+                                width="150px"
                                 open={!!errors.confirmPassword}
                                 />
                             </div>
@@ -170,7 +175,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                 return (
                     <>
                         <div className='modal-change__body'>
-                            <div className='modal-change__input__wrapper'>
+                            <div className='modal-change__input-wrapper'>
                                 <input 
                                     className='modal-change__input' 
                                     type='text'  
@@ -187,7 +192,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     open={!!errors.createSiteName}
                                 />
                             </div>
-                            <div className='modal-change__input__wrapper'>
+                            <div className='modal-change__input-wrapper'>
                                 <input 
                                     type="text" 
                                     className='modal-change__input' 
@@ -214,7 +219,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                     return (
                         <>
                             <div className='modal-change__body'>
-                                <div className='modal-change__input__wrapper'>
+                                <div className='modal-change__input-wrapper'>
                                     <input 
                                         className='modal-change__input' 
                                         type='text'  
@@ -232,7 +237,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                         open={!!errors.newSiteName}
                                     />
                                 </div>
-                                <div className='modal-change__input__wrapper'>
+                                <div className='modal-change__input-wrapper'>
                                     <input 
                                         type="text" 
                                         className='modal-change__input' 
@@ -292,7 +297,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         
         if (changeType === 'password') {
             if (!currentPassword) {
-                validationErrors.currentPassword = 'Current passwordrequired';
+                validationErrors.currentPassword = 'Current password is required';
             }
             if (!newPassword || newPassword.length < 6) {
                 validationErrors.newPassword = 'New password must be at least 6 characters';
