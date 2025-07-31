@@ -38,7 +38,9 @@ export const Canvas = () => {
     */
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (!e.target.closest('.tw-builder__canvas') && !e.target.closest('.tw-builder__toolbar')) {
+            if (!e.target.closest('.tw-builder__canvas') && 
+            !e.target.closest('.tw-builder__toolbar') &&
+            !e.target.closest('.tw-builder__right-settings')) {
                 setSelectedId('tw-root');
             }
         };

@@ -69,20 +69,6 @@ function Home() {
         }
     };
 
-//function to show the no installed message on cards
-const noInstalled = () => {
-    if(!isInstalled){
-        return (
-        <div className="scanner__noInstalled">
-            <span className="scanner__noInstalled-text">Install Trustwards on your site first.
-            </span>
-            <div className="scanner__verify">
-                <span className="scanner__verify-text" onClick={verify}>Verify</span>
-            </div>
-        </div>
-        )
-    }
-}
 
     return (
         <div className="scanner__wrapper">
@@ -101,7 +87,7 @@ const noInstalled = () => {
                 </div>
             </div>
             <Suspense fallback={<ScanResultSkeleton />}>
-                <ScanResult scanDone={scanDone} isScanning={isScanning} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug} noInstalled={noInstalled} />
+                <ScanResult scanDone={scanDone} isScanning={isScanning} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug} />
             </Suspense>
         </div>
     );

@@ -42,7 +42,7 @@ export function SitesList({ openChangeModal, setIsModalOpen, setModalType, showN
 
     return (
         <>
-        <div className={`sites__grid ${view ? 'sites__grid--grid' : 'sites__grid--list'}`}> 
+        <div className={`sites__grid ${view === 'grid' ? 'sites__grid--grid' : 'sites__grid--list'}`}> 
         {sortedSites.map(site => (
           user && site.userid === user.id && (
             <Site

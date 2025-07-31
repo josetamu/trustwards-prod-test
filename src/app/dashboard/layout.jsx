@@ -83,6 +83,7 @@ function DashboardLayout({ children }) {
     }
 
     try {
+    await new Promise(resolve => setTimeout(resolve, 1000));
     const [userResult, sitesResult, appearanceResult] = await Promise.allSettled([
       supabase.from('User').select('*').eq('id', userId).single(),
       supabase.from('Site').select('*').eq('userid', userId),

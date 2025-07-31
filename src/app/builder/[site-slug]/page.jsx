@@ -15,6 +15,7 @@ import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
 import { ModalSupport } from '../../components/ModalSupport/ModalSupport';
 import { ModalChange } from '../../components/ModalChange/ModalChange';
 import  Notification  from '../../components/Notification/Notification';
+import { CanvasProvider } from '@contexts/CanvasContext';
 
 function Builder() {
   const params = useParams();
@@ -213,11 +214,11 @@ const closeModal = () => {
           setSite(siteData);
         };
 
-//Function to open the ModalChange modal
-const openChangeModal = (type) => {
-  setModalType(type);
-  setIsModalOpen(true);
-};
+    // Function to open the ModalChange modal
+    const openChangeModal = (type) => {
+      setChangeType(type);
+      setIsChangeModalOpen(true);
+    };
 
     //Function to show the notification
     const showNotification = (message, position = 'top', contentCenter = false) => {
@@ -262,7 +263,6 @@ const renderModal = () => {
         checkProfilePicture={checkProfilePicture}
         profileStyle={ProfileStyle}
         setUser={setUser}
-        allUserDataResource={allUserData}
         />
       );
     case 'DeleteSite':
@@ -340,11 +340,13 @@ const renderModal = () => {
   }, [])
 
   return (
+    <CanvasProvider>
     <div className="tw-builder">
       <BuilderLeftPanel/>
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
-      <BuilderRightPanel/>
-
+      
+      <BuilderRightPanel user={user} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification}/>
+      
       <ModalContainer 
         isOpen={isModalOpen} 
         onClose={closeModal} 
@@ -379,6 +381,7 @@ const renderModal = () => {
                     >
                     </Notification>
     </div>
+    </CanvasProvider>
   );
 }
 
