@@ -40,7 +40,7 @@ export const Canvas = () => {
         const handleClickOutside = (e) => {
             if (!e.target.closest('.tw-builder__canvas') && 
             !e.target.closest('.tw-builder__toolbar') &&
-            !e.target.closest('.tw-builder__right-settings')) {
+            !e.target.closest('.tw-builder__settings')) {
                 setSelectedId('tw-root');
             }
         };

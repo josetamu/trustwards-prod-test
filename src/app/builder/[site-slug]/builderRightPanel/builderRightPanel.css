@@ -4,7 +4,12 @@
     border-radius: var(--panels-radius);
     border: 1px solid var(--border-light-color);
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
-    
+    height: 100%; /* Ocupa toda la altura disponible */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
 }
 
 .tw-builder__right-header{
@@ -17,4 +22,5 @@
 
 .tw-builder__right-body{
     padding: 10px;
+    height: 100%;
 }

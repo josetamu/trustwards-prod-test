@@ -47,7 +47,9 @@ System selected: will fallback to root or html[data-theme="dark"]
 
 
     --header-plan-background: #E3E3E3;
-    --header-plan-color: #999999;
+    --shadow-color: #999999;
+    --subtitle-color: #666666;
+    --label-color: #222222;
 
 
     --modal-backdrop-color: rgba(0, 0, 0, 0.5);

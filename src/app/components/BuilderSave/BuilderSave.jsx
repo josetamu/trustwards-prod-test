@@ -16,8 +16,6 @@ export default function BuilderSave({showNotification, siteSlug}) {
                 .from('Site')
                 .update({JSON: JSONtree})
                 .eq('id', siteSlug);
-
-            console.log(JSONtree);
             showNotification('Changes saved successfully');
         } catch (error) {
             showNotification('Error saving changes');

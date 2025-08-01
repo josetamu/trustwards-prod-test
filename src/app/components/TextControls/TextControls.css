@@ -1,0 +1,107 @@
+.tw-builder__settings{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+}
+
+.tw-builder__settings-header{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-light-color);
+    padding-bottom: 10px;
+}
+
+.tw-builder__settings-classes{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.tw-builder__settings-id{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--shadow-color);
+    background-color: var(--builder-background);
+    border-radius: 5px;
+    padding: 5px; 
+}
+
+.tw-builder__settings-tag{
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
+}
+.tw-builder__settings-tag--column{
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.tw-builder__settings-subtitle{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--subtitle-color);
+}
+
+.tw-builder__settings-select-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tw-builder__settings-select{
+    background-color: var(--builder-background);
+    border-radius: 5px;
+    padding: 5px;
+    padding-right: 20px;
+    /* width será controlado por JavaScript */
+    min-width: 40px;
+    border: none;
+    color: #000;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    appearance: none;
+    cursor: pointer;
+}
+.tw-builder__settings-select:focus{
+    outline: none;
+}
+
+/* Flecha personalizada */
+.tw-builder__settings-arrow {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    pointer-events: none; /* Permite clics a través del SVG */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tw-builder__settings-input{
+    width: 88px;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--builder-background);
+    color: #000;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    cursor: text;
+    &::placeholder{
+        color: var(--shadow-color);
+    }
+}
+.tw-builder__settings-input:focus{
+    outline: none;
+}
+.tw-builder__settings-body{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+   
+}

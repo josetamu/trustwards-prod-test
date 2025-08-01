@@ -51,7 +51,7 @@
 .tw-builder__header-plan{
     font-size: var(--font-size-mini);
     font-weight: 700;
-    color: var( --header-plan-color);
+    color: var( --shadow-color);
     background-color: var(--header-plan-background);
     padding: 3px;
     border-radius: 5px;

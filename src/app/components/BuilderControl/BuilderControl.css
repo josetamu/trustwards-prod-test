@@ -1,0 +1,31 @@
+.tw-builder__control{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-light-color);
+    padding-bottom: 10px;
+}
+
+.tw-builder__control-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    cursor: pointer;
+}
+.tw-builder__control-label{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    color: var(--label-color);
+    letter-spacing: var(--letter-spacing-negative);
+}
+
+.tw-builder__control-icon{
+    display: none;
+}
+.tw-builder__control-icon--active{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
