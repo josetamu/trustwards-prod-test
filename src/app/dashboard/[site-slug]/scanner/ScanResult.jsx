@@ -6,6 +6,7 @@ import { useDashboard } from "../../layout";
 import './scanner.css';
 import '../home.css';
 import React from "react";
+import { supabase } from "../../../../supabase/supabaseClient";
 
 // tridimensional array with default scan results grouped by category
 const defaultScanResults = [
@@ -109,12 +110,62 @@ const defaultScanResults = [
 
 export const ScanResult = ({scanDone, isScanning, MAX_SCANS, setScanDone, setIsScanning, siteSlug}) => {
     const [scanResults, setScanResults] = useState(defaultScanResults);
-    const {allUserDataResource } = useDashboard();
+    const {allUserDataResource, showNotification, setSiteData, setIsInstalled, setWebs, siteData} = useDashboard();
     if(!allUserDataResource) return <ScanResultSkeleton />;
     const {webs} = allUserDataResource.read();
     const site = webs.find(web => web.id === siteSlug);
-    const scanCount = site.Scans;
-    const isInstalled = site.Verified;
+    const scanCount = site?.Scans;
+    const isInstalled = site?.Verified;
+    const verify = async () => {
+      try {
+          // 1. Actualizar en la base de datos
+          const { data, error } = await supabase
+              .from('Site')
+              .update({ Verified: true })
+              .eq('id', siteSlug)
+              .select()
+              .single();
+
+          if (error) {
+              console.error('Error updating site verification:', error);
+              if (showNotification) {
+                  showNotification('Failed to verify site. Please try again.', 'top', false);
+              }
+              return;
+          }
+
+          // 2. Actualizar el estado local
+          const updatedSite = { ...siteData, Verified: true };
+          setSiteData(updatedSite);
+          setIsInstalled(true);
+
+          // 3. Actualizar el estado global webs
+          setWebs(prevWebs =>
+              prevWebs.map(site =>
+                  site.id === siteSlug ? { ...site, Verified: true } : site
+              )
+          );
+
+          // 4. Actualizar el resource para mantener consistencia
+          if (allUserDataResource) {
+              const currentData = allUserDataResource.read();
+              currentData.webs = currentData.webs.map(web =>
+                  web.id === siteSlug ? { ...web, Verified: true } : web
+              );
+          }
+
+          // 5. Mostrar notificación de éxito
+          if (showNotification) {
+              showNotification('Site verified successfully!', 'top', true);
+          }
+
+      } catch (error) {
+          console.error('Error verifying site:', error);
+          if (showNotification) {
+              showNotification('Failed to verify site. Please try again.', 'top', false);
+          }
+      }
+  };
 
     //function to show the no installed message on cards
 const noInstalled = () => {

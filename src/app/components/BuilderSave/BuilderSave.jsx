@@ -1,15 +1,23 @@
 import './BuilderSave.css';
 import { useState } from 'react';
+import { useCanvas } from '@contexts/CanvasContext';
+import { supabase } from '../../../supabase/supabaseClient';
 
-export default function BuilderSave({showNotification}) {
+export default function BuilderSave({showNotification, siteSlug}) {
     const [isLoading, setIsLoading] = useState(false);
+    const {JSONtree} = useCanvas();
 
     const save = async () => {
         setIsLoading(true);
         try {
-            // Simular delay de guardado (reemplaza esto con tu lógica real de guardado)
+            // Simular delay de guardado (reemplazar)
             await new Promise(resolve => setTimeout(resolve, 2000));
-            console.log('save');
+            const {data, error} = await supabase
+                .from('Site')
+                .update({JSON: JSONtree})
+                .eq('id', siteSlug);
+
+            console.log(JSONtree);
             showNotification('Changes saved successfully');
         } catch (error) {
             showNotification('Error saving changes');

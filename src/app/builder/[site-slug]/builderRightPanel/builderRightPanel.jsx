@@ -5,7 +5,7 @@ import { useCanvas } from '@contexts/CanvasContext';
 import BuilderSave from '@components/BuilderSave/BuilderSave';
 import TextControls from '@components/TextControls/TextControls';
 
-function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification}) {
+function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug}) {
     const { selectedId, JSONtree } = useCanvas();
 
     const findElement = (node, targetId) => {
@@ -27,7 +27,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
         <div className="tw-builder__right-panel">
             <div className="tw-builder__right-header">
                 <BuilderUser user={user} checkProfilePicture={checkProfilePicture} profileStyle={profileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen}></BuilderUser>
-                <BuilderSave showNotification={showNotification}/>
+                <BuilderSave showNotification={showNotification} siteSlug={siteSlug}/>
             </div>
             <div className="tw-builder__right-body">
                 {selectedId === 'tw-root' && <NoSelectedItem/>}

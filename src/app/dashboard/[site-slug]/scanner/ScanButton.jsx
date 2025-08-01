@@ -8,7 +8,7 @@ export const ScanButton = ({isScanning, MAX_SCANS, setScanDone, setIsScanning, s
     if(!allUserDataResource) return <PlanSkeleton />;
     const { webs } = allUserDataResource.read();
     const site = webs.find(web => web.id === siteSlug);
-    const isInstalled = site.Verified;
+    const isInstalled = site?.Verified;
     const currentScanCount = site?.Scans;
 
 
