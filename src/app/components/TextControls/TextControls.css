@@ -145,13 +145,13 @@
     align-items: flex-end;
 }
 
-.tw-builder__settings-select-spacing{
+.tw-builder__settings-spacing{
     display: flex;
     align-items: center;
     gap: 5px;
     height: 80px;
 }
-.tw-builder__settings-select-spacing-mid{
+.tw-builder__settings-spacing-mid{
     display: flex;
     align-items: center;
     gap: 5px;
@@ -177,3 +177,80 @@
     width: 100%;
     height: 100%;
 }
+.tw-builder__settings-background{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    background-color: var(--builder-background);
+    border-radius: 5px;
+    padding: 5px;
+}
+.tw-builder__settings-colors{
+    display: flex;
+    align-items: center;
+    width: 70%;
+    height: 100%;
+    gap: 5px;
+
+}
+.tw-builder__settings-color{
+    padding: 0;
+    border: none;
+    background: none;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    border-radius: 4px;
+    
+}
+.tw-builder__settings-color:focus{
+    outline: none;
+}
+.tw-builder__settings-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 4px;
+    border: 1px solid var(--border-light-color);
+  }
+.tw-builder__settings-color::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+    border: 1px solid var(--border-light-color);
+  }
+.tw-builder__settings-hex{
+    width: 75%;
+    height: 100%;
+    border:none;
+    background: none;
+}
+.tw-builder__settings-hex:focus{
+    outline: none;
+}
+.tw-builder__settings-percentages{
+    display: flex;
+    align-items: center;
+    width: 30%;
+    height: 100%;
+    justify-content: center;
+    border-left: 1px solid var(--border-light-color);
+    padding-left: 5px;
+   
+}
+.tw-builder__settings-percentage{
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: none;
+    text-align: center;
+}
+.tw-builder__settings-percentage:focus{
+    outline: none;
+}
+.tw-builder__settings-percentage::-webkit-outer-spin-button,
+.tw-builder__settings-percentage::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+
+  

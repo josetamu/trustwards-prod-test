@@ -134,9 +134,9 @@ export const SpacingControl = () => (
     <>
     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
         <span className="tw-builder__settings-subtitle">Margin</span>
-        <div className="tw-builder__settings-select-spacing">
+        <div className="tw-builder__settings-spacing">
             <input type="text" className="tw-builder__spacing-input"/>
-            <div className="tw-builder__settings-select-spacing-mid">
+            <div className="tw-builder__settings-spacing-mid">
                 <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
                 <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
             </div>
@@ -145,9 +145,9 @@ export const SpacingControl = () => (
     </div>
     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
         <span className="tw-builder__settings-subtitle">Padding</span>
-        <div className="tw-builder__settings-select-spacing">
+        <div className="tw-builder__settings-spacing">
             <input type="text" className="tw-builder__spacing-input"/>
-            <div className="tw-builder__settings-select-spacing-mid">
+            <div className="tw-builder__settings-spacing-mid">
                 <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
                 <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
             </div>
@@ -178,12 +178,76 @@ export const SizeControl = () => (
     </>
 );
 
-export const BackgroundControl = () => (
-    <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
+export const BackgroundControl = () => {
+    const [color, setColor] = useState('#FFFFFF');
+    const [hex, setHex] = useState('FFFFFF');
+    const [percentage, setPercentage] = useState('100%');
 
-        <input type="color" />
+    const handleColorChange = (e) => {
+        const newColor = e.target.value;
+        setColor(newColor);
+        setHex(newColor.replace('#', '').toUpperCase());
+    };
+    const handleHexChange = (e) => {
+        const hexValue = e.target.value.toUpperCase().replace('#', '');
+
+        if(hexValue.length > 8){
+            hexValue = hexValue.slice(0, 8);
+        }
+        setHex(hexValue);
+
+        const hexPattern = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
+        if(hexPattern.test(hexValue)) {
+            const formattedHex = `#${hexValue}`;
+            setColor(formattedHex);
+
+            if (hexValue.length === 3) {
+                const expandedHex = hexValue.split('').map(char => char + char).join('');
+                const formattedHex = `#${expandedHex}`;
+                setColor(formattedHex);
+            } else {
+                const formattedHex = `#${hexValue}`;
+                setColor(formattedHex);
+            }
+        }
+    };
+    const handleHexBlur = (e) => {
+        const hexValue = e.target.value.trim();
+        if(hexValue === ''){
+            setHex('FFFFFF');
+            setColor('#FFFFFF');
+        } 
+    };
+    const handlePercentageChange = (e) => {
+        let value = e.target.value.replace('%', '');
+        if(value === '' && e.type === 'blur'){
+            value = 100;
+        } 
+        if(value < 0) value = 0;
+        if(value > 100) value = 100;
+        if(isNaN(value)) value = 0;
+
+        if(value !== 0 || e.type === 'blur') {
+            const finalValue = `${value}%`;
+            setPercentage(finalValue);
+            e.target.value = finalValue;
+        }
+    };
+    return(
+    <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
+        <div className="tw-builder__settings-background">
+            <div className="tw-builder__settings-colors">
+                <input type="color" className="tw-builder__settings-color" value={color} onChange={handleColorChange} />
+                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="FFFFFF"/>
+            </div>
+            <div className="tw-builder__settings-percentages">
+                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} />
+            </div>
+        </div>
     </div>
-);
+    )
+};
 
 export const TextControl = () => (
     <div>
