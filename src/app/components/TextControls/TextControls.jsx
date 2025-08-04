@@ -5,33 +5,37 @@ import { DisplayControl, SpacingControl, SizeControl, BackgroundControl, TextCon
 
 function TextControls({selectedId}) {
     const [selectedTag, setSelectedTag] = useState('h1');
-    const selectRef = useRef(null);
+    const tagSelectRef = useRef(null);
 
-    // Función para ajustar el ancho del select
+    // Function to adjust the width of the select
     const adjustSelectWidth = () => {
-        if (selectRef.current) {
-            const select = selectRef.current;
-            // Mapeo de tags a anchos
+        if (tagSelectRef.current) {
+            const select = tagSelectRef.current;
+            // Map of tags to widths
             const tagWidths = {
-                'h1': 25, 'h2': 25, 'h3': 25, 'h4': 25, 'h5': 25, 'h6': 25,
-                'p': 15,
-                'span': 35
+                'h1': 20, 'h2': 20, 'h3': 20, 'h4': 20, 'h5': 20, 'h6': 20,
+                'p': 5,
+                'span': 30,
             };
             
             const baseWidth = tagWidths[selectedTag] || 30;
-            const totalWidth = baseWidth + 25; // +25 para la flecha
+            const totalWidth = baseWidth + 25; // +25 for arrow
             
             select.style.width = `${totalWidth}px`;
         }
     };
 
+    // Adjust the width of the select when the tag is changed
     useEffect(() => {
         adjustSelectWidth();
     }, [selectedTag]);
 
+
+
     const handleSelectChange = (e) => {
         setSelectedTag(e.target.value);
     };
+
     const controls = [
         {
             label: 'Display',
@@ -70,11 +74,11 @@ function TextControls({selectedId}) {
                 <div className="tw-builder__settings-classes">
                     <span className="tw-builder__settings-id">#{selectedId}</span>
                 </div>
-                <div className="tw-builder__settings-tag">
+                <div className="tw-builder__settings-setting">
                     <span className="tw-builder__settings-subtitle">Tag</span>
                     <div className="tw-builder__settings-select-container">
                     <select 
-                        ref={selectRef}
+                        ref={tagSelectRef}
                         className="tw-builder__settings-select"
                         value={selectedTag}
                         onChange={handleSelectChange}
@@ -96,9 +100,9 @@ function TextControls({selectedId}) {
                     </span>
                     </div>
                 </div>
-                <div className="tw-builder__settings-tag">
+                <div className="tw-builder__settings-setting">
                     <span className="tw-builder__settings-subtitle">Link to</span>
-                    <input type="text" className="tw-builder__settings-input" placeholder="URL..." />
+                    <input type="text" className="tw-builder__settings-input tw-builder__settings-input--link" placeholder="URL..." />
                 </div>
             </div>
             <div className="tw-builder__settings-body">

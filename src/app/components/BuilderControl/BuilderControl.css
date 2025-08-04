@@ -28,4 +28,8 @@
     align-items: center;
     justify-content: center;
 }
-
+.tw-builder__control-content{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

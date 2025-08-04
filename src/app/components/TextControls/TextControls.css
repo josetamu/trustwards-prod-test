@@ -28,14 +28,15 @@
     padding: 5px; 
 }
 
-.tw-builder__settings-tag{
+.tw-builder__settings-setting{
     display:flex;
     justify-content:space-between;
     align-items: center;
 }
-.tw-builder__settings-tag--column{
+.tw-builder__settings-setting--column{
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
 }
 
 .tw-builder__settings-subtitle{
@@ -82,7 +83,7 @@
 }
 
 .tw-builder__settings-input{
-    width: 88px;
+    width: 60px;
     padding: 5px;
     border-radius: 5px;
     border: none;
@@ -96,6 +97,9 @@
         color: var(--shadow-color);
     }
 }
+.tw-builder__settings-input--link{
+    width: 90px;
+}
 .tw-builder__settings-input:focus{
     outline: none;
 }
@@ -103,5 +107,73 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-   
+}
+.tw-builder__settings-actions{
+    display: flex;
+    background-color: var(--builder-background);
+    width: 90px;
+    height: 25px;
+    border-radius: 8px;
+    padding: 1px;
+    align-items: stretch;
+    justify-content: center;
+}
+.tw-builder__settings-action{
+    width: 50%;
+    background-color: var(--builder-background);
+    border-radius: 5px;
+    padding: 5px;
+    border: none;
+    background-color: transparent;
+    color: var(--shadow-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tw-builder__settings-action--active{
+    background-color: #fff;
+    color: var(--text-color);
+    border: 1px solid var(--border-light-color);
+    border-radius: 7px;
+    height: 23px;
+}
+.tw-builder__settings-action--start{
+    align-items: flex-start;
+}
+.tw-builder__settings-action--end{
+    align-items: flex-end;
+}
+
+.tw-builder__settings-select-spacing{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 80px;
+}
+.tw-builder__settings-select-spacing-mid{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+}
+.tw-builder__spacing-input{
+    width: 25%;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--builder-background);
+    color: #000;
+    font-size: var(--font-size-small);
+    height: 100%;
+    text-align: center;
+}
+.tw-builder__spacing-input:focus{
+    outline: none;
+}
+.tw-builder__spacing-input--mid{
+    width: 100%;
+    height: 100%;
 }
