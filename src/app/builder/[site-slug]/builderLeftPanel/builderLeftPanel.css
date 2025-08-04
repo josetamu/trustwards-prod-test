@@ -8,6 +8,44 @@
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+    max-height: 100%;
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+/* Builder Left Panel Closed State */
+.tw-builder__left-panel--closed {
+    max-height: 57px;
+    height: 57px;
+}
+
+/* Panel Toggle Button */
+.tw-builder__panel-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    color: #999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tw-builder__panel-toggle-btn:hover {
+    background-color: #F5F5F5;
+    color: #666666;
+}
+
+.tw-builder__panel-toggle-btn svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+}
+
+/* Rotate icon when panel is closed */
+.tw-builder__left-panel--closed .tw-builder__panel-toggle-btn svg {
+    transform: rotate(180deg);
 }
 
 /* Builder Left Panel Header */
@@ -27,8 +65,8 @@
     background-color: #FFFFFF;
     border: 1px solid #E6E6E6;
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
-    border-radius: 8px;
-    padding: 8px 12px;
+    border-radius: 6px;
+    padding: 7px;
     cursor: pointer;
     transition: all 0.2s ease;
     color: var(--body-light-color);
@@ -50,12 +88,21 @@
     position: relative;
 }
 .builder-logo-dropdown .dropdown__menu {
-    min-width: 160px;
+    min-width: 200px;
     background: #FFFFFF;
     border: 1px solid #E6E6E6;
     border-radius: 8px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
     margin-top: 20px;
+}
+
+/* Dropdown options */
+.dropdown__item.tw-builder__dropdown-item {
+    padding: 5px 8px;
+}
+.dropdown__item.tw-builder__dropdown-item--home,
+.dropdown__item.tw-builder__dropdown-item--help {
+    padding: 8px;
 }
 
 /* Tab Morphing Section */
@@ -121,29 +168,128 @@
     flex-direction: column;
 }
 
+/* Selected container styling */
+.tree-item-container.selected-container {
+    border-radius: 8px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tree-item-container.selected-container .tree-item-header {
+    background-color: #3B82F6;
+    color: white;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+    padding: 8px 12px 10px 12px;
+}
+
+.tree-item-container.selected-container .tree-children {
+    margin-left: 0;
+    padding: 0;
+}
+
+.tree-item-container.selected-container .tree-children .tree-item {
+    padding-left: 0;
+}
+
+.tree-item-container.selected-container .tree-children .tree-item-header {
+    background-color: #E0F2FE;
+    color: #1E40AF;
+    border-radius: 0 0 8px 8px;
+    margin-bottom: 0;
+    padding: 6px 12px 8px 12px;
+}
+
+.tree-item-container.selected-container .tree-children .tree-item-header:hover {
+    background-color: #D1E7FE;
+}
+
+.tree-item-container.selected-container .square-icon {
+    background-color: white;
+}
+
+.tree-item-container.selected-container .text-icon {
+    background-color: white;
+    color: #3B82F6;
+    font-weight: bold;
+}
+
+.tree-item-container.selected-container .tree-children .square-icon {
+    background-color: #1E40AF;
+}
+
+.tree-item-container.selected-container .tree-children .text-icon {
+    background-color: #1E40AF;
+    color: white;
+    font-weight: bold;
+}
+
+.tree-item-container.selected-container .tree-expand-button {
+    color: white;
+}
+
+.tree-item-container.selected-container .tree-children .tree-expand-button {
+    color: #1E40AF;
+}
+
+.tree-item-container.selected-container .tree-item-label {
+    color: white;
+    font-weight: 500;
+}
+
+.tree-item-container.selected-container .tree-children .tree-item-label {
+    color: #1E40AF;
+    font-weight: 500;
+}
+
+.tree-item-bg-extend {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #E0F2FE;
+  border-radius: 0 0 8px 8px;
+  z-index: 0;
+}
+
+.tree-item-header {
+  position: relative;
+  z-index: 1;
+}
+
+.tree-item {
+  position: relative;
+}
+
 .tree-item-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 8px;
-    border-radius: 4px;
+    padding: 8px 12px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
     margin-bottom: 2px;
 }
 
 .tree-item-header:hover {
-    background-color: #F5F5F5;
+    background-color: #E9ECEF;
 }
 
 .tree-item-header.selected {
-    background-color: #3B82F6;
+    background-color: #0099FE;
     color: white;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
 }
 
 .tree-item-header.child-selected {
     background-color: #E0F2FE;
     color: #1E40AF;
+    border-radius: 0 0 8px 8px;
+    margin-bottom: 0;
 }
 
 .tree-item-header.selected .square-icon {
@@ -156,12 +302,7 @@
 }
 
 .tree-item-header.child-selected .square-icon {
-    background-color: #1E40AF;
-}
-
-.tree-item-header.child-selected .text-icon {
-    background-color: #1E40AF;
-    color: white;
+    background-color: #666666;
 }
 
 .tree-expand-button {
@@ -182,7 +323,7 @@
 }
 
 .tree-item-header.child-selected .tree-expand-button {
-    color: #1E40AF;
+    color: #666666;
 }
 
 .tree-expand-button.expanded {
@@ -200,26 +341,29 @@
 .square-icon {
     width: 12px;
     height: 12px;
-    background-color: #CCCCCC;
+    background-color: #6C757D;
     border-radius: 2px;
+    transition: all 0.2s ease;
 }
 
 .text-icon {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
-    color: #666666;
+    color: #6C757D;
     width: 16px;
     height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 2px;
+    transition: all 0.2s ease;
 }
 
 .tree-item-label {
-    font-size: 14px;
-    color: #333333;
-    font-weight: 500;
+    font-size: 12px;
+    color: var(--subtitle-color);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
     cursor: pointer;
 }
 
@@ -228,11 +372,15 @@
 }
 
 .tree-item-header.child-selected .tree-item-label {
-    color: #1E40AF;
+    color: #666666;
 }
 
-.tree-children {
-    margin-left: 16px;
+/* When a parent is selected, style its children */
+.tree-item.selected + .tree-children .tree-item-header {
+    background-color: #E0F2FE;
+    color: #666666;
+    border-radius: 0 0 8px 8px;
+    margin-bottom: 0;
 }
 
 /* Builder Search Section */
