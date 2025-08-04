@@ -1,7 +1,7 @@
 import './TextControls.css';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useState, useRef, useEffect } from 'react';
-import { DisplayControl, SpacingControl, SizeControl, BackgroundControl, TextControl, StylesControl } from '../ControlComponents/ControlComponents';
+import { DisplayControl, SpacingControl, SizeControl, BackgroundControl, TextControl, StylesControl, CodeControl } from '../ControlComponents/ControlComponents';
 
 function TextControls({selectedId}) {
     const [selectedTag, setSelectedTag] = useState('h1');
@@ -65,6 +65,11 @@ function TextControls({selectedId}) {
         {
             label: 'Styles',    
             control: <StylesControl />,
+    
+        },
+        {
+            label: 'Code',
+            control: <CodeControl />,
     
         },
     ]

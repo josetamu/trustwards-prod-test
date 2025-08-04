@@ -248,17 +248,62 @@ export const BackgroundControl = () => {
     </div>
     )
 };
+/* 
+color
+size
+align
+transform
+family
+weight
+style
+line-height
+letter-spacing
+text-decoration
 
-export const TextControl = () => (
-    <div>
-        <label>Font Size:</label>
-        <input type="number" placeholder="16" />
-        <label>Font Weight:</label>
-        <select>
-            <option value="normal">Normal</option>
-            <option value="bold">Bold</option>
-        </select>
+*/ 
+export const TextControl = () => (  
+<>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Color</span>
+        <input type="color" className="tw-builder__settings-color" />
     </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Size</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="16" />
+    </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Align</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="left" />
+    </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Transform</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="none" />
+    </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Family</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="Arial" />
+    </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Weight</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="normal" />
+    </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Style</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="normal" />
+    </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Line Height</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="1.5" />
+    </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Letter Spacing</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="0" />
+    </div>
+    <div className="tw-builder__settings-setting">
+        <span className="tw-builder__settings-subtitle">Text Decoration</span>
+        <input type="text" className="tw-builder__settings-input" placeholder="none" />
+    </div>
+</>
 );
 
 export const StylesControl = () => (
@@ -269,3 +314,11 @@ export const StylesControl = () => (
         <input type="text" placeholder="0 2px 4px rgba(0,0,0,0.1)" />
     </div>
 );
+
+export const CodeControl  = () => (
+    <div>
+        <label>Code:</label>
+        <textarea placeholder="Enter your code here" />
+    </div>
+);
+
