@@ -676,10 +676,10 @@ export const StylesControl = () => {
     </div>
 
 {/* Box Shadow */}
-<div className="tw-builder__settings-setting">
+{/* <div className="tw-builder__settings-setting">
    <span className="tw-builder__settings-subtitle">Box Shadow</span>
    <input type="text" className="tw-builder__settings-input" placeholder="0 2px 4px rgba(0,0,0,0.1)" />
-</div>
+</div> */}
 
 {/* Position Controls */}
 <div className="tw-builder__settings-setting">
