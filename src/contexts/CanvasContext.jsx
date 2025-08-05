@@ -78,31 +78,22 @@ export const CanvasProvider = ({ children }) => {
         };
         fetchSiteData();
     }, [siteSlug]);
+    const userJSON = siteData?.JSON;
 
-    const [state, dispatch] = useReducer(treeReducer, {
+    //Initial JSONtree by default
+    const initialTree = {
+        id: "tw-root",
+        classList: [],
+        tagName: "div",
+        children: [],
+    };
+    const initialState = {
         past: [], //undo stack
-        present: null, // initially null until data is fetched
+        present: userJSON ? userJSON : initialTree,
         future: [] //redo stack
-    });
+    };
 
-    useEffect(() => {
-        if (siteData) {
-            const userJSON = siteData.JSON;
-            const initialTree = {
-                id: "tw-root",
-                classList: [],
-                tagName: "div",
-                children: [],
-            };
-            const initialState = {
-                past: [], //undo stack
-                present: userJSON ? userJSON : initialTree,
-                future: [] //redo stack
-            };
-            dispatch({ type: 'SET', payload: initialState.present });
-        }
-    }, [siteData]);
-
+    const [state, dispatch] = useReducer(treeReducer, initialState); //State and dispatch to manage the JSONtree state and undo/redo stacks
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
 
