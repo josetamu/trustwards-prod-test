@@ -106,12 +106,14 @@ export const CanvasProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        //Manage the JSONtree current state and undo/redo stacks
+        if(userJSON){
+            console.log(userJSON);
         initialState = {
             past: [], //undo stack
-            present: userJSON ? userJSON : initialTree,
+            present: userJSON,
             future: [] //redo stack
-        };
+            };
+        }
     }, [userJSON]);
 
     //Updates the real JSONtree
