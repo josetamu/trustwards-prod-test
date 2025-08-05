@@ -2,21 +2,17 @@ import './builderLeftPanel.css'
 import { useState } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
 
-function BuilderLeftPanel() {
+function BuilderLeftPanel({ isPanelOpen, setIsPanelOpen }) {
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-    // State for search functionality
-    const [searchQuery, setSearchQuery] = useState('')
     // State to track which tab is currently active (banner or modal)
     const [activeTab, setActiveTab] = useState('banner')
     // State to track which tree items are expanded/collapsed
     const [expandedItems, setExpandedItems] = useState(new Set(['banner', 'div', 'modal', 'modal-content']))
     // State to track which item is currently selected in the tree
     const [selectedItem, setSelectedItem] = useState(null)
-    // State to control if the left panel is open or closed
-    const [isPanelOpen, setIsPanelOpen] = useState(true)
 
-    // Toggle panel visibility
+    // Toggle left panel visibility
     const handlePanelToggle = () => {
         setIsPanelOpen(!isPanelOpen)
     }
@@ -29,22 +25,6 @@ function BuilderLeftPanel() {
     // Close dropdown when clicking outside
     const handleDropdownClose = () => {
         setIsDropdownOpen(false)
-    }
-
-    // Toggle expansion state of tree items (expand/collapse)
-    const toggleExpanded = (itemId) => {
-        const newExpanded = new Set(expandedItems)
-        if (newExpanded.has(itemId)) {
-            newExpanded.delete(itemId)
-        } else {
-            newExpanded.add(itemId)
-        }
-        setExpandedItems(newExpanded)
-    }
-
-    // Handle selection of tree items
-    const handleItemClick = (itemId) => {
-        setSelectedItem(itemId)
     }
 
     // Dropdown menu items
@@ -73,13 +53,29 @@ function BuilderLeftPanel() {
         </>
     )
 
-    // Recursive function to render tree items with proper indentation and styling
+    // Toggle expansion state of tree items (expand/collapse)
+    const toggleExpanded = (itemId) => {
+        const newExpanded = new Set(expandedItems)
+        if (newExpanded.has(itemId)) {
+            newExpanded.delete(itemId)
+        } else {
+            newExpanded.add(itemId)
+        }
+        setExpandedItems(newExpanded)
+    }
+
+    // Handle selection of tree items
+    const handleItemClick = (itemId) => {
+        setSelectedItem(itemId)
+    }
+
+    // Recursive function to render tree items with proper styling
     const renderTreeItem = (item, level = 0, parentId = null) => {
         const hasChildren = item.children && item.children.length > 0
         const isExpanded = expandedItems.has(item.id)
         const isSelected = selectedItem === item.id
         const isChildOfSelected = selectedItem && item.id !== selectedItem && isChildOfSelectedItem(item.id, selectedItem)
-        // El padre de este item está seleccionado
+        // The parent of this item is selected
         const isParentSelected = parentId && selectedItem === parentId
 
         return (
@@ -281,23 +277,6 @@ function BuilderLeftPanel() {
                         {modalTreeData.map(item => renderTreeItem(item))}
                     </div>
                 )}
-            </div>
-            
-            {/* Search section with input field */}
-            <div className="tw-builder__search-section">
-                <div className="tw-builder__search-container">
-                    <svg className="tw-builder__search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M14.3986 14.3986L11.3125 11.3125" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
-                        <path d="M7.28866 12.9773C10.4304 12.9773 12.9773 10.4304 12.9773 7.28866C12.9773 4.14695 10.4304 1.6 7.28866 1.6C4.14695 1.6 1.6 4.14695 1.6 7.28866C1.6 10.4304 4.14695 12.9773 7.28866 12.9773Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
-                    </svg>
-                    <input 
-                        className="tw-builder__search-input" 
-                        type="text" 
-                        placeholder="Search..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
             </div>
         </div>
     )

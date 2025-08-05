@@ -339,13 +339,16 @@ const renderModal = () => {
     }
   }, [])
 
+  // State to control both panels (left and right)
+  const [isPanelOpen, setIsPanelOpen] = useState(true)
+
   return (
     <CanvasProvider>
     <div className="tw-builder">
-      <BuilderLeftPanel/>
+      <BuilderLeftPanel isPanelOpen={isPanelOpen} setIsPanelOpen={setIsPanelOpen}/>
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
       
-      <BuilderRightPanel user={user} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug}/>
+      <BuilderRightPanel user={user} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isPanelOpen}/>
       
       <ModalContainer 
         isOpen={isModalOpen} 
