@@ -12,7 +12,7 @@ export const Canvas = () => {
     * setSelectedId - When an element is clicked, set it as the selectedId
     * selectedId - Current element selected
     */
-    const renderNode = (node, setSelectedId, selectedId) => {
+    const renderNode = (node, selectedId, setSelectedId) => {
         const isSelected = node.id === selectedId;
 
         // Set the node properties from its JSON (id, classes, tag, children, etc..)
@@ -27,7 +27,7 @@ export const Canvas = () => {
         };
     
         const children = node.children?.map((child) => //Render the children of the node (JSON tree) in loop
-            renderNode(child, setSelectedId, selectedId)
+            renderNode(child, selectedId, setSelectedId)
         );
     
         return React.createElement(node.tagName, { key: node.id, ...nodeProps }, node.text, children);
