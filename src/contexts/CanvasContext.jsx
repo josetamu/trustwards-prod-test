@@ -1,4 +1,8 @@
-import React, { createContext, useReducer, useContext, useEffect, useCallback } from "react";
+'use client'
+
+import React, { createContext, useReducer, useState, useContext, useEffect, useCallback } from "react";
+import { useParams } from "next/navigation";
+import { supabase } from "../supabase/supabaseClient";
 
 const CanvasContext = createContext(null);
 
@@ -23,21 +27,6 @@ const generateUniqueId = (tree) => {
         newId = `tw-${randomLetters}`;
     } while (existingIds.has(newId));
     return newId;
-};
-
-//Initial JSONtree by default
-const initialTree = {
-    id: "tw-root",
-    classList: [],
-    tagName: "div",
-    children: [],
-};
-
-//Manage the JSONtree current state and undo/redo stacks
-const initialState = {
-    past: [], //undo stack
-    present: initialTree,
-    future: [] //redo stack
 };
 
 /*
@@ -78,10 +67,43 @@ function treeReducer(state, action) {
 
 export const CanvasProvider = ({ children }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
+    const params = useParams();
+    const siteSlug = params['site-slug'];
+    const [siteData, setSiteData] = useState(null);
 
+    useEffect(() => {
+        const fetchSiteData = async () => {
+            const { data, error } = await supabase.from('Site').select('*').eq('id', siteSlug).single();
+            setSiteData(data);
+        };
+        fetchSiteData();
+    }, [siteSlug]);
+    const userJSON = siteData?.JSON;
+
+    //Initial JSONtree by default
+    const initialTree = {
+        id: "tw-root",
+        classList: [],
+        tagName: "div",
+        children: [],
+    };
+    var initialState = {
+        past: [], //undo stack
+        present: initialTree,
+        future: [] //redo stack
+    };
     const [state, dispatch] = useReducer(treeReducer, initialState); //State and dispatch to manage the JSONtree state and undo/redo stacks
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
+
+    useEffect(() => {
+        //Manage the JSONtree current state and undo/redo stacks
+        initialState = {
+            past: [], //undo stack
+            present: userJSON ? userJSON : initialTree,
+            future: [] //redo stack
+        };
+    }, [userJSON]);
 
     //Updates the real JSONtree
     const setJSONtree = useCallback((newTree, saveToHistory = true) => {

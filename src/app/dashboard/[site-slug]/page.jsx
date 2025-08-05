@@ -34,6 +34,7 @@ function Home() {
 
 
 
+    
     //update site data when the selected site changes
     useEffect(() => {
             if(!webs || webs.length === 0) return;
@@ -42,6 +43,8 @@ function Home() {
             if(selectedSite){
                 setSiteData(selectedSite);
                 setIsInstalled(selectedSite.Verified);
+            }else{
+                notFound();
             }
 
     }, [webs, siteSlug]);

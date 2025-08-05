@@ -195,7 +195,7 @@
 }
 .tw-builder__settings-color{
     padding: 0;
-    border: none;
+    border: 1px solid var(--border-light-color);
     background: none;
     width: 25px;
     height: 25px;
@@ -203,19 +203,15 @@
     border-radius: 4px;
     
 }
-.tw-builder__settings-color:focus{
-    outline: none;
+.tw-builder__settings-color-input{
+    position: absolute;
+    opacity: 0;
+    width: 20px;
+    height: 30px;
+    overflow: hidden;
+    pointer-events: none;
 }
-.tw-builder__settings-color::-webkit-color-swatch-wrapper {
-    padding: 0;
-    border-radius: 4px;
-    border: 1px solid var(--border-light-color);
-  }
-.tw-builder__settings-color::-webkit-color-swatch {
-    border: none;
-    border-radius: 4px;
-    border: 1px solid var(--border-light-color);
-  }
+
 .tw-builder__settings-hex{
     width: 75%;
     height: 100%;
