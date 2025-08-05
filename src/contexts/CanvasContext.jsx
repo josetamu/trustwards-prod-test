@@ -78,34 +78,33 @@ export const CanvasProvider = ({ children }) => {
         };
         fetchSiteData();
     }, [siteSlug]);
-    const userJSON = siteData?.JSON;
-    console.log(userJSON);
 
-    //Initial JSONtree by default
-    const initialTree = {
-        id: "tw-root",
-        classList: [],
-        tagName: "div",
-        children: [],
-    };
-    const initialState = {
+    const [state, dispatch] = useReducer(treeReducer, {
         past: [], //undo stack
-        present: userJSON ? userJSON : initialTree,
+        present: null, // initially null until data is fetched
         future: [] //redo stack
-    };
+    });
 
-    const [state, dispatch] = useReducer(treeReducer, initialState); //State and dispatch to manage the JSONtree state and undo/redo stacks
+    useEffect(() => {
+        if (siteData) {
+            const userJSON = siteData.JSON;
+            const initialTree = {
+                id: "tw-root",
+                classList: [],
+                tagName: "div",
+                children: [],
+            };
+            const initialState = {
+                past: [], //undo stack
+                present: userJSON ? userJSON : initialTree,
+                future: [] //redo stack
+            };
+            dispatch({ type: 'SET', payload: initialState.present });
+        }
+    }, [siteData]);
+
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
-
-    // Function to handle element selection and open right panel
-    const selectElement = (id) => {
-        setSelectedId(id);
-        // Only open right panel if selecting a real element (not root)
-        if (id !== "tw-root" && window.handleElementSelection) {
-            window.handleElementSelection();
-        }
-    }
 
     //Updates the real JSONtree
     const setJSONtree = useCallback((newTree, saveToHistory = true) => {
@@ -225,7 +224,7 @@ export const CanvasProvider = ({ children }) => {
     };
 
     return (
-        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, selectElement, addClass, removeClass }}>
+        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass }}>
             {children}
         </CanvasContext.Provider>
     );
