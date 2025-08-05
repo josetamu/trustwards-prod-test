@@ -377,6 +377,8 @@ const renderModal = () => {
         setModalType={setModalType}
         setIsModalOpen={setIsModalOpen}
         openChangeModal={openChangeModal}
+        isRightPanelOpen={isRightPanelOpen}
+        setIsRightPanelOpen={setIsRightPanelOpen}
       />
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
       
