@@ -4,15 +4,15 @@ import { useCanvas } from '@contexts/CanvasContext';
 import React, { useEffect } from "react";
 
 export const Canvas = () => {
-    const { JSONtree, selectElement, selectedId } = useCanvas();
+    const { JSONtree, selectedId, setSelectedId } = useCanvas();
 
     /*
     * Used by the canvas to convert the JSONtree into React elements
     * node - The JSON node to render (canvas passes the root)
-    * selectElement - When an element is clicked, set it as the selectedId and open right panel
+    * setSelectedId - When an element is clicked, set it as the selectedId
     * selectedId - Current element selected
     */
-    const renderNode = (node, selectElement, selectedId) => {
+    const renderNode = (node, setSelectedId, selectedId) => {
         const isSelected = node.id === selectedId;
 
         // Set the node properties from its JSON (id, classes, tag, children, etc..)
@@ -21,13 +21,13 @@ export const Canvas = () => {
             ...(node.classList.length > 0 && { className: node.classList.join(' ') }), // Add the node.classList as the real classList
             onClick: (e) => {
                 e.stopPropagation();
-                selectElement(node.id); // Set the clicked element as the selectedId and open right panel
+                setSelectedId(node.id); // Set the clicked element as the selectedId
             },
             ...(isSelected && { className: 'tw-builder__active' }), // Add the class tw-builder__active to the selected element
         };
     
         const children = node.children?.map((child) => //Render the children of the node (JSON tree) in loop
-            renderNode(child, selectElement, selectedId)
+            renderNode(child, setSelectedId, selectedId)
         );
     
         return React.createElement(node.tagName, { key: node.id, ...nodeProps }, node.text, children);
@@ -41,12 +41,12 @@ export const Canvas = () => {
             if (!e.target.closest('.tw-builder__canvas') && 
             !e.target.closest('.tw-builder__toolbar') &&
             !e.target.closest('.tw-builder__settings')) {
-                selectElement('tw-root');
+                setSelectedId('tw-root');
             }
         };
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [selectElement]);
+    }, [setSelectedId]);
 
     /*
     * Handlebars resize
@@ -102,7 +102,7 @@ export const Canvas = () => {
         <div className="tw-builder__handlebars-canvas-wrapper">
             <div className="tw-builder__handlebar tw-builder__handlebar--left"></div>
             <div className="tw-builder__canvas">
-                {JSONtree && renderNode(JSONtree, selectElement, selectedId) /* Render the JSONtree */}
+                {JSONtree && renderNode(JSONtree, selectedId, setSelectedId) /* Render the JSONtree */}
             </div>
             <div className="tw-builder__handlebar tw-builder__handlebar--right"></div>
         </div>
