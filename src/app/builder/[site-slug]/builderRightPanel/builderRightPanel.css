@@ -9,7 +9,7 @@
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-    scrollbar-width: thin;
+    scrollbar-width: none;
 }
 
 /* Builder Right Panel Closed State */

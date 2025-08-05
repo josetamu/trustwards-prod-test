@@ -1,11 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
+import { Tooltip } from '@components/Tooltip/Tooltip';
 
 export const DisplayControl = ({}) => {
     const [selectedWrap, setSelectedWrap] = useState('wrap');
-    const [selectedDirection, setSelectedDirection] = useState('horizontal');
+    const [selectedDirection, setSelectedDirection] = useState('row');
     const [selectedAlign, setSelectedAlign] = useState('flex-start');
     const [selectedJustify, setSelectedJustify] = useState('flex-start');
     const wrapSelectRef = useRef(null);
+    const [showTooltip, setShowTooltip] = useState(false);
+
+    const handleMouseEnter = () => {
+        setShowTooltip(true);
+    };
+    const handleMouseLeave = () => {
+        setShowTooltip(false);
+    };
 
     const adjustWrapSelectWidth = () => {
         if (wrapSelectRef.current) {
@@ -43,13 +52,19 @@ export const DisplayControl = ({}) => {
     <div className="tw-builder__settings-setting">
         <span className="tw-builder__settings-subtitle">Direction</span>
         <div className="tw-builder__settings-actions">
-            <button className={`tw-builder__settings-action ${selectedDirection === 'horizontal' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleDirectionChange('horizontal')}>
+            <button className={`tw-builder__settings-action ${selectedDirection === 'row' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleDirectionChange('row')} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                 <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0.00134172 2C-0.00151758 1.78086 -0.00630757 1.37951 0.0645315 1.1168C0.156314 0.776369 0.384806 0.417969 0.917786 0.185477C1.16804 0.0763693 1.43357 0.0356924 1.70173 0.0173539C1.95531 9.16995e-08 2.26431 0 2.62258 0H8.37743C8.7357 0 9.04469 9.16995e-08 9.29828 0.0173539C9.56645 0.0356924 9.83193 0.0763693 10.0822 0.185477C10.6152 0.417969 10.8437 0.776369 10.9355 1.1168C11.0063 1.37951 11.0016 1.78086 10.9986 2C11.0016 2.21914 11.0063 2.62049 10.9355 2.8832C10.8437 3.22363 10.6152 3.58203 10.0822 3.81452C9.83193 3.92363 9.56645 3.96431 9.29828 3.98265C9.04469 4 8.7357 4 8.37743 4H2.62258C2.26431 4 1.95531 4 1.70173 3.98265C1.43357 3.96431 1.16804 3.92363 0.917786 3.81452C0.384806 3.58203 0.156314 3.22363 0.0645315 2.8832C-0.00630757 2.62049 -0.00151758 2.21914 0.00134172 2Z" fill="currentColor"/>
                     <path d="M0.00134172 7C-0.00151758 6.78086 -0.00630757 6.37951 0.0645315 6.1168C0.156314 5.77637 0.384806 5.41797 0.917786 5.18548C1.16804 5.07637 1.43357 5.03569 1.70173 5.01735C1.95531 5 2.26431 5 2.62258 5H8.37743C8.7357 5 9.04469 5 9.29828 5.01735C9.56645 5.03569 9.83193 5.07637 10.0822 5.18548C10.6152 5.41797 10.8437 5.77637 10.9355 6.1168C11.0063 6.37951 11.0016 6.78086 10.9986 7C11.0016 7.21914 11.0063 7.62049 10.9355 7.8832C10.8437 8.22363 10.6152 8.58203 10.0822 8.81452C9.83193 8.92363 9.56645 8.96431 9.29828 8.98265C9.04469 9 8.7357 9 8.37743 9H2.62258C2.26431 9 1.95531 9 1.70173 8.98265C1.43357 8.96431 1.16804 8.92363 0.917786 8.81452C0.384806 8.58203 0.156314 8.22363 0.0645315 7.8832C-0.00630757 7.62049 -0.00151758 7.21914 0.00134172 7Z" fill="currentColor"/>
                 </svg>
+                <Tooltip
+                message={'Row'}
+                open={showTooltip}
+                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                width="auto"
+                />
             </button>
-            <button className={`tw-builder__settings-action ${selectedDirection === 'vertical' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleDirectionChange('vertical')}>
+            <button className={`tw-builder__settings-action ${selectedDirection === 'column' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleDirectionChange('column')}>
                 <svg width="9" height="8" viewBox="0 0 9 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M7 0.000975796C7.21914 -0.0011037 7.62049 -0.00458732 7.8832 0.046932C8.22363 0.113683 8.58203 0.279859 8.81452 0.66748C8.92363 0.849487 8.96431 1.0426 8.98265 1.23762C9 1.42205 9 1.64677 9 1.90733V6.09268C9 6.35324 9 6.57795 8.98265 6.76238C8.96431 6.95742 8.92363 7.1505 8.81452 7.3325C8.58203 7.72014 8.22363 7.88632 7.8832 7.95309C7.62049 8.00457 7.21914 8.00113 7 7.999C6.78086 8.00113 6.37951 8.00457 6.1168 7.95309C5.77637 7.88632 5.41797 7.72014 5.18548 7.3325C5.07637 7.1505 5.03569 6.95742 5.01735 6.76238C5 6.57795 5 6.35324 5 6.09268V1.90733C5 1.64677 5 1.42204 5.01735 1.23762C5.03569 1.0426 5.07637 0.849487 5.18548 0.66748C5.41797 0.279859 5.77637 0.113683 6.1168 0.046932C6.37951 -0.00458732 6.78086 -0.0011037 7 0.000975796Z" fill="currentColor"/>
                     <path d="M2 0.000975796C2.21914 -0.0011037 2.62049 -0.00458732 2.8832 0.046932C3.22363 0.113683 3.58203 0.279859 3.81452 0.66748C3.92363 0.849487 3.96431 1.0426 3.98265 1.23762C4 1.42205 4 1.64677 4 1.90733V6.09268C4 6.35324 4 6.57795 3.98265 6.76238C3.96431 6.95742 3.92363 7.1505 3.81452 7.3325C3.58203 7.72014 3.22363 7.88632 2.8832 7.95309C2.62049 8.00457 2.21914 8.00113 2 7.999C1.78086 8.00113 1.37951 8.00457 1.1168 7.95309C0.776369 7.88632 0.417969 7.72014 0.185476 7.3325C0.0763686 7.1505 0.0356922 6.95742 0.0173538 6.76238C0 6.57795 0 6.35324 0 6.09268V1.90733C0 1.64677 0 1.42204 0.0173538 1.23762C0.0356922 1.0426 0.0763686 0.849487 0.185476 0.66748C0.417969 0.279859 0.776369 0.113683 1.1168 0.046932C1.37951 -0.00458732 1.78086 -0.0011037 2 0.000975796Z" fill="currentColor"/>
@@ -182,7 +197,7 @@ export const BackgroundControl = () => {
     const [color, setColor] = useState('#FFFFFF');
     const [hex, setHex] = useState('FFFFFF');
     const [percentage, setPercentage] = useState('100%');
-    const bgInputRef = useRef(null);
+    const colorInputRef = useRef(null);
 
     // Convertir hex a rgba con opacidad
     const hexToRgba = (hex, opacity) => {
@@ -246,8 +261,8 @@ export const BackgroundControl = () => {
         }
     };
     const handleColorClick = () => {
-        if(bgInputRef.current){
-            bgInputRef.current.click();
+        if(colorInputRef.current){
+            colorInputRef.current.click();
         }
     };
     const finalColor = hexToRgba(color, parseInt(percentage.replace('%', '')));
@@ -256,7 +271,7 @@ export const BackgroundControl = () => {
     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
         <div className="tw-builder__settings-background">
             <div className="tw-builder__settings-colors">
-                <input  ref={bgInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
+                <input  ref={colorInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
                 <div className="tw-builder__settings-color" onClick={handleColorClick} style={{
                         backgroundColor: finalColor, 
                     }}>
@@ -275,7 +290,7 @@ export const TextControl = () => {
     const [color, setColor] = useState('#FFFFFF');
     const [hex, setHex] = useState('FFFFFF');
     const [percentage, setPercentage] = useState('100%');
-    const bgInputRef = useRef(null);
+    const colorInputRef = useRef(null);
     const [selectedAlign, setSelectedAlign] = useState('flex-start');
     const [selectedWeight, setSelectedWeight] = useState('500');
     const weightSelectRef = useRef(null);
@@ -355,8 +370,8 @@ export const TextControl = () => {
             }
         };
         const handleColorClick = () => {
-            if(bgInputRef.current){
-                bgInputRef.current.click();
+            if(colorInputRef.current){
+                colorInputRef.current.click();
             }
         };
         const finalColor = hexToRgba(color, parseInt(percentage.replace('%', '')));
@@ -370,7 +385,7 @@ export const TextControl = () => {
     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
         <div className="tw-builder__settings-background">
             <div className="tw-builder__settings-colors">
-                <input  ref={bgInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
+                <input  ref={colorInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
                 <div className="tw-builder__settings-color" onClick={handleColorClick} style={{
                         backgroundColor: finalColor, 
                     }}>
@@ -526,17 +541,208 @@ export const TextControl = () => {
         </div>
     </div>
 </>
-)};
-
-export const StylesControl = () => (
-    <div>
-        <label>Border Radius:</label>
-        <input type="number" placeholder="0" />
-        <label>Box Shadow:</label>
-        <input type="text" placeholder="0 2px 4px rgba(0,0,0,0.1)" />
-
-    </div>
 );
+};
+
+export const StylesControl = () => {
+    const [borderStyle, setBorderStyle] = useState('none');
+    const [selectedPosition, setSelectedPosition] = useState('static');
+    const [selectedOverflow, setSelectedOverflow] = useState('visible');
+    const [selectedCursor, setSelectedCursor] = useState('default');
+    const [color, setColor] = useState('#000000');
+    const [hex, setHex] = useState('000000');
+    const [percentage, setPercentage] = useState('100%');
+    const colorInputRef = useRef(null);
+
+        // Convertir hex a rgba con opacidad
+        const hexToRgba = (hex, opacity) => {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+        };
+    
+    
+    
+        const handleColorChange = (e) => {
+            const newColor = e.target.value;
+            setColor(newColor);
+            setHex(newColor.replace('#', '').toUpperCase());
+        };
+        const handleHexChange = (e) => {
+            const hexValue = e.target.value.toUpperCase().replace('#', '');
+    
+            if(hexValue.length > 8){
+                hexValue = hexValue.slice(0, 8);
+            }
+            setHex(hexValue);
+    
+            const hexPattern = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+    
+            if(hexPattern.test(hexValue)) {
+                const formattedHex = `#${hexValue}`;
+                setColor(formattedHex);
+    
+                if (hexValue.length === 3) {
+                    const expandedHex = hexValue.split('').map(char => char + char).join('');
+                    const formattedHex = `#${expandedHex}`;
+                    setColor(formattedHex);
+                } else {
+                    const formattedHex = `#${hexValue}`;
+                    setColor(formattedHex);
+                }
+            }
+        };
+        const handleHexBlur = (e) => {
+            const hexValue = e.target.value.trim();
+            if(hexValue === ''){
+                setHex('FFFFFF');
+                setColor('#FFFFFF');
+            } 
+        };
+        const handlePercentageChange = (e) => {
+            let value = e.target.value.replace('%', '');
+            if(value === '' && e.type === 'blur'){
+                value = 100;
+            } 
+            if(value < 0) value = 0;
+            if(value > 100) value = 100;
+            if(isNaN(value)) value = 0;
+    
+            if(value !== 0 || e.type === 'blur') {
+                const finalValue = `${value}%`;
+                setPercentage(finalValue);
+                e.target.value = finalValue;
+            }
+        };
+        const handleColorClick = () => {
+            if(colorInputRef.current){
+                colorInputRef.current.click();
+            }
+        };
+        const finalColor = hexToRgba(color, parseInt(percentage.replace('%', '')));
+    return (
+    <>
+   {/* Border Controls */}
+   <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
+        <span className="tw-builder__settings-subtitle">Border Width</span>
+        <div className="tw-builder__settings-spacing">
+            <input type="text" className="tw-builder__spacing-input"/>
+            <div className="tw-builder__settings-spacing-mid">
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
+            </div>
+            <input type="text" className="tw-builder__spacing-input"/>
+        </div>
+    </div>
+
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Border Style</span>
+   <select className="tw-builder__settings-select" value={borderStyle} onChange={(e) => setBorderStyle(e.target.value)}>
+       <option value="none">none</option>
+       <option value="solid">solid</option>
+       <option value="dashed">dashed</option>
+       <option value="dotted">dotted</option>
+   </select>
+</div>
+
+<div className="tw-builder__settings-setting tw-builder__settings-setting--column">
+   <span className="tw-builder__settings-subtitle">Border Color</span>
+   <div className="tw-builder__settings-background">
+            <div className="tw-builder__settings-colors">
+                <input  ref={colorInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
+                <div className="tw-builder__settings-color" onClick={handleColorClick} style={{
+                        backgroundColor: finalColor, 
+                    }}>
+                </div>
+                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="000000"/>
+            </div>
+            <div className="tw-builder__settings-percentages">
+                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} />
+            </div>
+        </div>
+</div>
+
+<div className="tw-builder__settings-setting tw-builder__settings-setting--column">
+        <span className="tw-builder__settings-subtitle">Border Radius</span>
+        <div className="tw-builder__settings-spacing">
+            <input type="text" className="tw-builder__spacing-input"/>
+            <div className="tw-builder__settings-spacing-mid">
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
+            </div>
+            <input type="text" className="tw-builder__spacing-input"/>
+        </div>
+    </div>
+
+{/* Box Shadow */}
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Box Shadow</span>
+   <input type="text" className="tw-builder__settings-input" placeholder="0 2px 4px rgba(0,0,0,0.1)" />
+</div>
+
+{/* Position Controls */}
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Position</span>
+   <select className="tw-builder__settings-select" /* value={selectedPosition} *//*  onChange={(e) => setSelectedPosition(e.target.value)} */>
+       <option value="static">Static</option>
+       <option value="relative">Relative</option>
+       <option value="absolute">Absolute</option>
+       <option value="fixed">Fixed</option>
+       <option value="sticky">Sticky</option>
+   </select>
+</div>
+
+{/* Z-Index */}
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Z-Index</span>
+   <input type="text" className="tw-builder__settings-input" placeholder="auto" />
+</div>
+
+{/* Overflow */}
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Overflow</span>
+   <select className="tw-builder__settings-select" /* value={selectedOverflow} */ /* onChange={(e) => setSelectedOverflow(e.target.value)} */>
+       <option value="visible">Visible</option>
+       <option value="hidden">Hidden</option>
+       <option value="scroll">Scroll</option>
+       <option value="auto">Auto</option>
+   </select>
+</div>
+
+{/* Opacity */}
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Opacity</span>
+   <input type="text" className="tw-builder__settings-input" placeholder="1" />
+</div>
+
+{/* Cursor */}
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Cursor</span>
+   <select className="tw-builder__settings-select" /* value={selectedCursor} onChange={(e) => setSelectedCursor(e.target.value)} */>
+       <option value="default">Default</option>
+       <option value="pointer">Pointer</option>
+       <option value="text">Text</option>
+       <option value="not-allowed">Not Allowed</option>
+       <option value="grab">Grab</option>
+   </select>
+</div>
+
+{/* Transform */}
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Transform</span>
+   <input type="text" className="tw-builder__settings-input" placeholder="rotate(0deg) scale(1)" />
+</div>
+
+{/* Transition */}
+<div className="tw-builder__settings-setting">
+   <span className="tw-builder__settings-subtitle">Transition</span>
+   <input type="text" className="tw-builder__settings-input" placeholder="all 0.3s ease" />
+</div>
+</>
+);
+};
+
 
 
 
