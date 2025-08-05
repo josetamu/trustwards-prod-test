@@ -79,6 +79,7 @@ export const CanvasProvider = ({ children }) => {
         fetchSiteData();
     }, [siteSlug]);
     const userJSON = siteData?.JSON;
+    console.log(userJSON);
 
     //Initial JSONtree by default
     const initialTree = {
@@ -87,23 +88,15 @@ export const CanvasProvider = ({ children }) => {
         tagName: "div",
         children: [],
     };
-    var initialState = {
+    const initialState = {
         past: [], //undo stack
-        present: initialTree,
+        present: userJSON ? userJSON : initialTree,
         future: [] //redo stack
     };
+
     const [state, dispatch] = useReducer(treeReducer, initialState); //State and dispatch to manage the JSONtree state and undo/redo stacks
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
-
-    useEffect(() => {
-        //Manage the JSONtree current state and undo/redo stacks
-        initialState = {
-            past: [], //undo stack
-            present: userJSON ? userJSON : initialTree,
-            future: [] //redo stack
-        };
-    }, [userJSON]);
 
     //Updates the real JSONtree
     const setJSONtree = useCallback((newTree, saveToHistory = true) => {
