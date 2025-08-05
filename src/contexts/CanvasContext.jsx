@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useReducer, useContext, useEffect, useCallback } from "react";
 
 const CanvasContext = createContext(null);
 
@@ -25,26 +25,106 @@ const generateUniqueId = (tree) => {
     return newId;
 };
 
+//Initial JSONtree by default
+const initialTree = {
+    id: "tw-root",
+    classList: [],
+    tagName: "div",
+    children: [],
+};
+
+//Manage the JSONtree current state and undo/redo stacks
+const initialState = {
+    past: [], //undo stack
+    present: initialTree,
+    future: [] //redo stack
+};
+
+/*
+* To add a builder action to the stack, we need to:
+* 1. Make a copy of the current JSONtree before the action for undo/redo stacks (deepCopy)
+* 2. Execute the action that changes the JSONtree (action addElement, removeElement, addClass, removeClass...)
+* 3. Update the JSONtree state with the changed JSONtree using SET (setJSONtree)
+*/
+const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj)); //Creates a deep exact copy of the passed JSON (used to save the JSONtree in the undo/redo stacks)
+function treeReducer(state, action) {
+    const { past, present, future } = state;
+
+    switch (action.type) {
+        case 'SET': //Saves the current JSONtree in the undo stack, puts the new JSONtree in the present and clears the redo stack
+            return {
+                past: [...past, deepCopy(present)],
+                present: action.payload,
+                future: []
+            };
+        case 'UNDO': //Gets and remove the last JSONtree from the undo stack and puts it in the present state, puts the current JSONtree in the redo stack
+            if (past.length === 0) return state;
+            return {
+                past: past.slice(0, -1),
+                present: past[past.length - 1],
+                future: [deepCopy(present), ...future]
+            };
+        case 'REDO': //Gets and remove the first JSONtree from the redo stack and puts it in the present state, puts the current JSONtree in the undo stack
+            if (future.length === 0) return state;
+            return {
+                past: [...past, deepCopy(present)],
+                present: future[0],
+                future: future.slice(1)
+            };
+        default:
+            return state;
+    }
+}
+
 export const CanvasProvider = ({ children }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
 
-    //JSONtree by default
-    const initialTree = {
-        id: "tw-root",
-        classList: [],
-        tagName: "div",
-        children: []
-    };
-      
-    const [JSONtree, setJSONtree] = useState(initialTree); //Starts the JSONtree with the initialTree
-    const [selectedId, setSelectedId] = useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
+    const [state, dispatch] = useReducer(treeReducer, initialState); //State and dispatch to manage the JSONtree state and undo/redo stacks
+    const JSONtree = state.present; //The real JSONtree at any moment (state.present)
+    const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
+
+    //Updates the real JSONtree
+    const setJSONtree = useCallback((newTree, saveToHistory = true) => {
+        if (saveToHistory) {
+            dispatch({ type: 'SET', payload: newTree });
+        } else {
+            // Force direct update without history (rarely used)
+            dispatch({ type: 'SET', payload: newTree, skipHistory: true });
+        }
+    }, []);
+
+    //Undo and Redo JSONtree (Ctrl+Z / Ctrl+Y) or (Cmd+Z / Cmd+Y)
+    const undo = useCallback(() => {
+        dispatch({ type: 'UNDO' });
+    }, []);
+    const redo = useCallback(() => {
+        dispatch({ type: 'REDO' });
+    }, []);
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const isCtrlOrCmd = e.ctrlKey || e.metaKey; // Handles both Windows (Ctrl) and macOS (Cmd)
+
+            if (isCtrlOrCmd && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+            }
+
+            if ((isCtrlOrCmd && e.key === 'y') || (isCtrlOrCmd && e.shiftKey && e.key === 'z')) {
+                e.preventDefault();
+                redo();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [undo, redo]);
 
     /*
     * Add element in the JSONtree inside the current selectedId (Creation of the React element is managed by Canvas.jsx)
     * properties - Add the element in the JSONtree with its properties with format: {tagName: "div", children: [], etc..} - id and classList are created automatically
     */
     const addElement = (properties) => {
-        const insert = (node, parent) => {
+        const add = (node, parent) => {
             if (node.id === selectedId) {
                 if (node.children) {
                     node.children = [...node.children, { ...properties, id: generateUniqueId(JSONtree), classList: [] }]; //Node has children attribute. Put it as its child
@@ -53,30 +133,30 @@ export const CanvasProvider = ({ children }) => {
                     parent.children.splice(index + 1, 0, { ...properties, id: generateUniqueId(JSONtree), classList: [] }); //Node has no children attribute. Put it as its first sibling
                 }
             } else if (node.children) {
-                node.children.forEach(child => insert(child, node));
+                node.children.forEach(child => add(child, node));
             }
         };
-        const updated = structuredClone(JSONtree);
-        insert(updated, null);
-        setJSONtree(updated);
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the add
+        add(updated, null); //Add the new element in the current JSONtree
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
 
     /*
-    * Delete element from the JSONtree (Delete of the React element is managed by Canvas.jsx)
-    * id - The id of the element to delete from the JSONtree
+    * Remove element from the JSONtree (Delete of the React element is managed by Canvas.jsx)
+    * id - The id of the element to remove from the JSONtree
     */
-    const deleteElement = (id) => {
+    const removeElement = (id) => {
         const remove = (node) => {
             if (!node.children) return;
             node.children = node.children.filter((child) => child.id !== id);
             node.children.forEach(remove);
         };
-        const updated = structuredClone(JSONtree);
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the remove
         if (updated.id === id) {
-            setJSONtree(null);
+            setJSONtree(null); //If the element to remove is the root, set the JSONtree to null
         } else {
-            remove(updated);
-            setJSONtree(updated);
+            remove(updated); //Remove the element in the current JSONtree
+            setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
         }
     };
 
@@ -86,13 +166,19 @@ export const CanvasProvider = ({ children }) => {
     * className - The class to add to the element
     */
     const addClass = (id, className) => {
-        const updated = structuredClone(JSONtree);
-        const node = updated.children.find((child) => child.id === id);
-        if (node) {
-            node.classList.push(className);
-        }
-        setJSONtree(updated);
-    }
+        const updateClass = (node) => {
+            if (node.id === id) {
+                node.classList.push(className);
+                return;
+            }
+            if (node.children) {
+                node.children.forEach(updateClass);
+            }
+        };
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addClass
+        updateClass(updated); //Add the class to the element in the current JSONtree
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+    };
 
     /*
     * Remove class from an element
@@ -100,16 +186,22 @@ export const CanvasProvider = ({ children }) => {
     * className - The class to remove from the element
     */
     const removeClass = (id, className) => {
-        const updated = structuredClone(JSONtree);
-        const node = updated.children.find((child) => child.id === id);
-        if (node) {
-            node.classList = node.classList.filter((cls) => cls !== className);
-        }
-        setJSONtree(updated);
-    }
+        const updateClass = (node) => {
+            if (node.id === id) {
+                node.classList = node.classList.filter((cls) => cls !== className);
+                return;
+            }
+            if (node.children) {
+                node.children.forEach(updateClass);
+            }
+        };
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeClass
+        updateClass(updated); //Remove the class from the element in the current JSONtree
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+    };
 
     return (
-        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, deleteElement, selectedId, setSelectedId, addClass, removeClass }}>
+        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass }}>
             {children}
         </CanvasContext.Provider>
     );
