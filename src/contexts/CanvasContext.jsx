@@ -56,6 +56,15 @@ export const CanvasProvider = ({ children }) => {
     const [JSONtree, setJSONtree] = useState(initialTree); //Starts the JSONtree with the initialTree
     const [selectedId, setSelectedId] = useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
 
+    // Function to handle element selection and open right panel
+    const selectElement = (id) => {
+        setSelectedId(id);
+        // Only open right panel if selecting a real element (not root)
+        if (id !== "tw-root" && window.handleElementSelection) {
+            window.handleElementSelection();
+        }
+    }
+
     useEffect(() => {
         if(userJSON){
             setJSONtree(userJSON);
@@ -131,7 +140,7 @@ export const CanvasProvider = ({ children }) => {
     }
 
     return (
-        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, deleteElement, selectedId, setSelectedId, addClass, removeClass }}>
+        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, deleteElement, selectedId, setSelectedId, selectElement, addClass, removeClass }}>
             {children}
         </CanvasContext.Provider>
     );

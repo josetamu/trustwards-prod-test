@@ -1,8 +1,10 @@
 import './builderLeftPanel.css'
 import { useState } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
+import { useRouter } from 'next/navigation'
 
-function BuilderLeftPanel({ isPanelOpen, setIsPanelOpen }) {
+function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal }) {
+    const router = useRouter()
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     // State to track which tab is currently active (banner or modal)
@@ -14,7 +16,7 @@ function BuilderLeftPanel({ isPanelOpen, setIsPanelOpen }) {
 
     // Toggle left panel visibility
     const handlePanelToggle = () => {
-        setIsPanelOpen(!isPanelOpen)
+        onPanelToggle()
     }
 
     // Toggle dropdown visibility
@@ -27,27 +29,62 @@ function BuilderLeftPanel({ isPanelOpen, setIsPanelOpen }) {
         setIsDropdownOpen(false)
     }
 
+    // Handle dropdown menu item clicks
+    const handleGoToHome = () => {
+        router.push('/dashboard')
+        setIsDropdownOpen(false)
+    }
+
+    const handleSiteSettings = () => {
+        openChangeModal('settings')
+        setIsDropdownOpen(false)
+    }
+
+    const handleTheme = () => {
+        setModalType('Appearance')
+        setIsModalOpen(true)
+        setIsDropdownOpen(false)
+    }
+
+    const handlePreferences = () => {
+        setModalType('Account')
+        setIsModalOpen(true)
+        setIsDropdownOpen(false)
+    }
+
+    const handleUpgradeToPro = () => {
+        setModalType('Plan')
+        setIsModalOpen(true)
+        setIsDropdownOpen(false)
+    }
+
+    const handleHelp = () => {
+        setModalType('Support')
+        setIsModalOpen(true)
+        setIsDropdownOpen(false)
+    }
+
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <button className="dropdown__item tw-builder__dropdown-item--home">
+            <button className="dropdown__item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
                 <span>Go to Home</span>
             </button>
             <div className="dropdown__divider"></div>
-            <button className="dropdown__item tw-builder__dropdown-item">
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleSiteSettings}>
                 <span>Site settings</span>
             </button>
-            <button className="tw-builder__dropdown-item dropdown__item ">
+            <button className="tw-builder__dropdown-item dropdown__item" onClick={handleTheme}>
                 <span>Theme</span>
             </button>
-            <button className="dropdown__item tw-builder__dropdown-item">
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={handlePreferences}>
                 <span>Preferences</span>
             </button>
-            <button className="dropdown__item tw-builder__dropdown-item">
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleUpgradeToPro}>
                 <span>Upgrade to pro</span>
             </button>
             <div className="dropdown__divider"></div>
-            <button className="dropdown__item tw-builder__dropdown-item--help">
+            <button className="dropdown__item tw-builder__dropdown-item--help" onClick={handleHelp}>
                 <span>Help</span>
             </button>
         </>
@@ -226,8 +263,8 @@ function BuilderLeftPanel({ isPanelOpen, setIsPanelOpen }) {
                         <div className="tw-builder__logo">
                             <div className="tw-builder__logo"></div>
                         </div>
-                        <svg className="tw-builder__logo-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <svg className='tw-builder__logo-arrow' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+                            <path d="M18 15L12 9L6 15" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="16" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </button>
                 </Dropdown>
