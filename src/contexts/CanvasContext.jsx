@@ -65,35 +65,33 @@ function treeReducer(state, action) {
     }
 }
 
-export const CanvasProvider = ({ children }) => {
+export const CanvasProvider = ({ children, siteData }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
-    const params = useParams();
-    const siteSlug = params['site-slug'];
-    const [siteData, setSiteData] = useState(null);
+    
+    const [state, dispatch] = useReducer(treeReducer, {
+        past: [], //undo stack
+        present: null, // initially null until data is fetched
+        future: [] //redo stack
+    });
 
     useEffect(() => {
-        const fetchSiteData = async () => {
-            const { data, error } = await supabase.from('Site').select('*').eq('id', siteSlug).single();
-            setSiteData(data);
-        };
-        fetchSiteData();
-    }, [siteSlug]);
-    const userJSON = siteData?.JSON;
+        if (siteData) {
+            const userJSON = siteData.JSON;
+            const initialTree = {
+                id: "tw-root",
+                classList: [],
+                tagName: "div",
+                children: [],
+            };
+            const initialState = {
+                past: [], //undo stack
+                present: userJSON ? userJSON : initialTree,
+                future: [] //redo stack
+            };
+            dispatch({ type: 'SET', payload: initialState.present });
+        }
+    }, [siteData]);
 
-    //Initial JSONtree by default
-    const initialTree = {
-        id: "tw-root",
-        classList: [],
-        tagName: "div",
-        children: [],
-    };
-    const initialState = {
-        past: [], //undo stack
-        present: userJSON ? userJSON : initialTree,
-        future: [] //redo stack
-    };
-
-    const [state, dispatch] = useReducer(treeReducer, initialState); //State and dispatch to manage the JSONtree state and undo/redo stacks
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
 

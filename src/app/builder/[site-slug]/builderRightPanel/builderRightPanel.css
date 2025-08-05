@@ -7,9 +7,7 @@
     height: 100%; /* Ocupa toda la altura disponible */
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: thin;
+    overflow: hidden;
 }
 
 /* Builder Right Panel Closed State */
@@ -33,4 +31,7 @@
 .tw-builder__right-body{
     padding: 10px;
     height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
 }
