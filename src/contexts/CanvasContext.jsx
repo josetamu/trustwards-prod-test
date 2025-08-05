@@ -1,4 +1,8 @@
-import React, { createContext, useState, useContext } from "react";
+'use client'
+
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { supabase } from "../supabase/supabaseClient";
 
 const CanvasContext = createContext(null);
 
@@ -27,7 +31,20 @@ const generateUniqueId = (tree) => {
 
 export const CanvasProvider = ({ children }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
+    const params = useParams();
+    const siteSlug = params['site-slug'];
+    const [siteData, setSiteData] = useState(null);
 
+    useEffect(() => {
+        const fetchSiteData = async () => {
+            const { data, error } = await supabase.from('Site').select('*').eq('id', siteSlug).single();
+            setSiteData(data);
+        };
+        fetchSiteData();
+    }, [siteSlug]);
+    const userJSON = siteData?.JSON;
+    
+    
     //JSONtree by default
     const initialTree = {
         id: "tw-root",
@@ -39,6 +56,11 @@ export const CanvasProvider = ({ children }) => {
     const [JSONtree, setJSONtree] = useState(initialTree); //Starts the JSONtree with the initialTree
     const [selectedId, setSelectedId] = useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
 
+    useEffect(() => {
+        if(userJSON){
+            setJSONtree(userJSON);
+        }
+    }, [userJSON]);
     /*
     * Add element in the JSONtree inside the current selectedId (Creation of the React element is managed by Canvas.jsx)
     * properties - Add the element in the JSONtree with its properties with format: {tagName: "div", children: [], etc..} - id and classList are created automatically

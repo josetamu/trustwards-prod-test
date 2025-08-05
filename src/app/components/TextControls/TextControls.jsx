@@ -67,11 +67,6 @@ function TextControls({selectedId}) {
             control: <StylesControl />,
     
         },
-        {
-            label: 'Code',
-            control: <CodeControl />,
-    
-        },
     ]
     return (
         <div className="tw-builder__settings">

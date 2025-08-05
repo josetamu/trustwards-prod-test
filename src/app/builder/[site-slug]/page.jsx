@@ -8,7 +8,7 @@ import BuilderBody from './builderBody/builderBody'
 import BuilderRightPanel from './builderRightPanel/builderRightPanel'
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
-import { useParams } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation';
 import { ModalContainer } from '../../components/ModalContainer/ModalContainer';
 import { ModalUser } from '../../components/ModalUser/ModalUser';
 import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
@@ -69,6 +69,7 @@ function Builder() {
       const siteData = siteResult.status === 'fulfilled' && !siteResult.value.error ? siteResult.value.data : [];
       const appearanceData = appearanceResult.status === 'fulfilled' && !appearanceResult.value.error ? appearanceResult.value.data : null;
 
+
       setUser(userData);
       setSite(siteData);
       setAppearanceSettings(appearanceData);
@@ -76,7 +77,6 @@ function Builder() {
       console.error('Error fetching data:', error);
     }
   };
-  
 
   // useEffect to fetch all data user from the database
   useEffect(() => {
@@ -95,6 +95,12 @@ function Builder() {
       authListener?.subscription.unsubscribe();
     };
   }, []);
+/*         //update site data when the selected site changes
+        useEffect(() => {
+          if(!site || site.userid !== user.id) return notFound();
+    
+  }, [site, user]);
+   */
 
   // Set the accent color of the builder
   useEffect(() => {

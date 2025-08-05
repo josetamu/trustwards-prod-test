@@ -185,7 +185,7 @@
     border-radius: 5px;
     padding: 5px;
 }
-.tw-builder__settings-colors{
+.tw-builder__settings-bg-colors{
     display: flex;
     align-items: center;
     width: 70%;
@@ -193,9 +193,9 @@
     gap: 5px;
 
 }
-.tw-builder__settings-color{
+.tw-builder__settings-bg-color{
     padding: 0;
-    border: none;
+    border: 1px solid var(--border-light-color);
     background: none;
     width: 25px;
     height: 25px;
@@ -203,19 +203,15 @@
     border-radius: 4px;
     
 }
-.tw-builder__settings-color:focus{
-    outline: none;
+.tw-builder__settings-bg-color-input{
+    position: absolute;
+    opacity: 0;
+    width: 25px;
+    height: 25px;
+    overflow: hidden;
+    pointer-events: none;
 }
-.tw-builder__settings-color::-webkit-color-swatch-wrapper {
-    padding: 0;
-    border-radius: 4px;
-    border: 1px solid var(--border-light-color);
-  }
-.tw-builder__settings-color::-webkit-color-swatch {
-    border: none;
-    border-radius: 4px;
-    border: 1px solid var(--border-light-color);
-  }
+
 .tw-builder__settings-hex{
     width: 75%;
     height: 100%;
