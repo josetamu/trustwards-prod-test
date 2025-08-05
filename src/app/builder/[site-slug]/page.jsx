@@ -346,15 +346,56 @@ const renderModal = () => {
   }, [])
 
   // State to control both panels (left and right)
-  const [isPanelOpen, setIsPanelOpen] = useState(true)
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true)
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true)
+
+  // Function to handle left panel toggle
+  const handleLeftPanelToggle = () => {
+    if (!isLeftPanelOpen && !isRightPanelOpen) {
+      // If both are closed, open both
+      setIsLeftPanelOpen(true)
+      setIsRightPanelOpen(true)
+    } else if (isLeftPanelOpen && isRightPanelOpen) {
+      // If both are open, close both
+      setIsLeftPanelOpen(false)
+      setIsRightPanelOpen(false)
+    } else if (!isLeftPanelOpen && isRightPanelOpen) {
+      // If left is closed but right is open, open left
+      setIsLeftPanelOpen(true)
+    } else if (isLeftPanelOpen && !isRightPanelOpen) {
+      // If left is open but right is closed, close left
+      setIsLeftPanelOpen(false)
+    }
+  }
+
+  // Function to open right panel when element is selected
+  const handleElementSelection = () => {
+    if (!isRightPanelOpen) {
+      setIsRightPanelOpen(true)
+    }
+  }
+
+  // Expose the function globally for the canvas context
+  useEffect(() => {
+    window.handleElementSelection = handleElementSelection
+    return () => {
+      delete window.handleElementSelection
+    }
+  }, [isRightPanelOpen])
 
   return (
     <CanvasProvider>
     <div className="tw-builder">
-      <BuilderLeftPanel isPanelOpen={isPanelOpen} setIsPanelOpen={setIsPanelOpen}/>
+      <BuilderLeftPanel 
+        isPanelOpen={isLeftPanelOpen} 
+        onPanelToggle={handleLeftPanelToggle}
+        setModalType={setModalType}
+        setIsModalOpen={setIsModalOpen}
+        openChangeModal={openChangeModal}
+      />
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
       
-      <BuilderRightPanel user={user} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isPanelOpen}/>
+      <BuilderRightPanel user={user} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isRightPanelOpen}/>
       
       <ModalContainer 
         isOpen={isModalOpen} 

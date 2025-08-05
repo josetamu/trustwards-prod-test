@@ -98,6 +98,15 @@ export const CanvasProvider = ({ children }) => {
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
 
+    // Function to handle element selection and open right panel
+    const selectElement = (id) => {
+        setSelectedId(id);
+        // Only open right panel if selecting a real element (not root)
+        if (id !== "tw-root" && window.handleElementSelection) {
+            window.handleElementSelection();
+        }
+    }
+
     //Updates the real JSONtree
     const setJSONtree = useCallback((newTree, saveToHistory = true) => {
         if (saveToHistory) {
@@ -216,7 +225,7 @@ export const CanvasProvider = ({ children }) => {
     };
 
     return (
-        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass }}>
+        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, selectElement, addClass, removeClass }}>
             {children}
         </CanvasContext.Provider>
     );

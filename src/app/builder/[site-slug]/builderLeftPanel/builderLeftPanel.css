@@ -80,6 +80,8 @@
     width: 12px;
     height: 12px;
     transition: transform 0.2s ease;
+    rotate: 180deg;
+    color: var(--body-light-color);
 }
 
 /* Builder Logo Dropdown */
@@ -93,6 +95,7 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
     margin-top: 20px;
+    transform-origin: top left;
 }
 
 /* Dropdown options */
