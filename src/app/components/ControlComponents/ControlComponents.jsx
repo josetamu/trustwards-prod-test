@@ -63,7 +63,7 @@ export const DisplayControl = ({}) => {
             <button className={`tw-builder__settings-action ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')}>
                 <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.5 0C0.22386 0 0 0.244211 0 0.545455V11.4545C0 11.7558 0.22386 12 0.5 12C0.77614 12 1 11.7558 1 11.4545V0.545455C1 0.244211 0.77614 0 0.5 0Z" fill="currentColor"/>
+                    <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0C0.22386 0 0 0.244211 0 0.545455V11.4545C0 11.7558 0.22386 12 0.5 12C0.77614 12 1 11.7558 1 11.4545V0.545455C1 0.244211 0.77614 0 0.5 0Z" fill="currentColor"/>
                 </svg>
             </button>
             <button className={`tw-builder__settings-action ${selectedAlign === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('center')}>
@@ -182,11 +182,32 @@ export const BackgroundControl = () => {
     const [color, setColor] = useState('#FFFFFF');
     const [hex, setHex] = useState('FFFFFF');
     const [percentage, setPercentage] = useState('100%');
+    const bgInputRef = useRef(null);
 
-    const handleColorChange = (e) => {
-        const newColor = e.target.value;
-        setColor(newColor);
-        setHex(newColor.replace('#', '').toUpperCase());
+    // Convertir hex a rgba con opacidad
+    const hexToRgba = (hex, opacity) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+    };
+
+    // Extraer color base de rgba
+    const rgbaToHex = (rgba) => {
+        const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+        if (match) {
+            const r = parseInt(match[1]).toString(16).padStart(2, '0');
+            const g = parseInt(match[2]).toString(16).padStart(2, '0');
+            const b = parseInt(match[3]).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`.toUpperCase();
+        }
+        return rgba;
+    };
+
+    const handleBgColorChange = (e) => {
+        const newBgColor = e.target.value;
+        setColor(newBgColor);
+        setHex(newBgColor.replace('#', '').toUpperCase());
     };
     const handleHexChange = (e) => {
         const hexValue = e.target.value.toUpperCase().replace('#', '');
@@ -234,17 +255,28 @@ export const BackgroundControl = () => {
             e.target.value = finalValue;
         }
     };
+    const handleColorClick = () => {
+        if(bgInputRef.current){
+            bgInputRef.current.click();
+        }
+    };
+    const finalColor = hexToRgba(color, parseInt(percentage.replace('%', '')));
     return(
     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
         <div className="tw-builder__settings-background">
-            <div className="tw-builder__settings-colors">
-                <input type="color" className="tw-builder__settings-color" value={color} onChange={handleColorChange} />
+            <div className="tw-builder__settings-bg-colors">
+                <input  ref={bgInputRef} type="color" className="tw-builder__settings-bg-color-input" value={color} onChange={handleBgColorChange} />
+                <div className="tw-builder__settings-bg-color" onClick={handleColorClick} style={{
+                        backgroundColor: finalColor, 
+                    }}>
+                </div>
                 <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="FFFFFF"/>
             </div>
             <div className="tw-builder__settings-percentages">
                 <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} />
             </div>
         </div>
+
     </div>
     )
 };
