@@ -368,21 +368,6 @@ const renderModal = () => {
     }
   }
 
-  // Function to open right panel when element is selected
-  const handleElementSelection = () => {
-    if (!isRightPanelOpen) {
-      setIsRightPanelOpen(true)
-    }
-  }
-
-  // Expose the function globally for the canvas context
-  useEffect(() => {
-    window.handleElementSelection = handleElementSelection
-    return () => {
-      delete window.handleElementSelection
-    }
-  }, [isRightPanelOpen])
-
   return (
     <CanvasProvider>
     <div className="tw-builder">

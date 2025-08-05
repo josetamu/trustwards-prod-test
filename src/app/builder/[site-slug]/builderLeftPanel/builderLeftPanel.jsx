@@ -3,8 +3,11 @@ import { useState } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
 import { useRouter } from 'next/navigation'
 
+import { useCanvas } from "@contexts/CanvasContext";
+
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal }) {
     const router = useRouter()
+    const { selectedId, setSelectedId } = useCanvas();
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     // State to track which tab is currently active (banner or modal)
