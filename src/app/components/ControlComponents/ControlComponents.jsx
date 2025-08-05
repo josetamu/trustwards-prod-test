@@ -248,19 +248,7 @@ export const BackgroundControl = () => {
     </div>
     )
 };
-/* 
-color
-size
-align
-transform
-family
-weight
-style
-line-height
-letter-spacing
-text-decoration
 
-*/ 
 export const TextControl = () => (  
 <>
     <div className="tw-builder__settings-setting">
@@ -269,7 +257,7 @@ export const TextControl = () => (
     </div>
     <div className="tw-builder__settings-setting">
         <span className="tw-builder__settings-subtitle">Size</span>
-        <input type="text" className="tw-builder__settings-input" placeholder="16" />
+        <input type="text" className="tw-builder__settings-input" placeholder="16px" />
     </div>
     <div className="tw-builder__settings-setting">
         <span className="tw-builder__settings-subtitle">Align</span>
