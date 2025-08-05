@@ -69,10 +69,10 @@ export const CanvasProvider = ({ children }) => {
         const insert = (node, parent) => {
             if (node.id === selectedId) {
                 if (node.children) {
-                    node.children = [...node.children, { ...properties, id: generateUniqueId(JSONtree), classList: [] }]; //Node has children attribute. Put it as its child
+                    node.children = [...node.children, { ...properties, id: generateUniqueId(JSONtree), classList: [], idProperties: {} }]; //Node has children attribute. Put it as its child
                 } else if (parent) {
                     const index = parent.children.findIndex(child => child.id === node.id);
-                    parent.children.splice(index + 1, 0, { ...properties, id: generateUniqueId(JSONtree), classList: [] }); //Node has no children attribute. Put it as its first sibling
+                    parent.children.splice(index + 1, 0, { ...properties, id: generateUniqueId(JSONtree), classList: [], idProperties: {} }); //Node has no children attribute. Put it as its first sibling
                 }
             } else if (node.children) {
                 node.children.forEach(child => insert(child, node));
