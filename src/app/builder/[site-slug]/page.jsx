@@ -77,11 +77,6 @@ function Builder() {
       console.error('Error fetching data:', error);
     }
   };
-      //update site data when the selected site changes
-      useEffect(() => {
-        if(!site || site.userid !== user.id) return notFound();
-  
-}, [site, user]);
 
   // useEffect to fetch all data user from the database
   useEffect(() => {
@@ -100,6 +95,12 @@ function Builder() {
       authListener?.subscription.unsubscribe();
     };
   }, []);
+/*         //update site data when the selected site changes
+        useEffect(() => {
+          if(!site || site.userid !== user.id) return notFound();
+    
+  }, [site, user]);
+   */
 
   // Set the accent color of the builder
   useEffect(() => {
