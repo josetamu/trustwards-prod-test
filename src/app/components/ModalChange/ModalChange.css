@@ -140,3 +140,14 @@
     max-width: 400px;
   }
 }
+
+/* Warning styles for inputs */
+.modal-change__input-wrapper .modal-change__input--warning {
+    border: 1px solid var(--warning-color);
+    background-color: var(--hover-warning-color);
+    color: var(--warning-color);
+}
+
+.modal-change__input-wrapper .modal-change__input--warning::placeholder {
+    color: var(--warning-color);
+}
