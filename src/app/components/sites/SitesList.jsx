@@ -5,18 +5,13 @@ import { SitesSkeleton } from '../Skeletons/SitesSkeleton';
 import { useMemo } from 'react';
 
 export function SitesList({ openChangeModal, setIsModalOpen, setModalType, showNotification, isModalOpen, isDropdownOpen, setIsDropdownOpen, setSiteData, checkSitePicture, SiteStyle, openChangeModalSettings }) {
-    const { allUserDataResource, appearanceSettings } = useDashboard();
+    const { allUserDataResource, appearanceSettings, webs, user } = useDashboard();
     
-
-    
-
     const sortedSites = useMemo(() => {
-      if(!allUserDataResource) return [];
+      if(!webs || !allUserDataResource) return [];
 
-      const { webs, appearance } = allUserDataResource.read();
+      const { appearance } = allUserDataResource.read();
       const sortMode = appearance['Sort Sites'];
-
-      
       
       const sorted = [...webs];
       
@@ -32,13 +27,12 @@ export function SitesList({ openChangeModal, setIsModalOpen, setModalType, showN
           default:
               return sorted;
       }
-  }, [allUserDataResource, appearanceSettings]);
+  }, [webs, allUserDataResource, appearanceSettings]);
 
   if(!allUserDataResource) return <SitesSkeleton/>;
 
-  const { webs, user, appearance} = allUserDataResource.read();
+  const { appearance } = allUserDataResource.read();
   const view = appearance['View Sites'];
-
 
     return (
         <>

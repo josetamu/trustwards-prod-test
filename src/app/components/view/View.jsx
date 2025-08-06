@@ -32,8 +32,10 @@ export const View = ({ isGridView, onViewChange }) => {
     const viewValue = view==='grid' ? 'grid' : 'list';
 
     // Update local appearance settings state
-    const newSettings = { ...appearance, 'View Sites': viewValue };
-    setAppearanceSettings(newSettings);
+    setAppearanceSettings(prev => ({ 
+      ...prev, 
+      'View Sites': viewValue 
+    }));
 
 
     if(allUserDataResource) {
