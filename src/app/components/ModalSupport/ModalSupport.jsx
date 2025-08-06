@@ -3,8 +3,6 @@ import './ModalSupport.css';
 import { useState, useEffect } from 'react';
 import { Resend } from 'resend';
 
-import { Tooltip } from '../tooltip/Tooltip';
-
 export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
     const resend = new Resend('re_xxxxxxxxx');
     const [selectedChoice, setSelectedChoice] = useState(null);
@@ -204,7 +202,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         Please be as descriptive as possible. Screenshots and recordings will help us identify better your concerns.
                     </span>
                     <div className="modal-support__choices">
-                        <div className={`modal-support__choice ${selectedChoice === 'Bug report' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
+                        <div className={`modal-support__choice ${selectedChoice === 'Bug report' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
                             <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
@@ -222,7 +220,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 Bug report
                             </span>
                         </div>
-                        <div className={`modal-support__choice ${selectedChoice === 'Pre-sale questions' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
+                        <div className={`modal-support__choice ${selectedChoice === 'Pre-sale questions' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
                         <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
@@ -240,7 +238,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 Pre-sale questions
                             </span>
                         </div>
-                        <div className={`modal-support__choice ${selectedChoice === 'Other' ? 'modal-support__choice--active' : ''}`} onClick={() => { setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
+                        <div className={`modal-support__choice ${selectedChoice === 'Other' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }}>
                         <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
@@ -258,13 +256,6 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 Other
                             </span>
                         </div>
-                        <Tooltip 
-                            message={errors.selectedChoice} 
-                            id="selectedChoice-error"
-                            responsivePosition={{ desktop: 'modal-support', mobile: 'modal-support' }}
-                            width="150px"
-                            open={!!errors.selectedChoice}
-                        />
                     </div>
                 </div>
                 <div className="modal-support__mid">
@@ -273,19 +264,13 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         <div className="modal-support__input-container">
                             <input 
                             type="text" 
-                            className="modal-support__input-field" 
+                            className={`modal-support__input-field ${errors.name ? 'modal-support__input-field--warning' : ''}`}
                             value={name} 
                             onChange={(e) => handleInputEdit('name', e.target.value)} 
                             onKeyDown={handleKeyDown}
                             aria-invalid={!!errors.name} 
                             aria-describedby={errors.name ? 'name-error' : undefined} 
                             
-                            />
-                            <Tooltip
-                                message={errors.name}
-                                responsivePosition={{ desktop: 'modal-support', mobile: 'modal-support' }}
-                                width="150px"
-                                open={!!errors.name}
                             />
                         </div>
                         
@@ -295,18 +280,12 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         <div className="modal-support__input-container">
                             <input 
                             type="text" 
-                            className="modal-support__input-field" 
+                            className={`modal-support__input-field ${errors.email ? 'modal-support__input-field--warning' : ''}`}
                             value={email} 
                             onChange={(e) => handleInputEdit('email', e.target.value)} 
                             onKeyDown={handleKeyDown}
                             aria-invalid={!!errors.email} 
                             aria-describedby={errors.email ? 'email-error' : undefined} 
-                            />
-                            <Tooltip
-                                message={errors.email}
-                                responsivePosition={{ desktop: 'modal-support', mobile: 'modal-support' }}
-                                width="150px"
-                                open={!!errors.email}
                             />
                         </div>
                     </div>
@@ -315,7 +294,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         <div className="modal-support__input-container">
                             <textarea 
                             type="text-area" 
-                            className="modal-support__input-field modal-support__input-field--textarea" 
+                            className={`modal-support__input-field modal-support__input-field--textarea ${errors.message ? 'modal-support__input-field--warning' : ''}`}
                             placeholder='...' 
                             value={message} 
                             onChange={(e) => {
@@ -326,12 +305,6 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                             aria-invalid={!!errors.message} 
                             aria-describedby={errors.message ? 'message-error' : undefined} 
                             />
-                        <Tooltip
-                            message={errors.message}
-                            responsivePosition={{ desktop: 'modal-support', mobile: 'modal-support' }}
-                            width="150px"
-                            open={!!errors.message}
-                        />
                         </div>
                     </div>
                 </div>

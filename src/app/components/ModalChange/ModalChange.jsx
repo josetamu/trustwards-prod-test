@@ -3,8 +3,6 @@ import './ModalChange.css';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 
-import { Tooltip } from '../tooltip/Tooltip';
-
 export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, createNewSite, setWebs, allUserDataResource }) {
 
     const [newName, setNewName] = useState(user?.Name);
@@ -27,7 +25,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                         <div className='modal-change__body'>
                             <div className='modal-change__input-wrapper'>
                                 <input 
-                                    className='modal-change__input' 
+                                    className={`modal-change__input ${errors.name ? 'modal-change__input--warning' : ''}`}
                                     type='text' 
                                     value={newName} 
                                     onChange={e => {
@@ -36,11 +34,6 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     }}
                                     onKeyDown={handleKeyDown}
                                     placeholder="New name"
-                                />
-                                <Tooltip
-                                    message={errors.name}
-                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    open={!!errors.name}
                                 />
                             </div>
                         </div>
@@ -57,7 +50,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             <span className='modal-change__advice'>We'll send an email to your new adress to confirm the change.</span>
                             <div className='modal-change__input-wrapper'>
                                 <input 
-                                    className='modal-change__input' 
+                                    className={`modal-change__input ${errors.email ? 'modal-change__input--warning' : ''}`}
                                     type='email' 
                                     value={newEmail} 
                                     onChange={e => {
@@ -67,17 +60,11 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     onKeyDown={handleKeyDown}
                                 placeholder="New email"
                                 />
-                                <Tooltip
-                                    message={errors.email}
-                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    width="150px"
-                                    open={!!errors.email}
-                                />
                             </div>
                             <div className='modal-change__input-wrapper'>
                                 <input 
                                     type="password" 
-                                    className='modal-change__input' 
+                                    className={`modal-change__input ${errors.password ? 'modal-change__input--warning' : ''}`}
                                     placeholder='Current password' 
                                     value={currentPassword}
                                     onChange={e => {
@@ -85,12 +72,6 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                         if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
                                     }}
                                     onKeyDown={handleKeyDown}
-                                />
-                                <Tooltip
-                                    message={errors.password}
-                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    width="150px"
-                                    open={!!errors.password}
                                 />
                             </div>
                         </div>
@@ -108,7 +89,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             <div className='modal-change__input-wrapper'>
                                 <input 
                                     type="password" 
-                                    className='modal-change__input' 
+                                    className={`modal-change__input ${errors.currentPassword ? 'modal-change__input--warning' : ''}`}
                                     placeholder='Current password' 
                                     value={currentPassword}
                                     onChange={e => {
@@ -117,16 +98,10 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     }}
                                     onKeyDown={handleKeyDown}
                                 />
-                                <Tooltip
-                                    message={errors.currentPassword}
-                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    width="150px"
-                                    open={!!errors.currentPassword}
-                                />
                             </div>
                             <div className='modal-change__input-wrapper'>
                                 <input 
-                                    className='modal-change__input' 
+                                    className={`modal-change__input ${errors.newPassword ? 'modal-change__input--warning' : ''}`}
                                     type='password' 
                                     value={newPassword} 
                                     onChange={e => {
@@ -136,18 +111,12 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     onKeyDown={handleKeyDown}
                                     placeholder="New password"
                                 />
-                                <Tooltip
-                                    message={errors.newPassword}
-                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    width="150px"
-                                    open={!!errors.newPassword}
-                                />
                             </div>
-                           
+                            
                             <div className='modal-change__input-wrapper'>
                             <input 
                                 type="password" 
-                                className='modal-change__input' 
+                                className={`modal-change__input ${errors.confirmPassword ? 'modal-change__input--warning' : ''}`}
                                 placeholder='Confirm password' 
                                 value={confirmPassword}
                                 onChange={e => {
@@ -156,12 +125,6 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                 }}
                                 onKeyDown={handleKeyDown}
                             />
-                            <Tooltip
-                                message={errors.confirmPassword}
-                                responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                width="150px"
-                                open={!!errors.confirmPassword}
-                                />
                             </div>
                         </div>
                         <div className='modal-change__actions'>
@@ -177,7 +140,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                         <div className='modal-change__body'>
                             <div className='modal-change__input-wrapper'>
                                 <input 
-                                    className='modal-change__input' 
+                                    className={`modal-change__input ${errors.createSiteName ? 'modal-change__input--warning' : ''}`}
                                     type='text'  
                                     onChange={(e) => {
                                         setCreateSiteName(e.target.value);
@@ -186,27 +149,17 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                     onKeyDown={handleKeyDown}
                                     placeholder="New site name"
                                 />
-                                <Tooltip
-                                    message={errors.createSiteName}
-                                    responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                    open={!!errors.createSiteName}
-                                />
                             </div>
                             <div className='modal-change__input-wrapper'>
                                 <input 
                                     type="text" 
-                                    className='modal-change__input' 
+                                    className={`modal-change__input ${errors.createSiteDomain ? 'modal-change__input--warning' : ''}`}
                                     placeholder='example.com' 
                                     onChange={(e) => {
                                         setCreateSiteDomain(e.target.value);
                                         if (errors.createSiteDomain) setErrors(prev => ({ ...prev, createSiteDomain: undefined }));
                                     }}
                                     onKeyDown={handleKeyDown}
-                                />
-                                <Tooltip
-                                    message={errors.createSiteDomain}
-                                    responsivePosition={{ desktop: 'left', mobile: 'left' }}
-                                    open={!!errors.createSiteDomain}
                                 />
                             </div>
                         </div>
@@ -221,7 +174,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             <div className='modal-change__body'>
                                 <div className='modal-change__input-wrapper'>
                                     <input 
-                                        className='modal-change__input' 
+                                        className={`modal-change__input ${errors.newSiteName ? 'modal-change__input--warning' : ''}`}
                                         type='text'  
                                         value={newSiteName || ""}
                                         onChange={(e) => {
@@ -231,16 +184,11 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                         onKeyDown={handleKeyDown}
                                         placeholder="Site name"
                                     />
-                                    <Tooltip
-                                        message={errors.newSiteName}
-                                        responsivePosition={{ desktop: 'left', mobile: 'top' }}
-                                        open={!!errors.newSiteName}
-                                    />
                                 </div>
                                 <div className='modal-change__input-wrapper'>
                                     <input 
                                         type="text" 
-                                        className='modal-change__input' 
+                                        className={`modal-change__input ${errors.newSiteDomain ? 'modal-change__input--warning' : ''}`}
                                         placeholder='example.com' 
                                         value={newSiteDomain || ""}
                                         onChange={(e) => {
@@ -248,11 +196,6 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                             if (errors.newSiteDomain) setErrors(prev => ({ ...prev, newSiteDomain: undefined }));
                                         }}
                                         onKeyDown={handleKeyDown}
-                                    />
-                                    <Tooltip
-                                        message={errors.newSiteDomain}
-                                        responsivePosition={{ desktop: 'left', mobile: 'left' }}
-                                        open={!!errors.newSiteDomain}
                                     />
                                 </div>
                             </div>

@@ -38,7 +38,7 @@ System selected: will fallback to root or html[data-theme="dark"]
 
     --font-size-mini: 10px;
     --font-size-small: 12px;
-    --font-weight: 500;
+    --font-weight-medium: 500;
     --letter-spacing-negative: -0.03em;
     --letter-spacing-positive: 0.03em;
     --logo-background: #FFFFFF;
@@ -81,42 +81,42 @@ System selected: will fallback to root or html[data-theme="dark"]
     --wrappers-strong-color: #EDEDED;
 
     /*Builder Left Panel*/
-    --left-panel-toggle-color: #999999;
+    --toggle-color: #999999;
 
-    --left-panel-logo-background: #FFFFFF;
-    --left-panel-logo-border: 1px solid #E6E6E6;
-    --left-panel-logo-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    --logo-background: #FFFFFF;
+    --logo-border: 1px solid #E6E6E6;
+    --logo-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
 
-    --left-panel-dropdown-background: #FFFFFF;
-    --left-panel-dropdown-border: 1px solid #E6E6E6;
-    --left-panel-dropdown-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    --dropdown-background: #FFFFFF;
+    --dropdown-border: 1px solid #E6E6E6;
+    --dropdown-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
 
-    --left-panel-tab-container-background: #F5F5F5;
-    --left-panel-tab-slider-background: #FFFFFF;
-    --left-panel-tab-slider-border: 1px solid #E6E6E6;
-    --left-panel-tab-slider-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-    --left-panel-tab-color: #999999;
-    --left-panel-tab-active-color: #222222;
-    --left-panel-tab-hover-background: #E8E8E8;
-    --left-panel-tab-hover-color: #222222;
+    --tab-container-background: #F5F5F5;
+    --tab-slider-background: #FFFFFF;
+    --tab-slider-border: 1px solid #E6E6E6;
+    --tab-slider-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    --tab-color: #999999;
+    --tab-active-color: #222222;
+    --tab-hover-background: #E8E8E8;
+    --tab-hover-color: #222222;
 
     /*Tree View*/
-    --left-panel-tree-item-hover-background: #F5F5F5;
+    --tree-item-hover-background: #E8E8E8;
 
-    --left-panel-tree-item-selected-background: #0099FE;
-    --left-panel-tree-item-selected-color: #FFFFFF;
+    --tree-item-selected-background: #0099FE;
+    --tree-item-selected-color: #FFFFFF;
 
-    --left-panel-tree-item-child-selected-background: #E0F2FE;
-    --left-panel-tree-item-child-selected-color: #FFFFFF;
+    --tree-item-child-selected-color: #666666;
 
-    --left-panel-tree-expand-button-color: #999999;
-    --left-panel-tree-expand-button-selected-color: white;
-    --left-panel-tree-expand-button-child-selected-color: #666666;
+    --tree-expand-button-color: #999999;
+    --tree-expand-button-selected-color: #FFFFFF;
+    --tree-expand-button-child-selected-color: #666666;
 
-    --left-panel-tree-square-icon-background: #FFFFFF;
-    --left-panel-tree-text-icon-color: #666666;
-    --left-panel-tree-label-child-selected-color: #666666;
-    --left-panel-tree-bg-extend-bg: #E0F2FE;
+    --square-icon-background: #666666;
+    --tree-text-icon-color: #666666;
+    
+    --child-selected-color: #666666;
+    --tree-childs-background: #0099FE26;
 }
 /* Button color variables using data-color */
 html[data-color="blue"] {
@@ -148,6 +148,9 @@ html[data-theme="dark"]{
     --builder-background: #202020;
     --panels-background: #252525;
     --canvas-background: #191919;
+    
+    --border-light-color: #333333;
+    --shadow-light-color: rgba(0, 0, 0, 0.15);
 
     /*General*/
     --body-light-color: #666666;
@@ -167,32 +170,40 @@ html[data-theme="dark"]{
     --wrappers-strong-color: #2B2B2B;
 
     /*Builder Left Panel*/
-    --left-panel-toggle-color: #9B9B9B;
+    --toggle-color: #9B9B9B;
 
-    --left-panel-logo-background: #2B2B2B;
-    --left-panel-logo-border: 1px solid #333333;
+    --logo-background: #2B2B2B;
+    --logo-border: 1px solid #333333;
+    --logo-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
 
-    --left-panel-dropdown-background: #2B2B2B;
-    --left-panel-dropdown-border: 1px solid #333333;
+    --dropdown-background: #2B2B2B;
+    --dropdown-border: 1px solid #333333;
+    --dropdown-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
 
-    --left-panel-tab-container-bg: #202020;
-    --left-panel-tab-slider-bg: #2B2B2B;
-    --left-panel-tab-slider-border: 1px solid #333333;
-    --left-panel-tab-color: #9B9B9B;
-    --left-panel-tab-active-color: #FFFFFF;
-    --left-panel-tab-hover-bg: #333333;
-    --left-panel-tab-hover-color: #FFFFFF;
+    --tab-container-background: #202020;
+    --tab-slider-background: #2B2B2B;
+    --tab-slider-border: 1px solid #333333;
+    --tab-slider-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+    --tab-color: #9B9B9B;
+    --tab-active-color: #FFFFFF;
+    --tab-hover-background: #333333;
+    --tab-hover-color: #FFFFFF;
 
     /*Tree View*/
-    --left-panel-tree-item-hover-bg: #333333;
-    --left-panel-tree-item-child-selected-bg: #1E3A8A;
-    --left-panel-tree-item-child-selected-color: #60A5FA;
-    --left-panel-tree-expand-button-color: #9B9B9B;
-    --left-panel-tree-expand-button-child-selected-color: #FFFFFF;
-    --left-panel-tree-square-icon-bg: #9B9B9B;
-    --left-panel-tree-text-icon-color: #9B9B9B;
-    --left-panel-tree-label-child-selected-color: #FFFFFF;
-    --left-panel-tree-bg-extend-bg: #1E3A8A;
+    --tree-item-hover-background: #333333;
+    --tree-item-selected-background: #0099FE;
+    --tree-item-selected-color: #FFFFFF;
+    --tree-item-child-selected-color: #60A5FA;
+    --tree-expand-button-color: #9B9B9B;
+    --tree-expand-button-selected-color: #FFFFFF;
+    --tree-expand-button-child-selected-color: #60A5FA;
+    --square-icon-background: #666666;
+    --tree-text-icon-color: #9B9B9B;
+    
+    --child-selected-color: #60A5FA;
+    --tree-childs-background: #1E3A8A;
+    
+    --subtitle-color: #9B9B9B;
 }
 
 .tw-builder__logo{

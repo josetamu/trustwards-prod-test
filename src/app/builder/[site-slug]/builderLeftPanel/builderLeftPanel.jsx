@@ -77,7 +77,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <button className="dropdown__item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
+            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
                 <span>Go to Home</span>
             </button>
             <div className="dropdown__divider"></div>
@@ -94,7 +94,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 <span>Upgrade to pro</span>
             </button>
             <div className="dropdown__divider"></div>
-            <button className="dropdown__item tw-builder__dropdown-item--help" onClick={handleHelp}>
+            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--help" onClick={handleHelp}>
                 <span>Help</span>
             </button>
         </>
@@ -127,20 +127,20 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         const isParentSelected = parentId && selectedItem === parentId
 
         return (
-            <div key={item.id} className="tree-item" style={{ paddingLeft: `${level * 16}px`, position: 'relative' }}>
+            <div key={item.id} className={`tree-item ${isSelected && !isExpanded ? 'collapsed' : ''}`} style={{ paddingLeft: `${level * 16}px`, position: 'relative' }}>
                 {isParentSelected && (
-                    <div className="tree-item-bg-extend"></div>
+                    <div className="tree-item-background-extend"></div>
                 )}
-                <div className={`tree-item-header ${isSelected ? 'selected' : ''} ${isChildOfSelected ? 'child-selected' : ''}`} style={{ position: 'relative', zIndex: 1 }}>
+                <div className={`tree-item-header ${isSelected ? 'selected' : ''} ${isChildOfSelected ? 'child-selected' : ''} ${isSelected && !isExpanded ? 'collapsed' : ''}`} style={{ position: 'relative', zIndex: 1 }}>
                     {/* Expand/collapse button for items with children */}
                     {hasChildren && (
                         <button 
                             className={`tree-expand-button ${isExpanded ? 'expanded' : ''}`}
                             onClick={() => toggleExpanded(item.id)}
                         >
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                        <svg width="5" height="3" viewBox="0 0 5 3" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 4.30088 0H0.693878C0.0741433 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
+                        </svg>
                         </button>
                     )}
                     {/* Icon for different item types (text or container) */}
