@@ -302,6 +302,46 @@ export const TextControl = () => {
     const handleWeightChange = (e) => {
         setSelectedWeight(e.target.value);
     };
+    
+    const adjustSelectWidth = () => {
+        if (transformSelectRef.current) {
+            const select = transformSelectRef.current;
+            const transformWidths = {
+                'none': 35,
+                'capitalize': 55,
+                'uppercase': 60,
+                'lowercase': 60,
+            };
+            
+            const baseWidth = transformWidths[selectedTransform] || 35;
+            const totalWidth = baseWidth + 25; // +25 for arrow
+            
+            select.style.width = `${totalWidth}px`;
+        }
+        if(weightSelectRef.current){
+            const select = weightSelectRef.current;
+            const weightWidth = 35;
+            const totalWidth = weightWidth + 25;
+            select.style.width = `${totalWidth}px`;
+        }
+        if(styleSelectRef.current){
+            const select = styleSelectRef.current;
+            const styleWidth = {
+                'normal': 40,   
+                'italic': 35,
+                'oblique': 40,
+            };
+            const totalWidth = styleWidth[selectedStyle] + 25;
+            select.style.width = `${totalWidth}px`;
+        }
+    };
+
+    useEffect(() => {
+        if(selectedTransform !== undefined && selectedWeight !== undefined && selectedStyle !== undefined){
+            adjustSelectWidth();
+        }
+    }, [selectedTransform, selectedWeight, selectedStyle]);
+
     const handleTransformChange = (e) => {
         setSelectedTransform(e.target.value);
     };
@@ -553,6 +593,65 @@ export const StylesControl = () => {
     const [hex, setHex] = useState('000000');
     const [percentage, setPercentage] = useState('100%');
     const colorInputRef = useRef(null);
+    const borderStyleSelectRef = useRef(null);
+    const positionSelectRef = useRef(null);
+    const overflowSelectRef = useRef(null);
+    const cursorSelectRef = useRef(null);
+
+    const adjustSelectWidth = () => {
+        if(borderStyleSelectRef.current){
+            const select = borderStyleSelectRef.current;
+            const borderStyleWidth = {
+                'none': 35,
+                'solid': 35,
+                'dashed': 40,
+                'dotted': 35,
+            };
+            const totalWidth = borderStyleWidth[borderStyle] + 25;
+            select.style.width = `${totalWidth}px`;
+        }
+        if(positionSelectRef.current){
+            const select = positionSelectRef.current;
+            const positionWidth = {
+                'static': 35,
+                'relative': 45,
+                'absolute': 50,
+                'fixed': 35,
+                'sticky': 35,
+            };
+            const totalWidth = positionWidth[selectedPosition] + 25;
+            select.style.width = `${totalWidth}px`;
+        }
+        if(overflowSelectRef.current){
+            const select = overflowSelectRef.current;
+            const overflowWidth = {
+                'visible': 36,
+                'hidden': 40,
+                'scroll': 35,
+                'auto': 35,
+            };
+            const totalWidth = overflowWidth[selectedOverflow] + 25;
+            select.style.width = `${totalWidth}px`;
+        }
+        if(cursorSelectRef.current){
+            const select = cursorSelectRef.current;
+            const cursorWidth = {
+                'default': 40,
+                'pointer': 40,
+                'text': 35,
+                'not-allowed': 65,
+                'grab': 35,
+            };
+            const totalWidth = cursorWidth[selectedCursor] + 25;
+            select.style.width = `${totalWidth}px`;
+        }
+    };
+
+    useEffect(() => {
+        if(borderStyle !== undefined && selectedPosition !== undefined && selectedOverflow !== undefined && selectedCursor !== undefined){
+            adjustSelectWidth();
+        }
+    }, [borderStyle, selectedPosition, selectedOverflow, selectedCursor]);
 
         // Convertir hex a rgba con opacidad
         const hexToRgba = (hex, opacity) => {
@@ -638,12 +737,20 @@ export const StylesControl = () => {
 
 <div className="tw-builder__settings-setting">
    <span className="tw-builder__settings-subtitle">Border Style</span>
-   <select className="tw-builder__settings-select" value={borderStyle} onChange={(e) => setBorderStyle(e.target.value)}>
-       <option value="none">none</option>
-       <option value="solid">solid</option>
-       <option value="dashed">dashed</option>
-       <option value="dotted">dotted</option>
-   </select>
+   <div className="tw-builder__settings-select-container">
+        <select ref={borderStyleSelectRef} className="tw-builder__settings-select" value={borderStyle} onChange={(e) => setBorderStyle(e.target.value)}>
+            <option value="none">none</option>
+            <option value="solid">solid</option>
+            <option value="dashed">dashed</option>
+                <option value="dotted">dotted</option>
+            </select>
+            <span className="tw-builder__settings-arrow">
+                <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                    <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+                </svg>
+            </span>
+   </div>
 </div>
 
 <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
@@ -675,22 +782,25 @@ export const StylesControl = () => {
         </div>
     </div>
 
-{/* Box Shadow */}
-{/* <div className="tw-builder__settings-setting">
-   <span className="tw-builder__settings-subtitle">Box Shadow</span>
-   <input type="text" className="tw-builder__settings-input" placeholder="0 2px 4px rgba(0,0,0,0.1)" />
-</div> */}
 
 {/* Position Controls */}
 <div className="tw-builder__settings-setting">
    <span className="tw-builder__settings-subtitle">Position</span>
-   <select className="tw-builder__settings-select" /* value={selectedPosition} *//*  onChange={(e) => setSelectedPosition(e.target.value)} */>
-       <option value="static">Static</option>
-       <option value="relative">Relative</option>
-       <option value="absolute">Absolute</option>
-       <option value="fixed">Fixed</option>
-       <option value="sticky">Sticky</option>
-   </select>
+   <div className="tw-builder__settings-select-container">
+        <select ref={positionSelectRef} className="tw-builder__settings-select" value={selectedPosition} onChange={(e) => setSelectedPosition(e.target.value)}>
+            <option value="static">Static</option>
+            <option value="relative">Relative</option>
+            <option value="absolute">Absolute</option>
+            <option value="fixed">Fixed</option>
+            <option value="sticky">Sticky</option>
+        </select>
+        <span className="tw-builder__settings-arrow">
+            <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+            </svg>
+        </span>
+    </div>
 </div>
 
 {/* Z-Index */}
@@ -702,12 +812,20 @@ export const StylesControl = () => {
 {/* Overflow */}
 <div className="tw-builder__settings-setting">
    <span className="tw-builder__settings-subtitle">Overflow</span>
-   <select className="tw-builder__settings-select" /* value={selectedOverflow} */ /* onChange={(e) => setSelectedOverflow(e.target.value)} */>
-       <option value="visible">Visible</option>
-       <option value="hidden">Hidden</option>
-       <option value="scroll">Scroll</option>
-       <option value="auto">Auto</option>
-   </select>
+   <div className="tw-builder__settings-select-container">
+        <select ref={overflowSelectRef} className="tw-builder__settings-select" value={selectedOverflow} onChange={(e) => setSelectedOverflow(e.target.value)}>
+            <option value="visible">Visible</option>
+            <option value="hidden">Hidden</option>
+            <option value="scroll">Scroll</option>
+            <option value="auto">Auto</option>
+        </select>
+        <span className="tw-builder__settings-arrow">
+            <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+            </svg>
+        </span>
+    </div>
 </div>
 
 {/* Opacity */}
@@ -719,13 +837,21 @@ export const StylesControl = () => {
 {/* Cursor */}
 <div className="tw-builder__settings-setting">
    <span className="tw-builder__settings-subtitle">Cursor</span>
-   <select className="tw-builder__settings-select" /* value={selectedCursor} onChange={(e) => setSelectedCursor(e.target.value)} */>
-       <option value="default">Default</option>
-       <option value="pointer">Pointer</option>
-       <option value="text">Text</option>
-       <option value="not-allowed">Not Allowed</option>
-       <option value="grab">Grab</option>
-   </select>
+   <div className="tw-builder__settings-select-container">
+        <select ref={cursorSelectRef} className="tw-builder__settings-select" value={selectedCursor} onChange={(e) => setSelectedCursor(e.target.value)}>
+            <option value="default">Default</option>
+            <option value="pointer">Pointer</option>
+            <option value="text">Text</option>
+            <option value="not-allowed">Not Allowed</option>
+            <option value="grab">Grab</option>
+        </select>
+        <span className="tw-builder__settings-arrow">
+            <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+            </svg>
+        </span>
+    </div>
 </div>
 
 {/* Transform */}

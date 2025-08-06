@@ -6,6 +6,10 @@
     position: relative;
     cursor: pointer;
 }
+.builder-user .tooltip{
+  position: fixed;
+  top: 45px;
+}
 .builder-user .tooltip__mask{
     width: max-content;
     display: inline-block;
