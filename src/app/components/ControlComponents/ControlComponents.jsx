@@ -1,5 +1,7 @@
+'use client'
+import { Tooltip } from '@components/tooltip/Tooltip';
+import '../TextControls/TextControls.css';
 import { useState, useRef, useEffect } from 'react';
-import { Tooltip } from '@components/Tooltip/Tooltip';
 
 export const DisplayControl = ({}) => {
     const [selectedWrap, setSelectedWrap] = useState('wrap');
@@ -329,7 +331,7 @@ export const BackgroundControl = () => {
     )
 };
 
-export const TextControl = () => {
+export const TextControl = ({tooltipKey}) => {
     const [color, setColor] = useState('#FFFFFF');
     const [hex, setHex] = useState('FFFFFF');
     const [percentage, setPercentage] = useState('100%');
@@ -496,14 +498,14 @@ export const TextControl = () => {
     <div className="tw-builder__settings-setting">
         <span className="tw-builder__settings-subtitle">Align</span>
         <div className="tw-builder__settings-actions">
-            <button className={`tw-builder__settings-action ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')} onMouseEnter={() => handleMouseEnter('start')} onMouseLeave={handleMouseLeave}>
+            <button className={`tw-builder__settings-action ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('left')} onMouseEnter={() => handleMouseEnter('left')} onMouseLeave={handleMouseLeave}>
                 <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
                     <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0C0.22386 0 0 0.244211 0 0.545455V11.4545C0 11.7558 0.22386 12 0.5 12C0.77614 12 1 11.7558 1 11.4545V0.545455C1 0.244211 0.77614 0 0.5 0Z" fill="currentColor"/>
                 </svg>
                 <Tooltip
-                message={'Start'}
-                open={activeTooltip === 'start'}
+                message={'Left'}
+                open={activeTooltip === 'left'}
                 responsivePosition={{ desktop: 'top', mobile: 'top' }}
                 width="auto"
                 />
@@ -520,14 +522,14 @@ export const TextControl = () => {
                 width="auto"
                 />
             </button>
-            <button className={`tw-builder__settings-action ${selectedAlign === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-end')} onMouseEnter={() => handleMouseEnter('end')} onMouseLeave={handleMouseLeave}>
+            <button className={`tw-builder__settings-action ${selectedAlign === 'right' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('right')} onMouseEnter={() => handleMouseEnter('right')} onMouseLeave={handleMouseLeave}>
                 <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
                     <path fillRule="evenodd" clipRule="evenodd" d="M8.5 0C8.22386 0 8 0.244211 8 0.545455V11.4545C8 11.7558 8.22386 12 8.5 12C8.77614 12 9 11.7558 9 11.4545V0.545455C9 0.244211 8.77614 0 8.5 0Z" fill="currentColor"/>
                 </svg>
                 <Tooltip
-                message={'End'}
-                open={activeTooltip === 'end'}
+                message={'Right'}
+                open={activeTooltip === 'right'}
                 responsivePosition={{ desktop: 'top', mobile: 'top' }}
                 width="auto"
                 />
@@ -628,7 +630,7 @@ export const TextControl = () => {
     <div className="tw-builder__settings-setting">
         <span className="tw-builder__settings-subtitle">Decoration</span>
         <div className="tw-builder__settings-actions">
-            <button className={`tw-builder__settings-action ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('none')} onMouseEnter={() => handleMouseEnter('none')} onMouseLeave={handleMouseLeave}>
+            <button className={`tw-builder__settings-action ${selectedAlign === 'none' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('none')} onMouseEnter={() => handleMouseEnter('none')} onMouseLeave={handleMouseLeave}>
                 <svg width="8" height="9" viewBox="0 0 8 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1.56818 0.272727L3.81818 3.90341H3.88636L6.13636 0.272727H7.38068L4.63636 4.63636L7.38068 9H6.13636L3.88636 5.4375H3.81818L1.56818 9H0.323864L3.13636 4.63636L0.323864 0.272727H1.56818Z" fill="black"/>
                 </svg>
@@ -663,7 +665,7 @@ export const TextControl = () => {
                 width="auto"
                 />
             </button>
-            <button className={`tw-builder__settings-action ${selectedAlign === 'overline' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('overline')} onMouseEnter={() => handleMouseEnter('overline')} onMouseLeave={handleMouseLeave}>
+            <button className={`tw-builder__settings-action tw-builder__settings-action--right ${selectedAlign === 'overline' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('overline')} onMouseEnter={() => handleMouseEnter('overline')} onMouseLeave={handleMouseLeave}>
                 <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2.57955 3.21023V2.27273H9.125V3.21023H6.38068V11H5.32386V3.21023H2.57955Z" fill="black"/>
                 <line y1="0.65" x2="12" y2="0.65" stroke="black" strokeWidth="0.7"/>
