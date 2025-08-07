@@ -40,6 +40,12 @@ function treeReducer(state, action) {
     const { past, present, future } = state;
 
     switch (action.type) {
+        case 'INIT': //The JSONtree when loading the builder (prevents the initial tree from being added to the undo stack)
+            return {
+                past: [],
+                present: action.payload,
+                future: []
+            };
         case 'SET': //Saves the current JSONtree in the undo stack, puts the new JSONtree in the present and clears the redo stack
             return {
                 past: [...past, deepCopy(present)],
@@ -78,22 +84,33 @@ export const CanvasProvider = ({ children }) => {
         };
         fetchSiteData();
     }, [siteSlug]);
-    const userJSON = siteData?.JSON;
 
-    //Initial JSONtree by default
     const initialTree = {
         id: "tw-root",
         classList: [],
         tagName: "div",
         children: [],
     };
-    const initialState = {
-        past: [], //undo stack
-        present: userJSON ? userJSON : initialTree,
-        future: [] //redo stack
-    };
 
-    const [state, dispatch] = useReducer(treeReducer, initialState); //State and dispatch to manage the JSONtree state and undo/redo stacks
+    const [state, dispatch] = useReducer(treeReducer, {
+        past: [], //undo stack
+        present: initialTree, // initially null until data is fetched
+        future: [] //redo stack
+    });
+
+    useEffect(() => {
+        if (siteData) {
+            const userJSON = siteData.JSON;
+            const initialState = {
+                past: [], //undo stack
+                present: userJSON ? userJSON : initialTree,
+                future: [] //redo stack
+            };
+            // Directly set the state without using the SET action to avoid adding to the undo stack
+            dispatch({ type: 'INIT', payload: initialState.present });
+        }
+    }, [siteData]);
+
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
 
@@ -139,12 +156,13 @@ export const CanvasProvider = ({ children }) => {
     */
     const addElement = (properties) => {
         const add = (node, parent) => {
-            if (node.id === selectedId) {
+            const currentSelectedId = selectedId || "tw-root"; // Ensure selectedId defaults to "tw-root" if empty
+            if (node.id === currentSelectedId) {
                 if (node.children) {
-                    node.children = [...node.children, { ...properties, id: generateUniqueId(JSONtree), classList: [] }]; //Node has children attribute. Put it as its child
+                    node.children = [...node.children, { ...properties, id: generateUniqueId(JSONtree) }]; //Node has children attribute. Put it as its child
                 } else if (parent) {
                     const index = parent.children.findIndex(child => child.id === node.id);
-                    parent.children.splice(index + 1, 0, { ...properties, id: generateUniqueId(JSONtree), classList: [] }); //Node has no children attribute. Put it as its first sibling
+                    parent.children.splice(index + 1, 0, { ...properties, id: generateUniqueId(JSONtree) }); //Node has no children attribute. Put it as its first sibling
                 }
             } else if (node.children) {
                 node.children.forEach(child => add(child, node));

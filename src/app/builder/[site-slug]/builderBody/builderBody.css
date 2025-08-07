@@ -68,7 +68,7 @@
 }
 .tw-builder__toolbar{
     background-color: var(--panels-background);
-    border-radius: var(--panels-radius);
+    border-radius: 12px;
     border: 1px solid var(--border-light-color);
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
 
@@ -79,7 +79,13 @@
     width: 100%;
     max-width: fit-content;
 
-    padding: 12px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    position: relative;
 }
 
 /* Handlebars */

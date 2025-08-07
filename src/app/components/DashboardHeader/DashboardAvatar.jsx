@@ -71,7 +71,6 @@ export const DashboardAvatar = ({siteSlug, checkSitePicture, SiteStyle, setSiteD
             if(updateError){
               throw updateError;
             }
-            console.log(updateData);
     
             // Update the siteData state to reflect the new avatar
             setSiteData(prev => ({

@@ -17,11 +17,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "@dashboard/*": ["app/dashboard/*"],
-      "@components/*": ["app/components/*"],
-      "@contexts/*": ["contexts/*"],
+      "@dashboard/*": ["src/app/dashboard/*"],
+      "@components/*": ["src/app/components/*"],
+      "@contexts/*": ["src/contexts/*"],
     },
     "plugins": [
       {
