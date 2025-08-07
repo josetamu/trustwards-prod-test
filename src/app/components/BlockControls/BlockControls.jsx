@@ -1,73 +1,55 @@
-import './TextControls.css';
-import BuilderControl from '../BuilderControl/BuilderControl';
 import { useState, useRef, useEffect } from 'react';
-import { LayoutControl, SpacingControl, SizeControl, BackgroundControl, TextControl, StylesControl } from '../ControlComponents/ControlComponents';
+import { SpacingControl, SizeControl, BackgroundControl, TextControl, StylesControl } from '../ControlComponents/ControlComponents';
+import BuilderControl from '@components/BuilderControl/BuilderControl';
 
-// Component to render the text controls. This have a header 
-function TextControls({selectedId}) {
-    const [selectedTag, setSelectedTag] = useState('h1');
+function BlockControls({selectedId}) {
+    const [selectedTag, setSelectedTag] = useState('div');
     const tagSelectRef = useRef(null);
 
-    // Function to adjust the width of the select
     const adjustSelectWidth = () => {
-        if (tagSelectRef.current) {
+        if(tagSelectRef.current){
             const select = tagSelectRef.current;
-            // Map of tags to widths
             const tagWidths = {
-                'h1': 20, 'h2': 20, 'h3': 20, 'h4': 20, 'h5': 20, 'h6': 20,
-                'p': 5,
-                'span': 30,
+                'div': 20,
+                'section': 40,
+                'a': 20,
+                'article': 35,
+                'aside': 30,
+                'nav': 20,
             };
-            
-            const baseWidth = tagWidths[selectedTag] || 30;
-            const totalWidth = baseWidth + 25; // +25 for arrow
-            
+            const baseWidth = tagWidths[selectedTag] || 20;
+            const totalWidth = baseWidth + 25;
             select.style.width = `${totalWidth}px`;
         }
     };
 
-    // Adjust the width of the select when the tag is changed
     useEffect(() => {
         adjustSelectWidth();
     }, [selectedTag]);
 
-
-
     const handleSelectChange = (e) => {
         setSelectedTag(e.target.value);
     };
-
-   //Determine the controls used for the text. controls are got from the ControlComponents component
     const controls = [
-        {
-            label: 'Layout',
-            control: <LayoutControl />,
-    
-        },
         {
             label: 'Spacing',
             control: <SpacingControl />,
-    
         },
         {
             label: 'Size',
             control: <SizeControl />,
-    
         },
         {
             label: 'Background',
             control: <BackgroundControl />,
-    
         },
         {
             label: 'Text',
             control: <TextControl />,
-    
         },
         {
-            label: 'Styles',    
+            label: 'Styles',
             control: <StylesControl />,
-    
         },
     ]
     return (
@@ -85,14 +67,12 @@ function TextControls({selectedId}) {
                         value={selectedTag}
                         onChange={handleSelectChange}
                     >
-                        <option className="tw-builder__settings-option" value="h1">h1</option>
-                        <option className="tw-builder__settings-option" value="h2">h2</option>
-                        <option className="tw-builder__settings-option" value="h3">h3</option>
-                        <option className="tw-builder__settings-option" value="h4">h4</option>
-                        <option className="tw-builder__settings-option" value="h5">h5</option>
-                        <option className="tw-builder__settings-option" value="h6">h6</option>
-                        <option className="tw-builder__settings-option" value="p">p</option>
-                        <option className="tw-builder__settings-option" value="span">span</option>
+                        <option className="tw-builder__settings-option" value="div">div</option>
+                        <option className="tw-builder__settings-option" value="a">a</option>
+                        <option className="tw-builder__settings-option" value="section">section</option>
+                        <option className="tw-builder__settings-option" value="article">article</option>
+                        <option className="tw-builder__settings-option" value="aside">aside</option>
+                        <option className="tw-builder__settings-option" value="nav">nav</option>
                     </select>
                     <span className="tw-builder__settings-arrow">
                             <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -103,9 +83,20 @@ function TextControls({selectedId}) {
                     </div>
                 </div>
                 <div className="tw-builder__settings-setting">
+                    <span className="tw-builder__settings-subtitle">Display</span>
+                    <div className="tw-builder__settings-select-container">
+                        <select className="tw-builder__settings-select">
+                            <option className="tw-builder__settings-option" value="block">Block</option>
+                            <option className="tw-builder__settings-option" value="inline">Inline</option>
+                        </select>
+                    </div>
+                </div>
+                {selectedTag === 'a' && (
+                <div className="tw-builder__settings-setting">
                     <span className="tw-builder__settings-subtitle">Link to</span>
                     <input type="text" className="tw-builder__settings-input tw-builder__settings-input--link" placeholder="URL..." />
                 </div>
+                )}
             </div>
             <div className="tw-builder__settings-body">
                 {/* Map the controls */}
@@ -116,5 +107,4 @@ function TextControls({selectedId}) {
         </div>
     )
 }
-
-export default TextControls;    
+export default BlockControls;
