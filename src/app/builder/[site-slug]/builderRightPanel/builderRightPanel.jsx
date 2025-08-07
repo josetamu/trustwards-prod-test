@@ -9,7 +9,7 @@ import DividerControls from '@components/DividerControls/DividerControls';
 function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
     const { selectedId, JSONtree } = useCanvas();
 
-
+    // Function to find the element in the JSON tree
     const findElement = (node, targetId) => {
         if(!node) return null;
         if (node.id === targetId) {
@@ -21,8 +21,9 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
         return null;
     };
 
+    // Function to get the selected element
     const selectedElement = findElement(JSONtree, selectedId);
-    const selectedTagName = selectedElement?.tagName;
+    // Get the class name to know the type of the selected element
     const selectedClassName = selectedElement?.classList[0];
     
     
@@ -34,7 +35,9 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 <BuilderSave showNotification={showNotification} siteSlug={siteSlug}/>
             </div>
             <div className="tw-builder__right-body">
+                {/* If no element is selected(root), show the no selected item */}
                 {selectedId === 'tw-root' && <NoSelectedItem/>}
+                {/* Check the type element and show the correct controls */}
                 {selectedClassName === 'tw-builder__text' && <TextControls selectedId={selectedId}/>}
                 {selectedClassName === 'tw-builder__divider' && <DividerControls selectedId={selectedId}/>}
 

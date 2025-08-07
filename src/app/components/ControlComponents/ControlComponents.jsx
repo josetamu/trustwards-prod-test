@@ -3,6 +3,8 @@ import { Tooltip } from '@components/tooltip/Tooltip';
 import '../TextControls/TextControls.css';
 import { useState, useRef, useEffect } from 'react';
 
+//This component is the master component for all the controls. It is used to render the controls for the selected element.
+
 export const DisplayControl = ({}) => {
     const [selectedWrap, setSelectedWrap] = useState('wrap');
     const [selectedDirection, setSelectedDirection] = useState('row');
@@ -10,15 +12,19 @@ export const DisplayControl = ({}) => {
     const [selectedJustify, setSelectedJustify] = useState('flex-start');
     const wrapSelectRef = useRef(null);
     
+    //Tooltip state
     const [activeTooltip, setActiveTooltip] = useState(null);
 
+    //Function to show the tooltip when the user is hovered
     const handleMouseEnter = (tooltipId) => {
         setActiveTooltip(tooltipId);
     };
+    //Function to hide the tooltip when the user is not hovered
     const handleMouseLeave = () => {
         setActiveTooltip(null);
     };
 
+    //Function to adjust the width of the wrap select
     const adjustWrapSelectWidth = () => {
         if (wrapSelectRef.current) {
             const select = wrapSelectRef.current;
@@ -38,6 +44,7 @@ export const DisplayControl = ({}) => {
         adjustWrapSelectWidth();
     }, [selectedWrap]);
 
+    //Functions to change the select
     const handleWrapSelectChange = (e) => {
         setSelectedWrap(e.target.value);
     };
@@ -244,7 +251,7 @@ export const BackgroundControl = () => {
     const [percentage, setPercentage] = useState('100%');
     const colorInputRef = useRef(null);
 
-    // Convertir hex a rgba con opacidad
+    //Function to convert hex to rgba with opacity
     const hexToRgba = (hex, opacity) => {
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
@@ -252,27 +259,31 @@ export const BackgroundControl = () => {
         return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
     };
 
-
-
+    //Function to change the color
     const handleColorChange = (e) => {
         const newColor = e.target.value;
         setColor(newColor);
         setHex(newColor.replace('#', '').toUpperCase());
     };
+    //Function to change the color with the text input
     const handleHexChange = (e) => {
         const hexValue = e.target.value.toUpperCase().replace('#', '');
 
-        if(hexValue.length > 8){
-            hexValue = hexValue.slice(0, 8);
+        //If the hex value is longer than 6, cut it to 6
+        if(hexValue.length > 6){
+            hexValue = hexValue.slice(0, 6);
         }
         setHex(hexValue);
 
+        //Check if the hex value is valid
         const hexPattern = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 
+        //If the hex value is valid, set the color
         if(hexPattern.test(hexValue)) {
             const formattedHex = `#${hexValue}`;
             setColor(formattedHex);
 
+            //If the hex value is 3 characters, expand it to 6 (ex: #fff -> #ffffff)
             if (hexValue.length === 3) {
                 const expandedHex = hexValue.split('').map(char => char + char).join('');
                 const formattedHex = `#${expandedHex}`;
@@ -283,6 +294,7 @@ export const BackgroundControl = () => {
             }
         }
     };
+    //Function to change the color when the user is not typing
     const handleHexBlur = (e) => {
         const hexValue = e.target.value.trim();
         if(hexValue === ''){
@@ -290,6 +302,7 @@ export const BackgroundControl = () => {
             setColor('#FFFFFF');
         } 
     };
+    //Function to change the transparency with the percentage input
     const handlePercentageChange = (e) => {
         let value = e.target.value.replace('%', '');
         if(value === '' && e.type === 'blur'){
@@ -305,11 +318,13 @@ export const BackgroundControl = () => {
             e.target.value = finalValue;
         }
     };
+    //Function to open the color picker(native html input)
     const handleColorClick = () => {
         if(colorInputRef.current){
             colorInputRef.current.click();
         }
     };
+    //Function to get the final color. This is used to mix the color with the transparency
     const finalColor = hexToRgba(color, parseInt(percentage.replace('%', '')));
 
     return(
@@ -1067,7 +1082,6 @@ export const DividerMainControl = () => {
     const [selectedDirection, setSelectedDirection] = useState('horizontal');
     const [activeTooltip, setActiveTooltip] = useState(null);
     const [selectedAlign, setSelectedAlign] = useState('none');
-    const alignSelectRef = useRef(null);
     const [color, setColor] = useState('000000');
     const [hex, setHex] = useState('000000');
     const [percentage, setPercentage] = useState('100%');
