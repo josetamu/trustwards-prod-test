@@ -75,6 +75,7 @@ export const CanvasProvider = ({ children, siteData }) => {
     });
 
     useEffect(() => {
+        console.log(siteData);
         if (siteData) {
             const userJSON = siteData.JSON;
             const initialTree = {

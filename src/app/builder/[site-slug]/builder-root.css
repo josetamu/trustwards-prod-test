@@ -38,7 +38,7 @@ System selected: will fallback to root or html[data-theme="dark"]
 
     --font-size-mini: 10px;
     --font-size-small: 12px;
-    --font-weight-medium: 500;
+    --font-weight: 500;
     --letter-spacing-negative: -0.03em;
     --letter-spacing-positive: 0.03em;
     --logo-background: #FFFFFF;

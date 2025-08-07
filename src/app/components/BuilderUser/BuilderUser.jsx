@@ -1,5 +1,5 @@
 import './BuilderUser.css';
-import { Tooltip } from '@components/Tooltip/Tooltip';
+import { Tooltip } from '@components/tooltip/Tooltip';
 import { useState } from 'react';
 
 export default function BuilderUser({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen}) {

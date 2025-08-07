@@ -4,6 +4,7 @@ import NoSelectedItem from '../../../components/NoSelectedItem/NoSelectedItem';
 import { useCanvas } from '@contexts/CanvasContext';
 import BuilderSave from '@components/BuilderSave/BuilderSave';
 import TextControls from '@components/TextControls/TextControls';
+import DividerControls from '@components/DividerControls/DividerControls';
 
 function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
     const { selectedId, JSONtree } = useCanvas();
@@ -21,6 +22,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
     };
 
     const selectedElement = findElement(JSONtree, selectedId);
+    const selectedClassName = selectedElement?.className;
     const selectedTagName = selectedElement?.tagName;
     
     
@@ -36,7 +38,8 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 {selectedId !== 'tw-root' && selectedTagName === 'div' && <div className="tw-builder__settings">
                     <h1>Div</h1>
                 </div>}
-                {selectedTagName === 'h1' && <TextControls selectedId={selectedId}/>}
+                {selectedClassName === 'tw-builder__text' && <TextControls selectedId={selectedId}/>}
+                {selectedTagName === 'h1' && <DividerControls selectedId={selectedId}/>}
 
             </div>
         </div>

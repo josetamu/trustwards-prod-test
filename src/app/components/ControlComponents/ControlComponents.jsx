@@ -331,7 +331,7 @@ export const BackgroundControl = () => {
     )
 };
 
-export const TextControl = ({tooltipKey}) => {
+export const TextControl = () => {
     const [color, setColor] = useState('#FFFFFF');
     const [hex, setHex] = useState('FFFFFF');
     const [percentage, setPercentage] = useState('100%');
@@ -969,7 +969,67 @@ export const StylesControl = () => {
 );
 };
 
+export const DividerControl = () => {
+    const [selectedStyle, setSelectedStyle] = useState('solid');
+    const styleSelectRef = useRef(null);
 
+    const handleStyleSelectChange = (e) => {
+        setSelectedStyle(e.target.value);
+    };
+
+    return (
+        <>
+        <div className="tw-builder__settings-setting">
+            <span className="tw-builder__settings-subtitle">Height</span>
+            <input type="text" className="tw-builder__settings-input" placeholder="100%" />
+        </div>
+        <div className="tw-builder__settings-setting">
+            <span className="tw-builder__settings-subtitle">Width</span>
+            <input type="text" className="tw-builder__settings-input" placeholder="100%" />
+        </div>
+        <div className="tw-builder__settings-setting">
+            <span className="tw-builder__settings-subtitle">Style</span>
+            <div className="tw-builder__settings-select-container">
+                <select 
+                    ref={styleSelectRef}
+                    className="tw-builder__settings-select"
+                    value={selectedStyle}
+                    onChange={handleStyleSelectChange}
+                >
+                    <option className="tw-builder__settings-option" value="none">None</option>
+                    <option className="tw-builder__settings-option" value="hidden">Hidden</option>
+                    <option className="tw-builder__settings-option" value="solid">Solid</option>
+                    <option className="tw-builder__settings-option" value="dotted">Dotted</option>
+                    <option className="tw-builder__settings-option" value="dashed">Dashed</option>
+                    <option className="tw-builder__settings-option" value="double">Double</option>
+                    <option className="tw-builder__settings-option" value="groove">Groove</option>
+                    <option className="tw-builder__settings-option" value="ridge">Ridge</option>
+                    <option className="tw-builder__settings-option" value="inset">Inset</option>
+                    <option className="tw-builder__settings-option" value="outset">Outset</option>
+                </select>
+                <span className="tw-builder__settings-arrow">
+                    <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                        <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+                    </svg>
+                </span>
+            </div>
+        </div>
+        <div className="tw-builder__settings-setting">
+            <span className="tw-builder__settings-subtitle">Direction</span>
+            <input type="text" className="tw-builder__settings-input" placeholder="100%" />
+        </div>
+        <div className="tw-builder__settings-setting">
+            <span className="tw-builder__settings-subtitle">Align</span>
+            <input type="text" className="tw-builder__settings-input" placeholder="100%" />
+        </div>
+        <div className="tw-builder__settings-setting">
+            <span className="tw-builder__settings-subtitle">Color</span>
+            <input type="text" className="tw-builder__settings-input" placeholder="100%" />
+        </div>
+        </>
+    )
+}
 
 
 
