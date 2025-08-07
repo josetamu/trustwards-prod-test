@@ -9,10 +9,10 @@
     padding: 15px;
 }
 .no-selected-item__text{
-    font-size: var(--font-size-mini);
+    font-size: var(--font-size-small);
     font-weight: 500;
     color: #5E5E5E;
-    width: 90px;
+    width: 120px;
     letter-spacing: var(--letter-spacing-negative);
     text-align: center;
 }
