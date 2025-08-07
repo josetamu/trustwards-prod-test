@@ -1,8 +1,6 @@
 'use client'
 
-import React, { createContext, useReducer, useState, useContext, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
-import { supabase } from "../supabase/supabaseClient";
+import React, { createContext, useReducer, useContext, useEffect, useCallback } from "react";
 
 const CanvasContext = createContext(null);
 
@@ -81,6 +79,7 @@ export const CanvasProvider = ({ children, siteData }) => {
     });
 
     useEffect(() => {
+        console.log('siteData', siteData);
         if (siteData) {
             const userJSON = siteData.JSON;
             const initialTree = {
