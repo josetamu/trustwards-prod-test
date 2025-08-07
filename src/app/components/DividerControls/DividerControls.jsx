@@ -1,18 +1,27 @@
 import './DividerControls.css';
-import { DividerControl } from '@components/ControlComponents/ControlComponents';
+import { DividerMainControl, StylesControl } from '@components/ControlComponents/ControlComponents';
+import BuilderControl from '@components/BuilderControl/BuilderControl';
 
-function DividerControls({selectedId}) {
+
+
+const controls = [
+    {
+        label: 'Divider',
+        control: <DividerMainControl />,
+    },
+    {
+        label: 'Style',
+        control: <StylesControl />,
+    },
+
+];
+function DividerControls() {
     return (
-        <div className="tw-builder__settings">
             <div className="tw-builder__settings-body">
-                <div className="tw-builder__control-header">
-                    <span className="tw-builder__control-label">Divider</span>
-                </div>
-                <div className="tw-builder__control-content">
-                    <DividerControl />
-                </div>
+                {controls.map((control, index) => (
+                    <BuilderControl key={index} label={control.label} control={control.control} />
+                ))}
             </div>
-        </div>
     )
 }
 

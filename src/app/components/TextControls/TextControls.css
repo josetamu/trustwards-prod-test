@@ -287,5 +287,10 @@
   .tw-builder__settings-action .tooltip__mask .tooltip__message{
     font-size: var(--builder-tooltip-font-size);
   }
-
+  .tw-builder__settings-setting--shadow{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
   
