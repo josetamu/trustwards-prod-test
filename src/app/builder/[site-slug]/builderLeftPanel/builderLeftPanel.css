@@ -148,6 +148,7 @@
     color: var(--tab-hover-color);
 }
 
+/* Tree View */
 /* Tree View Content */
 .tw-builder__tree-content {
     flex: 1;
@@ -159,7 +160,6 @@
 .tw-builder__tree-content::-webkit-scrollbar {
     width: 4px;
 }
-
 .tw-builder__left-panel--closed .tw-builder__tree-content::-webkit-scrollbar {
     width: 0px;
 }
@@ -181,22 +181,6 @@
     overflow: hidden;
 }
 
-.tree-item-container.selected-container .tree-item-header {
-    background: var(--tree-item-selected-background);
-    color: white;
-    border-radius: 8px 8px 0 0;
-    padding: 8px 12px 10px 12px;
-}
-
-.tree-item-container.selected-container .tree-children {
-    margin-left: 0;
-    padding: 0;
-}
-
-.tree-item-container.selected-container .tree-children .tree-item {
-    padding-left: 0;
-}
-
 .tree-item-container.selected-container .tree-children .tree-item-header {
     color: var(--tree-item-child-selected-color);
     border-radius: 0 0 8px 8px;
@@ -210,7 +194,6 @@
 .tree-item-container.selected-container .text-icon {
     background-color: var(--tree-item-selected-background);
     color: var(--tree-item-selected-color);
-    font-weight: bold;
 }
 
 .tree-item-container.selected-container .tree-expand-button {
@@ -223,12 +206,10 @@
 
 .tree-item-container.selected-container .tree-item-label {
     color: var(--tree-item-selected-color);
-    font-weight: 500;
 }
 
 .tree-item-container.selected-container .tree-children .tree-item-label {
     color: var(--tree-item-child-selected-color);
-    font-weight: 500;
 }
 
 /* Background extend for childs of selected item */
@@ -259,7 +240,6 @@
     padding: 8px 10px;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
     position: relative;
 }
 .tree-item-header:hover {
@@ -294,15 +274,14 @@
 }
 
 .tree-item-header.selected .square-icon {
-    background-color: white;
+    background-color: var(--tree-item-selected-color);
 }
-
 .tree-item-header.selected .text-icon {
     color: var(--tree-item-selected-color);
 }
 
 .tree-item-header.child-selected .square-icon {
-    background-color: #666666;
+    background-color: var(--tree-item-child-selected-color);
 }
 
 /* Expand button (arrow icon) */
@@ -316,7 +295,6 @@
     align-items: center;
     justify-content: center;
     color: var(--tree-expand-button-color);
-    transition: transform 0.2s ease;
     position: relative;
     z-index: 2;
 }
@@ -343,7 +321,6 @@
     height: 8px;
     background-color: var(--square-icon-background);
     border-radius: 2px;
-    transition: all 0.2s ease;
     position: relative;
     z-index: 1;
 }
@@ -353,13 +330,9 @@
     font-size: 11px;
     font-weight: bold;
     color: var(--tree-text-icon-color);
-    width: 16px;
-    height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 2px;
-    transition: all 0.2s ease;
     position: relative;
     z-index: 1;
 }
@@ -373,7 +346,7 @@
 }
 
 .tree-item-header.selected .tree-item-label {
-    color: white;
+    color: var(--tree-item-selected-color);
 }
 .tree-item-header.child-selected .tree-item-label {
     color: var(--child-selected-color);
