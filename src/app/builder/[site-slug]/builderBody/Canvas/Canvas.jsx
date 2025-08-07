@@ -4,7 +4,7 @@ import { useCanvas } from '@contexts/CanvasContext';
 import React, { useEffect } from "react";
 
 export const Canvas = () => {
-    const { JSONtree, selectedId, setSelectedId } = useCanvas();
+    const { JSONtree, selectedId, setSelectedId, addElement } = useCanvas();
 
     /*
     * Used by the canvas to convert the JSONtree into React elements
@@ -108,10 +108,20 @@ export const Canvas = () => {
         };
     }, []);
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+        const elementType = e.dataTransfer.getData('elementType');
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        // Use addElement to add the new element at the calculated position
+        addElement({ tagName: elementType, style: { position: 'absolute', left: `${x}px`, top: `${y}px` } });
+    };
+
     return (
         <div className="tw-builder__handlebars-canvas-wrapper">
             <div className="tw-builder__handlebar tw-builder__handlebar--left"></div>
-            <div className="tw-builder__canvas">
+            <div className="tw-builder__canvas" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
                 {JSONtree && renderNode(JSONtree, selectedId, setSelectedId) /* Render the JSONtree */}
             </div>
             <div className="tw-builder__handlebar tw-builder__handlebar--right"></div>
