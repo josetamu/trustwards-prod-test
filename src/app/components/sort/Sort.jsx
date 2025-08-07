@@ -33,14 +33,17 @@ export const Sort = ({ }) => {
 
   // Handle sort option selection
   const handleSortChange = (mode) => {
-    const newSettings = { ...appearance, 'Sort Sites': mode };
-    setAppearanceSettings(newSettings);
+    setAppearanceSettings(prev => ({ 
+      ...prev, 
+      'Sort Sites': mode 
+    }));
+  
 
     if(allUserDataResource) {
       const currentData = allUserDataResource.read();
       currentData.appearance['Sort Sites'] = mode;
     }
-    updateAppearanceSettings(newSettings);
+    updateAppearanceSettings({'Sort Sites': mode});
   };
 
   // Sort button trigger

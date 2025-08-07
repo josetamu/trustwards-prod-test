@@ -95,12 +95,6 @@ function Builder() {
       authListener?.subscription.unsubscribe();
     };
   }, []);
-/*         //update site data when the selected site changes
-        useEffect(() => {
-          if(!site || site.userid !== user.id) return notFound();
-    
-  }, [site, user]);
-   */
 
   // Set the accent color of the builder
   useEffect(() => {
@@ -369,7 +363,7 @@ const renderModal = () => {
   }
 
   return (
-    <CanvasProvider>
+    <CanvasProvider siteData={site}>
     <div className="tw-builder">
       <BuilderLeftPanel 
         isPanelOpen={isLeftPanelOpen} 
@@ -377,6 +371,8 @@ const renderModal = () => {
         setModalType={setModalType}
         setIsModalOpen={setIsModalOpen}
         openChangeModal={openChangeModal}
+        isRightPanelOpen={isRightPanelOpen}
+        setIsRightPanelOpen={setIsRightPanelOpen}
       />
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
       

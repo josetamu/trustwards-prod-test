@@ -1,11 +1,11 @@
 import './builderLeftPanel.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
 import { useRouter } from 'next/navigation'
 
 import { useCanvas } from "@contexts/CanvasContext";
 
-function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal }) {
+function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen }) {
     const router = useRouter()
     const { selectedId, setSelectedId } = useCanvas();
     // State management for dropdown visibility
@@ -16,6 +16,13 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const [expandedItems, setExpandedItems] = useState(new Set(['banner', 'div', 'modal', 'modal-content']))
     // State to track which item is currently selected in the tree
     const [selectedItem, setSelectedItem] = useState(null)
+
+    // Handle right panel opening when an element is selected and both panels are closed
+    useEffect(() => {
+        if (selectedId && selectedId !== 'tw-root' && !isPanelOpen && !isRightPanelOpen) {
+            setIsRightPanelOpen(true);
+        }
+    }, [selectedId, isPanelOpen, isRightPanelOpen, setIsRightPanelOpen]);
 
     // Toggle left panel visibility
     const handlePanelToggle = () => {
@@ -70,7 +77,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <button className="dropdown__item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
+            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
                 <span>Go to Home</span>
             </button>
             <div className="dropdown__divider"></div>
@@ -87,7 +94,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 <span>Upgrade to pro</span>
             </button>
             <div className="dropdown__divider"></div>
-            <button className="dropdown__item tw-builder__dropdown-item--help" onClick={handleHelp}>
+            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--help" onClick={handleHelp}>
                 <span>Help</span>
             </button>
         </>
@@ -107,6 +114,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Handle selection of tree items
     const handleItemClick = (itemId) => {
         setSelectedItem(itemId)
+        setSelectedId(itemId) // Also update the canvas selectedId
     }
 
     // Recursive function to render tree items with proper styling
@@ -119,20 +127,20 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         const isParentSelected = parentId && selectedItem === parentId
 
         return (
-            <div key={item.id} className="tree-item" style={{ paddingLeft: `${level * 16}px`, position: 'relative' }}>
+            <div key={item.id} className={`tree-item ${isSelected && !isExpanded ? 'collapsed' : ''}`} style={{ paddingLeft: `${level * 16}px`, position: 'relative' }}>
                 {isParentSelected && (
-                    <div className="tree-item-bg-extend"></div>
+                    <div className="tree-item-background-extend"></div>
                 )}
-                <div className={`tree-item-header ${isSelected ? 'selected' : ''} ${isChildOfSelected ? 'child-selected' : ''}`} style={{ position: 'relative', zIndex: 1 }}>
+                <div className={`tree-item-header ${isSelected ? 'selected' : ''} ${isChildOfSelected ? 'child-selected' : ''} ${isSelected && !isExpanded ? 'collapsed' : ''}`} style={{ position: 'relative', zIndex: 1 }}>
                     {/* Expand/collapse button for items with children */}
                     {hasChildren && (
                         <button 
                             className={`tree-expand-button ${isExpanded ? 'expanded' : ''}`}
                             onClick={() => toggleExpanded(item.id)}
                         >
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                        <svg width="5" height="3" viewBox="0 0 5 3" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 4.30088 0H0.693878C0.0741433 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
+                        </svg>
                         </button>
                     )}
                     {/* Icon for different item types (text or container) */}
@@ -263,9 +271,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         className="tw-builder__logo-button"
                         onClick={handleDropdownToggle}
                     >
-                        <div className="tw-builder__logo">
-                            <div className="tw-builder__logo"></div>
-                        </div>
+                        <div className="tw-builder__logo"></div> 
                         <svg className='tw-builder__logo-arrow' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
                             <path d="M18 15L12 9L6 15" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="16" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
@@ -277,8 +283,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     title={isPanelOpen ? "Close panel" : "Open panel"}
                 >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M14.6667 8C14.6667 10.4594 14.6667 11.6891 14.1242 12.5608C13.9235 12.8833 13.6741 13.1638 13.3875 13.3896C12.6126 14 11.5196 14 9.33342 14H6.66675C4.48062 14 3.38755 14 2.61268 13.3896C2.32602 13.1638 2.07668 12.8833 1.87595 12.5608C1.33342 11.6891 1.33342 10.4594 1.33342 8C1.33342 5.5406 1.33342 4.31087 1.87595 3.4392C2.07668 3.11667 2.32602 2.8362 2.61268 2.61033C3.38755 2 4.48062 2 6.66675 2H9.33342C11.5196 2 12.6126 2 13.3875 2.61033C13.6741 2.8362 13.9235 3.11667 14.1242 3.4392C14.6667 4.31087 14.6667 5.5406 14.6667 8Z" stroke="#999999" strokeWidth="1.5"/>
-                        <path d="M9.66675 14V2" stroke="#999999" strokeWidth="1.5" strokeLinejoin="round"/>
+                        <path d="M14.6667 8C14.6667 10.4594 14.6667 11.6891 14.1242 12.5608C13.9235 12.8833 13.6741 13.1638 13.3875 13.3896C12.6126 14 11.5196 14 9.33342 14H6.66675C4.48062 14 3.38755 14 2.61268 13.3896C2.32602 13.1638 2.07668 12.8833 1.87595 12.5608C1.33342 11.6891 1.33342 10.4594 1.33342 8C1.33342 5.5406 1.33342 4.31087 1.87595 3.4392C2.07668 3.11667 2.32602 2.8362 2.61268 2.61033C3.38755 2 4.48062 2 6.66675 2H9.33342C11.5196 2 12.6126 2 13.3875 2.61033C13.6741 2.8362 13.9235 3.11667 14.1242 3.4392C14.6667 4.31087 14.6667 5.5406 14.6667 8Z" stroke="currentColor" strokeWidth="1.5"/>
+                        <path d="M9.66675 14V2" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
                     </svg>
                 </button>
             </div>
