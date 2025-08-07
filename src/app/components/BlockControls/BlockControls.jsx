@@ -5,30 +5,51 @@ import BuilderControl from '@components/BuilderControl/BuilderControl';
 function BlockControls({selectedId}) {
     const [selectedTag, setSelectedTag] = useState('div');
     const tagSelectRef = useRef(null);
+    const displaySelectRef = useRef(null);
+    const [selectedDisplay, setSelectedDisplay] = useState('flex');
 
     const adjustSelectWidth = () => {
         if(tagSelectRef.current){
             const select = tagSelectRef.current;
             const tagWidths = {
-                'div': 20,
+                'div': 25,
                 'section': 40,
-                'a': 20,
+                'a': 25,
                 'article': 35,
                 'aside': 30,
-                'nav': 20,
+                'nav': 25,
             };
             const baseWidth = tagWidths[selectedTag] || 20;
+            const totalWidth = baseWidth + 25;
+            select.style.width = `${totalWidth}px`;
+        }
+        if(displaySelectRef.current){
+            const select = displaySelectRef.current;
+            const displayWidths = {
+                'flex': 25,
+                'grid': 25,
+                'block': 30,
+                'inline-block': 65,
+                'inline': 30,
+                'none': 30,
+            };
+            const baseWidth = displayWidths[selectedDisplay] || 20;
             const totalWidth = baseWidth + 25;
             select.style.width = `${totalWidth}px`;
         }
     };
 
     useEffect(() => {
-        adjustSelectWidth();
-    }, [selectedTag]);
+        if(selectedTag || selectedDisplay){
+            adjustSelectWidth();
+        }
+    }, [selectedTag, selectedDisplay]);
 
     const handleSelectChange = (e) => {
         setSelectedTag(e.target.value);
+    };
+    const handleDisplaySelectChange = (e) => {
+        setSelectedDisplay(e.target.value);
     };
     const controls = [
         {
@@ -82,20 +103,46 @@ function BlockControls({selectedId}) {
                     </span>
                     </div>
                 </div>
-                <div className="tw-builder__settings-setting">
-                    <span className="tw-builder__settings-subtitle">Display</span>
-                    <div className="tw-builder__settings-select-container">
-                        <select className="tw-builder__settings-select">
-                            <option className="tw-builder__settings-option" value="block">Block</option>
-                            <option className="tw-builder__settings-option" value="inline">Inline</option>
-                        </select>
-                    </div>
-                </div>
                 {selectedTag === 'a' && (
                 <div className="tw-builder__settings-setting">
                     <span className="tw-builder__settings-subtitle">Link to</span>
                     <input type="text" className="tw-builder__settings-input tw-builder__settings-input--link" placeholder="URL..." />
                 </div>
+                )}
+                <div className="tw-builder__settings-setting">
+                    <span className="tw-builder__settings-subtitle">Display</span>
+                    <div className="tw-builder__settings-select-container">
+                        <select 
+                            ref={displaySelectRef}
+                            className="tw-builder__settings-select"
+                            value={selectedDisplay}
+                            onChange={handleDisplaySelectChange}
+                        >
+                            <option className="tw-builder__settings-option" value="flex">Flex</option>
+                            <option className="tw-builder__settings-option" value="grid">Grid</option>
+                            <option className="tw-builder__settings-option" value="block">Block</option>
+                            <option className="tw-builder__settings-option" value="inline-block">Inline Block</option>
+                            <option className="tw-builder__settings-option" value="inline">Inline</option>
+                            <option className="tw-builder__settings-option" value="none">None</option>
+                        </select>
+                        <span className="tw-builder__settings-arrow">
+                            <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                                <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                {selectedDisplay === 'flex' && (
+                    <h1>Flex</h1>
+                )}
+                {selectedDisplay === 'grid' && (
+                    <div className="tw-builder__settings-setting">
+                    <span className="tw-builder__settings-subtitle">Display</span>
+                    </div>
+                )}
+                {(selectedDisplay === 'block' || selectedDisplay === 'inline-block' || selectedDisplay === 'inline') && (
+                    <h1>Block</h1>
                 )}
             </div>
             <div className="tw-builder__settings-body">
