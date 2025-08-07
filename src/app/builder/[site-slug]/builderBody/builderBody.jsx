@@ -5,8 +5,6 @@ import { Toolbar } from './Toolbar/Toolbar';
 import { Canvas } from './Canvas/Canvas';
 
 function BuilderBody({site, setSite, setModalType, setIsModalOpen, checkSitePicture, SiteStyle, openChangeModalSettings}) {
-
-
     return (
         <div className="tw-builder__body">
             <div className="tw-builder__header">

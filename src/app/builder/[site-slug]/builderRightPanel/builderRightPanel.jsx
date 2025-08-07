@@ -8,7 +8,6 @@ import TextControls from '@components/TextControls/TextControls';
 function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
     const { selectedId, JSONtree } = useCanvas();
 
-
     const findElement = (node, targetId) => {
         if(!node) return null;
         if (node.id === targetId) {

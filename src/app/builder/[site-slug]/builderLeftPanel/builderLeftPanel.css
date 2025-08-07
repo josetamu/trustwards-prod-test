@@ -133,7 +133,7 @@
     background: none;
     border-radius: 6px;
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--tab-color);
     cursor: pointer;
@@ -338,9 +338,9 @@
 }
 
 .tree-item-label {
-    font-size: 12px;
+    font-size: var(--font-size-small);
     color: var(--subtitle-color);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     flex: 1;
 }

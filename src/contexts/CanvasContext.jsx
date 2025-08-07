@@ -1,8 +1,6 @@
 'use client'
 
-import React, { createContext, useReducer, useState, useContext, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
-import { supabase } from "../supabase/supabaseClient";
+import React, { createContext, useReducer, useContext, useEffect, useCallback } from "react";
 
 const CanvasContext = createContext(null);
 
@@ -40,6 +38,12 @@ function treeReducer(state, action) {
     const { past, present, future } = state;
 
     switch (action.type) {
+        case 'INIT': //The JSONtree when loading the builder (prevents the initial tree from being added to the undo stack)
+            return {
+                past: [],
+                present: action.payload,
+                future: []
+            };
         case 'SET': //Saves the current JSONtree in the undo stack, puts the new JSONtree in the present and clears the redo stack
             return {
                 past: [...past, deepCopy(present)],
@@ -75,6 +79,7 @@ export const CanvasProvider = ({ children, siteData }) => {
     });
 
     useEffect(() => {
+        console.log('siteData', siteData);
         if (siteData) {
             const userJSON = siteData.JSON;
             const initialTree = {
@@ -88,7 +93,7 @@ export const CanvasProvider = ({ children, siteData }) => {
                 present: userJSON ? userJSON : initialTree,
                 future: [] //redo stack
             };
-            dispatch({ type: 'SET', payload: initialState.present });
+            dispatch({ type: 'INIT', payload: initialState.present });
         }
     }, [siteData]);
 
@@ -137,12 +142,13 @@ export const CanvasProvider = ({ children, siteData }) => {
     */
     const addElement = (properties) => {
         const add = (node, parent) => {
-            if (node.id === selectedId) {
+            const currentSelectedId = selectedId || "tw-root"; // Ensure selectedId defaults to "tw-root" if empty
+            if (node.id === currentSelectedId) {
                 if (node.children) {
-                    node.children = [...node.children, { ...properties, id: generateUniqueId(JSONtree), classList: [] }]; //Node has children attribute. Put it as its child
+                    node.children = [...node.children, { ...properties, id: generateUniqueId(JSONtree) }]; //Node has children attribute. Put it as its child
                 } else if (parent) {
                     const index = parent.children.findIndex(child => child.id === node.id);
-                    parent.children.splice(index + 1, 0, { ...properties, id: generateUniqueId(JSONtree), classList: [] }); //Node has no children attribute. Put it as its first sibling
+                    parent.children.splice(index + 1, 0, { ...properties, id: generateUniqueId(JSONtree) }); //Node has no children attribute. Put it as its first sibling
                 }
             } else if (node.children) {
                 node.children.forEach(child => add(child, node));

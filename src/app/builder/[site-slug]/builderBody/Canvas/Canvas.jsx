@@ -23,14 +23,24 @@ export const Canvas = () => {
                 e.stopPropagation();
                 setSelectedId(node.id); // Set the clicked element as the selectedId
             },
-            ...(isSelected && { className: 'tw-builder__active' }), // Add the class tw-builder__active to the selected element
+            //Add canvas classes to the node (dont use addClass on this render because it will render JSONtree in a loop)
+            className: [
+                ...node.classList,
+                ...(node.classList.includes('tw-builder__block') && node.children.length === 0 ? ['tw-builder__block--empty'] : []), // Add the class tw-builder__block--empty if the node has the class tw-builder__block and no children
+                ...(isSelected ? ['tw-builder__active'] : []), // Add the class tw-builder__active to the classList of the selected element
+            ].join(' '),
         };
     
         const children = node.children?.map((child) => //Render the children of the node (JSON tree) in loop
             renderNode(child, selectedId, setSelectedId)
         );
-    
-        return React.createElement(node.tagName, { key: node.id, ...nodeProps }, node.text, children);
+
+        switch (node.tagName) {
+            case 'img':
+                return React.createElement(node.tagName, { key: node.id, ...nodeProps, src: node.src });
+            default:
+                return React.createElement(node.tagName, { key: node.id, ...nodeProps }, node.text, children);
+        }
     };
 
     /*

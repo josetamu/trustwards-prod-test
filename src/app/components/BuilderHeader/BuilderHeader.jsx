@@ -63,7 +63,6 @@ export default function BuilderHeader({site, setSite, setModalType, setIsModalOp
         if(updateError){
           throw updateError;
         }
-        console.log(updateData);
 
         setSite(prev => ({
           ...prev,
