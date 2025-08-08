@@ -12,13 +12,22 @@
     overflow: hidden;
 }
 
-/* Builder Left Panel Closed State */
+/* Panel closed state */
 .tw-builder__left-panel--closed {
     max-height: 50px;
     height: 50px;
 }
 
-/* Panel Toggle Button */
+/* Panel header section */
+.tw-builder__left-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-light-color);
+}
+
+/* Panel toggle button */
 .tw-builder__panel-toggle-btn {
     background: none;
     border: none;
@@ -44,16 +53,7 @@
     transform: rotate(180deg);
 }
 
-/* Builder Left Panel Header */
-.tw-builder__left-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    border-bottom: 1px solid var(--border-light-color);
-}
-
-/* Builder Logo Button */
+/* Logo button */
 .tw-builder__logo-button {
     display: flex;
     align-items: center;
@@ -66,7 +66,7 @@
     cursor: pointer;
 }
 
-/* Builder Logo Arrow */
+/* Logo arrow icon */
 .tw-builder__logo-arrow {
     width: 12px;
     height: 12px;
@@ -75,7 +75,7 @@
     color: var(--body-strong-color);
 }
 
-/* Builder Logo Dropdown */
+/* Logo dropdown container */
 .builder-logo-dropdown {
     position: relative;
 }
@@ -89,7 +89,7 @@
     transform-origin: top left;
 }
 
-/* Dropdown options */
+/* Dropdown menu items */
 .dropdown__item.tw-builder__dropdown-item {
     padding: 5px 8px;
     color: var(--body-strong-color);
@@ -99,11 +99,16 @@
     padding: 8px;
 }
 
-/* Tab Morphing Section */
+/* ==========================================================================
+   TAB SECTION
+   ========================================================================== */
+
+/* Tab section container */
 .tw-builder__tab-section {
     padding: 10px;
 }
 
+/* Tab container with animated slider */
 .tw-builder__tab-container {
     display: flex;
     background-color: var(--tab-container-background);
@@ -113,6 +118,7 @@
     position: relative;
 }
 
+/* Animated tab slider */
 .tw-builder__tab-slider {
     position: absolute;
     top: 3px;
@@ -126,6 +132,7 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Individual tab buttons */
 .tw-builder__tab {
     flex: 1;
     padding: 6px 16px;
@@ -140,100 +147,49 @@
     transition: all 0.2s ease;
     position: relative;
 }
-.tw-builder__tab.active {
+
+.tw-builder__tab--active {
     color: var(--tab-active-color);
 }
-.tw-builder__tab:hover:not(.active) {
+
+.tw-builder__tab:hover:not(.tw-builder__tab--active) {
     background-color: var(--tab-hover-background);
     color: var(--tab-hover-color);
 }
 
-/* Tree View */
-/* Tree View Content */
+/* ==========================================================================
+   TREE VIEW
+   ========================================================================== */
+
+/* Tree content container */
 .tw-builder__tree-content {
     flex: 1;
-    padding: 0 10px;
+    padding: 10px 10px 0 10px;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
-
-/* Scrollbar styling for tree content */
 .tw-builder__tree-content::-webkit-scrollbar {
-    width: 4px;
-}
-.tw-builder__left-panel--closed .tw-builder__tree-content::-webkit-scrollbar {
-    width: 0px;
+    display: none;
 }
 
-.tw-builder__tree-content::-webkit-scrollbar-thumb {
-    background: var(--body-light-color);
-    border-radius: 100px;
-}
-
-.tree-container {
+/* Tree container */
+.tw-builder__tree-container {
     display: flex;
     flex-direction: column;
 }
 
-/* Selected container styling */
-.tree-item-container.selected-container {
-    border-radius: 8px;
-    margin-bottom: 4px;
-    overflow: hidden;
+/* ==========================================================================
+   TREE ITEMS
+   ========================================================================== */
+
+/* Tree item container */
+.tw-builder__tree-item {
+    position: relative;
 }
 
-.tree-item-container.selected-container .tree-children .tree-item-header {
-    color: var(--tree-item-child-selected-color);
-    border-radius: 0 0 8px 8px;
-    padding: 6px 12px 8px 12px;
-}
-
-.tree-item-container.selected-container .square-icon {
-    background-color: var(--tree-item-selected-background);
-}
-
-.tree-item-container.selected-container .text-icon {
-    background-color: var(--tree-item-selected-background);
-    color: var(--tree-item-selected-color);
-}
-
-.tree-item-container.selected-container .tree-expand-button {
-    color: var(--tree-item-selected-color);
-}
-
-.tree-item-container.selected-container .tree-children .tree-expand-button {
-    color: var(--tree-item-child-selected-color);
-}
-
-.tree-item-container.selected-container .tree-item-label {
-    color: var(--tree-item-selected-color);
-}
-
-.tree-item-container.selected-container .tree-children .tree-item-label {
-    color: var(--tree-item-child-selected-color);
-}
-
-/* Background extend for childs of selected item */
-.tree-item-background-extend {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background: var(--tree-childs-background);
-  border-radius: 0 0 8px 8px;
-  z-index: 0;
-}
-
-.tree-item-header {
-  position: relative;
-  z-index: 1;
-}
-
-.tree-item {
-  position: relative;
-}
-
-.tree-item-header {
+/* Tree item header */
+.tw-builder__tree-item-header {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -241,51 +197,133 @@
     border-radius: 6px;
     cursor: pointer;
     position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    user-select: none;
 }
-.tree-item-header:hover {
+
+/* Tree item header hover state */
+.tw-builder__tree-item-header:hover:not(.tw-builder__tree-item-header--selected):not(.tw-builder__tree-item-header--child-selected) {
     background-color: var(--tree-item-hover-background);
 }
 
-.tree-item-header.selected {
+/* Tree item header selected state */
+.tw-builder__tree-item-header--selected {
     background-color: var(--tree-item-selected-background);
     color: var(--tree-item-selected-color);
     border-radius: 8px 8px 0 0;
 }
 
-/* When tree is collapsed, selected item should have full border radius */
-.tree-item-header.selected.collapsed {
-    border-radius: 8px;
-}
-
-/* When tree is collapsed, hide children and adjust parent border radius */
-.tree-item.selected.collapsed + .tree-children {
-    display: none;
-}
-
-.tree-item.selected.collapsed .tree-item-header.selected,
-.tree-item.collapsed .tree-item-header.selected {
-    border-radius: 8px;
-}
-
-.tree-item-header.child-selected {
+/* Tree item header child selected state */
+.tw-builder__tree-item-header--child-selected {
     background-color: transparent;
     color: var(--tree-item-child-selected-color);
     border-radius: 0 0 8px 8px;
 }
 
-.tree-item-header.selected .square-icon {
-    background-color: var(--tree-item-selected-color);
+/* Tree item header collapsed state */
+.tw-builder__tree-item-header--collapsed {
+    border-radius: 8px;
 }
-.tree-item-header.selected .text-icon {
+
+/* Tree item header dragging state */
+.tw-builder__tree-item-header--dragging {
+    opacity: 1;
+    transform: scale(0.95);
+    background-color: var(--tree-item-hover-background);
+}
+
+/* Tree item header drag over state */
+.tw-builder__tree-item-header--drag-over {
+    background-color: transparent;
+}
+
+/* Tree item header drag over inside position */
+.tw-builder__tree-item-header--drag-over[data-position="inside"] {
+    background-color: var(--tree-item-selected-background);
     color: var(--tree-item-selected-color);
 }
 
-.tree-item-header.child-selected .square-icon {
-    background-color: var(--tree-item-child-selected-color);
+/* Tree item header drag over inside position - icon colors */
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-square-icon {
+    background-color: var(--tree-item-selected-color);
 }
 
-/* Expand button (arrow icon) */
-.tree-expand-button {
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-text-icon {
+    color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-selected-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-label {
+    color: var(--tree-item-selected-color);
+}
+
+/* Tree item header cursor */
+.tw-builder__tree-item-header {
+    cursor: pointer;
+}
+
+.tw-builder__tree-item-header:active {
+    cursor: grabbing;
+}
+
+/* ==========================================================================
+   TREE ITEM ICONS
+   ========================================================================== */
+
+/* Tree item icon container */
+.tw-builder__tree-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Square icon */
+.tw-builder__tree-item-square-icon {
+    width: 8px;
+    height: 8px;
+    background-color: var(--square-icon-background);
+    border-radius: 2px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Text icon */
+.tw-builder__tree-item-text-icon {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--tree-text-icon-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   TREE ITEM LABEL
+   ========================================================================== */
+
+/* Tree item label */
+.tw-builder__tree-item-label {
+    font-size: var(--font-size-small);
+    color: var(--subtitle-color);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    flex: 1;
+}
+
+/* ==========================================================================
+   TREE EXPAND BUTTON
+   ========================================================================== */
+
+/* Tree expand button */
+.tw-builder__tree-expand-button {
     width: 8px;
     height: 8px;
     border: none;
@@ -298,70 +336,205 @@
     position: relative;
     z-index: 2;
 }
-/* Expand button selected (arrow icon) */
-.tree-item-header.selected .tree-expand-button {
+
+/* Tree expand button collapsed state */
+.tw-builder__tree-expand-button:not(.tw-builder__tree-expand-button--expanded) {
+    transform: rotate(-90deg);
+}
+
+/* ==========================================================================
+   TREE CHILDREN
+   ========================================================================== */
+
+/* Tree children container */
+.tw-builder__tree-children {
+    /* Children styling handled by parent states */
+}
+
+/* ==========================================================================
+   TREE ITEM STATES
+   ========================================================================== */
+
+/* Tree item collapsed state */
+.tw-builder__tree-item--collapsed .tw-builder__tree-children {
+    display: none;
+}
+
+/* Tree item collapsed header */
+.tw-builder__tree-item--collapsed .tw-builder__tree-item-header--selected {
+    border-radius: 8px;
+}
+
+/* Tree item without children */
+.tw-builder__tree-item:not(.tw-builder__tree-item--has-children) .tw-builder__tree-item-header--selected {
+    border-radius: 8px;
+}
+
+/* ==========================================================================
+   TREE ITEM SELECTED STATES
+   ========================================================================== */
+
+/* Selected tree item icon colors */
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-square-icon {
+    background-color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-text-icon {
+    color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-selected-color);
 }
-/* Expand button child selected (arrow icon) */
-.tree-item-header.child-selected .tree-expand-button {
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-label {
+    color: var(--tree-item-selected-color);
+}
+
+/* Child selected tree item icon colors */
+.tw-builder__tree-item-header--child-selected .tw-builder__tree-item-square-icon {
+    background-color: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--child-selected .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-child-selected-color);
 }
 
-.tree-item-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 1;
-}
-
-/* Square Icon not selected neither hovered */
-.square-icon {
-    width: 8px;
-    height: 8px;
-    background-color: var(--square-icon-background);
-    border-radius: 2px;
-    position: relative;
-    z-index: 1;
-}
-
-/* Text Icon not selected neither hovered */
-.text-icon {
-    font-size: 11px;
-    font-weight: bold;
-    color: var(--tree-text-icon-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 1;
-}
-
-.tree-item-label {
-    font-size: var(--font-size-small);
-    color: var(--subtitle-color);
-    font-weight: var(--font-weight);
-    letter-spacing: var(--letter-spacing-negative);
-    flex: 1;
-}
-
-.tree-item-header.selected .tree-item-label {
-    color: var(--tree-item-selected-color);
-}
-.tree-item-header.child-selected .tree-item-label {
+.tw-builder__tree-item-header--child-selected .tw-builder__tree-item-label {
     color: var(--child-selected-color);
 }
 
-/* When tree is collapsed, hide children and adjust parent border radius */
-.tree-item.selected.collapsed + .tree-children {
-    display: none;
-}
-.tree-item.selected.collapsed .tree-item-header.selected {
+/* ==========================================================================
+   TREE ITEM DRAGGING CONTAINER
+   ========================================================================== */
+
+/* Tree item dragging container */
+.tw-builder__tree-item--dragging-container {
     border-radius: 8px;
+    overflow: hidden;
+    opacity: 0.5;
+    transform: scale(0.95);
+    background-color: var(--tree-item-hover-background);
+    transition: all 0.2s ease;
 }
 
-/* When tree is collapsed and item has no children, ensure proper border radius */
-.tree-item.selected.collapsed:not(.has-children) .tree-item-header.selected {
-    border-radius: 8px;
+/* Dragging container children header */
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-item-header {
+    color: var(--subtitle-color);
+    border-radius: 0 0 8px 8px;
+    padding: 6px 12px 8px 12px;
+    background-color: transparent;
+    opacity: 1;
+}
+
+/* Dragging container icon colors */
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-square-icon {
+    background-color: var(--square-icon-background);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-text-icon {
+    color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-label {
+    color: var(--subtitle-color);
+}
+
+/* Dragging container parent header override */
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header {
+    background-color: transparent;
+    color: var(--subtitle-color);
+    opacity: 1;
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-square-icon {
+    background-color: var(--square-icon-background);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-text-icon {
+    color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-label {
+    color: var(--subtitle-color);
+}
+
+/* Dragging container children opacity */
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children {
+    opacity: 1;
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-item {
+    opacity: 1;
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-item-label {
+    color: var(--subtitle-color);
+    opacity: 1;
+}
+
+/* ==========================================================================
+   TREE BACKGROUND EXTEND
+   ========================================================================== */
+
+/* Background extend for selected item children */
+.tw-builder__tree-item-background-extend {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: var(--tree-childs-background);
+    border-radius: 0;
+    z-index: 0;
+}
+
+/* Background extend for last child of selected parent - with border radius */
+.tw-builder__tree-children .tw-builder__tree-item:last-child .tw-builder__tree-item-background-extend {
+    border-radius: 0 0 8px 8px;
+}
+
+/* Hide background extend when dragging */
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-background-extend {
+    display: none;
+}
+
+/* ==========================================================================
+   DROP LINES
+   ========================================================================== */
+
+/* Drop line base styles */
+.tw-builder__drop-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    z-index: 100;
+    border-radius: 2px;
+    pointer-events: none;
+    box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+}
+
+/* Drop line before position */
+.tw-builder__drop-line--before {
+    top: -2px;
+}
+
+/* Drop line after position */
+.tw-builder__drop-line--after {
+    bottom: -2px;
 }
 

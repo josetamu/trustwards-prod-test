@@ -2,12 +2,12 @@ import './builderLeftPanel.css'
 import { useState, useEffect } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
 import { useRouter } from 'next/navigation'
-
 import { useCanvas } from "@contexts/CanvasContext";
 
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen }) {
     const router = useRouter()
     const { selectedId, setSelectedId } = useCanvas();
+    
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     // State to track which tab is currently active (banner or modal)
@@ -16,30 +16,42 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const [expandedItems, setExpandedItems] = useState(new Set(['banner', 'div', 'modal', 'modal-content']))
     // State to track which item is currently selected in the tree
     const [selectedItem, setSelectedItem] = useState(null)
+    // State to track if user manually closed both panels
+    const [userManuallyClosed, setUserManuallyClosed] = useState(false)
+    
+    // Drag and drop states
+    const [draggedItem, setDraggedItem] = useState(null)
+    const [dragOverItem, setDragOverItem] = useState(null)
+    const [dragPosition, setDragPosition] = useState(null) // 'before', 'after', 'inside'
 
     // Handle right panel opening when an element is selected and both panels are closed
     useEffect(() => {
-        if (selectedId && selectedId !== 'tw-root' && !isPanelOpen && !isRightPanelOpen) {
+        if (selectedId && selectedId !== 'tw-root' && !isPanelOpen && !isRightPanelOpen && !userManuallyClosed) {
             setIsRightPanelOpen(true);
         }
-    }, [selectedId, isPanelOpen, isRightPanelOpen, setIsRightPanelOpen]);
+    }, [selectedId, isPanelOpen, isRightPanelOpen, setIsRightPanelOpen, userManuallyClosed]);
 
-    // Toggle left panel visibility
+    // Reset userManuallyClosed when user opens panels
+    useEffect(() => {
+        if (isPanelOpen || isRightPanelOpen) {
+            setUserManuallyClosed(false);
+        }
+    }, [isPanelOpen, isRightPanelOpen]);
+
+    // Panel toggle handler
     const handlePanelToggle = () => {
+        // If both panels are open and there's a selected element, mark as manually closed
+        if (isPanelOpen && isRightPanelOpen && selectedId && selectedId !== 'tw-root') {
+            setUserManuallyClosed(true);
+        }
         onPanelToggle()
     }
 
-    // Toggle dropdown visibility
-    const handleDropdownToggle = () => {
-        setIsDropdownOpen(!isDropdownOpen)
-    }
+    // Dropdown handlers
+    const handleDropdownToggle = () => setIsDropdownOpen(!isDropdownOpen)
+    const handleDropdownClose = () => setIsDropdownOpen(false)
 
-    // Close dropdown when clicking outside
-    const handleDropdownClose = () => {
-        setIsDropdownOpen(false)
-    }
-
-    // Handle dropdown menu item clicks
+    // Dropdown navigation handlers
     const handleGoToHome = () => {
         router.push('/dashboard')
         setIsDropdownOpen(false)
@@ -74,6 +86,376 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setIsDropdownOpen(false)
     }
 
+    // Toggle expansion state of tree items (expand/collapse)
+    const toggleExpanded = (itemId) => {
+        const newExpanded = new Set(expandedItems)
+        if (newExpanded.has(itemId)) {
+            newExpanded.delete(itemId)
+        } else {
+            newExpanded.add(itemId)
+        }
+        setExpandedItems(newExpanded)
+    }
+
+    // Handle selection of tree items
+    const handleItemClick = (itemId) => {
+        setSelectedItem(itemId)
+        setSelectedId(itemId)
+    }
+
+    // Click outside handler to deselect
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            const leftPanel = document.querySelector('.tw-builder__left-panel')
+            const treeContainer = e.target.closest('.tw-builder__tree-container')
+            
+            if ((leftPanel && !leftPanel.contains(e.target)) || 
+                (e.target.closest('.tw-builder__tree-content') && !treeContainer)) {
+                setSelectedItem(null)
+                if (selectedId === selectedItem) {
+                    setSelectedId(null)
+                }
+            }
+        }
+
+        document.addEventListener('click', handleClickOutside)
+        return () => document.removeEventListener('click', handleClickOutside)
+    }, [selectedId, selectedItem, setSelectedId])
+
+    // Drag and drop handlers
+    const handleDragStart = (e, item) => {
+        setDraggedItem(item)
+        e.dataTransfer.effectAllowed = 'move'
+        e.dataTransfer.setData('text/html', '')
+    }
+
+    const handleDragEnd = () => {
+        setDraggedItem(null)
+        setDragOverItem(null)
+        setDragPosition(null)
+    }
+
+    const handleDragOver = (e, item) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+        
+        if (!draggedItem || draggedItem.id === item.id) return
+        
+        const rect = e.currentTarget.getBoundingClientRect()
+        const y = e.clientY - rect.top
+        const height = rect.height
+        
+        // Determine drop position
+        let position = 'inside'
+        if (y < height * 0.25) {
+            position = 'before'
+        } else if (y > height * 0.75) {
+            position = 'after'
+        }
+        
+        setDragOverItem(item)
+        setDragPosition(position)
+    }
+
+    const handleDragLeave = (e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            setDragOverItem(null)
+            setDragPosition(null)
+        }
+    }
+
+    const handleDrop = (e, targetItem) => {
+        e.preventDefault()
+        
+        if (!draggedItem || draggedItem.id === targetItem.id) {
+            setDraggedItem(null)
+            setDragOverItem(null)
+            setDragPosition(null)
+            return
+        }
+
+        // Move the element in the current tree data
+        moveElement(draggedItem.id, targetItem.id, dragPosition)
+        
+        // Set the dragged item as the new selected item
+        setSelectedItem(draggedItem.id)
+        setSelectedId(draggedItem.id)
+        
+        setDraggedItem(null)
+        setDragOverItem(null)
+        setDragPosition(null)
+    }
+
+    // Tree data manipulation
+    const moveElement = (draggedId, targetId, position) => {
+        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
+        const newTreeData = JSON.parse(JSON.stringify(currentTreeData))
+        
+        // Find and remove the dragged element
+        const removeElement = (nodes) => {
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i].id === draggedId) {
+                    const [removed] = nodes.splice(i, 1)
+                    return removed
+                }
+                if (nodes[i].children) {
+                    const removed = removeElement(nodes[i].children)
+                    if (removed) return removed
+                }
+            }
+            return null
+        }
+        
+        const draggedElement = removeElement(newTreeData)
+        if (!draggedElement) return
+        
+        // Insert the element based on position
+        const insertElement = (nodes) => {
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i].id === targetId) {
+                    if (position === 'inside') {
+                        if (!nodes[i].children) nodes[i].children = []
+                        nodes[i].children.unshift(draggedElement)
+                    } else if (position === 'before') {
+                        nodes.splice(i, 0, draggedElement)
+                    } else if (position === 'after') {
+                        nodes.splice(i + 1, 0, draggedElement)
+                    }
+                    return true
+                }
+                if (nodes[i].children) {
+                    if (insertElement(nodes[i].children)) return true
+                }
+            }
+            return false
+        }
+        
+        insertElement(newTreeData)
+        
+        // Update the appropriate tree data
+        if (activeTab === 'banner') {
+            setBannerTreeData(newTreeData)
+        } else {
+            setModalTreeData(newTreeData)
+        }
+    }
+
+    // Tree relationship helpers
+    const isChildOfSelectedItem = (itemId, selectedId) => {
+        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
+        
+        // Function to check if targetId is a descendant of ancestorId
+        const isDescendantOf = (tree, targetId, ancestorId) => {
+            for (const item of tree) {
+                if (item.id === targetId) return false
+                if (item.id === ancestorId) {
+                    // Check if targetId is in the children of this ancestor
+                    return findInChildren(item, targetId)
+                }
+                if (item.children) {
+                    if (isDescendantOf(item.children, targetId, ancestorId)) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
+        // Helper function to search for targetId in children recursively
+        const findInChildren = (parent, targetId) => {
+            if (!parent.children) return false
+            for (const child of parent.children) {
+                if (child.id === targetId) return true
+                if (child.children) {
+                    if (findInChildren(child, targetId)) return true
+                }
+            }
+            return false
+        }
+
+        return isDescendantOf(currentTreeData, itemId, selectedId)
+    }
+
+    // Check if an item is a descendant of the dragged item
+    const isChildOfDraggedItem = (itemId) => {
+        if (!draggedItem) return false
+        
+        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
+        
+        // Function to check if targetId is a descendant of ancestorId
+        const isDescendantOf = (tree, targetId, ancestorId) => {
+            for (const item of tree) {
+                if (item.id === targetId) return false
+                if (item.id === ancestorId) {
+                    // Check if targetId is in the children of this ancestor
+                    return findInChildren(item, targetId)
+                }
+                if (item.children) {
+                    if (isDescendantOf(item.children, targetId, ancestorId)) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
+        const findInChildren = (parent, targetId) => {
+            if (!parent.children) return false
+            for (const child of parent.children) {
+                if (child.id === targetId) return true
+                if (child.children) {
+                    if (findInChildren(child, targetId)) return true
+                }
+            }
+            return false
+        }
+
+        return isDescendantOf(currentTreeData, itemId, draggedItem.id)
+    }
+
+    // Tree data structure for banner tab
+    const [bannerTreeData, setBannerTreeData] = useState([
+        {
+            id: 'banner',
+            label: 'Banner',
+            type: 'container',
+            children: [
+                {
+                    id: 'div',
+                    label: 'Div',
+                    type: 'container',
+                    children: [
+                        {
+                            id: 'text',
+                            label: 'Text',
+                            type: 'text'
+                        },
+                        {
+                            id: 'text-2',
+                            label: 'Text 2',
+                            type: 'text'
+                        }
+                    ]
+                }
+            ]
+        }
+    ])
+
+    // Tree data structure for modal tab
+    const [modalTreeData, setModalTreeData] = useState([
+        {
+            id: 'modal',
+            label: 'Modal',
+            type: 'container',
+            children: [
+                {
+                    id: 'modal-content',
+                    label: 'Modal Content',
+                    type: 'container',
+                    children: [
+                        {
+                            id: 'modal-text',
+                            label: 'Text',
+                            type: 'text'
+                        }
+                    ]
+                }
+            ]
+        }
+    ])
+
+    // Tree item renderer
+    const renderTreeItem = (item, level = 0, parentId = null) => {
+        const hasChildren = item.children && item.children.length > 0
+        const isExpanded = expandedItems.has(item.id)
+        const isSelected = selectedItem === item.id
+        const isChildOfSelected = selectedItem && item.id !== selectedItem && isChildOfSelectedItem(item.id, selectedItem)
+        const isParentSelected = parentId && selectedItem === parentId
+        const isDragging = draggedItem && draggedItem.id === item.id
+        const isDragOver = dragOverItem && dragOverItem.id === item.id
+        const isChildOfDragged = isChildOfDraggedItem(item.id)
+        const isDraggingContainer = isDragging || isChildOfDragged
+
+        // When dragging, only show selection for dragged item and its children
+        const isDraggingActive = draggedItem !== null
+        const shouldShowSelection = !isDraggingActive || isDragging || isChildOfDragged
+        const shouldShowChildSelection = shouldShowSelection && isChildOfSelected
+        const shouldShowParentSelection = shouldShowSelection && isParentSelected
+
+        return (
+            <div 
+                key={item.id} 
+                className={`tw-builder__tree-item ${isSelected && !isExpanded ? 'tw-builder__tree-item--collapsed' : ''} ${isDraggingContainer ? 'tw-builder__tree-item--dragging-container' : ''} ${hasChildren ? 'tw-builder__tree-item--has-children' : ''}`} 
+                style={{ paddingLeft: `${level * 16}px`, position: 'relative' }}
+            >
+                {/* Drop line before */}
+                {isDragOver && dragPosition === 'before' && draggedItem && !isChildOfDraggedItem(item.id) && draggedItem.id !== item.id && (
+                    <div className="tw-builder__drop-line tw-builder__drop-line--before"></div>
+                )}
+                
+                {/* Background extend for selected parent */}
+                {shouldShowParentSelection && (
+                    <div className="tw-builder__tree-item-background-extend"></div>
+                )}
+                
+                {/* Tree item header */}
+                <div 
+                    className={`tw-builder__tree-item-header ${isSelected && shouldShowSelection ? 'tw-builder__tree-item-header--selected' : ''} ${shouldShowChildSelection ? 'tw-builder__tree-item-header--child-selected' : ''} ${isSelected && !isExpanded ? 'tw-builder__tree-item-header--collapsed' : ''} ${isDragging ? 'tw-builder__tree-item-header--dragging' : ''} ${isDragOver ? 'tw-builder__tree-item-header--drag-over' : ''}`} 
+                    style={{ position: 'relative', zIndex: 1 }}
+                    onClick={() => handleItemClick(item.id)}
+                    draggable={true}
+                    onDragStart={(e) => handleDragStart(e, item)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={(e) => handleDragOver(e, item)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, item)}
+                    data-position={isDragOver ? dragPosition : null}
+                >
+                    {/* Expand/collapse button for items with children */}
+                    {hasChildren && (
+                        <button 
+                            className={`tw-builder__tree-expand-button ${isExpanded ? 'tw-builder__tree-expand-button--expanded' : ''}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleExpanded(item.id);
+                            }}
+                        >
+                            <svg width="5" height="3" viewBox="0 0 5 3" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 4.30088 0H0.693878C0.0741433 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    )}
+                    
+                    {/* Item icon */}
+                    <div className="tw-builder__tree-item-icon">
+                        {item.type === 'text' ? (
+                            <span className="tw-builder__tree-item-text-icon">T</span>
+                        ) : (
+                            <div className="tw-builder__tree-item-square-icon"></div>
+                        )}
+                    </div>
+                    
+                    {/* Item label */}
+                    <span className="tw-builder__tree-item-label">
+                        {item.label}
+                    </span>
+                </div>
+                
+                {/* Render children if item is expanded */}
+                {hasChildren && isExpanded && (
+                    <div className="tw-builder__tree-children">
+                        {item.children.map(child => renderTreeItem(child, level + 1, item.id))}
+                    </div>
+                )}
+                
+                {/* Drop line after */}
+                {isDragOver && dragPosition === 'after' && draggedItem && !isChildOfDraggedItem(item.id) && draggedItem.id !== item.id && (
+                    <div className="tw-builder__drop-line tw-builder__drop-line--after"></div>
+                )}
+            </div>
+        )
+    }
+
     // Dropdown menu items
     const dropdownMenu = (
         <>
@@ -100,166 +482,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         </>
     )
 
-    // Toggle expansion state of tree items (expand/collapse)
-    const toggleExpanded = (itemId) => {
-        const newExpanded = new Set(expandedItems)
-        if (newExpanded.has(itemId)) {
-            newExpanded.delete(itemId)
-        } else {
-            newExpanded.add(itemId)
-        }
-        setExpandedItems(newExpanded)
-    }
-
-    // Handle selection of tree items
-    const handleItemClick = (itemId) => {
-        setSelectedItem(itemId)
-        setSelectedId(itemId) // Also update the canvas selectedId
-    }
-
-    // Recursive function to render tree items with proper styling
-    const renderTreeItem = (item, level = 0, parentId = null) => {
-        const hasChildren = item.children && item.children.length > 0
-        const isExpanded = expandedItems.has(item.id)
-        const isSelected = selectedItem === item.id
-        const isChildOfSelected = selectedItem && item.id !== selectedItem && isChildOfSelectedItem(item.id, selectedItem)
-        // The parent of this item is selected
-        const isParentSelected = parentId && selectedItem === parentId
-
-        return (
-            <div key={item.id} className={`tree-item ${isSelected && !isExpanded ? 'collapsed' : ''}`} style={{ paddingLeft: `${level * 16}px`, position: 'relative' }}>
-                {isParentSelected && (
-                    <div className="tree-item-background-extend"></div>
-                )}
-                <div className={`tree-item-header ${isSelected ? 'selected' : ''} ${isChildOfSelected ? 'child-selected' : ''} ${isSelected && !isExpanded ? 'collapsed' : ''}`} style={{ position: 'relative', zIndex: 1 }}>
-                    {/* Expand/collapse button for items with children */}
-                    {hasChildren && (
-                        <button 
-                            className={`tree-expand-button ${isExpanded ? 'expanded' : ''}`}
-                            onClick={() => toggleExpanded(item.id)}
-                        >
-                        <svg width="5" height="3" viewBox="0 0 5 3" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 4.30088 0H0.693878C0.0741433 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
-                        </svg>
-                        </button>
-                    )}
-                    {/* Icon for different item types (text or container) */}
-                    <div className="tree-item-icon">
-                        {item.type === 'text' ? (
-                            <span className="text-icon">T</span>
-                        ) : (
-                            <div className="square-icon"></div>
-                        )}
-                    </div>
-                    {/* Clickable item label */}
-                    <span 
-                        className="tree-item-label"
-                        onClick={() => handleItemClick(item.id)}
-                    >
-                        {item.name}
-                    </span>
-                </div>
-                {/* Render children if item is expanded */}
-                {hasChildren && isExpanded && (
-                    <div className="tree-children">
-                        {item.children.map(child => renderTreeItem(child, level + 1, item.id))}
-                    </div>
-                )}
-            </div>
-        )
-    }
-
-    // Check if an item is a descendant of the selected item
-    const isChildOfSelectedItem = (itemId, selectedId) => {
-        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
-        
-        // Function to check if targetId is a descendant of ancestorId
-        const isDescendantOf = (tree, targetId, ancestorId) => {
-            for (const item of tree) {
-                if (item.id === targetId) {
-                    return false // It's not a descendant of itself
-                }
-                if (item.id === ancestorId) {
-                    // Check if targetId is in the children of this ancestor
-                    return findInChildren(item, targetId)
-                }
-                if (item.children) {
-                    if (isDescendantOf(item.children, targetId, ancestorId)) {
-                        return true
-                    }
-                }
-            }
-            return false
-        }
-
-        // Helper function to search for targetId in children recursively
-        const findInChildren = (parent, targetId) => {
-            if (!parent.children) return false
-            for (const child of parent.children) {
-                if (child.id === targetId) {
-                    return true
-                }
-                if (child.children) {
-                    if (findInChildren(child, targetId)) {
-                        return true
-                    }
-                }
-            }
-            return false
-        }
-
-        return isDescendantOf(currentTreeData, itemId, selectedId)
-    }
-
-    // Tree data structure for banner tab
-    const bannerTreeData = [
-        {
-            id: 'banner',
-            name: 'Banner',
-            type: 'container',
-            children: [
-                {
-                    id: 'div',
-                    name: 'Div',
-                    type: 'container',
-                    children: [
-                        {
-                            id: 'text',
-                            name: 'Text',
-                            type: 'text'
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-
-    // Tree data structure for modal tab
-    const modalTreeData = [
-        {
-            id: 'modal',
-            name: 'Modal',
-            type: 'container',
-            children: [
-                {
-                    id: 'modal-content',
-                    name: 'Modal Content',
-                    type: 'container',
-                    children: [
-                        {
-                            id: 'modal-text',
-                            name: 'Text',
-                            type: 'text'
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-
     return (
         <div className={`tw-builder__left-panel ${!isPanelOpen ? 'tw-builder__left-panel--closed' : ''}`}>
-            {/* Header section with logo dropdown and settings icon */}
+            {/* Panel header */}
             <div className="tw-builder__left-panel-header">
                 <Dropdown
                     className="builder-logo-dropdown"
@@ -292,18 +517,18 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             {/* Tab switching section with animated slider */}
             <div className="tw-builder__tab-section">
                 <div className="tw-builder__tab-container">
-                    {/* Animated slider that moves based on active tab */}
-                    <div className="tw-builder__tab-slider" style={{ 
-                        transform: `translateX(${activeTab === 'banner' ? '0%' : '100%'})` 
-                    }}></div>
+                    <div 
+                        className="tw-builder__tab-slider" 
+                        style={{ transform: `translateX(${activeTab === 'banner' ? '0%' : '100%'})` }}
+                    ></div>
                     <button 
-                        className={`tw-builder__tab ${activeTab === 'banner' ? 'active' : ''}`}
+                        className={`tw-builder__tab ${activeTab === 'banner' ? 'tw-builder__tab--active' : ''}`}
                         onClick={() => setActiveTab('banner')}
                     >
                         Banner
                     </button>
                     <button 
-                        className={`tw-builder__tab ${activeTab === 'modal' ? 'active' : ''}`}
+                        className={`tw-builder__tab ${activeTab === 'modal' ? 'tw-builder__tab--active' : ''}`}
                         onClick={() => setActiveTab('modal')}
                     >
                         Modal
@@ -313,16 +538,10 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 
             {/* Tree view content that changes based on active tab */}
             <div className="tw-builder__tree-content">
-                {activeTab === 'banner' && (
-                    <div className="tree-container">
-                        {bannerTreeData.map(item => renderTreeItem(item))}
-                    </div>
-                )}
-                {activeTab === 'modal' && (
-                    <div className="tree-container">
-                        {modalTreeData.map(item => renderTreeItem(item))}
-                    </div>
-                )}
+                <div className="tw-builder__tree-container">
+                    {activeTab === 'banner' && bannerTreeData.map(item => renderTreeItem(item))}
+                    {activeTab === 'modal' && modalTreeData.map(item => renderTreeItem(item))}
+                </div>
             </div>
         </div>
     )
