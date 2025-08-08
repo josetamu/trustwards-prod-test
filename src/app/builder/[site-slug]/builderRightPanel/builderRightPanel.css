@@ -242,8 +242,8 @@
     padding: 0;
     border: 1px solid var(--border-light-color);
     background: none;
-    width: 25px;
-    height: 25px;
+    width: 23px;
+    height: 23px;
     cursor: pointer;
     border-radius: 4px;
 }
@@ -261,6 +261,9 @@
     height: 100%;
     border:none;
     background: none;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-hex:focus{
     outline: none;
@@ -273,6 +276,7 @@
     justify-content: center;
     border-left: 1px solid var(--border-light-color);
     padding-left: 5px;
+ 
    
 }
 .tw-builder__settings-percentage{
@@ -281,6 +285,9 @@
     border: none;
     background: none;
     text-align: center;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-percentage:focus{
     outline: none;
@@ -336,5 +343,11 @@
     align-items: flex-start;
     gap: 10px;
     width: 100%;
+  }
+  .tw-builder__settings-image{
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+
   }
   
