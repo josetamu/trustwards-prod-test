@@ -158,6 +158,10 @@
     align-items: stretch;
     justify-content: center;
 }
+.tw-builder__settings-actions--column{
+    width: 100%;
+
+}
 .tw-builder__settings-action{
     width: 50%;
     background-color: var(--builder-background);

@@ -6,6 +6,7 @@ import BuilderSave from '@components/BuilderSave/BuilderSave';
 import TextControls from '@components/TextControls/TextControls';
 import DividerControls from '@components/DividerControls/DividerControls';
 import BlockControls from '@components/BlockControls/BlockControls';
+import ImageControls from '@components/ImageControls/ImageControls';
 
 function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
     const { selectedId, JSONtree } = useCanvas();
@@ -41,7 +42,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 {/* Check the type element and show the correct controls */}
                 {selectedClassName === 'tw-builder__text' && <TextControls selectedId={selectedId}/>}
                 {selectedClassName === 'tw-builder__divider' && <DividerControls selectedId={selectedId}/>}
-                {selectedClassName === 'tw-builder__image' && <TextControls selectedId={selectedId}/>}
+                {selectedClassName === 'tw-builder__image' && <ImageControls selectedId={selectedId}/>}
                 {selectedClassName === 'tw-builder__block' && <BlockControls selectedId={selectedId}/>}
 
             </div>

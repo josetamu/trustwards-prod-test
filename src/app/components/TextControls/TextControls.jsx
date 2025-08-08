@@ -5,7 +5,7 @@ import { LayoutControl, SpacingControl, SizeControl, BackgroundControl, TextCont
 
 // Component to render the text controls. This have a header 
 function TextControls({selectedId}) {
-    const [selectedTag, setSelectedTag] = useState('h1');
+    const [selectedTag, setSelectedTag] = useState('h3');
     const tagSelectRef = useRef(null);
 
     // Function to adjust the width of the select

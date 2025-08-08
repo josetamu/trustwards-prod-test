@@ -20,6 +20,42 @@ const directionSelectRef = useRef(null);
 const [selectedDirection, setSelectedDirection] = useState('horizontal');
 const [selectedAlign, setSelectedAlign] = useState('none');
 
+const adjustSelectWidth = () => {
+    if(styleSelectRef.current){
+        const select = styleSelectRef.current;
+        const styleWidths = {
+            'none': 35,
+            'hidden': 40,
+            'solid': 35,
+            'dotted': 40,
+            'dashed': 45,
+            'double': 40,
+            'groove': 40,
+            'ridge': 35,
+            'inset': 35,
+            'outset': 35,
+        };
+        const baseWidth = styleWidths[selectedStyle] || 20;
+        const totalWidth = baseWidth + 25;
+        select.style.width = `${totalWidth}px`;
+    }
+    if(directionSelectRef.current){
+        const select = directionSelectRef.current;
+        const directionWidths = {
+            'horizontal': 60,
+            'vertical': 40,
+        };
+        const baseWidth = directionWidths[selectedDirection] || 20;
+        const totalWidth = baseWidth + 25;
+        select.style.width = `${totalWidth}px`;
+    }
+};
+
+useEffect(() => {
+    if(selectedStyle || selectedDirection){
+        adjustSelectWidth();
+    }
+}, [selectedStyle, selectedDirection]);
 
      //Function to convert hex to rgba with opacity
      const hexToRgba = (hex, opacity) => {
