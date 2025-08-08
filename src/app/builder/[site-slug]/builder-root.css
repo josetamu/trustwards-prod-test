@@ -44,12 +44,14 @@ System selected: will fallback to root or html[data-theme="dark"]
 
     --font-size-mini: 10px;
     --font-size-small: 12px;
-    --font-weight-medium: 500;
+    --font-weight: 500;
     --letter-spacing-negative: -0.03em;
     --letter-spacing-positive: 0.03em;
     --logo-background: #FFFFFF;
     --border-strong-color: #E0E0E0;
     --hover-strong-color: #E3E3E3;
+
+    --builder-tooltip-font-size: 10px;
 
     --header-plan-background: #E3E3E3;
     --shadow-color: #999999;
@@ -125,6 +127,10 @@ System selected: will fallback to root or html[data-theme="dark"]
     
     --child-selected-color: #666666;
     --tree-childs-background: #0099FE26;
+
+
+
+    
 }
 /* Button color variables using data-color */
 html[data-color="blue"] {
@@ -212,6 +218,11 @@ html[data-theme="dark"]{
     --tree-childs-background: #1E3A8A;
     
     --subtitle-color: #9B9B9B;
+
+
+
+
+    
 }
 
 .tw-builder__logo{

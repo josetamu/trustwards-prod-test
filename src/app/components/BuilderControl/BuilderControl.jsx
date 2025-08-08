@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './BuilderControl.css';
+// Component to render the control(label with + and -) Pass the label(title) and the control to render
 export default function BuilderControl({label, control}) {
     const [isOpen, setIsOpen] = useState(false);
     return (
@@ -20,6 +21,7 @@ export default function BuilderControl({label, control}) {
                     </span>
                 </div>
             </div>
+            {/* If the control is open, show the content */}
             {isOpen && (
                 <div className="tw-builder__control-content">
                     {control}

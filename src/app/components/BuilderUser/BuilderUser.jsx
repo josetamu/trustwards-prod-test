@@ -1,25 +1,31 @@
 import './BuilderUser.css';
-import { Tooltip } from '@components/Tooltip/Tooltip';
+import { Tooltip } from '@components/tooltip/Tooltip';
 import { useState } from 'react';
 
 export default function BuilderUser({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen}) {
 
     const [showTooltip, setShowTooltip] = useState(false);
+    // Function to show the tooltip when the user is hovered
     const handleMouseEnter = () => {
         setShowTooltip(true);
     };
+    // Function to hide the tooltip when the user is not hovered
     const handleMouseLeave = () => {
         setShowTooltip(false);
     };
     return (
+
         <div className="builder-user" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={() => {
+            // Open the account modal
             setModalType('Account');
             setIsModalOpen(true);
         }}>
+            {/* Show the user color */}
         <span className={`builder-user__color ${checkProfilePicture(user) === '' ? '' : 'builder-user__color--null'}`} 
         style={profileStyle(user)}>
           {user?.Name.charAt(0)}
         </span> 
+        {/* Show the user avatar */}
         <img className={`builder-user__avatar ${checkProfilePicture(user) === '' ? 'builder-user__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="avatar"/>
         <Tooltip
                 message={user?.Name || 'User'}

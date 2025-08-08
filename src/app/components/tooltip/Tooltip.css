@@ -78,7 +78,7 @@
   width: var(--tooltip-width, 100px);
   left: calc(50% - var(--tooltip-width, 100px)/2);
   margin-bottom: 8px;
-}
+  }
 
 .tooltip--top .tooltip__mask::after,
 .tooltip--modal-support .tooltip__mask::after {
@@ -209,3 +209,4 @@
     border-bottom-color: transparent;
   }
 }
+

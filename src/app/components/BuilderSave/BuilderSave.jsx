@@ -7,10 +7,11 @@ export default function BuilderSave({showNotification, siteSlug}) {
     const [isLoading, setIsLoading] = useState(false);
     const {JSONtree} = useCanvas();
 
+    // Function to save the changes. This function is used by the button and the keyboard shortcut(Ctrl+S or Cmd+S)
     const save = useCallback(async () => {
         setIsLoading(true);
         try {
-            // Simular delay de guardado (reemplazar)
+            // Simulate a delay of saving (replace)
             await new Promise(resolve => setTimeout(resolve, 1000));
             const {data, error} = await supabase
                 .from('Site')
@@ -24,11 +25,11 @@ export default function BuilderSave({showNotification, siteSlug}) {
         }
     }, [JSONtree, siteSlug, showNotification]);
 
-        // Add keyboard shortcut for Ctrl+S or Cmd+S
+        // Add keyboard shortcut for Ctrl+S or Cmd+S to save the changes
         useEffect(() => {
             const handleKeyDown = (e) => {
                 const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-                
+                // Check if the user is pressing Ctrl+S or Cmd+S
                 if (isCtrlOrCmd && e.key === 's') {
                     e.preventDefault();
                     if (!isLoading) {
@@ -36,7 +37,7 @@ export default function BuilderSave({showNotification, siteSlug}) {
                     }
                 }
             };
-    
+            // Add the event listener to the window
             window.addEventListener('keydown', handleKeyDown);
             return () => window.removeEventListener('keydown', handleKeyDown);
         }, [isLoading, save]); // Include isLoading to prevent saving while already saving
@@ -47,9 +48,10 @@ export default function BuilderSave({showNotification, siteSlug}) {
             className={`builder-save ${isLoading ? 'builder-save--loading' : ''}`} 
             onClick={!isLoading ? save : undefined}
         >
+            {/* If the changes are being saved, show the spinner */}
             {isLoading ? (
                 <>
-                      <div className="builder-save__spinner">
+                    <div className="builder-save__spinner">
                         <svg className="builder-save__svg" viewBox="0 0 50 50">
                         <circle className="builder-save__circle" cx="25" cy="25" r="20" />
                         </svg>

@@ -47,6 +47,7 @@ function Builder() {
     }
   }, [modalType]);
   
+  
 
 
   //Fetch all data user from the database
@@ -78,7 +79,7 @@ function Builder() {
     }
   };
 
-  // useEffect to fetch all data user from the database
+  // useEffect to fetch all data user from the database when the user is logged ins
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -105,6 +106,7 @@ function Builder() {
   }
 }, [appearanceSettings]);
 
+// Avatar colors when there is no avatar image
   const avatarColors = {
     green: {
       backgroundColor: '#2FB11F',
@@ -132,6 +134,7 @@ function Builder() {
         return sitePicture;
         }
   }
+  // Function to set the style of the site picture
   const SiteStyle = (site) => {
     const color = avatarColors[site?.["Avatar Color"]]?.color || '#FFFFFF';
     const backgroundColor = avatarColors[site?.["Avatar Color"]]?.backgroundColor || '#000000';
