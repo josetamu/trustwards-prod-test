@@ -166,6 +166,7 @@
     flex: 1;
     padding: 10px 10px 0 10px;
     overflow-y: auto;
+    overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -203,7 +204,7 @@
 }
 
 /* Tree item header hover state */
-.tw-builder__tree-item-header:hover:not(.tw-builder__tree-item-header--selected):not(.tw-builder__tree-item-header--child-selected) {
+.tw-builder__tree-item-header:hover:not(.tw-builder__tree-item-header--selected):not(.tw-builder__tree-item-header--child-selected):not(.tw-builder__tree-item-header--child-selected-intermediate) {
     background-color: var(--tree-item-hover-background);
 }
 
@@ -219,6 +220,12 @@
     background-color: transparent;
     color: var(--tree-item-child-selected-color);
     border-radius: 0 0 8px 8px;
+}
+
+/* Tree item header child selected intermediate state (no border radius) */
+.tw-builder__tree-item-header--child-selected-intermediate {
+    background-color: transparent;
+    color: var(--tree-item-child-selected-color);
 }
 
 /* Tree item header collapsed state */
@@ -404,6 +411,19 @@
     color: var(--child-selected-color);
 }
 
+/* Child selected intermediate tree item icon colors */
+.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-item-square-icon {
+    background-color: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-child-selected-color);
+}
+
+.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-item-label {
+    color: var(--child-selected-color);
+}
+
 /* ==========================================================================
    TREE ITEM DRAGGING CONTAINER
    ========================================================================== */
@@ -502,7 +522,7 @@
 }
 
 /* Background extend for last child of selected parent - with border radius */
-.tw-builder__tree-children .tw-builder__tree-item:last-child .tw-builder__tree-item-background-extend {
+.tw-builder__tree-item-header--child-selected + .tw-builder__tree-item-background-extend {
     border-radius: 0 0 8px 8px;
 }
 

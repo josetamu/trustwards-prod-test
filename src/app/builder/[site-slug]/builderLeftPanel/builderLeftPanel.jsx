@@ -1,10 +1,12 @@
 import './builderLeftPanel.css'
 import { useState, useEffect } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
+import { ContextMenu } from '../../../components/contextMenu/ContextMenu'
+import { TreeContextMenu } from './TreeContextMenu'
 import { useRouter } from 'next/navigation'
 import { useCanvas } from "@contexts/CanvasContext";
 
-function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen }) {
+function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification }) {
     const router = useRouter()
     const { selectedId, setSelectedId } = useCanvas();
     
@@ -23,6 +25,13 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const [draggedItem, setDraggedItem] = useState(null)
     const [dragOverItem, setDragOverItem] = useState(null)
     const [dragPosition, setDragPosition] = useState(null) // 'before', 'after', 'inside'
+
+    // Context menu states
+    const [contextMenu, setContextMenu] = useState({
+        open: false,
+        position: { x: 0, y: 0 },
+        targetItem: null
+    })
 
     // Handle right panel opening when an element is selected and both panels are closed
     useEffect(() => {
@@ -186,6 +195,68 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setDragPosition(null)
     }
 
+    // Close context menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (contextMenu.open) {
+                const contextMenuElement = e.target.closest('.context-menu')
+                if (!contextMenuElement) {
+                    closeContextMenu()
+                }
+            }
+        }
+
+        document.addEventListener('click', handleClickOutside)
+        return () => document.removeEventListener('click', handleClickOutside)
+    }, [contextMenu.open])
+
+    // Context menu handlers
+    const handleContextMenu = (e, item) => {
+        e.preventDefault()
+        e.stopPropagation()
+        
+        // Select the item when right-clicking (same as left-click)
+        setSelectedItem(item.id)
+        setSelectedId(item.id)
+        
+        setContextMenu({
+            open: true,
+            position: { x: e.clientX, y: e.clientY },
+            targetItem: item
+        })
+    }
+
+    const closeContextMenu = () => {
+        setContextMenu({
+            open: false,
+            position: { x: 0, y: 0 },
+            targetItem: null
+        })
+    }
+
+    // Handle tree data changes from context menu
+    const handleTreeDataChange = (newTreeData) => {
+        if (activeTab === 'banner') {
+            setBannerTreeData(newTreeData)
+        } else {
+            setModalTreeData(newTreeData)
+        }
+        
+        // Expand newly added items (pasted/duplicated items)
+        const expandNewItems = (tree) => {
+            tree.forEach(item => {
+                if (item.id.includes('-copy') || item.id.includes('wrapper')) {
+                    setExpandedItems(prev => new Set([...prev, item.id]))
+                }
+                if (item.children) {
+                    expandNewItems(item.children)
+                }
+            })
+        }
+        
+        expandNewItems(newTreeData)
+    }
+
     // Tree data manipulation
     const moveElement = (draggedId, targetId, position) => {
         const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
@@ -240,42 +311,6 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         }
     }
 
-    // Tree relationship helpers
-    const isChildOfSelectedItem = (itemId, selectedId) => {
-        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
-        
-        // Function to check if targetId is a descendant of ancestorId
-        const isDescendantOf = (tree, targetId, ancestorId) => {
-            for (const item of tree) {
-                if (item.id === targetId) return false
-                if (item.id === ancestorId) {
-                    // Check if targetId is in the children of this ancestor
-                    return findInChildren(item, targetId)
-                }
-                if (item.children) {
-                    if (isDescendantOf(item.children, targetId, ancestorId)) {
-                        return true
-                    }
-                }
-            }
-            return false
-        }
-
-        // Helper function to search for targetId in children recursively
-        const findInChildren = (parent, targetId) => {
-            if (!parent.children) return false
-            for (const child of parent.children) {
-                if (child.id === targetId) return true
-                if (child.children) {
-                    if (findInChildren(child, targetId)) return true
-                }
-            }
-            return false
-        }
-
-        return isDescendantOf(currentTreeData, itemId, selectedId)
-    }
-
     // Check if an item is a descendant of the dragged item
     const isChildOfDraggedItem = (itemId) => {
         if (!draggedItem) return false
@@ -313,6 +348,43 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         return isDescendantOf(currentTreeData, itemId, draggedItem.id)
     }
 
+    // Check if an item is a descendant of the selected item
+    const isDescendantOfSelected = (itemId, selectedId) => {
+        if (!selectedId || itemId === selectedId) return false
+        
+        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
+        
+        // Function to check if targetId is a descendant of ancestorId
+        const isDescendantOf = (tree, targetId, ancestorId) => {
+            for (const item of tree) {
+                if (item.id === targetId) return false
+                if (item.id === ancestorId) {
+                    // Check if targetId is in the children of this ancestor
+                    return findInChildren(item, targetId)
+                }
+                if (item.children) {
+                    if (isDescendantOf(item.children, targetId, ancestorId)) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
+        const findInChildren = (parent, targetId) => {
+            if (!parent.children) return false
+            for (const child of parent.children) {
+                if (child.id === targetId) return true
+                if (child.children) {
+                    if (findInChildren(child, targetId)) return true
+                }
+            }
+            return false
+        }
+
+        return isDescendantOf(currentTreeData, itemId, selectedId)
+    }
+
     // Tree data structure for banner tab
     const [bannerTreeData, setBannerTreeData] = useState([
         {
@@ -333,6 +405,23 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         {
                             id: 'text-2',
                             label: 'Text 2',
+                            type: 'text'
+                        }
+                    ]
+                },
+                {
+                    id: 'div-2',
+                    label: 'Div 2',
+                    type: 'container',
+                    children: [
+                        {
+                            id: 'text-3',
+                            label: 'Text 3',
+                            type: 'text'
+                        },
+                        {
+                            id: 'text-4',
+                            label: 'Text 4',
                             type: 'text'
                         }
                     ]
@@ -365,42 +454,69 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     ])
 
     // Tree item renderer
-    const renderTreeItem = (item, level = 0, parentId = null) => {
+    const renderTreeItem = (item, level = 0, parentId = null, isLastChild = false) => {
         const hasChildren = item.children && item.children.length > 0
         const isExpanded = expandedItems.has(item.id)
         const isSelected = selectedItem === item.id
-        const isChildOfSelected = selectedItem && item.id !== selectedItem && isChildOfSelectedItem(item.id, selectedItem)
         const isParentSelected = parentId && selectedItem === parentId
         const isDragging = draggedItem && draggedItem.id === item.id
         const isDragOver = dragOverItem && dragOverItem.id === item.id
-        const isChildOfDragged = isChildOfDraggedItem(item.id)
-        const isDraggingContainer = isDragging || isChildOfDragged
 
-        // When dragging, only show selection for dragged item and its children
-        const isDraggingActive = draggedItem !== null
-        const shouldShowSelection = !isDraggingActive || isDragging || isChildOfDragged
-        const shouldShowChildSelection = shouldShowSelection && isChildOfSelected
-        const shouldShowParentSelection = shouldShowSelection && isParentSelected
+        // Determine which classes to apply
+        let headerClasses = ['tw-builder__tree-item-header']
+        
+        if (isSelected) {
+            headerClasses.push('tw-builder__tree-item-header--selected')
+            if (!isExpanded) {
+                headerClasses.push('tw-builder__tree-item-header--collapsed')
+            }
+        } else if (isParentSelected || (selectedItem && isDescendantOfSelected(item.id, selectedItem))) {
+            // This is either a direct child or any descendant of the selected item
+            if (isParentSelected && isLastChild) {
+                headerClasses.push('tw-builder__tree-item-header--child-selected')
+            } else {
+                headerClasses.push('tw-builder__tree-item-header--child-selected-intermediate')
+            }
+        }
+
+        if (isDragging) {
+            headerClasses.push('tw-builder__tree-item-header--dragging')
+        }
+        
+        if (isDragOver) {
+            headerClasses.push('tw-builder__tree-item-header--drag-over')
+        }
+
+        // Determine container classes
+        let containerClasses = ['tw-builder__tree-item']
+        if (isSelected && !isExpanded) {
+            containerClasses.push('tw-builder__tree-item--collapsed')
+        }
+        if (isDragging || isChildOfDraggedItem(item.id)) {
+            containerClasses.push('tw-builder__tree-item--dragging-container')
+        }
+        if (hasChildren) {
+            containerClasses.push('tw-builder__tree-item--has-children')
+        }
 
         return (
             <div 
                 key={item.id} 
-                className={`tw-builder__tree-item ${isSelected && !isExpanded ? 'tw-builder__tree-item--collapsed' : ''} ${isDraggingContainer ? 'tw-builder__tree-item--dragging-container' : ''} ${hasChildren ? 'tw-builder__tree-item--has-children' : ''}`} 
-                style={{ paddingLeft: `${level * 16}px`, position: 'relative' }}
+                className={containerClasses.join(' ')}
+                style={{ 
+                    // After level 2, items maintain the same padding and use horizontal overflow
+                    paddingLeft: `${Math.min(level, 1) * 16}px`, 
+                    position: 'relative' 
+                }}
             >
                 {/* Drop line before */}
                 {isDragOver && dragPosition === 'before' && draggedItem && !isChildOfDraggedItem(item.id) && draggedItem.id !== item.id && (
                     <div className="tw-builder__drop-line tw-builder__drop-line--before"></div>
                 )}
                 
-                {/* Background extend for selected parent */}
-                {shouldShowParentSelection && (
-                    <div className="tw-builder__tree-item-background-extend"></div>
-                )}
-                
                 {/* Tree item header */}
                 <div 
-                    className={`tw-builder__tree-item-header ${isSelected && shouldShowSelection ? 'tw-builder__tree-item-header--selected' : ''} ${shouldShowChildSelection ? 'tw-builder__tree-item-header--child-selected' : ''} ${isSelected && !isExpanded ? 'tw-builder__tree-item-header--collapsed' : ''} ${isDragging ? 'tw-builder__tree-item-header--dragging' : ''} ${isDragOver ? 'tw-builder__tree-item-header--drag-over' : ''}`} 
+                    className={headerClasses.join(' ')}
                     style={{ position: 'relative', zIndex: 1 }}
                     onClick={() => handleItemClick(item.id)}
                     draggable={true}
@@ -409,6 +525,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     onDragOver={(e) => handleDragOver(e, item)}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, item)}
+                    onContextMenu={(e) => handleContextMenu(e, item)}
                     data-position={isDragOver ? dragPosition : null}
                 >
                     {/* Expand/collapse button for items with children */}
@@ -421,7 +538,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                             }}
                         >
                             <svg width="5" height="3" viewBox="0 0 5 3" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 4.30088 0H0.693878C0.0741433 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
+                                <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
                             </svg>
                         </button>
                     )}
@@ -441,10 +558,15 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     </span>
                 </div>
                 
+                {/* Background extend for selected parent */}
+                {isParentSelected && (
+                    <div className="tw-builder__tree-item-background-extend"></div>
+                )}
+                
                 {/* Render children if item is expanded */}
                 {hasChildren && isExpanded && (
                     <div className="tw-builder__tree-children">
-                        {item.children.map(child => renderTreeItem(child, level + 1, item.id))}
+                        {item.children.map((child, index) => renderTreeItem(child, level + 1, item.id, index === item.children.length - 1))}
                     </div>
                 )}
                 
@@ -539,10 +661,22 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             {/* Tree view content that changes based on active tab */}
             <div className="tw-builder__tree-content">
                 <div className="tw-builder__tree-container">
-                    {activeTab === 'banner' && bannerTreeData.map(item => renderTreeItem(item))}
-                    {activeTab === 'modal' && modalTreeData.map(item => renderTreeItem(item))}
+                    {activeTab === 'banner' && bannerTreeData.map((item, index) => renderTreeItem(item, 0, null, index === bannerTreeData.length - 1))}
+                    {activeTab === 'modal' && modalTreeData.map((item, index) => renderTreeItem(item, 0, null, index === modalTreeData.length - 1))}
                 </div>
             </div>
+
+            {/* Context menu */}
+            <ContextMenu
+                open={contextMenu.open}
+                position={contextMenu.position}
+                onClose={closeContextMenu}
+                targetItem={contextMenu.targetItem}
+                treeData={activeTab === 'banner' ? bannerTreeData : modalTreeData}
+                onTreeDataChange={handleTreeDataChange}
+                showNotification={showNotification}
+                menu={<TreeContextMenu />}
+            />
         </div>
     )
 }
