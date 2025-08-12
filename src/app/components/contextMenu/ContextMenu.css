@@ -1,4 +1,4 @@
-/* Context Menu - Exactly like Dropdown but with fixed positioning */
+/* Context Menu */
 .context-menu * {
   will-change: transform;
 }
@@ -9,7 +9,7 @@
   display: inline-block;
 }
 
-/* Context menu menu styles - same as dropdown__menu */
+/* Context menu menu styles */
 .context-menu__menu {
   position: absolute;
   min-width: fit-content;
@@ -25,9 +25,10 @@
   overflow: hidden;
   padding: 4px;
   z-index: 2;
+  transform-origin: top left;
 }
 
-/* Context menu item styles - same as dropdown__item */
+/* Context menu item styles */
 .context-menu__item {
   width: 100%;
   display: flex;
@@ -36,10 +37,6 @@
   background: none;
   border: none;
   border-radius: 6px;
-  color: var(--body-fresco-color);
-  letter-spacing: var(--letter-spacing);
-  font-weight: var(--font-weight);
-  font-size: var(--font-size-small);
   white-space: nowrap;
   padding: 8px 12px;
   cursor: pointer;
@@ -50,33 +47,53 @@
   border-radius: 6px;
 }
 
-/* Delete item */
-.context-menu__item--danger {
+/* Delete item - exactly like dropdown__item--delete */
+.context-menu__item--delete {
   color: var(--warning-color);
 }
-.context-menu__item--danger:hover {
+.context-menu__item--delete:hover {
   background: var(--hover-warning-color);
   color: var(--warning-color);
 }
 
-/* Icon and delete icon styles */
+/* Icon and delete icon styles - exactly like dropdown__icon */
 .context-menu__icon,
 .context-menu__icon--delete {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--icons-fresco-color);
+  color: var(--icons-color);
 }
 .context-menu__icon--delete {
   color: var(--warning-color);
 }
-.context-menu__item.context-menu__item--danger:hover .context-menu__icon--delete {
+.context-menu__item.context-menu__item--delete .context-menu__icon {
+  color: var(--warning-color);
+}
+.context-menu__item.context-menu__item--delete:hover .context-menu__icon {
   color: var(--warning-color);
 }
 .context-menu__item:hover .context-menu__icon {
   color: var(--accent-color);
+}
+
+/* Context menu item label */
+.context-menu__label {
+    color: var(--label-color);
+    letter-spacing: var(--letter-spacing-negative);
+    font-weight: var(--font-weight);
+    font-size: var(--font-size-small);
+}
+
+.context-menu__item:hover .context-menu__icon,
+.context-menu__item:hover .context-menu__label{
+  color: var(--accent-color);
+}
+
+.context-menu__item--delete .context-menu__label {
+    color: var(--warning-color);
 }
 
 /* Divider */
@@ -93,11 +110,6 @@
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
-}
-
-.context-menu__item--disabled:hover {
-  background: none;
-  color: var(--body-fresco-color);
 }
 
 /* Tree context menu specific styles */

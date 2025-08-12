@@ -551,106 +551,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         </>
     )
 
-    // Context menu handlers
-    const handleCopy = () => {
-        console.log('Copy clicked for:', contextMenu.targetItem?.id);
-        // Copy logic here
-    }
 
-    const handlePaste = () => {
-        console.log('Paste clicked for:', contextMenu.targetItem?.id);
-        // Paste logic here
-    }
-
-    const handleDuplicate = () => {
-        console.log('Duplicate clicked for:', contextMenu.targetItem?.id);
-        // Duplicate logic here
-    }
-
-    const handleWrap = () => {
-        console.log('Wrap clicked for:', contextMenu.targetItem?.id);
-        // Wrap logic here
-    }
-
-    const handleRemove = () => {
-        console.log('Remove clicked for:', contextMenu.targetItem?.id);
-        // Remove logic here
-    }
-
-    const treeContextMenu = (
-        <>
-            {/* Copy */}
-            <button 
-                className="context-menu__item"
-                onClick={handleCopy}
-            >
-                <div className="context-menu__icon">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 2H2C1.44772 2 1 2.44772 1 3V13C1 13.5523 1.44772 14 2 14H10C10.5523 14 11 13.5523 11 13V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 6H14C14.5523 6 15 6.44772 15 7V15C15 15.5523 14.5523 16 14 16H6C5.44772 16 5 15.5523 5 15V7C5 6.44772 5.44772 6 6 6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </div>
-                <span>Copy</span>
-            </button>
-
-            {/* Paste */}
-            <button 
-                className="context-menu__item"
-                onClick={handlePaste}
-            >
-                <div className="context-menu__icon">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 2H10C10.5523 2 11 2.44772 11 3V7H15V11C15 11.5523 14.5523 12 14 12H10C9.44772 12 9 11.5523 9 11V7H5V3C5 2.44772 5.44772 2 6 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </div>
-                <span>Paste</span>
-            </button>
-
-            <div className="context-menu__divider"></div>
-
-            {/* Duplicate */}
-            <button 
-                className="context-menu__item"
-                onClick={handleDuplicate}
-            >
-                <div className="context-menu__icon">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 2V14M2 8H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </div>
-                <span>Duplicate</span>
-            </button>
-
-            {/* Wrap */}
-            <button 
-                className="context-menu__item"
-                onClick={handleWrap}
-            >
-                <div className="context-menu__icon">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 3H13V13H3V3Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6 6H10M6 9H10M6 12H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </div>
-                <span>Wrap</span>
-            </button>
-
-            <div className="context-menu__divider"></div>
-
-            {/* Remove */}
-            <button 
-                className="context-menu__item context-menu__item--danger"
-                onClick={handleRemove}
-            >
-                <div className="context-menu__icon">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 6H13M5 6V5C5 4.44772 5.44772 4 6 4H10C10.5523 4 11 4.44772 11 5V6M7 9V12M9 9V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </div>
-                <span>Remove</span>
-            </button>
-        </>
-    )
 
     return (
         <div className={`tw-builder__left-panel ${!isPanelOpen ? 'tw-builder__left-panel--closed' : ''}`}>
@@ -728,7 +629,10 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 open={contextMenu.open}
                 position={contextMenu.position}
                 onClose={closeContextMenu}
-                menu={treeContextMenu}
+                targetItem={contextMenu.targetItem}
+                treeData={activeTab === 'banner' ? bannerTreeData : modalTreeData}
+                onTreeDataChange={handleTreeDataChange}
+                showNotification={showNotification}
                 className="tree-context-menu"
             />
         </div>
