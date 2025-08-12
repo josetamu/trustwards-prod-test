@@ -38,7 +38,6 @@ System selected: will fallback to root or html[data-theme="dark"]
     --border-light-color: #E6E6E6;
     --shadow-light-color: #00000010;
 
-    --scrollbars-color: #E6E6E6;
     --handlebars-color: #D9D9D9;
     --handlebars-color-active: #AAAAAA;
 
@@ -74,23 +73,6 @@ System selected: will fallback to root or html[data-theme="dark"]
     --hover-warning-color: rgba(248, 218, 218, 1);
 
     --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
-
-    /*General*/
-    --body-light-color: #A0A0A0;
-    --body-fresco-color: #5E5E5E;
-    --body-semistrong-color: #333333;
-    --body-strong-color: #000000;
-    --border-fresco-color: #E6E6E6;
-    --border-strong-color: #E0E0E0;
-    --icons-fresco-color: #5E5E5E;
-    --icons-strong-color: #000000;
-    --hover-light-color: #FFFFFF;
-    --hover-fresco-color: #EBEBEB;
-    --hover-strong-color: #E3E3E3;
-    --shadow-fresco-color: rgba(0, 0, 0, 0.05);
-    --shadow-strong-color: rgba(0, 0, 0, 0.1);
-    --wrappers-fresco-color: #F2F2F2;
-    --wrappers-strong-color: #EDEDED;
 
     /*Builder Left Panel*/
     --toggle-color: #999999;
@@ -129,10 +111,6 @@ System selected: will fallback to root or html[data-theme="dark"]
     
     --child-selected-color: #666666;
     --tree-childs-background: #0099FE26;
-
-
-
-    
 }
 /* Button color variables using data-color */
 html[data-color="blue"] {
@@ -220,11 +198,6 @@ html[data-theme="dark"]{
     --tree-childs-background: #1E3A8A;
     
     --subtitle-color: #9B9B9B;
-
-
-
-
-    
 }
 
 .tw-builder__logo{

@@ -53,18 +53,15 @@
     width: 100%; /* Handlebars will never go above parent width (the parent canvas wrapper width) */
     max-width: 100%; /* Handlebars will change this to fixed px */ 
 
-    padding: 1px; /* To prevent actives outline from being cut by the overflow */
     overflow: auto;
 }
 .tw-builder__canvas::-webkit-scrollbar {
-    width: 11px;
-    height: 11px;
+    width: 4px;
+    height: 4px;
 }
 .tw-builder__canvas::-webkit-scrollbar-thumb {
-    background: var(--scrollbars-color);
+    background: var(--handlebars-color);
     border-radius: 10px;
-
-    border: 3px solid var(--canvas-background);
 }
 .tw-builder__toolbar{
     background-color: var(--panels-background);
