@@ -6,7 +6,7 @@
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+
     height: 100%;
     max-height: 100%;
     overflow: hidden;
@@ -99,13 +99,25 @@
     padding: 8px;
 }
 
+
+/* Tab and Tree container */
+.tw-builder__tab-tree-container {
+    padding: 0 10px;
+}
+
+.tw-builder__tab-tree-divider {
+    height: 1px;
+    background-color: var(--border-light-color);
+    margin: 0 0 10px 0;
+}
+
 /* ==========================================================================
    TAB SECTION
    ========================================================================== */
 
 /* Tab section container */
 .tw-builder__tab-section {
-    padding: 10px;
+    padding: 10px 0;
 }
 
 /* Tab container with animated slider */
@@ -164,11 +176,7 @@
 /* Tree content container */
 .tw-builder__tree-content {
     flex: 1;
-    padding: 10px 10px 0 10px;
-    overflow-y: auto;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    overflow: auto;
 }
 .tw-builder__tree-content::-webkit-scrollbar {
     display: none;
@@ -178,6 +186,9 @@
 .tw-builder__tree-container {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    min-width: max-content;
+    overflow: auto;
 }
 
 /* ==========================================================================
@@ -199,7 +210,6 @@
     cursor: pointer;
     position: relative;
     width: 100%;
-    box-sizing: border-box;
     user-select: none;
 }
 
@@ -323,6 +333,26 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* A partir del nivel 6: ancho mínimo fijo para evitar que se encoja más */
+.tw-builder__tree-item--deep-nesting {
+    min-width: 100px;
+}
+
+.tw-builder__tree-item--deep-nesting .tw-builder__tree-item-header {
+    min-width: 100%;
+}
+
+.tw-builder__tree-item--deep-nesting .tw-builder__tree-item-label {
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ==========================================================================
