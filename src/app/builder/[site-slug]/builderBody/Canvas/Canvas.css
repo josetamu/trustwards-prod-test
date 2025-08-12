@@ -1,12 +1,17 @@
 .tw-builder__canvas *{
     cursor: default;
 }
-.tw-builder__active:not(#tw-root){
+.tw-builder__active:not(#tw-root--banner, #tw-root--modal){
     outline: 1px solid #0099FE;
     outline-offset: -1px;
 }
-#tw-root{
+#tw-root--banner,
+#tw-root--modal{
     height: 100%;
+}
+#tw-root--banner:not(.tw-active-root),
+#tw-root--modal:not(.tw-active-root){
+    display: none;
 }
 
 /*Drop indicator*/

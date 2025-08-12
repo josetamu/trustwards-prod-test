@@ -7,14 +7,12 @@ import { useCanvas } from "@contexts/CanvasContext";
 
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification }) {
     const router = useRouter()
-    const { selectedId, setSelectedId } = useCanvas();
+    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId } = useCanvas();
     
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-    // State to track which tab is currently active (banner or modal)
-    const [activeTab, setActiveTab] = useState('banner')
     // State to track which tree items are expanded/collapsed
-    const [expandedItems, setExpandedItems] = useState(new Set(['banner', 'div', 'modal', 'modal-content']))
+    const [expandedItems, setExpandedItems] = useState(new Set(['tw-root--banner', 'div', 'tw-root--modal', 'modal-content']))
     // State to track which item is currently selected in the tree
     const [selectedItem, setSelectedItem] = useState(null)
     // State to track if user manually closed both panels
@@ -34,7 +32,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 
     // Handle right panel opening when an element is selected and both panels are closed
     useEffect(() => {
-        if (selectedId && selectedId !== 'tw-root' && !isPanelOpen && !isRightPanelOpen && !userManuallyClosed) {
+        if (selectedId && selectedId !== activeRoot && !isPanelOpen && !isRightPanelOpen && !userManuallyClosed) {
             setIsRightPanelOpen(true);
         }
     }, [selectedId, isPanelOpen, isRightPanelOpen, setIsRightPanelOpen, userManuallyClosed]);
@@ -49,7 +47,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Panel toggle handler
     const handlePanelToggle = () => {
         // If both panels are open and there's a selected element, mark as manually closed
-        if (isPanelOpen && isRightPanelOpen && selectedId && selectedId !== 'tw-root') {
+        if (isPanelOpen && isRightPanelOpen && selectedId && selectedId !== activeRoot) {
             setUserManuallyClosed(true);
         }
         onPanelToggle()
@@ -235,7 +233,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 
     // Handle tree data changes from context menu
     const handleTreeDataChange = (newTreeData) => {
-        if (activeTab === 'banner') {
+        if (activeTab === 'tw-root--banner') {
             setBannerTreeData(newTreeData)
         } else {
             setModalTreeData(newTreeData)
@@ -258,7 +256,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 
     // Tree data manipulation
     const moveElement = (draggedId, targetId, position) => {
-        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
+        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
         const newTreeData = JSON.parse(JSON.stringify(currentTreeData))
         
         // Find and remove the dragged element
@@ -303,7 +301,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         insertElement(newTreeData)
         
         // Update the appropriate tree data
-        if (activeTab === 'banner') {
+        if (activeTab === 'tw-root--banner') {
             setBannerTreeData(newTreeData)
         } else {
             setModalTreeData(newTreeData)
@@ -314,7 +312,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const isChildOfDraggedItem = (itemId) => {
         if (!draggedItem) return false
         
-        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
+        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
         
         // Function to check if targetId is a descendant of ancestorId
         const isDescendantOf = (tree, targetId, ancestorId) => {
@@ -351,7 +349,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const isDescendantOfSelected = (itemId, selectedId) => {
         if (!selectedId || itemId === selectedId) return false
         
-        const currentTreeData = activeTab === 'banner' ? bannerTreeData : modalTreeData
+        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
         
         // Function to check if targetId is a descendant of ancestorId
         const isDescendantOf = (tree, targetId, ancestorId) => {
@@ -384,73 +382,15 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         return isDescendantOf(currentTreeData, itemId, selectedId)
     }
 
-    // Tree data structure for banner tab
-    const [bannerTreeData, setBannerTreeData] = useState([
-        {
-            id: 'banner',
-            label: 'Banner',
-            type: 'container',
-            children: [
-                {
-                    id: 'div',
-                    label: 'Div',
-                    type: 'container',
-                    children: [
-                        {
-                            id: 'text',
-                            label: 'Text',
-                            type: 'text'
-                        },
-                        {
-                            id: 'text-2',
-                            label: 'Text 2',
-                            type: 'text'
-                        }
-                    ]
-                },
-                {
-                    id: 'div-2',
-                    label: 'Div 2',
-                    type: 'container',
-                    children: [
-                        {
-                            id: 'text-3',
-                            label: 'Text 3',
-                            type: 'text'
-                        },
-                        {
-                            id: 'text-4',
-                            label: 'Text 4',
-                            type: 'text'
-                        }
-                    ]
-                }
-            ]
+    // Updates the tree banner and modal structures when the JSONtree changes (on load and in real time)
+    useEffect(() => {
+        if(JSONtree) {
+            setBannerTreeData([JSONtree.roots[0]])
+            setModalTreeData([JSONtree.roots[1]])
         }
-    ])
-
-    // Tree data structure for modal tab
-    const [modalTreeData, setModalTreeData] = useState([
-        {
-            id: 'modal',
-            label: 'Modal',
-            type: 'container',
-            children: [
-                {
-                    id: 'modal-content',
-                    label: 'Modal Content',
-                    type: 'container',
-                    children: [
-                        {
-                            id: 'modal-text',
-                            label: 'Text',
-                            type: 'text'
-                        }
-                    ]
-                }
-            ]
-        }
-    ])
+    },[JSONtree]);
+    const [bannerTreeData, setBannerTreeData] = useState([])
+    const [modalTreeData, setModalTreeData] = useState([])
 
     // Tree item renderer
     const renderTreeItem = (item, level = 0, parentId = null, isLastChild = false) => {
@@ -547,11 +487,16 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     
                     {/* Item icon */}
                     <div className="tw-builder__tree-item-icon">
-                        {item.type === 'text' ? (
-                            <span className="tw-builder__tree-item-text-icon">T</span>
-                        ) : (
-                            <div className="tw-builder__tree-item-square-icon"></div>
-                        )}
+                        {(() => {
+                            switch (item.icon) {
+                                case 'text':
+                                    return <span className="tw-builder__tree-item-text-icon">T</span>;
+                                case 'block':
+                                    return <div className="tw-builder__tree-item-square-icon"></div>;
+                                default:
+                                    return <div className="tw-builder__tree-item-square-icon"></div>;
+                            }
+                        })()}
                     </div>
                     
                     {/* Item label */}
@@ -746,17 +691,21 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     <div className="tw-builder__tab-container">
                         <div 
                             className="tw-builder__tab-slider" 
-                            style={{ transform: `translateX(${activeTab === 'banner' ? '0%' : '100%'})` }}
+                            style={{ transform: `translateX(${activeTab === 'tw-root--banner' ? '0%' : '100%'})` }}
                         ></div>
                         <button 
-                            className={`tw-builder__tab ${activeTab === 'banner' ? 'tw-builder__tab--active' : ''}`}
-                            onClick={() => setActiveTab('banner')}
+                            className={`tw-builder__tab ${activeTab === 'tw-root--banner' ? 'tw-builder__tab--active' : ''}`}
+                            onClick={() => {
+                                updateActiveRoot('tw-root--banner')
+                            }}
                         >
                             Banner
                         </button>
                         <button 
-                            className={`tw-builder__tab ${activeTab === 'modal' ? 'tw-builder__tab--active' : ''}`}
-                            onClick={() => setActiveTab('modal')}
+                            className={`tw-builder__tab ${activeTab === 'tw-root--modal' ? 'tw-builder__tab--active' : ''}`}
+                            onClick={() => {
+                                updateActiveRoot('tw-root--modal')
+                            }}
                         >
                             Modal
                         </button>
@@ -768,8 +717,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 {/* Tree view content that changes based on active tab */}
                 <div className="tw-builder__tree-content">
                     <div className="tw-builder__tree-container">
-                        {activeTab === 'banner' && bannerTreeData.map((item, index) => renderTreeItem(item, 0, null, index === bannerTreeData.length - 1))}
-                        {activeTab === 'modal' && modalTreeData.map((item, index) => renderTreeItem(item, 0, null, index === modalTreeData.length - 1))}
+                        {activeTab === 'tw-root--banner' && bannerTreeData.map((item, index) => renderTreeItem(item, 0, null, index === bannerTreeData.length - 1))}
+                        {activeTab === 'tw-root--modal' && modalTreeData.map((item, index) => renderTreeItem(item, 0, null, index === modalTreeData.length - 1))}
                     </div>
                 </div>
             </div>

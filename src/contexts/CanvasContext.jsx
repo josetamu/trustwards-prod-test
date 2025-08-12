@@ -82,11 +82,31 @@ export const CanvasProvider = ({ children, siteData }) => {
         if (siteData && state.present === null) {
             const userJSON = siteData.JSON;
             const initialTree = {
-                id: "tw-root",
-                classList: [],
-                tagName: "div",
-                children: [],
-                nestable: true,
+                idsData: [], /*for each id, stores its right panel properties*/
+                classesData: [], /*for each class, stores its right panel properties*/
+                activeRoot: "tw-root--banner", //stored active root
+                roots: [
+                    {
+                        id: "tw-root--banner", //banner root
+                        elementType: "banner",
+                        icon: "banner",
+                        label: "Banner",
+                        classList: [],
+                        tagName: "div",
+                        children: [],
+                        nestable: true,
+                    },
+                    {
+                        id: "tw-root--modal", //modal root
+                        elementType: "modal",
+                        icon: "modal",
+                        label: "Modal",
+                        classList: [],
+                        tagName: "div",
+                        children: [],
+                        nestable: true,
+                    }
+                ]
             };
             const initialState = {
                 past: [],
@@ -94,11 +114,25 @@ export const CanvasProvider = ({ children, siteData }) => {
                 future: []
             };
             dispatch({ type: 'INIT', payload: initialState.present });
+            setActiveRoot(initialState.present.activeRoot); //Set the active root as the initial root
+            setActiveTab(initialState.present.activeRoot); //Set the active root as the initial tab
         }
     }, [siteData, state.present]);    
 
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
-    const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
+    const [selectedId, setSelectedId] = React.useState(null); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
+    const [activeRoot, setActiveRoot] = React.useState(null);
+    const [activeTab, setActiveTab] = React.useState(null); //State to track which tab is currently active (banner or modal)
+
+    //this happens when changing the tab: changes active root, nothing is selected, sets the active tab and updates the real JSONtree
+    const updateActiveRoot = (newActiveRoot) => {
+        setActiveRoot(newActiveRoot);
+        setSelectedId(null); //Reset the selectedId when the active root changes
+        setActiveTab(newActiveRoot);
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the update
+        updated.activeRoot = newActiveRoot;
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+    }
 
     //Updates the real JSONtree
     const setJSONtree = useCallback((newTree, saveToHistory = true) => {
@@ -144,7 +178,7 @@ export const CanvasProvider = ({ children, siteData }) => {
     */
     const addElement = (properties, parentId, insertIndex = null) => {
         const add = (node, parent) => {
-            const currentSelectedId = parentId || selectedId || "tw-root"; //Put it inside the parentId directly if given, otherwise use the selected element, otherwise fallback to the root
+            const currentSelectedId = parentId || selectedId || activeRoot; //Put it inside the parentId directly if given, otherwise use the selected element, otherwise fallback to the root
 
             if (node.id === currentSelectedId) {
                 const newNode = { ...properties, id: generateUniqueId(JSONtree) }; //Creates a new node with the properties given and a unique id
@@ -179,7 +213,7 @@ export const CanvasProvider = ({ children, siteData }) => {
         };
 
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addElement
-        add(updated, null); //Add the element in the current JSONtree
+        add(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1], null); //Add the element in the current JSONtree, in the activeRoot
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };    
 
@@ -288,9 +322,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             }
         };
     
-        removeElementById(updated);
-        insertElementById(updated);
-    
+        removeElementById(updated.activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]);
+        insertElementById(updated.activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]);
         setJSONtree(updated);
     };   
 
@@ -302,6 +335,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'block': //Block
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "block",
+                        icon: "block",
                         tagName: "div",
                         label: "Block",
                         children: [],
@@ -310,6 +345,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "block",
+                        icon: "block",
                         tagName: "div",
                         label: "Block",
                         children: [],
@@ -321,6 +358,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'image': //Image
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "image",
+                        icon: "image",
                         tagName: "img",
                         label: "Image",
                         src: '/assets/builder-default-image.svg',
@@ -328,6 +367,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "image",
+                        icon: "image",
                         tagName: "img",
                         label: "Image",
                         src: '/assets/builder-default-image.svg',
@@ -338,12 +379,16 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'divider': //Divider
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "divider",
+                        icon: "divider",
                         tagName: "div",
                         label: "Divider",
                         classList: ["tw-divider"]
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "divider",
+                        icon: "divider",
                         tagName: "div",
                         label: "Divider",
                         classList: ["tw-divider"]
@@ -353,6 +398,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'text': //Text
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "text",
+                        icon: "text",
                         tagName: "h3",
                         label: "Text",
                         text: "New Text",
@@ -360,6 +407,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "text",
+                        icon: "text",
                         tagName: "h3",
                         label: "Text",
                         text: "New Text",
@@ -370,6 +419,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'accept-all': //Accept all
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Accept all",
                         text: "Accept all",
@@ -377,6 +428,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Accept all",
                         text: "Accept all",
@@ -387,6 +440,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'reject-all': //Reject all
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Reject all",
                         text: "Reject all",
@@ -394,6 +449,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Reject all",
                         text: "Reject all",
@@ -404,6 +461,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'open-modal': //Open modal
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Open Modal",
                         text: "Settings",
@@ -411,6 +470,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Open Modal",
                         text: "Settings",
@@ -421,6 +482,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'enable-categories': //Enable categories
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Enable Categories",
                         text: "Enable all",
@@ -428,6 +491,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Enable Categories",
                         text: "Enable all",
@@ -438,6 +503,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'disable-categories': //Disable categories
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Disable Categories",
                         text: "Disable all",
@@ -445,6 +512,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Disable Categories",
                         text: "Disable all",
@@ -455,6 +524,8 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'save-categories': //Save categories
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Save Categories",
                         text: "Save",
@@ -462,6 +533,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        elementType: "button",
+                        icon: "button",
                         tagName: "div",
                         label: "Save Categories",
                         text: "Save",
@@ -472,26 +545,36 @@ export const CanvasProvider = ({ children, siteData }) => {
             case 'categories': //Categories (block type)
                 if(containerId && insertIndex) { //Added from drag&drop
                     addElement({
+                        elementType: "categories",
+                        icon: "categories",
                         tagName: "div",
                         label: "Categories",
                         classList: ["tw-block", "tw-categories"],
                         children: [
                             {
+                                elementType: "block",
+                                icon: "block",
                                 tagName: "div", //Expander
                                 label: "Expander",
                                 classList: ["tw-block", "tw-categories__expander"],
                                 children: [
                                     {
+                                        elementType: "block",
+                                        icon: "block",
                                         tagName: "div", //Expander Header
                                         label: "Header",
                                         classList: ["tw-block", "tw-categories__expander-header"],
                                         children: [
                                             {
+                                                elementType: "block",
+                                                icon: "block",
                                                 tagName: "div", //Expander Header Label
                                                 label: "Label",
                                                 classList: ["tw-block", "tw-categories__expander-header-title"],
                                                 children: [
                                                     {
+                                                        elementType: "block",
+                                                        icon: "block",
                                                         tagName: "div", //Expander Header Label Icon
                                                         label: "Icon",
                                                         children: [
@@ -523,6 +606,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                                                         classList: ["tw-categories__expander-icon"],
                                                     },
                                                     {
+                                                        elementType: "text",
+                                                        icon: "text",
                                                         tagName: "span", //Expander Header Label Title
                                                         label: "Text",
                                                         classList: ["tw-text"],
@@ -531,6 +616,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                                                 ],
                                             },
                                             {
+                                                elementType: "block",
+                                                icon: "block",
                                                 tagName: "div", //Expander Switch
                                                 label: "Switch",
                                                 children: [
@@ -554,11 +641,15 @@ export const CanvasProvider = ({ children, siteData }) => {
                                         ],
                                     },
                                     {
+                                        elementType: "block",
+                                        icon: "block",
                                         tagName: "div", //Expander content
                                         label: "Block",
                                         classList: ["tw-block", "tw-categories__expander-content"],
                                         children: [
                                             {
+                                                elementType: "text",
+                                                icon: "text",
                                                 tagName: "p", //Expander Content Paragraph
                                                 label: "Text",
                                                 classList: ["tw-text"],
@@ -573,26 +664,36 @@ export const CanvasProvider = ({ children, siteData }) => {
                     }, containerId, insertIndex);
                 } else { //Added from toolbar
                     addElement({
+                        type: "categories",
+                        icon: "categories",
                         tagName: "div",
                         label: "Categories",
                         classList: ["tw-block", "tw-categories"],
                         children: [
                             {
+                                elementType: "block",
+                                icon: "block",
                                 tagName: "div", //Expander
                                 label: "Expander",
                                 classList: ["tw-block", "tw-categories__expander"],
                                 children: [
                                     {
+                                        elementType: "block",
+                                        icon: "block",
                                         tagName: "div", //Expander Header
                                         label: "Header",
                                         classList: ["tw-block", "tw-categories__expander-header"],
                                         children: [
                                             {
+                                                elementType: "block",
+                                                icon: "block",
                                                 tagName: "div", //Expander Header Label
                                                 label: "Label",
                                                 classList: ["tw-block", "tw-categories__expander-header-title"],
                                                 children: [
                                                     {
+                                                        elementType: "block",
+                                                        icon: "block",
                                                         tagName: "div", //Expander Header Label Icon
                                                         label: "Icon",
                                                         children: [
@@ -605,7 +706,7 @@ export const CanvasProvider = ({ children, siteData }) => {
                                                                     fill: "none"
                                                                 },
                                                                 classList: [],
-                                                                draggable: false,
+                                                                draggable: false, //cant be displayed, selectable or draggable
                                                                 children: [
                                                                     {
                                                                         tagName: "path",
@@ -616,7 +717,7 @@ export const CanvasProvider = ({ children, siteData }) => {
                                                                             fill: "currentColor"
                                                                         },
                                                                         classList: [],
-                                                                        draggable: false,
+                                                                        draggable: false, //cant be displayed, selectable or draggable
                                                                     }
                                                                 ]
                                                             }
@@ -624,6 +725,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                                                         classList: ["tw-categories__expander-icon"],
                                                     },
                                                     {
+                                                        elementType: "text",
+                                                        icon: "text",
                                                         tagName: "span", //Expander Header Label Title
                                                         label: "Text",
                                                         classList: ["tw-text"],
@@ -632,6 +735,8 @@ export const CanvasProvider = ({ children, siteData }) => {
                                                 ],
                                             },
                                             {
+                                                elementType: "switch",
+                                                icon: "switch",
                                                 tagName: "div", //Expander Switch
                                                 label: "Switch",
                                                 children: [
@@ -642,12 +747,12 @@ export const CanvasProvider = ({ children, siteData }) => {
                                                             name: "category",
                                                         },
                                                         classList: ["tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
-                                                        draggable: false,
+                                                        draggable: false, //cant be displayed, selectable or draggable
                                                     },
                                                     {
                                                         tagName: "span",
                                                         classList: ["tw-categories__expander-toggle-icon"],
-                                                        draggable: false,
+                                                        draggable: false, //cant be displayed, selectable or draggable
                                                     }
                                                 ],
                                                 classList: ["tw-categories__expander-toggle", "tw-categories__expander-toggle--category"],
@@ -655,11 +760,15 @@ export const CanvasProvider = ({ children, siteData }) => {
                                         ],
                                     },
                                     {
+                                        elementType: "block",
+                                        icon: "block",
                                         tagName: "div", //Expander content
                                         label: "Block",
                                         classList: ["tw-block", "tw-categories__expander-content"],
                                         children: [
                                             {
+                                                elementType: "text",
+                                                icon: "text",
                                                 tagName: "p", //Expander Content Paragraph
                                                 label: "Text",
                                                 classList: ["tw-text"],
@@ -679,7 +788,7 @@ export const CanvasProvider = ({ children, siteData }) => {
 
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
-        moveElement, createElement }}>
+        moveElement, createElement, activeRoot, updateActiveRoot, activeTab }}>
             {children}
         </CanvasContext.Provider>
     );

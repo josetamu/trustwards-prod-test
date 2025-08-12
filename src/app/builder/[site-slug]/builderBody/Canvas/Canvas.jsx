@@ -4,7 +4,7 @@ import { useCanvas } from '@contexts/CanvasContext';
 import React, { useEffect } from "react";
 
 export const Canvas = () => {
-    const { JSONtree, selectedId, setSelectedId, moveElement, createElement } = useCanvas();
+    const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement } = useCanvas();
 
     /*
     * Used by the canvas to convert the JSONtree into React elements
@@ -12,9 +12,10 @@ export const Canvas = () => {
     * setSelectedId - When an element is clicked, set it as the selectedId
     * selectedId - Current element selected
     */
-    const renderNode = (node, selectedId, setSelectedId) => {
+    const renderNode = (node, selectedId) => {
         const isSelected = node.id === selectedId;
-        const isRoot = node.id === 'tw-root';
+        const isRoot = node.id === 'tw-root--banner' || node.id === 'tw-root--modal';
+        const isActiveRoot = node.id === activeRoot;
 
         // Set the node properties from its JSON (id, classes, tag, children, etc..)
         const nodeProps = {
@@ -23,7 +24,9 @@ export const Canvas = () => {
 
             onClick: (e) => {
                 e.stopPropagation();
-                setSelectedId(node.id); // Set the clicked element as the selectedId
+                if(node.draggable !== false) { //If the node is not draggable, it can't be selected neither
+                    setSelectedId(node.id); // Set the clicked element as the selectedId
+                }
             },
 
             //Add canvas classes to the node (dont use addClass on this render because it will render JSONtree in a loop)
@@ -31,9 +34,9 @@ export const Canvas = () => {
                 ...node.classList,
                 ...(node.classList.includes('tw-block') && node.children.length === 0 ? ['tw-block--empty'] : []), // Add the class tw-block--empty if the node has the class tw-block and no children
                 ...(isSelected ? ['tw-builder__active'] : []), // Add the class tw-builder__active to the classList of the selected element
+                ...(isActiveRoot ? ['tw-active-root'] : []), // Add the class tw-active-root to the classList of the active root element
             ].join(' '),
 
-            draggable: node.draggable,
             ...(isRoot || node.draggable === false ? {} : { //If the node is the root or the node is not draggable, don't make it draggable
                 draggable: true,
                 onDragStart: (e) => {
@@ -44,8 +47,8 @@ export const Canvas = () => {
         };
     
         const children = node.children?.map((child) => //Renders the children of the node (JSON tree) in loop
-            renderNode(child, selectedId, setSelectedId)
-        );
+            renderNode(child, selectedId)
+        )
 
         switch (node.tagName) {
             case 'img':
@@ -61,10 +64,10 @@ export const Canvas = () => {
         }
     };
 
+    //Categories element script function
     useEffect(() => {
         categoriesElementsFunction();
     }, [JSONtree]); //We need to run this function every time the JSONtree changes (Could be optimized??)
-
     const categoriesElementsFunction = () => {
         //we can check for custom attributes here to customize the animation
 
@@ -97,8 +100,11 @@ export const Canvas = () => {
         const handleClickOutside = (e) => {
             if (!e.target.closest('.tw-builder__canvas') && 
             !e.target.closest('.tw-builder__toolbar') &&
-            !e.target.closest('.tw-builder__right-body')) {
-                setSelectedId('tw-root');
+            !e.target.closest('.tw-builder__right-body') &&
+            !e.target.closest('.tw-builder__tab-container') &&
+            !e.target.closest('.tw-builder__tree-content')) {
+                setSelectedId(activeRoot);
+                
             }
         };
         document.addEventListener('click', handleClickOutside);
@@ -184,11 +190,11 @@ export const Canvas = () => {
         const canvas = document.querySelector('.tw-builder__canvas');
         const dropTarget = document.elementFromPoint(dropX, dropY);
         const container = dropTarget.closest('.tw-block') || canvas;
-        const containerId = container?.id || 'tw-root';
+        const containerId = container?.id || activeRoot;
 
         let logicalContainer = container;
         if (container === canvas) {
-            logicalContainer = canvas.querySelector('#tw-root');
+            logicalContainer = canvas.querySelector(`#${activeRoot}`);
         }
 
         const children = Array.from(logicalContainer?.children || []);
@@ -229,7 +235,7 @@ export const Canvas = () => {
         const canvas = document.querySelector('.tw-builder__canvas');
         const dropTarget = document.elementFromPoint(dropX, dropY);
         const container = dropTarget.closest('.tw-block') || canvas;
-        const containerId = container?.id || 'tw-root';
+        const containerId = container?.id || activeRoot;
 
         document.querySelectorAll('.tw-block--hover-drop').forEach(el => el.classList.remove('tw-block--hover-drop')); //only one hover drop at a time
 
@@ -247,7 +253,7 @@ export const Canvas = () => {
     
         let logicalContainer = container;
         if (container === canvas) {
-            logicalContainer = canvas.querySelector('#tw-root');
+            logicalContainer = canvas.querySelector(`#${activeRoot}`);
         }
     
         const children = Array.from(logicalContainer?.children || []);
@@ -312,7 +318,7 @@ export const Canvas = () => {
             onDrop={handleDrop} /*Create element on drop (resposability transfered from toolbar)*/
             onMouseLeave={handleMouseLeave} /*Remove drop indicator instantly as soon as the mouse leaves the canvas*/
             >
-                {JSONtree && renderNode(JSONtree, selectedId, setSelectedId) /* Render the JSONtree */}
+                {JSONtree && JSONtree.roots.map(root => renderNode(root, selectedId))} {/* Renders both root nodes */}
             </div>
             <div className="tw-builder__handlebar tw-builder__handlebar--right"></div>
         </div>
