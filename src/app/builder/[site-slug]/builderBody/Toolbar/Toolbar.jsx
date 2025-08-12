@@ -3,44 +3,7 @@ import "./Toolbar.css";
 import { useCanvas } from "@contexts/CanvasContext";
 
 export const Toolbar = () => {
-    const { addElement } = useCanvas();
-
-    /*Layout category*/
-    const createBlock = () => {
-        addElement({
-            tagName: "div",
-            children: [],
-            classList: ["tw-builder__block"]
-        });
-    };
-    const createImage = () => {
-        addElement({
-            tagName: "img",
-            src: '/assets/builder-default-image.svg',
-            classList: ["tw-builder__image"]
-        });
-    };
-    const createDivider = () => {
-        addElement({
-            tagName: "div",
-            classList: ["tw-builder__divider"]
-        });
-    };
-
-    /*Text category*/
-    const createText = () => {
-        addElement({
-            tagName: "h3",
-            text: "New Text",
-            classList: ["tw-builder__text"]
-        });
-    };
-
-    /*Cookies category*/
-
-    const handleDragStart = (e, type) => {
-        e.dataTransfer.setData('elementType', type);
-    };
+    const { createElement } = useCanvas();
 
     return (
         <div className="tw-builder__toolbar">
@@ -54,13 +17,29 @@ export const Toolbar = () => {
                 <div className="tw-builder__toolbar-dropdown">
                     <div className="tw-builder__toolbar-dropdown-column">
 
-                        <div draggable onDragStart={(e) => handleDragStart(e, 'block')} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--block">
+                        <div
+                        onClick={() => createElement("block")} /*Create block on click*/
+
+                        draggable
+                        onDragStart={(e) => {
+                            e.dataTransfer.setData("elementType", "block"); /*Create block on drag (resposability transfered to canvas)*/
+                        }}
+
+                        className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--block">
                             <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--block"></div>
                             <div className="tw-builder__toolbar-dropdown-item-title">
                                 Block
                             </div>
                         </div>
-                        <div draggable onDragStart={(e) => handleDragStart(e, 'image')} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--image">
+                        <div 
+                        onClick={() => createElement("image")} /*Create image on click*/
+
+                        draggable
+                        onDragStart={(e) => {
+                            e.dataTransfer.setData("elementType", "image"); /*Create image on drag (resposability transfered to canvas)*/
+                        }}
+                        
+                        className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--image">
                             <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--image">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" fill="none">
                                     <path fillRule="evenodd" clipRule="evenodd" d="M7.04346 0.875H6.9566C5.68731 0.874989 4.67532 0.874977 3.88191 0.981645C3.06269 1.09179 2.38964 1.32519 1.85742 1.85742C1.32519 2.38964 1.09179 3.06269 0.981645 3.88191C0.874977 4.67532 0.874989 5.68724 0.875 6.95654V7.04346C0.874989 8.31273 0.874977 9.3247 0.981645 10.1181C1.09179 10.9373 1.32519 11.6104 1.85742 12.1426C2.38964 12.6748 3.06269 12.9082 3.88191 13.0184C4.67533 13.125 5.68726 13.125 6.9566 13.125H7.0434C8.31273 13.125 9.32464 13.125 10.1181 13.0184C10.9373 12.9082 11.6104 12.6748 12.1426 12.1426C12.6748 11.6104 12.9082 10.9373 13.0184 10.1181C13.125 9.3247 13.125 8.31273 13.125 7.0434V6.9566C13.125 5.68726 13.125 4.67533 13.0184 3.88191C12.9082 3.06269 12.6748 2.38964 12.1426 1.85742C11.6104 1.32519 10.9373 1.09179 10.1181 0.981645C9.3247 0.874977 8.31273 0.874989 7.04346 0.875ZM3.20833 4.375C3.20833 3.73067 3.73067 3.20833 4.375 3.20833C5.01933 3.20833 5.54167 3.73067 5.54167 4.375C5.54167 5.01933 5.01933 5.54167 4.375 5.54167C3.73067 5.54167 3.20833 5.01933 3.20833 4.375ZM4.03773 11.8621C3.9666 11.8525 3.8987 11.8421 3.83382 11.8308C4.94496 10.4869 6.0774 9.12911 7.34936 8.27622C8.08436 7.78342 8.8403 7.47897 9.63906 7.44147C10.3393 7.40851 11.106 7.57907 11.9561 8.05729C11.9501 8.84537 11.9299 9.46108 11.8624 9.96263C11.7697 10.6525 11.5973 11.0383 11.318 11.3176C11.0386 11.597 10.6528 11.7693 9.96298 11.8621C9.25639 11.9571 8.32306 11.9583 7.00035 11.9583C5.67769 11.9583 4.74437 11.9571 4.03773 11.8621Z"/>
@@ -70,7 +49,15 @@ export const Toolbar = () => {
                                 Image
                             </div>
                         </div>
-                        <div draggable onDragStart={(e) => handleDragStart(e, 'divider')} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--divider">
+                        <div
+                        onClick={() => createElement("divider")} /*Create divider on click*/
+
+                        draggable
+                        onDragStart={(e) => {
+                            e.dataTransfer.setData("elementType", "divider"); /*Create divider on drag (resposability transfered to canvas)*/
+                        }}
+                        
+                        className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--divider">
                             <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--divider"></div>
                             <div className="tw-builder__toolbar-dropdown-item-title">
                                 Divider
@@ -89,7 +76,15 @@ export const Toolbar = () => {
                 <div className="tw-builder__toolbar-dropdown">
                     <div className="tw-builder__toolbar-dropdown-column">
 
-                        <div draggable onDragStart={(e) => handleDragStart(e, 'text')} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--text">
+                        <div
+                        onClick={() => createElement("text")} /*Create text on click*/
+
+                        draggable
+                        onDragStart={(e) => {
+                            e.dataTransfer.setData("elementType", "text"); /*Create text on drag (resposability transfered to canvas)*/
+                        }}
+                        
+                        className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--text">
                             <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--text">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 13 13" fill="none">
                                     <path d="M1 3.0625V1H12V3.0625M6.5 1V12M4.4375 12H8.5625" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -115,14 +110,30 @@ export const Toolbar = () => {
                     <div className="tw-builder__toolbar-dropdown-column">
                         <span className="tw-builder__toolbar-dropdown-column-title">Cookies</span>
 
-                        <div onClick={createText} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--accept-all">
+                        <div
+                        onClick={() => createElement("accept-all")} /*Create accept all on click*/
+
+                        draggable
+                        onDragStart={(e) => {
+                            e.dataTransfer.setData("elementType", "accept-all"); /*Create accept all on drag (resposability transfered to canvas)*/
+                        }}
+                        
+                        className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--accept-all">
                             <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--accept-all"></div>
                             <div className="tw-builder__toolbar-dropdown-item-title">
                                 Accept all
                             </div>
                         </div>
 
-                        <div onClick={createText} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--reject-all">
+                        <div
+                        onClick={() => createElement("reject-all")} /*Create reject all on click*/
+
+                        draggable
+                        onDragStart={(e) => {
+                            e.dataTransfer.setData("elementType", "reject-all"); /*Create reject all on drag (resposability transfered to canvas)*/
+                        }}
+                        
+                        className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--reject-all">
                             <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--reject-all"></div>
                             <div className="tw-builder__toolbar-dropdown-item-title">
                                 Reject all
@@ -136,21 +147,45 @@ export const Toolbar = () => {
                         <span className="tw-builder__toolbar-dropdown-column-title">Categories</span>
 
                         <div className="tw-builder__toolbar-dropdown-grid">
-                            <div onClick={createText} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--open-modal">
+                            <div
+                            onClick={() => createElement("open-modal")} /*Create open modal on click*/
+
+                            draggable
+                            onDragStart={(e) => {
+                                e.dataTransfer.setData("elementType", "open-modal"); /*Create open modal on drag (resposability transfered to canvas)*/
+                            }}
+                            
+                            className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--open-modal">
                                 <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--open-modal"></div>
                                 <div className="tw-builder__toolbar-dropdown-item-title">
                                     Open Modal
                                 </div>
                             </div>
 
-                            <div onClick={createText} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--save-categories">
+                            <div
+                            onClick={() => createElement("save-categories")} /*Create save categories on click*/
+
+                            draggable
+                            onDragStart={(e) => {
+                                e.dataTransfer.setData("elementType", "save-categories"); /*Create save categories on drag (resposability transfered to canvas)*/
+                            }}
+                            
+                            className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--save-categories">
                                 <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--save-categories"></div>
                                 <div className="tw-builder__toolbar-dropdown-item-title">
                                     Save categ.
                                 </div>
                             </div>
 
-                            <div onClick={createText} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--categories">
+                            <div
+                            onClick={() => createElement("categories")} /*Create categories on click*/
+
+                            draggable
+                            onDragStart={(e) => {
+                                e.dataTransfer.setData("elementType", "categories"); /*Create categories on drag (resposability transfered to canvas)*/
+                            }}
+                            
+                            className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--categories">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 81 107" fill="none">
                                     <g filter="url(#filter0_d_1016_9)">
                                     <rect x="4" y="76" width="73" height="25" rx="6" fill="white"/>
@@ -244,14 +279,30 @@ export const Toolbar = () => {
                                 </div>
                             </div>
 
-                            <div onClick={createText} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--enable-categories">
+                            <div
+                            onClick={() => createElement("enable-categories")} /*Create enable categories on click*/
+
+                            draggable
+                            onDragStart={(e) => {
+                                e.dataTransfer.setData("elementType", "enable-categories"); /*Create enable categories on drag (resposability transfered to canvas)*/
+                            }}
+                            
+                            className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--enable-categories">
                                 <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--enable-categories"></div>
                                 <div className="tw-builder__toolbar-dropdown-item-title">
                                     Enable categ.
                                 </div>
                             </div>
 
-                            <div onClick={createText} className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--disable-categories">
+                            <div
+                            onClick={() => createElement("disable-categories")} /*Create disable categories on click*/
+
+                            draggable
+                            onDragStart={(e) => {
+                                e.dataTransfer.setData("elementType", "disable-categories"); /*Create disable categories on drag (resposability transfered to canvas)*/
+                            }}
+                            
+                            className="tw-builder__toolbar-dropdown-item tw-builder__toolbar-dropdown-item--disable-categories">
                                 <div className="tw-builder__toolbar-dropdown-item-icon tw-builder__toolbar-dropdown-item-icon--disable-categories"></div>
                                 <div className="tw-builder__toolbar-dropdown-item-title">
                                     Disable categ.

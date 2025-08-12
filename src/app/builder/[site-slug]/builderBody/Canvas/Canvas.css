@@ -3,7 +3,25 @@
 }
 .tw-builder__active:not(#tw-root){
     outline: 1px solid #0099FE;
+    outline-offset: -1px;
 }
 #tw-root{
     height: 100%;
+}
+
+/*Drop indicator*/
+.tw-builder__canvas .tw-builder__drop-indicator {
+    background-color: #0099FE;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+    position: relative;
+
+    height: 1px;
+    width: 100%;
+}
+.tw-builder__canvas .tw-block--hover-drop {
+    outline: 1px dashed #0099FE;
+    outline-offset: -1px;
+    background-color: #0099FE15;
 }

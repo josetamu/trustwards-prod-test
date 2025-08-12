@@ -79,22 +79,23 @@ export const CanvasProvider = ({ children, siteData }) => {
     });
 
     useEffect(() => {
-        if (siteData) {
+        if (siteData && state.present === null) {
             const userJSON = siteData.JSON;
             const initialTree = {
                 id: "tw-root",
                 classList: [],
                 tagName: "div",
                 children: [],
+                nestable: true,
             };
             const initialState = {
-                past: [], //undo stack
+                past: [],
                 present: userJSON ? userJSON : initialTree,
-                future: [] //redo stack
+                future: []
             };
             dispatch({ type: 'INIT', payload: initialState.present });
         }
-    }, [siteData]);
+    }, [siteData, state.present]);    
 
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState("tw-root"); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
@@ -136,27 +137,51 @@ export const CanvasProvider = ({ children, siteData }) => {
     }, [undo, redo]);
 
     /*
-    * Add element in the JSONtree inside the current selectedId (Creation of the React element is managed by Canvas.jsx)
+    * Add element in the JSONtree inside the parentId given (drag & drop system) or if not given, then the current selectedId (Creation of the React element is managed by Canvas.jsx)
     * properties - Add the element in the JSONtree with its properties with format: {tagName: "div", children: [], etc..} - id and classList are created automatically
+    * parentId - The id of the parent where the element will be added (optional)
+    * insertIndex - The index where the element will be added (optional - used by drag & drop)
     */
-    const addElement = (properties) => {
+    const addElement = (properties, parentId, insertIndex = null) => {
         const add = (node, parent) => {
-            const currentSelectedId = selectedId || "tw-root"; // Ensure selectedId defaults to "tw-root" if empty
+            const currentSelectedId = parentId || selectedId || "tw-root"; //Put it inside the parentId directly if given, otherwise use the selected element, otherwise fallback to the root
+
             if (node.id === currentSelectedId) {
-                if (node.children) {
-                    node.children = [...node.children, { ...properties, id: generateUniqueId(JSONtree) }]; //Node has children attribute. Put it as its child
-                } else if (parent) {
-                    const index = parent.children.findIndex(child => child.id === node.id);
-                    parent.children.splice(index + 1, 0, { ...properties, id: generateUniqueId(JSONtree) }); //Node has no children attribute. Put it as its first sibling
+                const newNode = { ...properties, id: generateUniqueId(JSONtree) }; //Creates a new node with the properties given and a unique id
+
+                // Assign unique IDs to all children recursively
+                const assignIdsRecursively = (children) => {
+                    return children.map(child => {
+                        const newChild = { ...child, id: generateUniqueId(JSONtree) };
+                        if (newChild.children) {
+                            newChild.children = assignIdsRecursively(newChild.children);
+                        }
+                        return newChild;
+                    });
+                };
+                if (newNode.children) {
+                    newNode.children = assignIdsRecursively(newNode.children);
                 }
-            } else if (node.children) {
+
+                if (node.children) { //If the selected node has children
+                    if (insertIndex === null || insertIndex >= node.children.length) { //If the insertIndex is null or exceeds the number of children, append the new node to the end
+                        node.children = [...node.children, newNode];
+                    } else { //If the insertIndex is valid, insert the new node at the specified index
+                        node.children.splice(insertIndex, 0, newNode);
+                    }
+                } else if (parent) { //If the selected node has no children but has a parent, insert the new node immediately after the current node
+                    const index = parent.children.findIndex(child => child.id === node.id);
+                    parent.children.splice(index + 1, 0, newNode);
+                }
+            } else if (node.children) { // Recursively search through children to find the correct node for insertion
                 node.children.forEach(child => add(child, node));
             }
         };
-        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the add
-        add(updated, null); //Add the new element in the current JSONtree
+
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addElement
+        add(updated, null); //Add the element in the current JSONtree
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
-    };
+    };    
 
     /*
     * Remove element from the JSONtree (Delete of the React element is managed by Canvas.jsx)
@@ -217,8 +242,444 @@ export const CanvasProvider = ({ children, siteData }) => {
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
 
+    /*
+    * Move element (used by drag & drop)
+    * elementId - The id of the element to move
+    * newParentId - The id of the new parent
+    * insertIndex - The index where the element will be inserted
+    */
+    const moveElement = (elementId, newParentId, insertIndex) => {
+        const updated = deepCopy(JSONtree);
+        let elementToMove = null;
+        let originalParentId = null;
+        let originalIndex = null;
+    
+        const removeElementById = (node) => {
+            if (!node.children) return;
+    
+            node.children = node.children.filter((child, index) => {
+                if (child.id === elementId) {
+                    elementToMove = child;
+                    originalParentId = node.id;
+                    originalIndex = index;
+                    return false;
+                }
+                return true;
+            });
+    
+            node.children.forEach(removeElementById);
+        };
+    
+        const insertElementById = (node) => {
+            if (node.id === newParentId) {
+                if (!node.children) node.children = [];
+    
+                if (newParentId === originalParentId && originalIndex < insertIndex) {
+                    insertIndex -= 1;
+                }
+    
+                if (insertIndex >= node.children.length) {
+                    node.children.push(elementToMove);
+                } else {
+                    node.children.splice(insertIndex, 0, elementToMove);
+                }
+            } else if (node.children) {
+                node.children.forEach(insertElementById);
+            }
+        };
+    
+        removeElementById(updated);
+        insertElementById(updated);
+    
+        setJSONtree(updated);
+    };   
+
+    /*
+    * Elements creation
+    */
+    const createElement = (type, containerId, insertIndex) => {
+        switch(type) {
+            case 'block': //Block
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Block",
+                        children: [],
+                        classList: ["tw-block"],
+                        nestable: true,
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Block",
+                        children: [],
+                        classList: ["tw-block"],
+                        nestable: true,
+                    });
+                }
+            break;
+            case 'image': //Image
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "img",
+                        label: "Image",
+                        src: '/assets/builder-default-image.svg',
+                        classList: ["tw-image"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "img",
+                        label: "Image",
+                        src: '/assets/builder-default-image.svg',
+                        classList: ["tw-image"]
+                    });
+                }
+            break;
+            case 'divider': //Divider
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Divider",
+                        classList: ["tw-divider"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Divider",
+                        classList: ["tw-divider"]
+                    });
+                }
+            break;
+            case 'text': //Text
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "h3",
+                        label: "Text",
+                        text: "New Text",
+                        classList: ["tw-text"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "h3",
+                        label: "Text",
+                        text: "New Text",
+                        classList: ["tw-text"]
+                    });
+                }
+            break;
+            case 'accept-all': //Accept all
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Accept all",
+                        text: "Accept all",
+                        classList: ["tw-accept-all"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Accept all",
+                        text: "Accept all",
+                        classList: ["tw-accept-all"]
+                    });
+                }
+            break;
+            case 'reject-all': //Reject all
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Reject all",
+                        text: "Reject all",
+                        classList: ["tw-reject-all"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Reject all",
+                        text: "Reject all",
+                        classList: ["tw-reject-all"]
+                    });
+                }
+            break;
+            case 'open-modal': //Open modal
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Open Modal",
+                        text: "Settings",
+                        classList: ["tw-open-modal"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Open Modal",
+                        text: "Settings",
+                        classList: ["tw-open-modal"]
+                    });
+                }
+            break;
+            case 'enable-categories': //Enable categories
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Enable Categories",
+                        text: "Enable all",
+                        classList: ["tw-enable-categories"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Enable Categories",
+                        text: "Enable all",
+                        classList: ["tw-enable-categories"]
+                    });
+                }
+            break;
+            case 'disable-categories': //Disable categories
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Disable Categories",
+                        text: "Disable all",
+                        classList: ["tw-disable-categories"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Disable Categories",
+                        text: "Disable all",
+                        classList: ["tw-disable-categories"]
+                    });
+                }
+            break;
+            case 'save-categories': //Save categories
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Save Categories",
+                        text: "Save",
+                        classList: ["tw-save-categories"]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Save Categories",
+                        text: "Save",
+                        classList: ["tw-save-categories"]
+                    });
+                }
+            break;
+            case 'categories': //Categories (block type)
+                if(containerId && insertIndex) { //Added from drag&drop
+                    addElement({
+                        tagName: "div",
+                        label: "Categories",
+                        classList: ["tw-block", "tw-categories"],
+                        children: [
+                            {
+                                tagName: "div", //Expander
+                                label: "Expander",
+                                classList: ["tw-block", "tw-categories__expander"],
+                                children: [
+                                    {
+                                        tagName: "div", //Expander Header
+                                        label: "Header",
+                                        classList: ["tw-block", "tw-categories__expander-header"],
+                                        children: [
+                                            {
+                                                tagName: "div", //Expander Header Label
+                                                label: "Label",
+                                                classList: ["tw-block", "tw-categories__expander-header-title"],
+                                                children: [
+                                                    {
+                                                        tagName: "div", //Expander Header Label Icon
+                                                        label: "Icon",
+                                                        children: [
+                                                            {
+                                                                tagName: "svg",
+                                                                attributes: {
+                                                                    xmlns: "http://www.w3.org/2000/svg",
+                                                                    viewBox: "0 0 24 24",
+                                                                    color: "currentColor",
+                                                                    fill: "none"
+                                                                },
+                                                                classList: [],
+                                                                draggable: false,
+                                                                children: [
+                                                                    {
+                                                                        tagName: "path",
+                                                                        attributes: {
+                                                                            fillRule: "evenodd",
+                                                                            clipRule: "evenodd",
+                                                                            d: "M12 2.75C12.6904 2.75 13.25 3.30964 13.25 4V10.75H20C20.6904 10.75 21.25 11.3096 21.25 12C21.25 12.6904 20.6904 13.25 20 13.25H13.25V20C13.25 20.6904 12.6904 21.25 12 21.25C11.3096 21.25 10.75 20.6904 10.75 20V13.25H4C3.30964 13.25 2.75 12.6904 2.75 12C2.75 11.3096 3.30964 10.75 4 10.75H10.75V4C10.75 3.30964 11.3096 2.75 12 2.75Z",
+                                                                            fill: "currentColor"
+                                                                        },
+                                                                        classList: [],
+                                                                        draggable: false,
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        classList: ["tw-categories__expander-icon"],
+                                                    },
+                                                    {
+                                                        tagName: "span", //Expander Header Label Title
+                                                        label: "Text",
+                                                        classList: ["tw-text"],
+                                                        text: "Category",
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                tagName: "div", //Expander Switch
+                                                label: "Switch",
+                                                children: [
+                                                    {
+                                                        tagName: "input",
+                                                        attributes: {
+                                                            type: "checkbox",
+                                                            name: "category",
+                                                        },
+                                                        classList: ["tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
+                                                        draggable: false,
+                                                    },
+                                                    {
+                                                        tagName: "span",
+                                                        classList: ["tw-categories__expander-toggle-icon"],
+                                                        draggable: false,
+                                                    }
+                                                ],
+                                                classList: ["tw-categories__expander-toggle", "tw-categories__expander-toggle--category"],
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        tagName: "div", //Expander content
+                                        label: "Block",
+                                        classList: ["tw-block", "tw-categories__expander-content"],
+                                        children: [
+                                            {
+                                                tagName: "p", //Expander Content Paragraph
+                                                label: "Text",
+                                                classList: ["tw-text"],
+                                                text: "Here goes a great description of the category.",
+                                            },
+                                            
+                                        ],
+                                    },
+                                ],
+                            },
+                        ]
+                    }, containerId, insertIndex);
+                } else { //Added from toolbar
+                    addElement({
+                        tagName: "div",
+                        label: "Categories",
+                        classList: ["tw-block", "tw-categories"],
+                        children: [
+                            {
+                                tagName: "div", //Expander
+                                label: "Expander",
+                                classList: ["tw-block", "tw-categories__expander"],
+                                children: [
+                                    {
+                                        tagName: "div", //Expander Header
+                                        label: "Header",
+                                        classList: ["tw-block", "tw-categories__expander-header"],
+                                        children: [
+                                            {
+                                                tagName: "div", //Expander Header Label
+                                                label: "Label",
+                                                classList: ["tw-block", "tw-categories__expander-header-title"],
+                                                children: [
+                                                    {
+                                                        tagName: "div", //Expander Header Label Icon
+                                                        label: "Icon",
+                                                        children: [
+                                                            {
+                                                                tagName: "svg",
+                                                                attributes: {
+                                                                    xmlns: "http://www.w3.org/2000/svg",
+                                                                    viewBox: "0 0 24 24",
+                                                                    color: "currentColor",
+                                                                    fill: "none"
+                                                                },
+                                                                classList: [],
+                                                                draggable: false,
+                                                                children: [
+                                                                    {
+                                                                        tagName: "path",
+                                                                        attributes: {
+                                                                            fillRule: "evenodd",
+                                                                            clipRule: "evenodd",
+                                                                            d: "M12 2.75C12.6904 2.75 13.25 3.30964 13.25 4V10.75H20C20.6904 10.75 21.25 11.3096 21.25 12C21.25 12.6904 20.6904 13.25 20 13.25H13.25V20C13.25 20.6904 12.6904 21.25 12 21.25C11.3096 21.25 10.75 20.6904 10.75 20V13.25H4C3.30964 13.25 2.75 12.6904 2.75 12C2.75 11.3096 3.30964 10.75 4 10.75H10.75V4C10.75 3.30964 11.3096 2.75 12 2.75Z",
+                                                                            fill: "currentColor"
+                                                                        },
+                                                                        classList: [],
+                                                                        draggable: false,
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        classList: ["tw-categories__expander-icon"],
+                                                    },
+                                                    {
+                                                        tagName: "span", //Expander Header Label Title
+                                                        label: "Text",
+                                                        classList: ["tw-text"],
+                                                        text: "Category",
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                tagName: "div", //Expander Switch
+                                                label: "Switch",
+                                                children: [
+                                                    {
+                                                        tagName: "input",
+                                                        attributes: {
+                                                            type: "checkbox",
+                                                            name: "category",
+                                                        },
+                                                        classList: ["tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
+                                                        draggable: false,
+                                                    },
+                                                    {
+                                                        tagName: "span",
+                                                        classList: ["tw-categories__expander-toggle-icon"],
+                                                        draggable: false,
+                                                    }
+                                                ],
+                                                classList: ["tw-categories__expander-toggle", "tw-categories__expander-toggle--category"],
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        tagName: "div", //Expander content
+                                        label: "Block",
+                                        classList: ["tw-block", "tw-categories__expander-content"],
+                                        children: [
+                                            {
+                                                tagName: "p", //Expander Content Paragraph
+                                                label: "Text",
+                                                classList: ["tw-text"],
+                                                text: "Here goes a great description of the category.",
+                                            },
+                                            
+                                        ],
+                                    },
+                                ],
+                            },
+                        ]
+                    });
+                }
+            break;
+        }
+    }
+
     return (
-        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass }}>
+        <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
+        moveElement, createElement }}>
             {children}
         </CanvasContext.Provider>
     );
