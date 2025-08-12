@@ -50,6 +50,8 @@ System selected: will fallback to root or html[data-theme="dark"]
     --border-strong-color: #E0E0E0;
     --hover-strong-color: #E3E3E3;
 
+    --builder-tooltip-font-size: 10px;
+
     --header-plan-background: #E3E3E3;
     --shadow-color: #999999;
     --subtitle-color: #666666;
@@ -69,6 +71,44 @@ System selected: will fallback to root or html[data-theme="dark"]
     --notification-color: #FFFFFF;
 
     --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+
+    /*Builder Left Panel*/
+    --toggle-color: #999999;
+
+    --logo-background: #FFFFFF;
+    --logo-border: 1px solid #E6E6E6;
+    --logo-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+
+    --dropdown-background: #FFFFFF;
+    --dropdown-border: 1px solid #E6E6E6;
+    --dropdown-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+
+    --tab-container-background: #F5F5F5;
+    --tab-slider-background: #FFFFFF;
+    --tab-slider-border: 1px solid #E6E6E6;
+    --tab-slider-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    --tab-color: #999999;
+    --tab-active-color: #222222;
+    --tab-hover-background: #E8E8E8;
+    --tab-hover-color: #222222;
+
+    /*Tree View*/
+    --tree-item-hover-background: #E8E8E8;
+
+    --tree-item-selected-background: #0099FE;
+    --tree-item-selected-color: #FFFFFF;
+
+    --tree-item-child-selected-color: #666666;
+
+    --tree-expand-button-color: #999999;
+    --tree-expand-button-selected-color: #FFFFFF;
+    --tree-expand-button-child-selected-color: #666666;
+
+    --square-icon-background: #666666;
+    --tree-text-icon-color: #666666;
+    
+    --child-selected-color: #666666;
+    --tree-childs-background: #0099FE26;
 }
 /* Button color variables using data-color */
 html[data-color="blue"] {
@@ -98,6 +138,64 @@ html[data-color="blue"] {
 
 html[data-theme="dark"]{
     --builder-background: #202020;
+    --panels-background: #252525;
+    --canvas-background: #191919;
+    
+    --border-light-color: #333333;
+    --shadow-light-color: rgba(0, 0, 0, 0.15);
+
+    /*General*/
+    --body-light-color: #666666;
+    --body-fresco-color: #9B9B9B;
+    --body-semistrong-color: #9B9B9B;
+    --body-strong-color: #FFFFFF;
+    --border-fresco-color: #252525;
+    --border-strong-color: #333333;
+    --icons-fresco-color: #9B9B9B;
+    --icons-strong-color: #FFFFFF;
+    --hover-light-color: #2B2B2B;
+    --hover-fresco-color: #2B2B2B;
+    --hover-strong-color: #333333;
+    --shadow-fresco-color: rgba(0, 0, 0, 0.05);
+    --shadow-strong-color: rgba(0, 0, 0, 0.15);
+    --wrappers-fresco-color: #202020;
+    --wrappers-strong-color: #2B2B2B;
+
+    /*Builder Left Panel*/
+    --toggle-color: #9B9B9B;
+
+    --logo-background: #2B2B2B;
+    --logo-border: 1px solid #333333;
+    --logo-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+
+    --dropdown-background: #2B2B2B;
+    --dropdown-border: 1px solid #333333;
+    --dropdown-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+
+    --tab-container-background: #202020;
+    --tab-slider-background: #2B2B2B;
+    --tab-slider-border: 1px solid #333333;
+    --tab-slider-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+    --tab-color: #9B9B9B;
+    --tab-active-color: #FFFFFF;
+    --tab-hover-background: #333333;
+    --tab-hover-color: #FFFFFF;
+
+    /*Tree View*/
+    --tree-item-hover-background: #333333;
+    --tree-item-selected-background: #0099FE;
+    --tree-item-selected-color: #FFFFFF;
+    --tree-item-child-selected-color: #60A5FA;
+    --tree-expand-button-color: #9B9B9B;
+    --tree-expand-button-selected-color: #FFFFFF;
+    --tree-expand-button-child-selected-color: #60A5FA;
+    --square-icon-background: #666666;
+    --tree-text-icon-color: #9B9B9B;
+    
+    --child-selected-color: #60A5FA;
+    --tree-childs-background: #1E3A8A;
+    
+    --subtitle-color: #9B9B9B;
 }
 
 .tw-builder__logo{

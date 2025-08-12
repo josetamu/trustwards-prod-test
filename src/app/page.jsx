@@ -1,6 +1,7 @@
 'use client'
 
 import './web.css'
+import '@components/tooltip/Tooltip.css'
 import Link from 'next/link'
 
 function Web() {

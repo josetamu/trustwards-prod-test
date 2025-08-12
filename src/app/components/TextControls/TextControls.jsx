@@ -1,10 +1,11 @@
 import './TextControls.css';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useState, useRef, useEffect } from 'react';
-import { DisplayControl, SpacingControl, SizeControl, BackgroundControl, TextControl, StylesControl } from '../ControlComponents/ControlComponents';
+import { LayoutControl, SpacingControl, SizeControl, BackgroundControl, TextControl, StylesControl } from '../ControlComponents/ControlComponents';
 
+// Component to render the text controls. This have a header 
 function TextControls({selectedId}) {
-    const [selectedTag, setSelectedTag] = useState('h1');
+    const [selectedTag, setSelectedTag] = useState('h3');
     const tagSelectRef = useRef(null);
 
     // Function to adjust the width of the select
@@ -36,11 +37,11 @@ function TextControls({selectedId}) {
         setSelectedTag(e.target.value);
     };
 
-    //Controls array
+   //Determine the controls used for the text. controls are got from the ControlComponents component
     const controls = [
         {
-            label: 'Display',
-            control: <DisplayControl />,
+            label: 'Layout',
+            control: <LayoutControl />,
     
         },
         {
@@ -107,6 +108,7 @@ function TextControls({selectedId}) {
                 </div>
             </div>
             <div className="tw-builder__settings-body">
+                {/* Map the controls */}
                 {controls.map((control, index) => (
                     <BuilderControl key={index} label={control.label} control={control.control} />
                 ))}
