@@ -5,9 +5,12 @@ import { ContextMenu } from '../../../components/contextMenu/ContextMenu'
 import { useRouter } from 'next/navigation'
 import { useCanvas } from "@contexts/CanvasContext";
 
+// Helper function to deep copy objects
+const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
+
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification }) {
     const router = useRouter()
-    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId } = useCanvas();
+    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, removeElement, addElement, setJSONtree } = useCanvas();
     
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -109,14 +112,29 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setSelectedId(itemId)
     }
 
+    // Sync selection from canvas to tree
+    useEffect(() => {
+        if (selectedId && selectedId !== selectedItem) {
+            setSelectedItem(selectedId)
+        }
+    }, [selectedId, selectedItem])
+
     // Click outside handler to deselect
     useEffect(() => {
         const handleClickOutside = (e) => {
             const leftPanel = document.querySelector('.tw-builder__left-panel')
             const treeContainer = e.target.closest('.tw-builder__tree-container')
             
-            if ((leftPanel && !leftPanel.contains(e.target)) || 
-                (e.target.closest('.tw-builder__tree-content') && !treeContainer)) {
+            // Check if click is on elements related to the selected item
+            const isRelatedToSelection = e.target.closest('.tw-builder__toolbar') || // Toolbar for adding elements
+                                        e.target.closest('.tw-builder__right-panel') || // Right panel with element options
+                                        e.target.closest('.context-menu') || // Context menu
+                                        e.target.closest('.tw-builder__canvas') // Canvas area
+            
+            // Only deselect if clicking outside AND not on related elements
+            if (((leftPanel && !leftPanel.contains(e.target)) || 
+                (e.target.closest('.tw-builder__tree-content') && !treeContainer)) && 
+                !isRelatedToSelection) {
                 setSelectedItem(null)
                 if (selectedId === selectedItem) {
                     setSelectedId(null)
@@ -233,20 +251,30 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 
     // Handle tree data changes from context menu
     const handleTreeDataChange = (newTreeData) => {
+        if (!JSONtree) return;
+        
+        const updated = deepCopy(JSONtree);
         if (activeTab === 'tw-root--banner') {
-            setBannerTreeData(newTreeData)
+            updated.roots[0] = newTreeData[0];
         } else {
-            setModalTreeData(newTreeData)
+            updated.roots[1] = newTreeData[0];
         }
+        
+        // Update the JSONtree using the context function
+        setJSONtree(updated);
         
         // Expand newly added items (pasted/duplicated items)
         const expandNewItems = (tree) => {
+            if (!tree || !Array.isArray(tree)) return;
+            
             tree.forEach(item => {
-                if (item.id.includes('-copy') || item.id.includes('wrapper')) {
+                if (item && item.id && (item.id.includes('-copy') || item.id.includes('wrapper') || item.id.includes('block-'))) {
                     setExpandedItems(prev => new Set([...prev, item.id]))
                 }
-                if (item.children) {
-                    expandNewItems(item.children)
+                if (item && item.children) {
+                    // Only expand children that are draggable
+                    const draggableChildren = item.children.filter(child => child.draggable !== false)
+                    expandNewItems(draggableChildren)
                 }
             })
         }
@@ -394,7 +422,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 
     // Tree item renderer
     const renderTreeItem = (item, level = 0, parentId = null, isLastChild = false) => {
-        const hasChildren = item.children && item.children.length > 0
+        const draggableChildren = item.children ? item.children.filter(child => child.draggable !== false) : []
+        const hasChildren = draggableChildren.length > 0
         const isExpanded = expandedItems.has(item.id)
         const isSelected = selectedItem === item.id
         const isParentSelected = parentId && selectedItem === parentId
@@ -441,9 +470,12 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             containerClasses.push('tw-builder__tree-item--deep-nesting')
         }
 
+        // Ensure item.id exists for React key prop
+        const itemKey = item.id || `item-${Math.random()}`;
+        
         return (
             <div 
-                key={item.id} 
+                key={itemKey} 
                 className={containerClasses.join(' ')}
                 style={{ 
                     // After level 2, items maintain the same padding and use horizontal overflow
@@ -480,7 +512,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                             }}
                         >
                             <svg width="5" height="3" viewBox="0 0 5 3" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 0.206446 1.11705Z" fill="currentColor"/>
+                                <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 4.30088 0H0.693878C0.0741433 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
                             </svg>
                         </button>
                     )}
@@ -513,7 +545,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 {/* Render children if item is expanded */}
                 {hasChildren && isExpanded && (
                     <div className="tw-builder__tree-children">
-                        {item.children.map((child, index) => renderTreeItem(child, level + 1, item.id, index === item.children.length - 1))}
+                        {item.children
+                            .filter(child => child.draggable !== false) // Filter out non-draggable elements
+                            .map((child, index, filteredChildren) => renderTreeItem(child, level + 1, item.id, index === filteredChildren.length - 1))}
                     </div>
                 )}
                 
@@ -630,10 +664,12 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 position={contextMenu.position}
                 onClose={closeContextMenu}
                 targetItem={contextMenu.targetItem}
-                treeData={activeTab === 'banner' ? bannerTreeData : modalTreeData}
+                treeData={JSONtree ? (activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]) : []}
                 onTreeDataChange={handleTreeDataChange}
                 showNotification={showNotification}
                 className="tree-context-menu"
+                removeElement={removeElement}
+                addElement={addElement}
             />
         </div>
     )

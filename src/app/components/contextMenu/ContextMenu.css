@@ -47,16 +47,19 @@
   border-radius: 6px;
 }
 
-/* Delete item - exactly like dropdown__item--delete */
+/* Delete item */
 .context-menu__item--delete {
   color: var(--warning-color);
+  letter-spacing: var(--letter-spacing-negative);
+  font-weight: var(--font-weight);
+  font-size: var(--font-size-small);
 }
 .context-menu__item--delete:hover {
   background: var(--hover-warning-color);
   color: var(--warning-color);
 }
 
-/* Icon and delete icon styles - exactly like dropdown__icon */
+/* Icon and delete icon styles */
 .context-menu__icon,
 .context-menu__icon--delete {
   width: 14px;

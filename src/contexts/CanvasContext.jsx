@@ -228,13 +228,13 @@ export const CanvasProvider = ({ children, siteData }) => {
             node.children.forEach(remove);
         };
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the remove
-        if (updated.id === id) {
+        if (updated.id == 'tw-root--banner' || updated.id == 'tw-root--modal') {
             setJSONtree(null); //If the element to remove is the root, set the JSONtree to null
         } else {
-            remove(updated); //Remove the element in the current JSONtree
+            remove(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the element in the current JSONtree
             setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
-        }
-    };
+        }
+    };
 
     /*
     * Add class to an element
