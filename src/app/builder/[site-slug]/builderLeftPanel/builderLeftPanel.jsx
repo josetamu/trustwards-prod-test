@@ -1,14 +1,13 @@
 import './builderLeftPanel.css'
 import { useState, useEffect } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
-import { ContextMenu } from '../../../components/contextMenu/ContextMenu'
 import { useRouter } from 'next/navigation'
 import { useCanvas } from "@contexts/CanvasContext";
 
 // Helper function to deep copy objects
 const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
 
-function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification }) {
+function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, onContextMenu }) {
     const router = useRouter()
     const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, removeElement, addElement, setJSONtree } = useCanvas();
     
@@ -26,12 +25,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const [dragOverItem, setDragOverItem] = useState(null)
     const [dragPosition, setDragPosition] = useState(null) // 'before', 'after', 'inside'
 
-    // Context menu states
-    const [contextMenu, setContextMenu] = useState({
-        open: false,
-        position: { x: 0, y: 0 },
-        targetItem: null
-    })
+
 
     // Handle right panel opening when an element is selected and both panels are closed
     useEffect(() => {
@@ -210,22 +204,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setDragPosition(null)
     }
 
-    // Close context menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (contextMenu.open) {
-                const contextMenuElement = e.target.closest('.context-menu')
-                if (!contextMenuElement) {
-                    closeContextMenu()
-                }
-            }
-        }
-
-        document.addEventListener('click', handleClickOutside)
-        return () => document.removeEventListener('click', handleClickOutside)
-    }, [contextMenu.open])
-
-    // Context menu handlers
+    // Context menu handler - now receives onContextMenu from builder
     const handleContextMenu = (e, item) => {
         e.preventDefault()
         e.stopPropagation()
@@ -234,53 +213,11 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setSelectedItem(item.id)
         setSelectedId(item.id)
         
-        setContextMenu({
-            open: true,
-            position: { x: e.clientX, y: e.clientY },
-            targetItem: item
-        })
+        // Call the context menu handler from builder
+        onContextMenu(e, item)
     }
 
-    const closeContextMenu = () => {
-        setContextMenu({
-            open: false,
-            position: { x: 0, y: 0 },
-            targetItem: null
-        })
-    }
 
-    // Handle tree data changes from context menu
-    const handleTreeDataChange = (newTreeData) => {
-        if (!JSONtree) return;
-        
-        const updated = deepCopy(JSONtree);
-        if (activeTab === 'tw-root--banner') {
-            updated.roots[0] = newTreeData[0];
-        } else {
-            updated.roots[1] = newTreeData[0];
-        }
-        
-        // Update the JSONtree using the context function
-        setJSONtree(updated);
-        
-        // Expand newly added items (pasted/duplicated items)
-        const expandNewItems = (tree) => {
-            if (!tree || !Array.isArray(tree)) return;
-            
-            tree.forEach(item => {
-                if (item && item.id && (item.id.includes('-copy') || item.id.includes('wrapper') || item.id.includes('block-'))) {
-                    setExpandedItems(prev => new Set([...prev, item.id]))
-                }
-                if (item && item.children) {
-                    // Only expand children that are draggable
-                    const draggableChildren = item.children.filter(child => child.draggable !== false)
-                    expandNewItems(draggableChildren)
-                }
-            })
-        }
-        
-        expandNewItems(newTreeData)
-    }
 
     // Tree data manipulation
     const moveElement = (draggedId, targetId, position) => {
@@ -657,20 +594,6 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     </div>
                 </div>
             </div>
-
-            {/* Context menu */}
-            <ContextMenu
-                open={contextMenu.open}
-                position={contextMenu.position}
-                onClose={closeContextMenu}
-                targetItem={contextMenu.targetItem}
-                treeData={JSONtree ? (activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]) : []}
-                onTreeDataChange={handleTreeDataChange}
-                showNotification={showNotification}
-                className="tree-context-menu"
-                removeElement={removeElement}
-                addElement={addElement}
-            />
         </div>
     )
 }

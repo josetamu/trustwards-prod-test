@@ -6,6 +6,7 @@ import './builder.css'
 import BuilderLeftPanel from './builderLeftPanel/builderLeftPanel'
 import BuilderBody from './builderBody/builderBody'
 import BuilderRightPanel from './builderRightPanel/builderRightPanel'
+import { ContextMenu } from '../../components/contextMenu/ContextMenu'
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import { useParams, notFound } from 'next/navigation';
@@ -42,15 +43,40 @@ function Builder() {
     position: 'top',
     contentCenter: false
   });
+
   // Set userSettings based on modalType
   useEffect(() => {
     if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Plan') {
       setUserSettings(modalType);
     }
   }, [modalType]);
-  
-  
 
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState({
+    open: false,
+    position: { x: 0, y: 0 },
+    targetItem: null
+  });
+
+  // Context menu handlers
+  const handleContextMenu = (e, item) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setContextMenu({
+      open: true,
+      position: { x: e.clientX, y: e.clientY },
+      targetItem: item
+    });
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu({
+      open: false,
+      position: { x: 0, y: 0 },
+      targetItem: null
+    });
+  };
 
   //Fetch all data user from the database
   const allUserData = async (userId) => {
@@ -384,6 +410,7 @@ const renderModal = () => {
         isRightPanelOpen={isRightPanelOpen}
         setIsRightPanelOpen={setIsRightPanelOpen}
         showNotification={showNotification}
+        onContextMenu={handleContextMenu}
       />
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
       
@@ -422,6 +449,16 @@ const renderModal = () => {
                     contentCenter={notification.contentCenter || false}
                     >
                     </Notification>
+
+                    {/* Context menu */}
+                    <ContextMenu
+                      open={contextMenu.open}
+                      position={contextMenu.position}
+                      onClose={closeContextMenu}
+                      targetItem={contextMenu.targetItem}
+                      showNotification={showNotification}
+                      className="tree-context-menu"
+                    />
     </div>
     </CanvasProvider>
   );
