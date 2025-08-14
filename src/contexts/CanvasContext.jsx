@@ -788,7 +788,7 @@ export const CanvasProvider = ({ children, siteData }) => {
 
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
-        moveElement, createElement, activeRoot, updateActiveRoot, activeTab }}>
+        moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy }}>
             {children}
         </CanvasContext.Provider>
     );

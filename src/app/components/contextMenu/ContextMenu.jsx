@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
+import { useCanvas } from '../../../contexts/CanvasContext';
 import './ContextMenu.css';
 
-// ContextMenu component - completely autonomous and reusable
+// ContextMenu component
 export function ContextMenu({ 
     open, 
     onClose, 
@@ -11,34 +12,54 @@ export function ContextMenu({
     className = "", 
     animationType = 'SCALE_TOP',
     targetItem = null,
-    treeData = [],
-    onTreeDataChange = null,
-    showNotification = null,
-    removeElement = null,
-    addElement = null
+    showNotification = null
 }) {
     const containerRef = useRef(null);
     const menuRef = useRef(null);
     const contextMenuId = useId();
 
+    // Use canvas context functions
+    const { 
+        addElement, 
+        removeElement, 
+        createElement, 
+        JSONtree, 
+        activeRoot,
+        setJSONtree,
+        generateUniqueId,
+        deepCopy
+    } = useCanvas();
+
     // Clipboard state for copy/paste operations
     const [clipboard, setClipboard] = useState(null);
 
-    // Close context menu when clicking outside
+    // Helper function to find parent of an element
+    const findParentById = (tree, itemId, parent = null) => {
+        for (const item of tree) {
+            if (item.children) {
+                for (const child of item.children) {
+                    if (child.id === itemId) {
+                        return { parent: item, child: child, index: item.children.indexOf(child) };
+                    }
+                    const found = findParentById([child], itemId, item);
+                    if (found) return found;
+                }
+            }
+        }
+        return null;
+    };
+
+    // Close context menu when clicking outside - using the same logic as CanvasContext
     useEffect(() => {
         if (!open) return;
         const handleClickOutside = (event) => {
-            if (
-                menuRef.current &&
-                !menuRef.current.contains(event.target) &&
-                containerRef.current &&
-                !containerRef.current.contains(event.target)
-            ) {
+            const contextMenuElement = event.target.closest('.context-menu');
+            if (!contextMenuElement) {
                 onClose && onClose();
             }
         };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
     }, [open, onClose]);
 
     // Close context menu when pressing Escape
@@ -73,90 +94,6 @@ export function ContextMenu({
         return () => window.removeEventListener('resize', handleResize);
     }, [open, onClose]);
 
-    // Tree manipulation functions
-    // Find an item in the tree by its ID
-    const findItemById = (tree, itemId) => {
-        for (const item of tree) {
-            if (item.id === itemId) return item;
-            if (item.children) {
-                const found = findItemById(item.children, itemId);
-                if (found) return found;
-            }
-        }
-        return null;
-    };
-
-    // Remove an item from the tree by its ID
-    const removeItemById = (tree, itemId) => {
-        for (let i = 0; i < tree.length; i++) {
-            if (tree[i].id === itemId) {
-                tree.splice(i, 1);
-                return true;
-            }
-            if (tree[i].children) {
-                if (removeItemById(tree[i].children, itemId)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    };
-
-    // Generate a unique ID for copied/duplicated items to avoid conflicts
-    const generateUniqueId = (baseId) => {
-        let counter = 1;
-        let newId = `${baseId}-copy`;
-        
-        while (findItemById(treeData, newId)) {
-            newId = `${baseId}-copy-${counter}`;
-            counter++;
-        }
-        
-        return newId;
-    };
-
-    // Deep clone an item and generate new unique IDs for all descendants
-    const deepCloneItem = (item) => {
-        const cloned = JSON.parse(JSON.stringify(item));
-        
-        // Generate new unique IDs for the cloned item and all its descendants
-        const updateIds = (node) => {
-            const oldId = node.id;
-            node.id = generateUniqueId(oldId);
-            
-            if (node.children) {
-                node.children.forEach(updateIds);
-            }
-        };
-        
-        updateIds(cloned);
-        return cloned;
-    };
-
-    // Insert a new item at a specific position relative to a target item
-    // Position can be 'before', 'after', or 'inside' the target
-    const insertItemAtPosition = (tree, newItem, targetId, position = 'after') => {
-        for (let i = 0; i < tree.length; i++) {
-            if (tree[i].id === targetId) {
-                if (position === 'inside') {
-                    if (!tree[i].children) tree[i].children = [];
-                    tree[i].children.unshift(newItem);
-                } else if (position === 'before') {
-                    tree.splice(i, 0, newItem);
-                } else if (position === 'after') {
-                    tree.splice(i + 1, 0, newItem);
-                }
-                return true;
-            }
-            if (tree[i].children) {
-                if (insertItemAtPosition(tree[i].children, newItem, targetId, position)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    };
-
     // Helper function to close menu and execute action
     const executeAction = (action) => {
         action();
@@ -166,96 +103,140 @@ export function ContextMenu({
     // Context menu actions
     // Copy an item and all its descendants to clipboard
     const handleCopy = () => {
-        if (!targetItem || !treeData.length) return;
+        if (!targetItem) return;
         
-        const itemToCopy = findItemById(treeData, targetItem.id);
-        if (itemToCopy) {
-            setClipboard(deepCloneItem(itemToCopy));
-            
-            // Use the same notification system as the project
-            if (showNotification) {
-                showNotification("Copied to clipboard", "top", false);
-            }
-            
-            console.log('Copied:', itemToCopy.id, 'with all descendants');
+        // Store the item in clipboard for pasting
+        setClipboard(deepCopy(targetItem));
+        
+        // Use the same notification system as the project
+        if (showNotification) {
+            showNotification("Copied to clipboard", "top", false);
         }
     };
 
     // Paste a copied item inside the target item
     const handlePaste = () => {
-        if (!clipboard || !targetItem || !addElement) return;
+        if (!clipboard || !targetItem || !JSONtree || !setJSONtree) return;
         
-        // Create a new element with the same properties as the copied item
-        const elementProperties = {
-            elementType: clipboard.elementType || "block",
-            icon: clipboard.icon || "block",
-            tagName: clipboard.tagName || "div",
-            label: clipboard.label || "Copied Element",
-            children: clipboard.children || [],
-            classList: clipboard.classList || [],
-            nestable: clipboard.nestable || true,
-            text: clipboard.text,
-            src: clipboard.src,
-            attributes: clipboard.attributes
+        // Create a deep copy of the clipboard item
+        const copiedItem = deepCopy(clipboard);
+        
+        // Generate new unique IDs for the copied item and all its descendants
+        const updateIdsRecursively = (node) => {
+            node.id = generateUniqueId(JSONtree);
+            if (node.children) {
+                node.children.forEach(updateIdsRecursively);
+            }
         };
+        updateIdsRecursively(copiedItem);
         
-        // Use the addElement function from canvas context to add the copied element
-        addElement(elementProperties, targetItem.id);
-        console.log('Pasted:', clipboard.id, 'inside:', targetItem.id);
-    };
-
-    // Duplicate an item and all its descendants after the original
-    const handleDuplicate = () => {
-        if (!targetItem || !treeData.length || !onTreeDataChange) return;
+        const updated = deepCopy(JSONtree);
+        const currentRoot = activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1];
         
-        const newTreeData = JSON.parse(JSON.stringify(treeData));
-        const itemToDuplicate = findItemById(newTreeData, targetItem.id);
-        
-        if (itemToDuplicate) {
-            const duplicatedItem = deepCloneItem(itemToDuplicate);
+        // Use the children attribute from CanvasContext to determine if element can accept children
+        if (targetItem.children) {
+            // Target can accept children, paste inside it
+            const addToTarget = (node) => {
+                if (node.id === targetItem.id) {
+                    if (!node.children) node.children = [];
+                    node.children.push(copiedItem);
+                    return true;
+                }
+                if (node.children) {
+                    for (const child of node.children) {
+                        if (addToTarget(child)) return true;
+                    }
+                }
+                return false;
+            };
             
-            // Insert the duplicated item after the original at the same level
-            if (insertItemAtPosition(newTreeData, duplicatedItem, targetItem.id, 'after')) {
-                onTreeDataChange(newTreeData);
-                console.log('Duplicated:', targetItem.id, 'with all descendants');
+            if (addToTarget(currentRoot)) {
+                setJSONtree(updated);
+            }
+        } else {
+            // Target cannot accept children, paste at the same level
+            const parentInfo = findParentById([currentRoot], targetItem.id);
+            
+            if (parentInfo) {
+                // Insert the copied item after the target item at the same level
+                const insertIndex = parentInfo.index + 1;
+                parentInfo.parent.children.splice(insertIndex, 0, copiedItem);
+                setJSONtree(updated);
+            } else {
+                // If target item is a root, add to the root level
+                currentRoot.children.push(copiedItem);
+                setJSONtree(updated);
             }
         }
     };
 
+    // Duplicate an item and all its descendants at the same level
+    const handleDuplicate = () => {
+        if (!targetItem || !JSONtree || !setJSONtree) return;
+        
+        // Find the parent of the target item
+        const currentRoot = activeRoot === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1];
+        const parentInfo = findParentById([currentRoot], targetItem.id);
+        
+        if (!parentInfo) return;
+        
+        // Create a deep copy of the target item
+        const duplicatedItem = deepCopy(targetItem);
+        
+        // Generate new unique IDs for the duplicated item and all its descendants
+        const updateIdsRecursively = (node) => {
+            node.id = generateUniqueId(JSONtree);
+            if (node.children) {
+                node.children.forEach(updateIdsRecursively);
+            }
+        };
+        updateIdsRecursively(duplicatedItem);
+        
+        // Insert the duplicated item after the original at the same level
+        const updated = deepCopy(JSONtree);
+        const targetRoot = activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1];
+        
+        // Find the parent in the updated tree
+        const updatedParentInfo = findParentById([targetRoot], targetItem.id);
+        if (updatedParentInfo) {
+            const insertIndex = updatedParentInfo.index + 1;
+            updatedParentInfo.parent.children.splice(insertIndex, 0, duplicatedItem);
+            setJSONtree(updated);
+        }
+    };
+
     // Wrap an item in a new block container
-    const handleBlock = () => {
-        if (!targetItem || !treeData.length || !onTreeDataChange) return;
+    const handleWrap = () => {
+        if (!targetItem || !createElement || !JSONtree || !setJSONtree) return;
         
         // Don't allow wrapping root elements
         if (targetItem.id === 'tw-root--banner' || targetItem.id === 'tw-root--modal') {
             return;
         }
         
-        const newTreeData = JSON.parse(JSON.stringify(treeData));
-        const itemToWrap = findItemById(newTreeData, targetItem.id);
+        // Create a new block that will wrap the target item
+        const blockProperties = {
+            id: generateUniqueId(JSONtree),
+            elementType: "block",
+            icon: "block",
+            tagName: "div",
+            label: "Block",
+            classList: ["tw-block"],
+            nestable: true,
+            children: [targetItem] // Put the target item directly inside the block
+        };
         
-        if (itemToWrap) {
-            // Create the block with a unique ID
-            const block = {
-                id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                elementType: "block",
-                icon: "block",
-                tagName: "div",
-                label: "Block",
-                classList: ["tw-block"],
-                nestable: true,
-                children: [itemToWrap] // Move the original element inside
-            };
+        // Replace the target item with the new block containing it
+        const updated = deepCopy(JSONtree);
+        const targetRoot = activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1];
+        
+        // Find the parent in the updated tree
+        const updatedParentInfo = findParentById([targetRoot], targetItem.id);
+        if (updatedParentInfo) {
+            // Replace the target item with the new block
+            updatedParentInfo.parent.children[updatedParentInfo.index] = blockProperties;
             
-            // Replace the original element with the block
-            // First insert the block in the same position
-            if (insertItemAtPosition(newTreeData, block, targetItem.id, 'after')) {
-                // Then remove the original element
-                removeItemById(newTreeData, targetItem.id);
-                
-                onTreeDataChange(newTreeData);
-                console.log('Wrapped:', targetItem.id, 'in new block');
-            }
+            setJSONtree(updated);
         }
     };
 
@@ -264,7 +245,6 @@ export function ContextMenu({
         if (!targetItem || !removeElement) return;
         
         removeElement(targetItem.id);
-        console.log('Removed:', targetItem.id, 'with all descendants');
     };
 
     // Tree context menu content - completely self-contained
@@ -317,17 +297,17 @@ export function ContextMenu({
                     <span className="context-menu__label">Duplicate</span>
                 </button>
 
-                {/* Block */}
+                {/* Wrap */}
                 <button 
                     className="context-menu__item"
-                    onClick={() => executeAction(handleBlock)}
+                    onClick={() => executeAction(handleWrap)}
                 >
                     <div className="context-menu__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
                             <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
                         </svg>
                     </div>
-                    <span className="context-menu__label">Block</span>
+                    <span className="context-menu__label">Wrap</span>
                 </button>
 
                 <div className="context-menu__divider"></div>
