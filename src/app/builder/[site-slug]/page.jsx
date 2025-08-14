@@ -15,6 +15,7 @@ import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
 import { ModalSupport } from '../../components/ModalSupport/ModalSupport';
 import { ModalChange } from '../../components/ModalChange/ModalChange';
 import  Notification  from '../../components/Notification/Notification';
+import Loader from '../../components/Loader/Loader';
 import { CanvasProvider } from '@contexts/CanvasContext';
 
 function Builder() {
@@ -25,6 +26,7 @@ function Builder() {
   const [user, setUser] = useState(null);
   const [site, setSite] = useState(null);
   const [appearanceSettings, setAppearanceSettings] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   //Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,9 +58,11 @@ function Builder() {
       setUser(null);
       setSite(null);
       setAppearanceSettings(null);
+      setIsLoading(false);
       return;
     }
 
+    setIsLoading(true);
     try {
       const [userResult, siteResult, appearanceResult] = await Promise.allSettled([
         supabase.from('User').select('*').eq('id', userId).single(),
@@ -76,6 +80,8 @@ function Builder() {
       setAppearanceSettings(appearanceData);
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -272,9 +278,9 @@ const renderModal = () => {
       return (
         <ModalDelete
           onClose={() => setIsModalOpen(false)}
-          siteData={siteData}
+          siteData={site}
           setIsModalOpen={setIsModalOpen}
-          setSiteData={setSiteData}
+          setSiteData={setSite}
         />
       );
     case 'Support':
@@ -368,6 +374,7 @@ const renderModal = () => {
   return (
     <CanvasProvider siteData={site}>
     <div className="tw-builder">
+      <Loader isVisible={isLoading}/>
       <BuilderLeftPanel 
         isPanelOpen={isLeftPanelOpen} 
         onPanelToggle={handleLeftPanelToggle}
