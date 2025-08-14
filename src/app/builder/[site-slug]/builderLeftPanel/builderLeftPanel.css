@@ -385,7 +385,7 @@
 
 /* Tree children container */
 .tw-builder__tree-children {
-    /* Children styling handled by parent states */
+    background-color: transparent;
 }
 
 /* ==========================================================================

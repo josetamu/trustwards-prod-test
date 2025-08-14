@@ -116,26 +116,19 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Click outside handler to deselect
     useEffect(() => {
         const handleClickOutside = (e) => {
-            const leftPanel = document.querySelector('.tw-builder__left-panel')
-            const treeContainer = e.target.closest('.tw-builder__tree-container')
-            
-            // Check if click is on elements related to the selected item
-            const isRelatedToSelection = e.target.closest('.tw-builder__toolbar') || // Toolbar for adding elements
-                                        e.target.closest('.tw-builder__right-panel') || // Right panel with element options
-                                        e.target.closest('.context-menu') || // Context menu
-                                        e.target.closest('.tw-builder__canvas') // Canvas area
-            
-            // Only deselect if clicking outside AND not on related elements
-            if (((leftPanel && !leftPanel.contains(e.target)) || 
-                (e.target.closest('.tw-builder__tree-content') && !treeContainer)) && 
-                !isRelatedToSelection) {
+            // Check if click is on elements that should maintain selection
+            if (!e.target.closest('.tw-active-root') && 
+                !e.target.closest('.tw-builder__toolbar') &&
+                !e.target.closest('.tw-builder__right-body') &&
+                !e.target.closest('.tw-builder__tab-container') &&
+                !e.target.closest('.tw-builder__tree-content') &&
+                !e.target.closest('.context-menu')) {
                 setSelectedItem(null)
                 if (selectedId === selectedItem) {
                     setSelectedId(null)
                 }
             }
         }
-
         document.addEventListener('click', handleClickOutside)
         return () => document.removeEventListener('click', handleClickOutside)
     }, [selectedId, selectedItem, setSelectedId])
@@ -192,6 +185,29 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             return
         }
 
+        // Check if target item allows children (has children attribute)
+        if (dragPosition === 'inside' && !targetItem.children) {
+            setDraggedItem(null)
+            setDragOverItem(null)
+            setDragPosition(null)
+            return
+        }
+
+        // Check if trying to drop in the exact same position (prevent unnecessary moves)
+        const currentParent = findParentById(activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData, draggedItem.id)
+        const targetParent = dragPosition === 'inside' ? targetItem : findParentById(activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData, targetItem.id)
+        
+        // Only prevent move if it's the same parent AND same position (before/after the same element)
+        if (dragPosition !== 'inside' && currentParent && targetParent && 
+            currentParent.parent.id === targetParent.parent.id && 
+            targetItem.id === draggedItem.id) {
+            // Same parent and same element, don't move
+            setDraggedItem(null)
+            setDragOverItem(null)
+            setDragPosition(null)
+            return
+        }
+
         // Move the element in the current tree data
         moveElement(draggedItem.id, targetItem.id, dragPosition)
         
@@ -218,6 +234,20 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     }
 
 
+
+    // Helper function to find parent of an element
+    const findParentById = (nodes, targetId, parent = null) => {
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].id === targetId) {
+                return { parent, index: i }
+            }
+            if (nodes[i].children) {
+                const result = findParentById(nodes[i].children, targetId, nodes[i])
+                if (result) return result
+            }
+        }
+        return null
+    }
 
     // Tree data manipulation
     const moveElement = (draggedId, targetId, position) => {
@@ -248,7 +278,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 if (nodes[i].id === targetId) {
                     if (position === 'inside') {
                         if (!nodes[i].children) nodes[i].children = []
-                        nodes[i].children.unshift(draggedElement)
+                        // Add to the end (last position) instead of beginning
+                        nodes[i].children.push(draggedElement)
                     } else if (position === 'before') {
                         nodes.splice(i, 0, draggedElement)
                     } else if (position === 'after') {
@@ -390,6 +421,10 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         
         if (isDragOver) {
             headerClasses.push('tw-builder__tree-item-header--drag-over')
+            // Add non-nestable class if trying to drop inside a non-nestable item
+            if (dragPosition === 'inside' && !item.children) {
+                headerClasses.push('tw-builder__tree-item-header--non-nestable')
+            }
         }
 
         // Determine container classes
