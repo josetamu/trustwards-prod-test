@@ -69,7 +69,7 @@ function treeReducer(state, action) {
     }
 }
 
-export const CanvasProvider = ({ children, siteData }) => {
+export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
     
     const [state, dispatch] = useReducer(treeReducer, {
@@ -123,6 +123,7 @@ export const CanvasProvider = ({ children, siteData }) => {
     const [selectedId, setSelectedId] = React.useState(null); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
     const [activeRoot, setActiveRoot] = React.useState(null);
     const [activeTab, setActiveTab] = React.useState(null); //State to track which tab is currently active (banner or modal)
+    const [selectedItem, setSelectedItem] = React.useState(null) //State to track which item is currently selected in the tree
 
     //this happens when changing the tab: changes active root, nothing is selected, sets the active tab and updates the real JSONtree
     const updateActiveRoot = (newActiveRoot) => {
@@ -788,7 +789,7 @@ export const CanvasProvider = ({ children, siteData }) => {
 
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
-        moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy }}>
+        moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem }}>
             {children}
         </CanvasContext.Provider>
     );

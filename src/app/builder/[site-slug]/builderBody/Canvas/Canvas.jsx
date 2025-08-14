@@ -4,7 +4,7 @@ import { useCanvas } from '@contexts/CanvasContext';
 import React, { useEffect } from "react";
 
 export const Canvas = () => {
-    const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement } = useCanvas();
+    const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, selectedItem, setSelectedItem } = useCanvas();
 
     /*
     * Used by the canvas to convert the JSONtree into React elements
@@ -27,6 +27,16 @@ export const Canvas = () => {
                 if(node.draggable !== false) { //If the node is not draggable, it can't be selected neither
                     setSelectedId(node.id); // Set the clicked element as the selectedId
                 }
+            },
+
+            onContextMenu: (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                setSelectedId(node.id);
+                //setSelectedItem(node);
+
+                CallContextMenu(e, node);
             },
 
             //Add canvas classes to the node (dont use addClass on this render because it will render JSONtree in a loop)
