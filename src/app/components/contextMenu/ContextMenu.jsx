@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useId, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 import { useCanvas } from '../../../contexts/CanvasContext';
@@ -16,7 +16,6 @@ export function ContextMenu({
 }) {
     const containerRef = useRef(null);
     const menuRef = useRef(null);
-    const contextMenuId = useId();
 
     // Use canvas context functions
     const { 
@@ -332,13 +331,12 @@ export function ContextMenu({
     };
 
     return (
-        <div
-            className={`context-menu ${className}`}
-            ref={containerRef}
-            id={contextMenuId}
-        >
-            <AnimatePresence>
-                {open && (
+        <AnimatePresence>
+            {open && (
+                <div
+                    className={`context-menu ${className}`}
+                    ref={containerRef}
+                >
                     <motion.div
                         {...ANIM_TYPES.find(anim => anim.name === animationType)}
                         className="context-menu__menu"
@@ -352,8 +350,8 @@ export function ContextMenu({
                     >
                         <TreeContextMenu />
                     </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                </div>
+            )}
+        </AnimatePresence>
     );
 }
