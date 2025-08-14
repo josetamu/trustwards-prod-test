@@ -233,8 +233,8 @@ export const CanvasProvider = ({ children, siteData }) => {
         } else {
             remove(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the element in the current JSONtree
             setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
-        }
-    };
+        }
+    };
 
     /*
     * Add class to an element
