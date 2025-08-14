@@ -342,10 +342,8 @@ export function ContextMenu({
                         className="context-menu__menu"
                         ref={menuRef}
                         style={{
-                            position: 'fixed',
                             left: position.x,
-                            top: position.y,
-                            zIndex: 9999
+                            top: position.y
                         }}
                     >
                         <TreeContextMenu />
