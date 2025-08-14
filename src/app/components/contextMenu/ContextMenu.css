@@ -1,22 +1,19 @@
 /* Context Menu */
-.context-menu * {
+.tw-context-menu * {
   will-change: transform;
 }
 
 /* Context menu root container */
-.context-menu {
+.tw-context-menu {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
   z-index: 9999;
+
+  transform-origin: top left;
+  transition: transform 0.2s ease;
 }
 
 /* Context menu menu styles */
-.context-menu__menu {
-  position: fixed;
+.tw-context-menu__menu {
   min-width: fit-content;
   background: var(--dropdown-background);
   border: 1px solid var(--border-strong-color);
@@ -25,16 +22,14 @@
   backdrop-filter: blur(2.5px);
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease;
   margin-top: 4px;
   overflow: hidden;
   padding: 4px;
   z-index: 2;
-  transform-origin: top left;
 }
 
 /* Context menu item styles */
-.context-menu__item {
+.tw-context-menu__item {
   width: 100%;
   display: flex;
   align-items: center;
@@ -46,27 +41,27 @@
   padding: 8px 12px;
   cursor: pointer;
 }
-.context-menu__item:hover {
+.tw-context-menu__item:hover {
   background: var(--accent-bg-color);
   color: var(--accent-color);
   border-radius: 6px;
 }
 
 /* Delete item */
-.context-menu__item--delete {
+.tw-context-menu__item--delete {
   color: var(--warning-color);
   letter-spacing: var(--letter-spacing-negative);
   font-weight: var(--font-weight);
   font-size: var(--font-size-small);
 }
-.context-menu__item--delete:hover {
+.tw-context-menu__item--delete:hover {
   background: var(--hover-warning-color);
   color: var(--warning-color);
 }
 
 /* Icon and delete icon styles */
-.context-menu__icon,
-.context-menu__icon--delete {
+.tw-context-menu__icon,
+.tw-context-menu__icon--delete {
   width: 14px;
   height: 14px;
   display: flex;
@@ -74,38 +69,38 @@
   justify-content: center;
   color: var(--icons-color);
 }
-.context-menu__icon--delete {
+.tw-context-menu__icon--delete {
   color: var(--warning-color);
 }
-.context-menu__item.context-menu__item--delete .context-menu__icon {
+.tw-context-menu__item.tw-context-menu__item--delete .tw-context-menu__icon {
   color: var(--warning-color);
 }
-.context-menu__item.context-menu__item--delete:hover .context-menu__icon {
+.tw-context-menu__item.tw-context-menu__item--delete:hover .tw-context-menu__icon {
   color: var(--warning-color);
 }
-.context-menu__item:hover .context-menu__icon {
+.tw-context-menu__item:hover .tw-context-menu__icon {
   color: var(--accent-color);
 }
 
 /* Context menu item label */
-.context-menu__label {
+.tw-context-menu__label {
     color: var(--label-color);
     letter-spacing: var(--letter-spacing-negative);
     font-weight: var(--font-weight);
     font-size: var(--font-size-small);
 }
 
-.context-menu__item:hover .context-menu__icon,
-.context-menu__item:hover .context-menu__label{
+.tw-context-menu__item:hover .tw-context-menu__icon,
+.tw-context-menu__item:hover .tw-context-menu__label{
   color: var(--accent-color);
 }
 
-.context-menu__item--delete .context-menu__label {
+.tw-context-menu__item--delete .tw-context-menu__label {
     color: var(--warning-color);
 }
 
 /* Divider */
-.context-menu__divider {
+.tw-context-menu__divider {
   height: 1px;
   margin: 4px 0;
   background: var(--border-strong-color);
@@ -114,13 +109,13 @@
 }
 
 /* Disabled item */
-.context-menu__item--disabled {
+.tw-context-menu__item--disabled {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
 }
 
 /* Tree context menu specific styles */
-.tree-context-menu .context-menu__menu {
+.tree-context-menu .tw-context-menu__menu {
   min-width: 140px;
 }

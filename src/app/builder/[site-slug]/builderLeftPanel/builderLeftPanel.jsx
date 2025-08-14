@@ -7,16 +7,14 @@ import { useCanvas } from "@contexts/CanvasContext";
 // Helper function to deep copy objects
 const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
 
-function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, onContextMenu }) {
+function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu }) {
     const router = useRouter()
-    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, removeElement, addElement, setJSONtree } = useCanvas();
+    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, setJSONtree } = useCanvas();
     
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     // State to track which tree items are expanded/collapsed
     const [expandedItems, setExpandedItems] = useState(new Set(['tw-root--banner', 'div', 'tw-root--modal', 'modal-content']))
-    // State to track which item is currently selected in the tree
-    const [selectedItem, setSelectedItem] = useState(null)
     // State to track if user manually closed both panels
     const [userManuallyClosed, setUserManuallyClosed] = useState(false)
     
@@ -122,7 +120,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             // Check if click is on elements related to the selected item
             const isRelatedToSelection = e.target.closest('.tw-builder__toolbar') || // Toolbar for adding elements
                                         e.target.closest('.tw-builder__right-panel') || // Right panel with element options
-                                        e.target.closest('.context-menu') || // Context menu
+                                        e.target.closest('.tw-context-menu') || // Context menu
                                         e.target.closest('.tw-builder__canvas') // Canvas area
             
             // Only deselect if clicking outside AND not on related elements
@@ -209,12 +207,11 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         e.preventDefault()
         e.stopPropagation()
         
-        // Select the item when right-clicking (same as left-click)
         setSelectedItem(item.id)
         setSelectedId(item.id)
         
-        // Call the context menu handler from builder
-        onContextMenu(e, item)
+        // Call the context menu handler from builder with current selected item
+        CallContextMenu(e, item)
     }
 
 

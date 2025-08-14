@@ -76,28 +76,36 @@ function Builder() {
   const [contextMenu, setContextMenu] = useState({
     open: false,
     position: { x: 0, y: 0 },
-    targetItem: null
+    targetItem: null,
+    previousSelectedItem: null,
+    key: Date.now() // Unique key for each context menu instance
   });
 
   // Context menu handlers
-  const handleContextMenu = (e, item) => {
+  const handleContextMenu = (e, item, currentSelectedItem) => {
     e.preventDefault();
     e.stopPropagation();
     
+    // Create a completely new context menu instance with unique key
     setContextMenu({
       open: true,
       position: { x: e.clientX, y: e.clientY },
-      targetItem: item
+      targetItem: item,
+      previousSelectedItem: currentSelectedItem, // Keep the original selection
+      key: Date.now() + Math.random() // Ensure unique key for each instance
     });
   };
 
-  const closeContextMenu = () => {
-    setContextMenu({
+  const closeContextMenu = (restoreSelection = false) => {
+    setContextMenu(prev => ({
       open: false,
       position: { x: 0, y: 0 },
-      targetItem: null
-    });
+      targetItem: null,
+      previousSelectedItem: restoreSelection ? prev.previousSelectedItem : null,
+      key: prev.key // Keep the same key when just closing
+    }));
   };
+
 
   //Fetch all data user from the database
   const allUserData = async (userId) => {
@@ -422,7 +430,7 @@ const renderModal = () => {
   const isMobile = useMediaQuery('(max-width: 820px)');
 
   return (
-    <CanvasProvider siteData={site}>
+    <CanvasProvider siteData={site} CallContextMenu={handleContextMenu}>
     <div className="tw-builder">
       <Loader isVisible={isLoading}/>
       {isMobile && <MobileWarning/>}
@@ -437,7 +445,7 @@ const renderModal = () => {
         isRightPanelOpen={isRightPanelOpen}
         setIsRightPanelOpen={setIsRightPanelOpen}
         showNotification={showNotification}
-        onContextMenu={handleContextMenu}
+        CallContextMenu={handleContextMenu}
       />
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
       
@@ -477,14 +485,16 @@ const renderModal = () => {
                     >
                     </Notification>
 
-                    {/* Context menu */}
+                    {/* Context menu - key forces new instance for each menu */}
                     <ContextMenu
+                      key={contextMenu.key}
                       open={contextMenu.open}
                       position={contextMenu.position}
                       onClose={closeContextMenu}
                       targetItem={contextMenu.targetItem}
                       showNotification={showNotification}
                       className="tree-context-menu"
+                      previousSelectedItem={contextMenu.previousSelectedItem}
                     />
         </>
       )}
