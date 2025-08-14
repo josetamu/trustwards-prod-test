@@ -101,13 +101,12 @@ export const Canvas = () => {
     */
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (!e.target.closest('.tw-builder__canvas') && 
+            if (!e.target.closest('.tw-active-root') && 
             !e.target.closest('.tw-builder__toolbar') &&
             !e.target.closest('.tw-builder__right-body') &&
             !e.target.closest('.tw-builder__tab-container') &&
             !e.target.closest('.tw-builder__tree-content')) {
                 setSelectedId(activeRoot);
-                
             }
         };
         document.addEventListener('click', handleClickOutside);
