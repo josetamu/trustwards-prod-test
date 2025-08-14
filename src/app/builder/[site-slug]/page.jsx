@@ -16,12 +16,30 @@ import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
 import { ModalSupport } from '../../components/ModalSupport/ModalSupport';
 import { ModalChange } from '../../components/ModalChange/ModalChange';
 import  Notification  from '../../components/Notification/Notification';
-import Loader from '../../components/Loader/Loader';
 import { CanvasProvider } from '@contexts/CanvasContext';
+import Loader from '../../components/Loader/Loader';
+import MobileWarning from '../../components/MobileWarning/MobileWarning';
 
 function Builder() {
   const params = useParams();
   const siteSlug = params['site-slug'];
+
+  // Custom hook for media queries
+  const useMediaQuery = (query) => {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+      const media = window.matchMedia(query);
+      if (media.matches !== matches) {
+        setMatches(media.matches);
+      }
+      const listener = () => setMatches(media.matches);
+      media.addListener(listener);
+      return () => media.removeListener(listener);
+    }, [matches, query]);
+
+    return matches;
+  };
 
   //BD states
   const [user, setUser] = useState(null);
@@ -43,6 +61,9 @@ function Builder() {
     position: 'top',
     contentCenter: false
   });
+
+  //Mobile state warning
+  
 
   // Set userSettings based on modalType
   useEffect(() => {
@@ -397,10 +418,16 @@ const renderModal = () => {
     }
   }
 
+  //Mobile state warning
+  const isMobile = useMediaQuery('(max-width: 820px)');
+
   return (
     <CanvasProvider siteData={site}>
     <div className="tw-builder">
       <Loader isVisible={isLoading}/>
+      {isMobile && <MobileWarning/>}
+      {!isMobile && !isLoading && (
+        <>
       <BuilderLeftPanel 
         isPanelOpen={isLeftPanelOpen} 
         onPanelToggle={handleLeftPanelToggle}
@@ -459,6 +486,8 @@ const renderModal = () => {
                       showNotification={showNotification}
                       className="tree-context-menu"
                     />
+        </>
+      )}
     </div>
     </CanvasProvider>
   );

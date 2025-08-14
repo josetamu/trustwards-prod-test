@@ -113,6 +113,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   /*Notification*/
   --notification-color: #FFFFFF;
   --notification-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
   /*Modal*/
   --modal-background: #FFFFFF;
   --modal-sidebar-background: #F2F2F2;

@@ -32,6 +32,7 @@ System selected: will fallback to root or html[data-theme="dark"]
     --panels-radius: 8px;
 
     --builder-background: #F5F5F5;
+    --builder-text-color: #333333;
     --panels-background: #FFFFFF;
     --canvas-background: #FFFFFF;
 
@@ -145,23 +146,6 @@ html[data-theme="dark"]{
     
     --border-light-color: #333333;
     --shadow-light-color: rgba(0, 0, 0, 0.15);
-
-    /*General*/
-    --body-light-color: #666666;
-    --body-fresco-color: #9B9B9B;
-    --body-semistrong-color: #9B9B9B;
-    --body-strong-color: #FFFFFF;
-    --border-fresco-color: #252525;
-    --border-strong-color: #333333;
-    --icons-fresco-color: #9B9B9B;
-    --icons-strong-color: #FFFFFF;
-    --hover-light-color: #2B2B2B;
-    --hover-fresco-color: #2B2B2B;
-    --hover-strong-color: #333333;
-    --shadow-fresco-color: rgba(0, 0, 0, 0.05);
-    --shadow-strong-color: rgba(0, 0, 0, 0.15);
-    --wrappers-fresco-color: #202020;
-    --wrappers-strong-color: #2B2B2B;
 
     /*Builder Left Panel*/
     --toggle-color: #9B9B9B;
