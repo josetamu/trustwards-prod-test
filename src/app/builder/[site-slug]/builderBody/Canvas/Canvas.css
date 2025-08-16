@@ -8,6 +8,7 @@
 #tw-root--banner,
 #tw-root--modal{
     height: 100%;
+    min-height: fit-content;
 }
 #tw-root--banner:not(.tw-active-root),
 #tw-root--modal:not(.tw-active-root){

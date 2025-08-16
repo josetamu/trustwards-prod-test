@@ -270,6 +270,18 @@
     color: var(--tree-item-selected-color);
 }
 
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-image-icon {
+    fill: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-divider-icon {
+    background-color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-button-icon {
+    background-color: var(--tree-item-selected-color);
+}
+
 .tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-selected-color);
 }
@@ -298,12 +310,15 @@
     justify-content: center;
     position: relative;
     z-index: 1;
+
+    width: 8px;
+    height: 8px;
 }
 
 /* Square icon */
 .tw-builder__tree-item-square-icon {
-    width: 8px;
-    height: 8px;
+    width: 100%;
+    height: 100%;
     background-color: var(--square-icon-background);
     border-radius: 2px;
     position: relative;
@@ -320,6 +335,45 @@
     justify-content: center;
     position: relative;
     z-index: 1;
+}
+
+/* Image icon */
+.tw-builder__tree-item-image-icon {
+    min-width: 10px;
+    height: 10px;
+    fill: var(--square-icon-background);
+}
+
+/* Divider icon */
+.tw-builder__tree-item-divider-icon {
+    width: 100%;
+    height: 1px;
+    background-color: var(--tree-text-icon-color);
+    border-radius: 100px;
+}
+
+/* Button icon */
+.tw-builder__tree-item-button-icon {
+    min-width: 11px;
+    height: 8px;
+    margin-top: 1px;
+
+    background-color: var(--tree-text-icon-color);
+    border-radius: 2px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tw-builder__tree-item-button-icon::after {
+    content: "";
+    position: absolute;
+
+    width: 4px;
+    height: 1px;
+    border-radius: 100px;
+
+    background-color: #FFFFFF;
 }
 
 /* ==========================================================================
@@ -420,6 +474,18 @@
     color: var(--tree-item-selected-color);
 }
 
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-image-icon {
+    fill: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-divider-icon {
+    background-color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-button-icon {
+    background-color: var(--tree-item-selected-color);
+}
+
 .tw-builder__tree-item-header--selected .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-selected-color);
 }
@@ -486,6 +552,18 @@
     color: var(--tree-text-icon-color);
 }
 
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-image-icon {
+    fill: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-divider-icon {
+    background-color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-button-icon {
+    background-color: var(--tree-text-icon-color);
+}
+
 .tw-builder__tree-item--dragging-container .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-color);
 }
@@ -505,12 +583,24 @@
     opacity: 1;
 }
 
-.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-square-icon {
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-square-icon{
     background-color: var(--square-icon-background);
 }
 
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-text-icon {
     color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-image-icon {
+    fill: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-divider-icon {
+    background-color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-button-icon {
+    background-color: var(--tree-text-icon-color);
 }
 
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-expand-button {
