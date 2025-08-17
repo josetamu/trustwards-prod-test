@@ -1,6 +1,6 @@
 'use client'
 
-import './builder-root.css'
+import '@app/root.css'
 import './builder.css'
 
 import BuilderLeftPanel from './builderLeftPanel/builderLeftPanel'

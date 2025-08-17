@@ -107,7 +107,7 @@ export const Canvas = () => {
     }
 
     /*
-    * Fallback to set the root element as the selected element when interacting outside of the canvas and the toolbar
+    * Fallback to set null as the selected element when interacting outside of the canvas and the toolbar
     */
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -115,8 +115,14 @@ export const Canvas = () => {
             !e.target.closest('.tw-builder__toolbar') &&
             !e.target.closest('.tw-builder__right-body') &&
             !e.target.closest('.tw-builder__tab-container') &&
-            !e.target.closest('.tw-builder__tree-content')) {
-                setSelectedId(activeRoot);
+            !e.target.closest('.tw-builder__tree-content') &&
+            !e.target.closest('.tw-context-menu') &&
+            !e.target.closest('.builder-save__text') &&
+            !e.target.closest('.tw-builder__panel-toggle-btn') &&
+            !e.target.closest('.tw-builder__logo-button')) {
+                console.log(e.target)
+                setSelectedId(null);
+                setSelectedItem(null);
             }
         };
         document.addEventListener('click', handleClickOutside);

@@ -6,7 +6,7 @@
     gap: 3px;
     padding: 6px;
     color: var(--body-fresco-color);
-    letter-spacing: var(--letter-spacing);
+    letter-spacing: var(--letter-spacing-negative);
     font-size: var(--font-size-medium);
     font-weight: 500;
     border: 1px solid var(--secondary-button-border-color);
@@ -23,7 +23,7 @@
 .sort__title {
   font-size: var(--font-size-mini);
   font-weight: 500;
-  letter-spacing: var(--letter-spacing);
+  letter-spacing: var(--letter-spacing-negative);
   color: var(--body-fresco-color);
   padding: 6px 12px;
   pointer-events: none;

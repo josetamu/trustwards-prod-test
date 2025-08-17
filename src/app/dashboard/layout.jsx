@@ -1,6 +1,6 @@
 'use client'
 
-import './dashboard-root.css'
+import '@app/root.css'
 import './dashboard.css'
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../../supabase/supabaseClient';

@@ -59,8 +59,8 @@
     align-items: center;
     gap: 10px;
     background-color: var(--logo-background);
-    border: var(--logo-border);
-    box-shadow: var(--logo-shadow);
+    border: 1px solid var(--border-light-color);
+    box-shadow: 0 2px 4px 0 var(--shadow-light-color);
     border-radius: 6px;
     padding: 7px;
     cursor: pointer;
@@ -82,9 +82,9 @@
 .builder-logo-dropdown .dropdown__menu {
     min-width: 200px;
     background: var(--dropdown-background);
-    border: var(--dropdown-border);
+    border: 1px solid var(--border-light-color);
     border-radius: 8px;
-    box-shadow: var(--dropdown-shadow);
+    box-shadow: 0 2px 4px 0 var(--shadow-light-color);
     margin-top: 15px;
     transform-origin: top left;
 }
@@ -139,8 +139,8 @@
     height: calc(100% - 6px);
     background-color: var(--tab-slider-background);
     border-radius: 6px;
-    border: var(--tab-slider-border);
-    box-shadow: var(--tab-slider-shadow);
+    border: 1px solid var(--border-light-color);
+    box-shadow: 0 2px 4px 0 var(--shadow-light-color);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -151,7 +151,7 @@
     border: 1px solid transparent;
     background: none;
     border-radius: 6px;
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--tab-color);
@@ -382,7 +382,7 @@
 
 /* Tree item label */
 .tw-builder__tree-item-label {
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     color: var(--subtitle-color);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
@@ -484,6 +484,9 @@
 
 .tw-builder__tree-item-header--selected .tw-builder__tree-item-button-icon {
     background-color: var(--tree-item-selected-color);
+}
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-button-icon::after{
+    background-color: var(--square-icon-background);
 }
 
 .tw-builder__tree-item-header--selected .tw-builder__tree-expand-button {

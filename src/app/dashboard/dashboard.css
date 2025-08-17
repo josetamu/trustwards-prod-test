@@ -1,4 +1,31 @@
+html{
+  padding: 20px 20px 20px 0;
+  background-color: var(--sidebar-background);
+}
+@media (max-width: 767px) {
+  /* Reset margins and padding to eliminate gaps */
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+}
 
+/* Hide buttons until color is loaded, if not blue is showed during half second*/
+[style*="background-color: var(--accent-bg-color)"],
+.sites__new-button,
+.newSite__button,
+.modalAppearance__accentColor__button {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* show buttons when color is loaded */
+html[data-color] [style*="background-color: var(--accent-bg-color)"],
+html[data-color] .sites__new-button,
+html[data-color] .newSite__button,
+html[data-color] .modalAppearance__accentColor__button {
+  opacity: 1;
+}
 
 .app-container {
   width: 100%;

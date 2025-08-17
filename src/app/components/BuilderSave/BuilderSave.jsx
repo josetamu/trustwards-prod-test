@@ -45,7 +45,7 @@ export default function BuilderSave({showNotification, siteSlug}) {
 
     return (
         <div 
-            className={`builder-save ${isLoading ? 'builder-save--loading' : ''}`} 
+            className={`builder-save${isLoading ? ' builder-save--loading' : ''}`} 
             onClick={!isLoading ? save : undefined}
         >
             {/* If the changes are being saved, show the spinner */}

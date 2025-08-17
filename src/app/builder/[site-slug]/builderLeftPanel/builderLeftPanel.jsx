@@ -111,26 +111,6 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         }
     }, [selectedId, selectedItem])
 
-    // Click outside handler to deselect
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            // Check if click is on elements that should maintain selection
-            if (!e.target.closest('.tw-active-root') && 
-                !e.target.closest('.tw-builder__toolbar') &&
-                !e.target.closest('.tw-builder__right-body') &&
-                !e.target.closest('.tw-builder__tab-container') &&
-                !e.target.closest('.tw-builder__tree-content') &&
-                !e.target.closest('.context-menu')) {
-                setSelectedItem(null)
-                if (selectedId === selectedItem) {
-                    setSelectedId(null)
-                }
-            }
-        }
-        document.addEventListener('click', handleClickOutside)
-        return () => document.removeEventListener('click', handleClickOutside)
-    }, [selectedId, selectedItem, setSelectedId])
-
     // Drag and drop handlers
     const handleDragStart = (e, item) => {
         setDraggedItem(item)
@@ -608,7 +588,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         <button 
                             className={`tw-builder__tab ${activeTab === 'tw-root--banner' ? 'tw-builder__tab--active' : ''}`}
                             onClick={() => {
-                                updateActiveRoot('tw-root--banner')
+                                updateActiveRoot('tw-root--banner');
+                                setSelectedId(null);
+                                setSelectedItem(null);
                             }}
                         >
                             Banner
@@ -616,7 +598,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         <button 
                             className={`tw-builder__tab ${activeTab === 'tw-root--modal' ? 'tw-builder__tab--active' : ''}`}
                             onClick={() => {
-                                updateActiveRoot('tw-root--modal')
+                                updateActiveRoot('tw-root--modal');
+                                setSelectedId(null);
+                                setSelectedItem(null);
                             }}
                         >
                             Modal

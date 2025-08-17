@@ -1,28 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-
-* {
+*{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   line-height: normal;
+}
+*:not(.tw-builder__canvas *) {
   font-family: 'Inter', sans-serif;
 }
 a {
   text-decoration: none;
-}
-html{
-  padding: 20px 20px 20px 0;
-  background-color: var(--sidebar-background);
-}
-
-@media (max-width: 767px) {
-
-  /* Reset margins and padding to eliminate gaps */
-html, body {
-  margin: 0;
-  padding: 0;
-
-}
 }
 
 /*
@@ -33,26 +20,25 @@ System selected: will fallback to root or html[data-theme="dark"]
 
 :root {
   --input-padding: 12px;
-  --letter-spacing: -0.03em;
-
   --backdrop-blur: 7px;
-  --heading-font-size: 18px;
-  --font-weight: 500;
-  --letter-spacing-negative: -0.03em;
 
   --sidebar-width-open: 230px;
   --sidebar-width-close: 65px;
   --sidebar-menu-backdrop-color: rgba(255, 255, 255, 0.35);
 
+  --font-size-extreme-mini: 10px;
   --font-size-mini: 12px;
   --font-size-small: 13px;
   --font-size-medium: 14px;
   --font-size-big: 16px;
+  --heading-font-size: 18px;
   --font-heading: 20px;
+  --font-weight: 500;
+  --letter-spacing-negative: -0.03em;
+  --letter-spacing-positive: 0.03em;
 
   --sidebar-icon-size: 16px;
   --sidebar-icon-main-size: 16px;
-  --sidebar-transition: all 0.3s ease;
   --skeleton-color: gainsboro;
 
   /*App*/
@@ -148,7 +134,66 @@ System selected: will fallback to root or html[data-theme="dark"]
   --home-chart-color: #666666;
   --home-chart-icon-color: #F3F3F3;
 
+  /*Builder - General*/
+  --panels-width: 200px;
+  --canvas-min-width: 350px;
+  --canvas-max-width: 1480px;
 
+  --panels-radius: 8px;
+
+  --handlebars-color: #D9D9D9;
+  --handlebars-color-active: #AAAAAA;
+
+  --header-plan-background: #E3E3E3;
+  --builder-background: #F5F5F5;
+  --builder-text-color: #333333;
+  --panels-background: #FFFFFF;
+  --canvas-background: #FFFFFF;
+
+  --border-light-color: #E6E6E6;
+  --shadow-light-color: #00000010;
+
+  --shadow-color: #999999;
+  --subtitle-color: #666666;
+  --label-color: #222222;
+  --icons-color: #999999;
+  --tooltip-background: #FFFFFF;
+
+  /*Builder - Toolbar*/
+  --toolbar-items-background: #F0F0F0;
+  --toolbar-items-background-hover: #e9e9e9;
+  --toolbar-items-text-color: #999999;
+  --toolbar-items-icon-color: #999999;
+  --toolbar-items-icon-background: #FFFFFF;
+
+  /*Builder - Left Panel*/
+  --logo-background: #FFFFFF;
+  --dropdown-background: #FFFFFF;
+  --toggle-color: #999999;
+  --tab-container-background: #F5F5F5;
+  --tab-slider-background: #FFFFFF;
+  --tab-color: #999999;
+  --tab-active-color: #222222;
+  --tab-hover-background: #E8E8E8;
+  --tab-hover-color: #222222;
+
+  /*Builder - Tree View*/
+  --tree-item-hover-background: #E8E8E8;
+
+  --tree-item-selected-background: #0099FE;
+  --tree-item-selected-color: #FFFFFF;
+
+  --tree-item-child-selected-color: #666666;
+
+  --tree-expand-button-color: #999999;
+  --tree-expand-button-selected-color: #FFFFFF;
+  --tree-expand-button-child-selected-color: #666666;
+
+  --square-icon-background: #666666;
+  --tree-text-icon-color: #666666;
+  
+  --child-selected-color: #666666;
+  --tree-childs-background: #0099FE26;
 }
 
 .sidebar__logo-img{
@@ -158,6 +203,15 @@ System selected: will fallback to root or html[data-theme="dark"]
   height: 18px;
 }
 .sidebar--open .sidebar__logo-img{
+  margin-left: 0px;
+}
+.tw-builder__logo{
+  background: url('/assets/logo-light-mode.svg');
+  background-size: cover;
+  width: 15px;
+  height: 11px;
+}
+.tw-builder--open .tw-builder__logo{
   margin-left: 0px;
 }
 
@@ -235,17 +289,72 @@ html[data-theme="dark"] {
   --support-choice-background: #333333;
   --support-dropzone-background: rgba(0, 153, 254, 0.1);
 
-    /* Modal - Upgrade*/
-    --upgrade-bg-popular: #0099FE10;
+  /* Modal - Upgrade*/
+  --upgrade-bg-popular: #0099FE10;
 
-    /*Home*/
-    --home-subtitle-color: #FFFFFF;
-    --home-text-color: #FFFFFFB3;
-    --home-verify-container-bg: #191919b3;
-    --home-bar-color: #666666;
-    --home-complyHealth-status-color: #FFFFFF;
-    --home-chart-color: #FFFFFF;
-    --home-chart-icon-color: #272727;
+  /*Home*/
+  --home-subtitle-color: #FFFFFF;
+  --home-text-color: #FFFFFFB3;
+  --home-verify-container-bg: #191919b3;
+  --home-bar-color: #666666;
+  --home-complyHealth-status-color: #FFFFFF;
+  --home-chart-color: #FFFFFF;
+  --home-chart-icon-color: #272727;
+
+  /*Builder - General*/
+  --handlebars-color: #444444;
+  --handlebars-color-active: #666666;
+
+  --header-plan-background: #2B2B2B;
+  --builder-background: #202020;
+  --builder-text-color: #F5F5F5;
+  --panels-background: #191919;
+  --canvas-background: #191919;
+  --tooltip-background: #2B2B2B;
+
+  --border-light-color: #2A2A2A;
+  --shadow-light-color: #00000010;
+
+  --shadow-color: #999999;
+  --subtitle-color: #AAAAAA;
+  --label-color: #F5F5F5;
+  --icons-color: #999999;
+
+  /*Builder - Toolbar*/
+  --toolbar-items-background: #2B2B2B;
+  --toolbar-items-background-hover: #3E3E3E;
+  --toolbar-items-text-color: #999999;
+  --toolbar-items-icon-color: #FFFFFF;
+  --toolbar-items-icon-background: #666;
+
+  /*Builder - Left Panel*/
+  --logo-background: #2B2B2B;
+  --dropdown-background: #2B2B2B;
+  --toggle-color: #999999;
+  --tab-container-background: #2B2B2B;
+  --tab-slider-background: #555555;
+  --tab-color: #999999;
+  --tab-active-color: #F5F5F5;
+  --tab-hover-background: #404040;
+  --tab-hover-color: #F5F5F5;
+
+  /*Builder - Tree View*/
+  --tree-item-hover-background: #333333;
+
+  --tree-item-selected-background: #0099FE;
+  --tree-item-selected-color: #FFFFFF;
+
+  --tree-item-child-selected-color: #999999;
+
+  --tree-expand-button-color: #999999;
+  --tree-expand-button-selected-color: #FFFFFF;
+  --tree-expand-button-child-selected-color: #999999;
+
+  --square-icon-background: #999999;
+  --tree-text-icon-color: #999999;
+  
+  --child-selected-color: #999999;
+  --tree-childs-background: #0099FE26;
 }
 
 html[data-theme="dark"] .sidebar__logo-img{
@@ -253,6 +362,12 @@ html[data-theme="dark"] .sidebar__logo-img{
   background-size: cover;
   width: 25px;
   height: 18px;
+}
+html[data-theme="dark"] .tw-builder__logo{
+  background: url('/assets/logo-dark-mode.svg');
+  background-size: cover;
+  width: 15px;
+  height: 11px;
 }
 
 
@@ -280,29 +395,4 @@ html[data-color="orange"] {
 html[data-color="red"] {
   --blue-button-shadow: 0px -4px 4px 0px #E31B1B inset, 0px 0px 0px 1px #F91212, 0px 0px 0px 1px #F97474 inset;
   --accent-bg-color: #F33D3D;
-}
-
-
-
-
-
-
-
-
-
-/* Hide buttons until color is loaded, if not blue is showed during half second*/
-[style*="background-color: var(--accent-bg-color)"],
-.sites__new-button,
-.newSite__button,
-.modalAppearance__accentColor__button {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-/* show buttons when color is loaded */
-html[data-color] [style*="background-color: var(--accent-bg-color)"],
-html[data-color] .sites__new-button,
-html[data-color] .newSite__button,
-html[data-color] .modalAppearance__accentColor__button {
-  opacity: 1;
 }

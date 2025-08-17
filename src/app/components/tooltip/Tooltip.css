@@ -22,7 +22,7 @@
   max-width: 100%; 
   display: block;
   text-align: center;
-  letter-spacing: var(--letter-spacing);
+  letter-spacing: var(--letter-spacing-negative);
   font-weight: 500;
   font-size: var(--font-size-mini);
 }

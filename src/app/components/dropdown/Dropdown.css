@@ -44,7 +44,7 @@
   border: none;
   border-radius: 6px;
   color: var(--body-fresco-color);
-  letter-spacing: var(--letter-spacing);
+  letter-spacing: var(--letter-spacing-negative);
   font-weight: var(--font-weight);
   font-size: var(--font-size-small);
   white-space: nowrap;

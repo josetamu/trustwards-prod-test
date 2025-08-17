@@ -103,7 +103,7 @@
     background-color: var(--toolbar-items-background-hover);
 }
 .tw-builder__toolbar-dropdown-item-title{
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     color: var(--toolbar-items-text-color);
 }
@@ -116,12 +116,12 @@
     justify-content: center;
     align-items: center;
 
-    background: #FFFFFF;
+    background: var(--toolbar-items-icon-background);
     border-radius: 5px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.10);
 }
 .tw-builder__toolbar-dropdown-column-title{
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     color: var(--toolbar-items-text-color);
 
@@ -140,7 +140,7 @@
     width: 16px;
     height: 16px;
     border-radius: 3px;
-    background: var(--toolbar-items-text-color);
+    background: var(--toolbar-items-icon-color);
 }
 .tw-builder__canvas .tw-block--empty{
     outline: 1px solid var(--border-light-color);
@@ -152,7 +152,7 @@
 .tw-builder__toolbar-dropdown-item-icon--image svg{
     width: 100%;
     height: 100%;
-    fill: var(--toolbar-items-text-color);
+    fill: var(--toolbar-items-icon-color);
 }
 .tw-builder__canvas .tw-image{
     width: auto;
@@ -165,7 +165,7 @@
     width: 16px;
     height: 2px;
     border-radius: 100px;
-    background: var(--toolbar-items-text-color);
+    background: var(--toolbar-items-icon-color);
 }
 .tw-divider{
     width: 100%;
@@ -177,7 +177,7 @@
 .tw-builder__toolbar-dropdown-item-icon--text svg{
     width: 100%;
     height: 100%;
-    stroke: var(--toolbar-items-text-color);
+    stroke: var(--toolbar-items-icon-color);
 }
 .tw-builder__canvas .tw-text{
     min-width: fit-content;

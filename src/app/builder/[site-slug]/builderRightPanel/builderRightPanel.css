@@ -59,7 +59,7 @@
     gap: 5px;
 }
 .tw-builder__settings-id{
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--shadow-color);
@@ -80,7 +80,7 @@
 }
 
 .tw-builder__settings-subtitle{
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--subtitle-color);
@@ -100,7 +100,7 @@
     min-width: 40px;
     border: none;
     color: #000;
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     appearance: none;
@@ -129,7 +129,7 @@
     border: none;
     background-color: var(--builder-background);
     color: #000;
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     cursor: text;
@@ -211,7 +211,7 @@
     border: none;
     background-color: var(--builder-background);
     color: #000;
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     height: 100%;
     text-align: center;
 }
@@ -261,7 +261,7 @@
     height: 100%;
     border:none;
     background: none;
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -285,7 +285,7 @@
     border: none;
     background: none;
     text-align: center;
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -312,7 +312,7 @@
     box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.05);
     position: relative;
     color: #222222;
-    font-size: var(--builder-tooltip-font-size);
+    font-size: var(--font-size-extreme-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -336,7 +336,7 @@
     display: none !important;
   }
   .tw-builder__settings-action .tooltip__mask .tooltip__message{
-    font-size: var(--builder-tooltip-font-size);
+    font-size: var(--font-size-extreme-mini);
   }
   .tw-builder__settings-setting--shadow{
     flex-direction: column;

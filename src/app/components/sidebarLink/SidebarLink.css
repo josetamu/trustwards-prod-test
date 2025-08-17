@@ -12,7 +12,7 @@
     padding: 8px 9px;
     border: 1px solid transparent;
     border-radius: 10px;
-    transition: var(--sidebar-transition);
+    transition: all 0.3s ease;
   }
   
   .sidebar__link:hover {

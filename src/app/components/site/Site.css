@@ -57,7 +57,7 @@
 }
 
 .site__name {
-  letter-spacing: var(--letter-spacing);
+  letter-spacing: var(--letter-spacing-negative);
   font-size: var(--font-size-medium);
   font-weight: var(--font-weight);
   color: var(--body-semistrong-color);
@@ -101,7 +101,7 @@
   font-size: var(--font-size-medium);
   color: var(--site-pro-toggle-text-color);
   font-weight: 500;
-  letter-spacing: var(--letter-spacing);
+  letter-spacing: var(--letter-spacing-negative);
   position: absolute;
   left: 0;
   right: 0;
@@ -177,7 +177,7 @@
 }
 
 .site__list-name {
-  letter-spacing: var(--letter-spacing);
+  letter-spacing: var(--letter-spacing-negative);
   font-size: var(--font-size-medium);
   font-weight: var(--font-weight);
   color: var(--body-semistrong-color);

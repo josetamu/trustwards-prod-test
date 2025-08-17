@@ -1,4 +1,7 @@
 /* Whole Builder */
+html.trustwards-builder{
+    padding: 0;
+}
 .tw-builder{
     background-color: var(--builder-background);
 

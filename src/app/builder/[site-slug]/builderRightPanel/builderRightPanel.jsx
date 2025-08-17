@@ -10,7 +10,7 @@ import ImageControls from '@components/ImageControls/ImageControls';
 import ControlComponent from '@components/ControlComponents/ControlComponents';
 
 function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
-    const { activeRoot, selectedId, JSONtree } = useCanvas();
+    const { selectedId, JSONtree } = useCanvas();
 
     // Function to find the element in the JSON tree
     const findElement = (node, targetId) => {
@@ -72,8 +72,8 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 <BuilderSave showNotification={showNotification} siteSlug={siteSlug}/>
             </div>
             <div className="tw-builder__right-body">
-                {/* If no element is selected(root), show the no selected item */}
-                {selectedId === activeRoot && <NoSelectedItem/>}
+                {/* If no element is selected, show the no selected item */}
+                {!selectedId && <NoSelectedItem/>}
                 {/* Check the type element and show the correct controls */}
                 {selectedClassName === 'tw-builder__text' && <TextControls selectedId={selectedId}/>}
                 {selectedClassName === 'tw-builder__divider' && <DividerControls selectedId={selectedId}/>}

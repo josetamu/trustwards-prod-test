@@ -19,6 +19,7 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
+      "@app/*": ["src/app/*"],
       "@dashboard/*": ["src/app/dashboard/*"],
       "@components/*": ["src/app/components/*"],
       "@contexts/*": ["src/contexts/*"],

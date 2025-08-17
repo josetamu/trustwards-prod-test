@@ -81,7 +81,7 @@
   cursor: pointer;
   border-radius: 10px;
   border: 1px solid transparent;
-  transition: var(--sidebar-transition);
+  transition: all 0.3s ease;
 }
 .sidebar-header--active,
 .sidebar-header:hover{

@@ -5,7 +5,10 @@
     gap: 6px;
     background-color: var(--accent-bg-color);
     color: var(--accent-color);
-    padding: 6px 10px;
+    
+    width: 49px;
+    height: 28px;
+
     border-radius: 8px;
     cursor: pointer;
     box-shadow: var(--blue-button-shadow);
@@ -23,6 +26,12 @@
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
+
+    min-width: 100%;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .builder-save__spinner {
