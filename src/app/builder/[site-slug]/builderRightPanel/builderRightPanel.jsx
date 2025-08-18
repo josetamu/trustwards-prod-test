@@ -10,7 +10,7 @@ import ImageControls from '@components/ImageControls/ImageControls';
 import ControlComponent from '@components/ControlComponents/ControlComponents';
 
 function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
-    const { selectedId, JSONtree } = useCanvas();
+    const { selectedId, JSONtree, activeRoot } = useCanvas();
 
     // Function to find the element in the JSON tree
     const findElement = (node, targetId) => {
@@ -19,15 +19,26 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             return node;
         }
         if (node.children) {
-            return node.children.find(child => findElement(child, targetId));
+            for (const child of node.children) {
+                const found = findElement(child, targetId);
+                if (found) return found;
+            }
         }
         return null;
     };
+    let selectedElement = null;
+    if(JSONtree && JSONtree.roots) {
+        const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
+        if(activeRootNode) {
+            selectedElement = findElement(activeRootNode, selectedId);
+        }
+    }
 
     // Function to get the selected element
-    const selectedElement = findElement(JSONtree, selectedId);
+    //const selectedElement = findElement(JSONtree, selectedId);
     // Get the class name to know the type of the selected element
     const selectedClassName = selectedElement?.classList[0];
+
 
     const pruebaControls = {
         header: [
@@ -46,21 +57,34 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             { name: 'Choose', type: 'choose', category: 'super-justify'},
             { name: 'Choose', type: 'choose', category: 'super-align'},
             { name: 'Choose', type: 'choose', category: 'text-align'},
+            { name: 'Super Select', type: 'super-select', value: 'div', category: 'text'},
+            { name: 'Super Select', type: 'super-select', value: 'flex', category: 'display'},
         ],
 
-/*         body: {
+         body: [
+        {
             label: 'Prueba',
             controls: [
                 { name: 'Texto', type: 'text', value: 'Title' },
                 { name: 'Texto2', type: 'text', placeholder: 'Title2' },
                 { name: 'Texto3', type: 'text', value: 'Title3', placeholder: 'Title3' },
-                { name: 'Select', type: 'select', value: 'opcion 1', placeholder: 'opcion 1', options: ['opcion 1', 'opcion 2', 'opcion 3'] },
+                { name: 'Select', type: 'select', value: 'opcion 3', options: ['opcion 1', 'opcion 2222', 'opcion 3333333'] },
+                { name: 'Fruta', type: 'select', value: 'Manzana', options: ['Manzana', 'Pera', 'Naranja', 'Mandarina'] },
                 { name: 'Panel', type: 'panel'},
-                { name: 'Color', type: 'color'},
+                { name: 'Color', type: 'color', value: '000000', opacity: '100%'},
                 { name: 'Image', type: 'image'},
-                { name: 'Choose', type: 'choose'},
+                { name: 'Choose', type: 'choose', category: 'direction'},
+                { name: 'Choose', type: 'choose', category: 'flex-direction'},
+                { name: 'Choose', type: 'choose', category: 'align'},
+                { name: 'Choose', type: 'choose', category: 'justify'},
+                { name: 'Choose', type: 'choose', category: 'super-justify'},
+                { name: 'Choose', type: 'choose', category: 'super-align'},
+                { name: 'Choose', type: 'choose', category: 'text-align'},
+                { name: 'Super Select', type: 'super-select', value: 'div', category: 'text'},
+                { name: 'Super Select', type: 'super-select', value: 'flex', category: 'display'},
             ]
-        } */
+        } 
+    ]
     }
     
     
@@ -75,11 +99,11 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 {/* If no element is selected, show the no selected item */}
                 {!selectedId && <NoSelectedItem/>}
                 {/* Check the type element and show the correct controls */}
-                {selectedClassName === 'tw-builder__text' && <TextControls selectedId={selectedId}/>}
-                {selectedClassName === 'tw-builder__divider' && <DividerControls selectedId={selectedId}/>}
+                {selectedClassName === 'tw-text' && <TextControls selectedId={selectedId}/>}
+                {selectedClassName === 'tw-divider' && <DividerControls selectedId={selectedId}/>}
 {/*                 {selectedClassName === 'tw-builder__image' && <ImageControls selectedId={selectedId}/>} */}
-                {selectedClassName === 'tw-builder__block' && <BlockControls selectedId={selectedId}/>}
-                {selectedClassName === 'tw-builder__image' && <ControlComponent control={pruebaControls} selectedId={selectedId}/>}
+                {selectedClassName === 'tw-block' && <BlockControls selectedId={selectedId}/>}
+                {selectedClassName === 'tw-image' && <ControlComponent control={pruebaControls} selectedId={selectedId}/>}
             </div>
         </div>
     )
