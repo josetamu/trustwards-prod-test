@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useReducer, useContext, useEffect, useCallback } from "react";
+import { JSfunctions } from '@contexts/JSfunctionsContext'; //Used by runElementScript() eval
 
 const CanvasContext = createContext(null);
 
@@ -71,53 +72,57 @@ function treeReducer(state, action) {
 
 export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
+    const [idsCSSData, setIdsCSSData] = React.useState([]);
+    const [classesCSSData, setClassesCSSData] = React.useState([]);
+    const defaultTree = {
+        idsCSSData: idsCSSData, /*for each id, stores its right panel properties*/
+        classesCSSData: classesCSSData, /*for each class, stores its right panel properties*/
+        activeRoot: "tw-root--banner", //stored active root
+        roots: [
+            {
+                id: "tw-root--banner", //banner root
+                elementType: "banner",
+                icon: "banner",
+                label: "Banner",
+                classList: [],
+                tagName: "div",
+                children: [],
+                nestable: true,
+            },
+            {
+                id: "tw-root--modal", //modal root
+                elementType: "modal",
+                icon: "modal",
+                label: "Modal",
+                classList: [],
+                tagName: "div",
+                children: [],
+                nestable: true,
+            }
+        ]
+    };
     
     const [state, dispatch] = useReducer(treeReducer, {
         past: [], //undo stack
-        present: null, // initially null until data is fetched
+        present: defaultTree, // initial tree until data is fetched
         future: [] //redo stack
     });
 
     useEffect(() => {
-        if (siteData && state.present === null) {
+        if (siteData) {
             const userJSON = siteData.JSON;
-            const initialTree = {
-                idsData: [], /*for each id, stores its right panel properties*/
-                classesData: [], /*for each class, stores its right panel properties*/
-                activeRoot: "tw-root--banner", //stored active root
-                roots: [
-                    {
-                        id: "tw-root--banner", //banner root
-                        elementType: "banner",
-                        icon: "banner",
-                        label: "Banner",
-                        classList: [],
-                        tagName: "div",
-                        children: [],
-                        nestable: true,
-                    },
-                    {
-                        id: "tw-root--modal", //modal root
-                        elementType: "modal",
-                        icon: "modal",
-                        label: "Modal",
-                        classList: [],
-                        tagName: "div",
-                        children: [],
-                        nestable: true,
-                    }
-                ]
-            };
             const initialState = {
                 past: [],
-                present: userJSON ? userJSON : initialTree,
+                present: userJSON ? userJSON : defaultTree,
                 future: []
             };
+            setIdsCSSData(initialState.present.idsCSSData); //Set the idsData from the stored idsData
+            setClassesCSSData(initialState.present.classesCSSData); //Set the classesData from the stored classesData
             dispatch({ type: 'INIT', payload: initialState.present });
             setActiveRoot(initialState.present.activeRoot); //Set the active root as the initial root
             setActiveTab(initialState.present.activeRoot); //Set the active root as the initial tab
         }
-    }, [siteData, state.present]);    
+    }, [siteData]);    
 
     const JSONtree = state.present; //The real JSONtree at any moment (state.present)
     const [selectedId, setSelectedId] = React.useState(null); //Starts the root as the selectedId (Canvas.jsx will manage the selected element)
@@ -170,6 +175,89 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) =
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [undo, redo]);
+
+    /*
+    * Add a CSS property (for CSS controls)
+    * type - id or class
+    * selector - #name, .name...
+    * property - the CSS property: color, background-color, padding, margin, etc...
+    * value - the value of the property
+    */
+    const addCSSProperty = (type, selector, property, value) => {
+        switch(type) {
+            case 'id': {
+                // Check if the selector already exists in idsCSSData
+                const existingIdIndex = idsCSSData.findIndex(item => item.id === selector);
+                if (existingIdIndex !== -1) {
+                    // If it exists, update the existing properties modifying the new property value
+                    const updatedProperties = { ...idsCSSData[existingIdIndex].properties, [property]: value };
+                    const updatedIdsCSSData = [...idsCSSData];
+                    updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
+                    setIdsCSSData(updatedIdsCSSData);
+                } else {
+                    // If it doesn't exist, add a new entry with the selector and property
+                    setIdsCSSData([...idsCSSData, { id: selector, properties: { [property]: value } }]);
+                }
+                break;
+            }
+            case 'class': {
+                // Check if the selector already exists in classesCSSData
+                const existingClassIndex = classesCSSData.findIndex(item => item.className === selector);
+                if (existingClassIndex !== -1) {
+                    // If it exists, update the existing properties modifying the new property value
+                    const updatedProperties = { ...classesCSSData[existingClassIndex].properties, [property]: value };
+                    const updatedClassesCSSData = [...classesCSSData];
+                    updatedClassesCSSData[existingClassIndex] = { ...classesCSSData[existingClassIndex], properties: updatedProperties };
+                    setClassesCSSData(updatedClassesCSSData);
+                } else {
+                    // If it doesn't exist, add a new entry with the selector and property
+                    setClassesCSSData([...classesCSSData, { className: selector, properties: { [property]: value } }]);
+                }
+                break;
+            }
+        }
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addProperty
+        updated.idsCSSData = idsCSSData;
+        updated.classesCSSData = classesCSSData;
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+    };
+
+    /*
+    * Add a JSON property (for HTML and Javascript (attr) controls)
+    * id - The id of the element to add the property to
+    * property - The property to add
+    * value - The value of the property
+    */
+    const addJSONProperty = (id, property, value) => {
+        const findAndUpdateElement = (node) => { // Find the element with the given id and update its property
+            if (node.id === id) {
+                // Update the property with the new value
+                node[property] = value;
+                runElementScript(node); //re-run the javascript function of the node if it has one
+                return true; // Element found and updated
+            }
+            
+            // Recursively search through children
+            if (node.children) {
+                for (let child of node.children) {
+                    if (findAndUpdateElement(child)) {
+                        return true; // Element found in children
+                    }
+                }
+            }
+            return false; // Element not found
+        };
+
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addProperty
+        updated.roots.forEach(root => findAndUpdateElement(root)); // Search through all roots to find and update the element
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+    };
+    //re-run the javascript function of a node if it has one
+    const runElementScript = (node) => {
+        if(node.script) {
+            eval(node.script);
+        }
+    }
 
     /*
     * Add element in the JSONtree inside the parentId given (drag & drop system) or if not given, then the current selectedId (Creation of the React element is managed by Canvas.jsx)
@@ -551,6 +639,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) =
                         tagName: "div",
                         label: "Categories",
                         classList: ["tw-block", "tw-categories"],
+                        script: 'categoriesElementsFunction()',
+                        attributes: {
+                            'data-duration': '0.6s',
+                        },
                         children: [
                             {
                                 elementType: "block",
@@ -670,6 +762,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) =
                         tagName: "div",
                         label: "Categories",
                         classList: ["tw-block", "tw-categories"],
+                        script: 'categoriesElementsFunction()',
+                        attributes: {
+                            'data-duration': '0.6s',
+                        },
                         children: [
                             {
                                 elementType: "block",
@@ -789,7 +885,8 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) =
 
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
-        moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem }}>
+        moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
+        idsCSSData, setIdsCSSData, classesCSSData, setClassesCSSData, addCSSProperty, addJSONProperty, runElementScript }}>
             {children}
         </CanvasContext.Provider>
     );

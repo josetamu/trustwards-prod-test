@@ -4,7 +4,35 @@ import { useCanvas } from '@contexts/CanvasContext';
 import React, { useEffect } from "react";
 
 export const Canvas = () => {
-    const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, selectedItem, setSelectedItem } = useCanvas();
+    const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
+        idsCSSData, classesCSSData, runElementScript } = useCanvas();
+
+    /*
+    * Custom hook to track elements after they are created and run their scripts
+    * Used by trackElement() inside renderNode()
+    */
+    const processedElementsRef = React.useRef(new Set());
+    const pendingScriptsRef = React.useRef(new Set());
+    const trackElement = React.useCallback((node) => {
+        if (node && node.id && node.script && !processedElementsRef.current.has(node.id)) {
+            pendingScriptsRef.current.add(node);
+        }
+    }, []);
+    React.useEffect(() => {
+        const scriptsToExecute = Array.from(pendingScriptsRef.current);
+        pendingScriptsRef.current.clear();
+
+        scriptsToExecute.forEach(node => {
+            if (!processedElementsRef.current.has(node.id)) {
+                try {
+                    runElementScript(node);
+                    processedElementsRef.current.add(node.id);
+                } catch (error) {
+                    console.error(`Error running script for ${node.id}:`, error);
+                }
+            }
+        });
+    });
 
     /*
     * Used by the canvas to convert the JSONtree into React elements
@@ -62,10 +90,13 @@ export const Canvas = () => {
 
         // Ensure node.id exists for React key prop
         const nodeKey = node.id || `node-${Math.random()}`;
+
+        // Track element for script execution once it is created
+        trackElement(node);
         
         switch (node.tagName) {
             case 'img':
-                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, src: node.src });
+                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, src: node.src, ...node.attributes });
             case 'input':
                 return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, type: node.attributes.type, name: node.attributes.name });
             case 'svg':
@@ -73,38 +104,9 @@ export const Canvas = () => {
             case 'path':
                 return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, ...node.attributes });
             default:
-                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps }, node.text, children);
+                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, ...node.attributes }, node.text, children);
         }
     };
-
-    //Categories element script function
-    useEffect(() => {
-        categoriesElementsFunction();
-    }, [JSONtree]); //We need to run this function every time the JSONtree changes (Could be optimized??)
-    const categoriesElementsFunction = () => {
-        //we can check for custom attributes here to customize the animation
-
-        document.querySelectorAll('.tw-categories').forEach(categoriesElement => {
-            categoriesElement.querySelectorAll('.tw-categories__expander').forEach(expander => {
-                let content = expander.querySelector('.tw-categories__expander-content');
-                expander.querySelector('.tw-categories__expander-header').addEventListener('click', (event) => {
-                    if (event.target.classList.contains('tw-categories__expander-checkbox')) {
-                        return;
-                    }
-                    if (expander.classList.toggle('tw-categories__expander--open')) {
-                        content.style.height = content.scrollHeight + 'px';
-                    } else {
-                        content.style.height = '0px';
-                    }
-                });
-                expander.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter' && event.target === expander) {
-                        expander.click();
-                    }
-                });
-            });
-        });
-    }
 
     /*
     * Fallback to set null as the selected element when interacting outside of the canvas and the toolbar
@@ -120,7 +122,6 @@ export const Canvas = () => {
             !e.target.closest('.builder-save__text') &&
             !e.target.closest('.tw-builder__panel-toggle-btn') &&
             !e.target.closest('.tw-builder__logo-button')) {
-                console.log(e.target)
                 setSelectedId(null);
                 setSelectedItem(null);
             }
@@ -326,6 +327,50 @@ export const Canvas = () => {
             marker.remove();
         };
     }, [dropIndicator]);
+
+    //Create a stylesheet for the properties every time the idsData or classesData changes
+    //For each id, add its CSS selector and properties
+    //For each class, add its CSS selector and properties
+    const createCSS = (JSONtree) => {
+        const styleId = 'tw-dynamic-stylesheet';
+        
+        // Build the CSS content
+        let cssContent = '';
+
+        //For each id, add its CSS selector and properties
+        JSONtree.idsCSSData.forEach(({ id, properties }) => {
+            cssContent += `#${id} {\n`;
+            Object.entries(properties).forEach(([prop, value]) => {
+                cssContent += `${prop}: ${value};\n`;
+            });
+            cssContent += `}\n`;
+        });
+
+        //For each class, add its CSS selector and properties
+        JSONtree.classesCSSData.forEach(({ className, properties }) => {
+            cssContent += `.${className} {\n`;
+            Object.entries(properties).forEach(([prop, value]) => {
+                cssContent += `${prop}: ${value};\n`;
+            });
+            cssContent += `}\n`;
+        });
+
+        // Check if style element exists and if content has changed
+        let existingStyle = document.getElementById(styleId);
+        if (existingStyle) { // Change current style element content if CSS properties have changed
+            if(existingStyle.textContent !== cssContent) {
+                existingStyle.textContent = cssContent;
+            }
+        } else { // Create new style element if it doesn't exist
+            const css = document.createElement('style');
+            css.id = styleId;
+            css.textContent = cssContent;
+            document.head.appendChild(css);
+        }
+    }
+    useEffect(() => {
+        createCSS(JSONtree);
+    }, [idsCSSData, classesCSSData]);
 
     return (
         <div className="tw-builder__handlebars-canvas-wrapper">
