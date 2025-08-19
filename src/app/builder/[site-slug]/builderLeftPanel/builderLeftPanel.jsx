@@ -70,7 +70,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setIsDropdownOpen(false)
     }
 
-    const handlePreferences = () => {
+    const handleAppearance = () => {
         setModalType('Appearance')
         setIsModalOpen(true)
         setIsDropdownOpen(false)
@@ -530,8 +530,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             <button className="tw-builder__dropdown-item dropdown__item" onClick={handleTheme}>
                 <span>Theme</span>
             </button>
-            <button className="dropdown__item tw-builder__dropdown-item" onClick={handlePreferences}>
-                <span>Preferences</span>
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleAppearance}>
+                <span>Appearance</span>
             </button>
             <button className="dropdown__item tw-builder__dropdown-item" onClick={handleUpgradeToPro}>
                 <span>Upgrade to pro</span>

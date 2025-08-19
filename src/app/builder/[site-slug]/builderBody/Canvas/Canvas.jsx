@@ -339,20 +339,26 @@ export const Canvas = () => {
 
         //For each id, add its CSS selector and properties
         JSONtree.idsCSSData.forEach(({ id, properties }) => {
-            cssContent += `#${id} {\n`;
-            Object.entries(properties).forEach(([prop, value]) => {
-                cssContent += `${prop}: ${value};\n`;
-            });
-            cssContent += `}\n`;
+            const propertyEntries = Object.entries(properties);
+            if (propertyEntries.length > 0) {
+                cssContent += `#${id} {\n`;
+                propertyEntries.forEach(([prop, value]) => {
+                    cssContent += `${prop}: ${value};\n`;
+                });
+                cssContent += `}\n`;
+            }
         });
 
         //For each class, add its CSS selector and properties
         JSONtree.classesCSSData.forEach(({ className, properties }) => {
-            cssContent += `.${className} {\n`;
-            Object.entries(properties).forEach(([prop, value]) => {
-                cssContent += `${prop}: ${value};\n`;
-            });
-            cssContent += `}\n`;
+            const propertyEntries = Object.entries(properties);
+            if (propertyEntries.length > 0) {
+                cssContent += `.${className} {\n`;
+                propertyEntries.forEach(([prop, value]) => {
+                    cssContent += `${prop}: ${value};\n`;
+                });
+                cssContent += `}\n`;
+            }
         });
 
         // Check if style element exists and if content has changed
