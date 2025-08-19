@@ -7,7 +7,7 @@ import BuilderLeftPanel from './builderLeftPanel/builderLeftPanel'
 import BuilderBody from './builderBody/builderBody'
 import BuilderRightPanel from './builderRightPanel/builderRightPanel'
 import { ContextMenu } from '../../components/contextMenu/ContextMenu'
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import { useParams, notFound } from 'next/navigation';
 import { ModalContainer } from '../../components/ModalContainer/ModalContainer';
@@ -46,6 +46,9 @@ function Builder() {
   const [site, setSite] = useState(null);
   const [appearanceSettings, setAppearanceSettings] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Track if we've already loaded data for the current user to prevent unnecessary refetching
+  const loadedUserIdRef = useRef(null);
 
   //Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -145,11 +148,18 @@ function Builder() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session) {
-          allUserData(session.user.id);
+          // Only fetch data if this is a different user or we haven't loaded data yet
+          if (loadedUserIdRef.current !== session.user.id) {
+            loadedUserIdRef.current = session.user.id;
+            allUserData(session.user.id);
+          }
         } else {
+          // User logged out - clear everything
+          loadedUserIdRef.current = null;
           setUser(null);
           setSite(null);
           setAppearanceSettings(null);
+          setIsLoading(false);
         }
       }
     );
@@ -430,12 +440,12 @@ const renderModal = () => {
   const isMobile = useMediaQuery('(max-width: 820px)');
 
   return (
+    <>
+    <Loader isVisible={isLoading}/>
+    {isMobile && <MobileWarning/>}
+    {!isMobile && !isLoading && (
     <CanvasProvider siteData={site} CallContextMenu={handleContextMenu}>
     <div className="tw-builder">
-      <Loader isVisible={isLoading}/>
-      {isMobile && <MobileWarning/>}
-      {!isMobile && !isLoading && (
-        <>
       <BuilderLeftPanel 
         isPanelOpen={isLeftPanelOpen} 
         onPanelToggle={handleLeftPanelToggle}
@@ -496,10 +506,10 @@ const renderModal = () => {
                       className="tree-context-menu"
                       previousSelectedItem={contextMenu.previousSelectedItem}
                     />
-        </>
-      )}
-    </div>
+      </div>
     </CanvasProvider>
+    )}
+    </>
   );
 }
 
