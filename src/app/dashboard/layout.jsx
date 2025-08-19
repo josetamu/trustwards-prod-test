@@ -228,7 +228,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'darezo.2809@gmail.com',  
+      email: 'oscar.abad.brickscore@gmail.com',  
       password: 'TW.141109'
     });
   };
