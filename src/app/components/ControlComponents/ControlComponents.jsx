@@ -90,7 +90,7 @@ const SuperSelectType = ({name, index, value, category}) => {
     const wrapSelectRef = useRef(null);
     const [selectedWrap, setSelectedWrap] = useState('wrap');
     const [selectedDirection, setSelectedDirection] = useState('column');
-    const [selectedAlign, setSelectedAlign] = useState('flex-start');
+    const [selectedAlign, setSelectedAlign] = useState('flex-star');
     const [selectedJustify, setSelectedJustify] = useState('flex-start');
     const [isReverse, setIsReverse] = useState(false);
     const [selectedFlow, setSelectedFlow] = useState('row');
@@ -704,18 +704,18 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
         // Función para obtener el valor guardado del elemento
         const getSavedValue = () => {
             if (!elementId || !idsCSSData) {
-                return { color: '', hex: '', percentage: '' };
+                return { color: `#${value}`, hex: value, percentage: opacity };
             }
     
             // Buscar el elemento en idsCSSData
             const elementData = idsCSSData.find(item => item.id === elementId);
             if (!elementData || !elementData.properties) {
-                return { color: '', hex: '', percentage: '' };
+                return { color: `#${value}`, hex: value, percentage: opacity };
             }
     
             const savedValue = elementData.properties[finalCSSProperty];
             if (!savedValue) {
-                return { color: '', hex: '', percentage: '' };
+                return { color: `#${value}`, hex: value, percentage: opacity };
             }
     
             // Parsear el valor guardado
@@ -742,7 +742,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
             }
     
             // Fallback a valores por defecto
-                return { color: '', hex: '', percentage: '' };
+            return { color: `#${value}`, hex: value, percentage: opacity };
         };
     
         // Función auxiliar para convertir RGB a Hex
@@ -801,13 +801,6 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
     //Function to change the color with the text input
     const handleHexChange = (e) => {
         let hexValue = e.target.value.toUpperCase().replace('#', '');
-        if(hexValue === ''){
-            setHex('');
-            setColor('');
-            setPercentage('');
-            applyCSSChange('', '');
-            return;
-        }
 
         //If the hex value is longer than 6, cut it to 6
         if(hexValue.length > 6){
@@ -828,6 +821,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
                 const expandedHex = hexValue.split('').map(char => char + char).join('');
                 const formattedHex = `#${expandedHex}`;
                 setColor(formattedHex);
+                
             } else {
                 const formattedHex = `#${hexValue}`;
                 setColor(formattedHex);
@@ -839,10 +833,9 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
     const handleHexBlur = (e) => {
         const hexValue = e.target.value.trim();
         if(hexValue === ''){
-            setHex('');
-            setColor('');
-            setPercentage('');
-            applyCSSChange('', '');
+            setHex('FFFFFF');
+            setColor('#FFFFFF');
+            applyCSSChange('#FFFFFF', percentage);
         } 
     };
     //Function to change the transparency with the percentage input
@@ -869,7 +862,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
         }
     };
     //Function to get the final color. This is used to mix the color with the transparency
-    const finalColor = color && color !== '' ? hexToRgba(color, parseInt(percentage.replace('%', ''))) : 'transparent';
+    const finalColor = hexToRgba(color, parseInt(percentage.replace('%', '')));
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -878,10 +871,10 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
             <div className="tw-builder__settings-colors">
                 <input  ref={colorInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
                 <div className="tw-builder__settings-color" onClick={handleColorClick} style={{
-                        backgroundColor: finalColor || 'transparent', 
+                        backgroundColor: finalColor, 
                     }}>
                 </div>
-                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="Color..."/>
+                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="FFFFFF"/>
             </div>
             <div className="tw-builder__settings-percentages">
                 <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} />
