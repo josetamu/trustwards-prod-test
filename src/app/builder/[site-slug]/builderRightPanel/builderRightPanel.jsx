@@ -3,10 +3,6 @@ import BuilderUser from '../../../components/BuilderUser/BuilderUser';
 import NoSelectedItem from '../../../components/NoSelectedItem/NoSelectedItem';
 import { useCanvas } from '@contexts/CanvasContext';
 import BuilderSave from '@components/BuilderSave/BuilderSave';
-import TextControls from '@components/TextControls/TextControls';
-import DividerControls from '@components/DividerControls/DividerControls';
-import BlockControls from '@components/BlockControls/BlockControls';
-import ImageControls from '@components/ImageControls/ImageControls';
 import ControlComponent from '@components/ControlComponents/ControlComponents';
 
 function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
@@ -40,7 +36,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
     const selectedClassName = selectedElement?.classList[0];
 
 
-    const pruebaControls = {
+    /* const pruebaControls = {
         header: [
             { name: 'Texto', type: 'text', value: 'Title' },
             { name: 'Texto2', type: 'text', placeholder: 'Title2' },
@@ -85,10 +81,250 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             ]
         } 
     ]
+    } */
+
+    const blockControls = {
+
+        header: [
+            { name: 'Tag', type: 'super-select', value: 'div', category: 'text'},
+            { name: 'Display', type: 'super-select', value: 'flex', category: 'display'},
+        ],
+        body: [
+            {
+                label: 'Spacing',
+                controls: [
+                    { name: 'Padding', type: 'panel'},
+                    { name: 'Margin', type: 'panel'},
+                ]
+            },
+            {
+                label: 'Size',
+                controls: [
+                    { name: 'Width', type: 'text' },
+                    { name: 'Max. Width', type: 'text' },
+                    { name: 'Height', type: 'text' },
+                    { name: 'Max. Height', type: 'text' },
+                ]
+            },
+            {
+                label: 'Background',
+                controls: [
+                    { name: '', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
+                ]
+            },
+            {
+                label: 'Text',
+                controls: [
+                    { name: 'Font Size', type: 'text' },
+                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
+                    { name: 'Font Family', type: 'text' },
+                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
+                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
+                    { name: 'Line Height', type: 'text' },
+                    { name: 'Letter Spacing', type: 'text' },
+                    { name: 'Text Decoration', type: 'choose', category: 'decoration'},
+                    { name: 'Text Align', type: 'choose', category: 'text-align'},
+                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
+                ]
+            }
+        ]
     }
-    
+
+    const imageControls = {
+
+        header: [
+            { name: 'Image', type: 'image'},
+            { name: 'Tag', type: 'select', value: 'div', options: ['div', 'figure', 'img']},
+            { name: 'Link to', type: 'text', placeholder: 'URL...'},
+            { name: 'Alt', type: 'text', placeholder: 'Alt...'},
+            { name: 'Height', type: 'text'},
+            { name: 'Width', type: 'text'},
+            { name: 'Object Fit', type: 'select', value: 'fill', options: ['Fill', 'Contain', 'Cover', 'Scale-down', 'None']},
+
+        ],
+        body: [
+            {
+                label: 'Layout',
+                controls: [
+                    { name: 'Direction', type: 'choose', category: 'direction'},
+                    { name: 'Justify', type: 'choose', category: 'justify'},
+                    { name: 'Align', type: 'choose', category: 'align'},
+                    { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap']},
+                    { name: 'Gap', type: 'text', placeholder: '0'},
+                ]
+            },
+            {
+                label: 'Spacing',
+                controls: [
+                    { name: 'Padding', type: 'panel'},
+                    { name: 'Margin', type: 'panel'},
+                ]
+            },
+            {
+                label: 'Size',
+                controls: [
+                    { name: 'Width', type: 'text'},
+                    { name: 'Max. Width', type: 'text'},
+                    { name: 'Height', type: 'text'},
+                    { name: 'Max. Height', type: 'text'},
+                ]
+            },
+            {
+                label: 'Background',
+                controls: [
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
+                ]
+            },
+            {
+                label: 'Text',
+                controls: [
+                    { name: 'Font Size', type: 'text' },
+                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
+                    { name: 'Font Family', type: 'text' },
+                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
+                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
+                    { name: 'Line Height', type: 'text' },
+                    { name: 'Letter Spacing', type: 'text' },
+                    { name: 'Text Decoration', type: 'choose', category: 'decoration'},
+                    { name: 'Text Align', type: 'choose', category: 'text-align'},
+                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
+                ]
+            },
+            {
+                label: 'Styles',
+                controls: [
+                    { name: 'Border Width', type: 'panel'},
+                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
+                    { name: 'Border Radius', type: 'panel'},
+                    { name: 'Box Shadow X', type: 'text' },
+                    { name: 'Box Shadow Y', type: 'text' },
+                    { name: 'Blur', type: 'text' },
+                    { name: 'Spread', type: 'text' },
+                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
+                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
+                    { name: 'Z-Index', type: 'text' },
+                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
+                    { name: 'Opacity', type: 'text', value: '1' },
+                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
+                    { name: 'Transform', type: 'text'},
+                ]
+            }
+        ]
+    }
+
+    const dividerControls = {
+        header: [
+            { name: 'Height', type: 'text', value: '2px' },
+            { name: 'Width', type: 'text', value: '100%' },
+            { name: 'Style', type: 'select', value: 'solid', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+            { name: 'Direction', type: 'choose', category: 'direction'},
+            { name: 'Align', type: 'choose', category: 'align'},
+            { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
+        ],
+        body: [
+            {
+                label: 'Style',
+                controls: [
+                    { name: 'Border Width', type: 'panel'},
+                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
+                    { name: 'Border Radius', type: 'panel'},
+                    { name: 'Box Shadow X', type: 'text' },
+                    { name: 'Box Shadow Y', type: 'text' },
+                    { name: 'Blur', type: 'text' },
+                    { name: 'Spread', type: 'text' },
+                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
+                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
+                    { name: 'Z-Index', type: 'text' },
+                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
+                    { name: 'Opacity', type: 'text', value: '1' },
+                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
+                    { name: 'Transform', type: 'text'},
+                ]
+            }
+        ]
+    }
+    const textControls = {
+        header: [
+            { name: 'Tag', type: 'select', value: 'h3', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span']},
+            { name: 'Link to', type: 'text', placeholder: 'URL...'},
+        ],
+        body: [
+            {
+                label: 'Layout',
+                controls: [
+                    { name: 'Direction', type: 'choose', category: 'direction'},
+                    { name: 'Justify', type: 'choose', category: 'justify'},
+                    { name: 'Align', type: 'choose', category: 'align'},
+                    { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap']},
+                    { name: 'Gap', type: 'text', placeholder: '0'},
+                ]
+            },
+            {
+                label: 'Spacing',
+                controls: [
+                    { name: 'Padding', type: 'panel'},
+                    { name: 'Margin', type: 'panel'},
+                ]
+            },
+            {
+                label: 'Size',
+                controls: [
+                    { name: 'Width', type: 'text'},
+                    { name: 'Max. Width', type: 'text'},
+                    { name: 'Height', type: 'text'},
+                    { name: 'Max. Height', type: 'text'},
+                ]
+            },
+            {
+                label: 'Background',
+                controls: [
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
+                ]
+            },
+            {
+                label: 'Text',
+                controls: [
+                    { name: 'Font Size', type: 'text' },
+                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
+                    { name: 'Font Family', type: 'text' },
+                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
+                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
+                    { name: 'Line Height', type: 'text' },
+                    { name: 'Letter Spacing', type: 'text' },
+                    { name: 'Text Decoration', type: 'choose', category: 'decoration'},
+                    { name: 'Text Align', type: 'choose', category: 'text-align'},
+                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
+                ]
+            },
+            {
+                label: 'Styles',
+                controls: [
+                    { name: 'Border Width', type: 'panel'},
+                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
+                    { name: 'Border Radius', type: 'panel'},
+                    { name: 'Box Shadow X', type: 'text' },
+                    { name: 'Box Shadow Y', type: 'text' },
+                    { name: 'Blur', type: 'text' },
+                    { name: 'Spread', type: 'text' },
+                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
+                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
+                    { name: 'Z-Index', type: 'text' },
+                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
+                    { name: 'Opacity', type: 'text', value: '1' },
+                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
+                    { name: 'Transform', type: 'text'},
+                ]
+            }
+        ]
+    }
+
     
 
+    console.log(JSONtree);
+    console.log(JSONtree.roots);
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>
             <div className="tw-builder__right-header">
@@ -97,13 +333,13 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             </div>
             <div className="tw-builder__right-body">
                 {/* If no element is selected, show the no selected item */}
-                {!selectedId && <NoSelectedItem/>}
+                {(!selectedId || selectedId === activeRoot) && <NoSelectedItem/>}
                 {/* Check the type element and show the correct controls */}
-                {selectedClassName === 'tw-text' && <TextControls selectedId={selectedId}/>}
-                {selectedClassName === 'tw-divider' && <DividerControls selectedId={selectedId}/>}
+                {selectedClassName === 'tw-text' && <ControlComponent control={textControls} selectedId={selectedId}/>}
+                {selectedClassName === 'tw-divider' && <ControlComponent control={dividerControls} selectedId={selectedId}/>}
 {/*                 {selectedClassName === 'tw-builder__image' && <ImageControls selectedId={selectedId}/>} */}
-                {selectedClassName === 'tw-block' && <BlockControls selectedId={selectedId}/>}
-                {selectedClassName === 'tw-image' && <ControlComponent control={pruebaControls} selectedId={selectedId}/>}
+                {selectedClassName === 'tw-block' && <ControlComponent control={blockControls} selectedId={selectedId}/>}
+                {selectedClassName === 'tw-image' && <ControlComponent control={imageControls} selectedId={selectedId}/>}
             </div>
         </div>
     )
