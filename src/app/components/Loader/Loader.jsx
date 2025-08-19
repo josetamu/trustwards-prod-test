@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react';
 import './Loader.css';
 
-const Loader = ({ isVisible }) => {
+const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [progressWidth, setProgressWidth] = useState(0);
-  const [animationCompleted, setAnimationCompleted] = useState(false);
 
   // Data not available - Progress bar will go to a random width between 0 and 50% of 250px
   useEffect(() => {
@@ -23,13 +22,13 @@ const Loader = ({ isVisible }) => {
 
         // Fade completed
         setTimeout(() => {
-          setAnimationCompleted(true);
+          setLoaderCompleted(true);
         }, 500); // fade transition lasts 0.5s, then remove loader
       }, 200); // progress bar transition lasts 0.2s, then start fade
     }
   }, [isVisible]);
 
-  if (!isVisible && animationCompleted) return null; // remove loader when builder call finished and animation is completed
+  if (!isVisible && loaderCompleted) return null; // remove loader when builder call finished and animation is completed
 
   return (
     <div className={`tw-builder-loader ${isAnimating ? 'tw-builder-loader--fade-out' : ''}`}>

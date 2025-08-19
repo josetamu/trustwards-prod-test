@@ -25,22 +25,22 @@ export default function BuilderSave({showNotification, siteSlug}) {
         }
     }, [JSONtree, siteSlug, showNotification]);
 
-        // Add keyboard shortcut for Ctrl+S or Cmd+S to save the changes
-        useEffect(() => {
-            const handleKeyDown = (e) => {
-                const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-                // Check if the user is pressing Ctrl+S or Cmd+S
-                if (isCtrlOrCmd && e.key === 's') {
-                    e.preventDefault();
-                    if (!isLoading) {
-                        save();
-                    }
+    // Add keyboard shortcut for Ctrl+S or Cmd+S to save the changes
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+            // Check if the user is pressing Ctrl+S or Cmd+S
+            if (isCtrlOrCmd && e.key === 's') {
+                e.preventDefault();
+                if (!isLoading) {
+                    save();
                 }
-            };
-            // Add the event listener to the window
-            window.addEventListener('keydown', handleKeyDown);
-            return () => window.removeEventListener('keydown', handleKeyDown);
-        }, [isLoading, save]); // Include isLoading to prevent saving while already saving
+            }
+        };
+        // Add the event listener to the window
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isLoading, save]); // Include isLoading to prevent saving while already saving
     
 
     return (
