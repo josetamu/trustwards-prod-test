@@ -109,7 +109,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             {
                 label: 'Background',
                 controls: [
-                    { name: '', type: 'color', value: '000000', opacity: '100%'},
+                    { name: '', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
                 ]
             },
             {
@@ -124,7 +124,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                     { name: 'Letter Spacing', type: 'text' },
                     { name: 'Text Decoration', type: 'choose', category: 'decoration'},
                     { name: 'Text Align', type: 'choose', category: 'text-align'},
-                    { name: 'Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
                 ]
             }
         ]
@@ -172,7 +172,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
                 ]
             },
             {
@@ -187,7 +187,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                     { name: 'Letter Spacing', type: 'text' },
                     { name: 'Text Decoration', type: 'choose', category: 'decoration'},
                     { name: 'Text Align', type: 'choose', category: 'text-align'},
-                    { name: 'Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
                 ]
             },
             {
@@ -195,13 +195,13 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 controls: [
                     { name: 'Border Width', type: 'panel'},
                     { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
-                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
                     { name: 'Border Radius', type: 'panel'},
                     { name: 'Box Shadow X', type: 'text' },
                     { name: 'Box Shadow Y', type: 'text' },
                     { name: 'Blur', type: 'text' },
                     { name: 'Spread', type: 'text' },
-                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
                     { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
                     { name: 'Z-Index', type: 'text' },
                     { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
@@ -220,7 +220,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             { name: 'Style', type: 'select', value: 'solid', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
             { name: 'Direction', type: 'choose', category: 'direction'},
             { name: 'Align', type: 'choose', category: 'align'},
-            { name: 'Color', type: 'color', value: '000000', opacity: '100%'},
+            { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
         ],
         body: [
             {
@@ -228,13 +228,13 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 controls: [
                     { name: 'Border Width', type: 'panel'},
                     { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
-                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
                     { name: 'Border Radius', type: 'panel'},
                     { name: 'Box Shadow X', type: 'text' },
                     { name: 'Box Shadow Y', type: 'text' },
                     { name: 'Blur', type: 'text' },
                     { name: 'Spread', type: 'text' },
-                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
                     { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
                     { name: 'Z-Index', type: 'text' },
                     { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
@@ -280,7 +280,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
                 ]
             },
             {
@@ -295,7 +295,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                     { name: 'Letter Spacing', type: 'text' },
                     { name: 'Text Decoration', type: 'choose', category: 'decoration'},
                     { name: 'Text Align', type: 'choose', category: 'text-align'},
-                    { name: 'Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
                 ]
             },
             {
@@ -303,13 +303,13 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 controls: [
                     { name: 'Border Width', type: 'panel'},
                     { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
-                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
                     { name: 'Border Radius', type: 'panel'},
                     { name: 'Box Shadow X', type: 'text' },
                     { name: 'Box Shadow Y', type: 'text' },
                     { name: 'Blur', type: 'text' },
                     { name: 'Spread', type: 'text' },
-                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%'},
+                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
                     { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
                     { name: 'Z-Index', type: 'text' },
                     { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
@@ -323,6 +323,8 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
 
     
 
+    console.log(JSONtree);
+    console.log(JSONtree.roots);
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>
             <div className="tw-builder__right-header">
