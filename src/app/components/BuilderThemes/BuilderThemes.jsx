@@ -177,9 +177,7 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
                         <div className="tw-builder-themes__theme">
                             <div className="tw-builder-themes__theme-preview" id="trustwards-light" onClick={() => {
                                 setActiveThemeFunction('trustwards-light');
-                            }}>
-                                <img src="/assets/trustwards-light--dark.png" alt="Trustwards Light" />
-                            </div>
+                            }}></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Trustwards Light</span>
                                 <span className="tw-builder-themes__theme-info-free">FREE</span>

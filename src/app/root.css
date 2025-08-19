@@ -159,6 +159,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   --icons-color: #999999;
   --tooltip-background: #FFFFFF;
 
+  /*Builder - Themes Modal*/
+  --themes-modal-background: #FFFFFF;
+  --free-badge-background: #EEEEEE;
+
   /*Builder - Toolbar*/
   --toolbar-items-background: #F0F0F0;
   --toolbar-items-background-hover: #e9e9e9;
@@ -322,6 +326,7 @@ html[data-theme="dark"] {
 
   /*Builder - Themes Modal*/
   --themes-modal-background: #191919;
+  --free-badge-background: #2B2B2B;
 
   /*Builder - Toolbar*/
   --toolbar-items-background: #2B2B2B;
