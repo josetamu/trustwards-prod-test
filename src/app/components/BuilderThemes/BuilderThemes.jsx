@@ -158,7 +158,7 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
                     className={`tw-builder-themes__modal`}
                 >
                     <div className="tw-builder-themes__modal-header">
-                        <span className="tw-builder-themes__header-title">Theme</span>
+                        <span className="tw-builder-themes__header-title">Themes</span>
                         <div className="tw-builder-themes__save-button" onClick={() => {
                             saveTheme();
                         }}>Save</div>

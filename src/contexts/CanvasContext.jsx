@@ -183,7 +183,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * type - id or class
     * selector - #name, .name...
     * property - the CSS property: color, background-color, padding, margin, etc...
-    * value - the value of the property
+    * value - the value of the property (if empty string "", the property will be removed)
     */
     const addCSSProperty = (type, selector, property, value) => {
         switch(type) {
@@ -191,14 +191,25 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 // Check if the selector already exists in idsCSSData
                 const existingIdIndex = idsCSSData.findIndex(item => item.id === selector);
                 if (existingIdIndex !== -1) {
-                    // If it exists, update the existing properties modifying the new property value
-                    const updatedProperties = { ...idsCSSData[existingIdIndex].properties, [property]: value };
-                    const updatedIdsCSSData = [...idsCSSData];
-                    updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
-                    setIdsCSSData(updatedIdsCSSData);
+                    // If value is empty string, remove the property
+                    if (value === "") {
+                        const updatedProperties = { ...idsCSSData[existingIdIndex].properties };
+                        delete updatedProperties[property];
+                        const updatedIdsCSSData = [...idsCSSData];
+                        updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
+                        setIdsCSSData(updatedIdsCSSData);
+                    } else {
+                        // If it exists, update the existing properties modifying the new property value
+                        const updatedProperties = { ...idsCSSData[existingIdIndex].properties, [property]: value };
+                        const updatedIdsCSSData = [...idsCSSData];
+                        updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
+                        setIdsCSSData(updatedIdsCSSData);
+                    }
                 } else {
-                    // If it doesn't exist, add a new entry with the selector and property
-                    setIdsCSSData([...idsCSSData, { id: selector, properties: { [property]: value } }]);
+                    // If it doesn't exist and value is not empty, add a new entry with the selector and property
+                    if (value !== "") {
+                        setIdsCSSData([...idsCSSData, { id: selector, properties: { [property]: value } }]);
+                    }
                 }
                 break;
             }
@@ -206,14 +217,25 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 // Check if the selector already exists in classesCSSData
                 const existingClassIndex = classesCSSData.findIndex(item => item.className === selector);
                 if (existingClassIndex !== -1) {
-                    // If it exists, update the existing properties modifying the new property value
-                    const updatedProperties = { ...classesCSSData[existingClassIndex].properties, [property]: value };
-                    const updatedClassesCSSData = [...classesCSSData];
-                    updatedClassesCSSData[existingClassIndex] = { ...classesCSSData[existingClassIndex], properties: updatedProperties };
-                    setClassesCSSData(updatedClassesCSSData);
+                    // If value is empty string, remove the property
+                    if (value === "") {
+                        const updatedProperties = { ...classesCSSData[existingClassIndex].properties };
+                        delete updatedProperties[property];
+                        const updatedClassesCSSData = [...classesCSSData];
+                        updatedClassesCSSData[existingClassIndex] = { ...classesCSSData[existingClassIndex], properties: updatedProperties };
+                        setClassesCSSData(updatedClassesCSSData);
+                    } else {
+                        // If it exists, update the existing properties modifying the new property value
+                        const updatedProperties = { ...classesCSSData[existingClassIndex].properties, [property]: value };
+                        const updatedClassesCSSData = [...classesCSSData];
+                        updatedClassesCSSData[existingClassIndex] = { ...classesCSSData[existingClassIndex], properties: updatedProperties };
+                        setClassesCSSData(updatedClassesCSSData);
+                    }
                 } else {
-                    // If it doesn't exist, add a new entry with the selector and property
-                    setClassesCSSData([...classesCSSData, { className: selector, properties: { [property]: value } }]);
+                    // If it doesn't exist and value is not empty, add a new entry with the selector and property
+                    if (value !== "") {
+                        setClassesCSSData([...classesCSSData, { className: selector, properties: { [property]: value } }]);
+                    }
                 }
                 break;
             }
@@ -233,8 +255,13 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const addJSONProperty = (id, property, value) => {
         const findAndUpdateElement = (node) => { // Find the element with the given id and update its property
             if (node.id === id) {
-                // Update the property with the new value
-                node[property] = value;
+                // If value is empty string, remove the property
+                if (value === "") {
+                    delete node[property];
+                } else {
+                    // Update the property with the new value
+                    node[property] = value;
+                }
                 runElementScript(node); //re-run the javascript function of the node if it has one
                 return true; // Element found and updated
             }
@@ -884,6 +911,35 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             break;
         }
     }
+
+    /*
+    * Remove a JSON property (for HTML and Javascript (attr) controls)
+    * id - The id of the element to remove the property from
+    * property - The property to remove
+    */
+    const removeJSONProperty = (id, property) => {
+        const findAndRemoveProperty = (node) => { // Find the element with the given id and remove its property
+            if (node.id === id) {
+                // Remove the property
+                delete node[property];
+                return true; // Element found and updated
+            }
+            
+            // Recursively search through children
+            if (node.children) {
+                for (let child of node.children) {
+                    if (findAndRemoveProperty(child)) {
+                        return true; // Element found in children
+                    }
+                }
+            }
+            return false; // Element not found
+        };
+
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeProperty
+        updated.roots.forEach(root => findAndRemoveProperty(root)); // Search through all roots to find and remove the property from the element
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+    };
 
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
