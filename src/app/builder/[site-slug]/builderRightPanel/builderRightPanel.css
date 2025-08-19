@@ -99,7 +99,7 @@
     /* width será controlado por JavaScript */
     min-width: 40px;
     border: none;
-    color: #000;
+    color: var(--builder-text-color);
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
@@ -128,7 +128,7 @@
     border-radius: 5px;
     border: none;
     background-color: var(--builder-background);
-    color: #000;
+    color: var(--builder-text-color);
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
@@ -210,7 +210,7 @@
     border-radius: 5px;
     border: none;
     background-color: var(--builder-background);
-    color: #000;
+    color: var(--builder-text-color);
     font-size: var(--font-size-mini);
     height: 100%;
     text-align: center;
