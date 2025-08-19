@@ -19,6 +19,7 @@ import  Notification  from '../../components/Notification/Notification';
 import { CanvasProvider } from '@contexts/CanvasContext';
 import Loader from '../../components/Loader/Loader';
 import MobileWarning from '../../components/MobileWarning/MobileWarning';
+import BuilderThemes from '@components/BuilderThemes/BuilderThemes';
 
 function Builder() {
   const params = useParams();
@@ -57,6 +58,10 @@ function Builder() {
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [changeType, setChangeType] = useState(null);
 
+  //Themes states
+  const [isFirstTime, setIsFirstTime] = useState(true);
+  const [isManualThemesOpen, setIsManualThemesOpen] = useState(false)
+
   //Notification state
   const [notification, setNotification] = useState({
     open: false,
@@ -65,8 +70,8 @@ function Builder() {
     contentCenter: false
   });
 
-  //Mobile state warning
-  
+  //Loader state
+  const [loaderCompleted, setLoaderCompleted] = useState(false);
 
   // Set userSettings based on modalType
   useEffect(() => {
@@ -441,11 +446,13 @@ const renderModal = () => {
 
   return (
     <>
-    <Loader isVisible={isLoading}/>
+    <Loader isVisible={isLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted}/>
     {isMobile && <MobileWarning/>}
     {!isMobile && !isLoading && (
-    <CanvasProvider siteData={site} CallContextMenu={handleContextMenu}>
+    <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
     <div className="tw-builder">
+      <BuilderThemes isFirstTime={isFirstTime} setIsFirstTime={setIsFirstTime} isManualThemesOpen={isManualThemesOpen} setIsManualThemesOpen={setIsManualThemesOpen} showNotification={showNotification} siteSlug={siteSlug}/>
+
       <BuilderLeftPanel 
         isPanelOpen={isLeftPanelOpen} 
         onPanelToggle={handleLeftPanelToggle}
@@ -456,6 +463,7 @@ const renderModal = () => {
         setIsRightPanelOpen={setIsRightPanelOpen}
         showNotification={showNotification}
         CallContextMenu={handleContextMenu}
+        setIsManualThemesOpen={setIsManualThemesOpen}
       />
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
       

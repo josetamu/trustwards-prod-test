@@ -70,7 +70,7 @@ function treeReducer(state, action) {
     }
 }
 
-export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) => {
+export const CanvasProvider = ({ children, siteData, CallContextMenu = null, setIsFirstTime }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
     const [idsCSSData, setIdsCSSData] = React.useState([]);
     const [classesCSSData, setClassesCSSData] = React.useState([]);
@@ -78,6 +78,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) =
         idsCSSData: idsCSSData, /*for each id, stores its right panel properties*/
         classesCSSData: classesCSSData, /*for each class, stores its right panel properties*/
         activeRoot: "tw-root--banner", //stored active root
+        isFirstTime: true, //stored if it is the first time on the builder to open the builder themes
         roots: [
             {
                 id: "tw-root--banner", //banner root
@@ -121,6 +122,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null }) =
             dispatch({ type: 'INIT', payload: initialState.present });
             setActiveRoot(initialState.present.activeRoot); //Set the active root as the initial root
             setActiveTab(initialState.present.activeRoot); //Set the active root as the initial tab
+            setIsFirstTime(initialState.present.isFirstTime); //Set the isFirstTime as the initial isFirstTime to open the builder themes
         }
     }, [siteData]);    
 

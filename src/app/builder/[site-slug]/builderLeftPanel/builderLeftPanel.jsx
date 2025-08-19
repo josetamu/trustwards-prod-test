@@ -4,10 +4,12 @@ import { Dropdown } from '../../../components/dropdown/Dropdown'
 import { useRouter } from 'next/navigation'
 import { useCanvas } from "@contexts/CanvasContext";
 
+import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
+
 // Helper function to deep copy objects
 const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
 
-function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu }) {
+function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu, setIsManualThemesOpen }) {
     const router = useRouter()
     const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, setJSONtree } = useCanvas();
     
@@ -64,13 +66,12 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     }
 
     const handleTheme = () => {
-        setModalType('Appearance')
-        setIsModalOpen(true)
+        setIsManualThemesOpen(true)
         setIsDropdownOpen(false)
     }
 
     const handlePreferences = () => {
-        setModalType('Account')
+        setModalType('Appearance')
         setIsModalOpen(true)
         setIsDropdownOpen(false)
     }
