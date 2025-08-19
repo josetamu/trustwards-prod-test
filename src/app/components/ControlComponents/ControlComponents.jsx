@@ -704,18 +704,18 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
         // Función para obtener el valor guardado del elemento
         const getSavedValue = () => {
             if (!elementId || !idsCSSData) {
-                return { color: `#${value}`, hex: value, percentage: opacity };
+                return { color: ``, hex: ``, percentage: `` };
             }
     
             // Buscar el elemento en idsCSSData
             const elementData = idsCSSData.find(item => item.id === elementId);
             if (!elementData || !elementData.properties) {
-                return { color: `#${value}`, hex: value, percentage: opacity };
+                return { color: ``, hex: ``, percentage: `` };
             }
     
             const savedValue = elementData.properties[finalCSSProperty];
             if (!savedValue) {
-                return { color: `#${value}`, hex: value, percentage: opacity };
+                return { color: ``, hex: ``, percentage: `` };
             }
     
             // Parsear el valor guardado
@@ -742,7 +742,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
             }
     
             // Fallback a valores por defecto
-            return { color: `#${value}`, hex: value, percentage: opacity };
+            return { color: ``, hex: ``, percentage: `` };
         };
     
         // Función auxiliar para convertir RGB a Hex
@@ -775,7 +775,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
      // Función para aplicar el estilo CSS
      const applyCSSChange = (newColor, newOpacity) => {
         if (!elementId || !cssProperty) return;
-        
+
         const opacityValue = parseInt(newOpacity.replace('%', ''));
         let finalValue;
         
@@ -821,7 +821,8 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
                 const expandedHex = hexValue.split('').map(char => char + char).join('');
                 const formattedHex = `#${expandedHex}`;
                 setColor(formattedHex);
-                
+
+
             } else {
                 const formattedHex = `#${hexValue}`;
                 setColor(formattedHex);
@@ -833,9 +834,9 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
     const handleHexBlur = (e) => {
         const hexValue = e.target.value.trim();
         if(hexValue === ''){
-            setHex('FFFFFF');
-            setColor('#FFFFFF');
-            applyCSSChange('#FFFFFF', percentage);
+            setHex('');
+            setColor('');
+            applyCSSChange('', '');
         } 
     };
     //Function to change the transparency with the percentage input
@@ -862,7 +863,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
         }
     };
     //Function to get the final color. This is used to mix the color with the transparency
-    const finalColor = hexToRgba(color, parseInt(percentage.replace('%', '')));
+    const finalColor = color && color !== '' ? hexToRgba(color, parseInt(percentage.replace('%', ''))) : 'transparent';
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -874,7 +875,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
                         backgroundColor: finalColor, 
                     }}>
                 </div>
-                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="FFFFFF"/>
+                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="Hex here..."/>
             </div>
             <div className="tw-builder__settings-percentages">
                 <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} />

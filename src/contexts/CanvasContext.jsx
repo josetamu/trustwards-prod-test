@@ -186,29 +186,39 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * value - the value of the property (if empty string "", the property will be removed)
     */
     const addCSSProperty = (type, selector, property, value) => {
+        console.log('addCSSProperty called with:', { type, selector, property, value });
+        
+        let updatedIdsCSSData = idsCSSData;
+        let updatedClassesCSSData = classesCSSData;
+        
         switch(type) {
             case 'id': {
                 // Check if the selector already exists in idsCSSData
                 const existingIdIndex = idsCSSData.findIndex(item => item.id === selector);
+                console.log('Existing ID index:', existingIdIndex);
+                
                 if (existingIdIndex !== -1) {
                     // If value is empty string, remove the property
                     if (value === "") {
                         const updatedProperties = { ...idsCSSData[existingIdIndex].properties };
                         delete updatedProperties[property];
-                        const updatedIdsCSSData = [...idsCSSData];
+                        updatedIdsCSSData = [...idsCSSData];
                         updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
                         setIdsCSSData(updatedIdsCSSData);
                     } else {
                         // If it exists, update the existing properties modifying the new property value
                         const updatedProperties = { ...idsCSSData[existingIdIndex].properties, [property]: value };
-                        const updatedIdsCSSData = [...idsCSSData];
+                        updatedIdsCSSData = [...idsCSSData];
                         updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
+                        console.log('Updated CSS data:', updatedIdsCSSData);
                         setIdsCSSData(updatedIdsCSSData);
                     }
                 } else {
                     // If it doesn't exist and value is not empty, add a new entry with the selector and property
                     if (value !== "") {
-                        setIdsCSSData([...idsCSSData, { id: selector, properties: { [property]: value } }]);
+                        updatedIdsCSSData = [...idsCSSData, { id: selector, properties: { [property]: value } }];
+                        console.log('New CSS data:', updatedIdsCSSData);
+                        setIdsCSSData(updatedIdsCSSData);
                     }
                 }
                 break;
@@ -221,29 +231,33 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                     if (value === "") {
                         const updatedProperties = { ...classesCSSData[existingClassIndex].properties };
                         delete updatedProperties[property];
-                        const updatedClassesCSSData = [...classesCSSData];
+                        updatedClassesCSSData = [...classesCSSData];
                         updatedClassesCSSData[existingClassIndex] = { ...classesCSSData[existingClassIndex], properties: updatedProperties };
                         setClassesCSSData(updatedClassesCSSData);
                     } else {
                         // If it exists, update the existing properties modifying the new property value
                         const updatedProperties = { ...classesCSSData[existingClassIndex].properties, [property]: value };
-                        const updatedClassesCSSData = [...classesCSSData];
+                        updatedClassesCSSData = [...classesCSSData];
                         updatedClassesCSSData[existingClassIndex] = { ...classesCSSData[existingClassIndex], properties: updatedProperties };
                         setClassesCSSData(updatedClassesCSSData);
                     }
                 } else {
                     // If it doesn't exist and value is not empty, add a new entry with the selector and property
                     if (value !== "") {
-                        setClassesCSSData([...classesCSSData, { className: selector, properties: { [property]: value } }]);
+                        updatedClassesCSSData = [...classesCSSData, { className: selector, properties: { [property]: value } }];
+                        setClassesCSSData(updatedClassesCSSData);
                     }
                 }
                 break;
             }
         }
-        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addProperty
-        updated.idsCSSData = idsCSSData;
-        updated.classesCSSData = classesCSSData;
-        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+        
+        // Use the updated data (not the potentially stale state)
+        const updated = deepCopy(JSONtree); 
+        updated.idsCSSData = updatedIdsCSSData;
+        updated.classesCSSData = updatedClassesCSSData;
+        console.log('Updated JSONtree:', updated);
+        setJSONtree(updated);
     };
 
     /*
