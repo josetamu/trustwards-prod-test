@@ -13,55 +13,50 @@ import { jsx } from 'react/jsx-runtime';
 
 const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit}) => {
     
-    const savedValue = getGlobalCSSValue(cssProperty) || value || '';
+    const [textValue, setTextValue] = useState(() => {
+        return getGlobalCSSValue(cssProperty) || value || '';
+    });
 
-    // Función para determinar si un valor tiene solo la unidad automática añadida
-    const hasOnlyAutoUnit = (val) => {
-        if (!val || !autoUnit) return false;
+    const processValueForCSS = (inputValue) => {
+        if (!autoUnit || !inputValue) return inputValue;
+
+        const trimmedValue = inputValue.trim();
         
-        // Si el valor termina con la unidad automática
-        if (val.endsWith(autoUnit)) {
-            const numberPart = val.slice(0, -autoUnit.length);
-            const numberRegex = /^-?\d*\.?\d+$/;
-            // Verificar que la parte antes de la unidad es solo un número
-            return numberRegex.test(numberPart.trim());
-        }
-        return false;
-    };
-    
-    // Función para extraer solo el número si tiene únicamente la unidad automática
-    const getDisplayValue = (val) => {
-        if (hasOnlyAutoUnit(val)) {
-            return val.slice(0, -autoUnit.length);
-        }
-        return val;
-    };
-    const displayValue = getDisplayValue(savedValue);
-    const [textValue, setTextValue] = useState(displayValue);
-
-    useEffect(() => {
-        const newValue = getGlobalCSSValue(cssProperty) || value || '';
-        const newDisplayValue = getDisplayValue(newValue);
-        setTextValue(newDisplayValue);
-    }, [getGlobalCSSValue, cssProperty, value]);
-
-    const processValue = (inputValue) => {
-        if(!autoUnit || !inputValue) return inputValue;
-
-        const numberRegex = /^-?\d*\.?\d+$/;
-        if (numberRegex.test(inputValue.trim())) {
-            return `${inputValue.trim()}${autoUnit}`;
+        // Lista de unidades CSS válidas
+        const validUnits = [
+            'px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', '%', 
+            'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'fr',
+            's', 'ms', 'deg', 'rad', 'grad', 'turn', 'hz', 'khz'
+        ];
+        
+        // Regex para detectar número seguido de texto
+        const numberWithTextRegex = /^(-?\d*\.?\d+)(.*)$/;
+        const match = trimmedValue.match(numberWithTextRegex);
+        
+        if (match) {
+            const numberPart = match[1];
+            const unitPart = match[2];
+            
+            // Si no hay unidad o la unidad no es válida, añadir unidad automática
+            if (!unitPart || !validUnits.includes(unitPart)) {
+                return `${numberPart}${autoUnit}`;
+            }
+            
+            // Si tiene una unidad válida, devolver tal como está
+            return trimmedValue;
         }
         
+        // Si no es un número con texto, devolver tal como está
         return inputValue;
     }
 
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextValue(newValue);
+        
         if(cssProperty && applyGlobalCSSChange) {
-            const processedValue = processValue(newValue);
-            applyGlobalCSSChange(cssProperty, processedValue);
+            const cssValue = processValueForCSS(newValue);
+            applyGlobalCSSChange(cssProperty, cssValue);
         }
     };
 
@@ -70,13 +65,6 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         
         if (autoUnit && inputValue) {
             const cssValue = processValueForCSS(inputValue);
-            
-            // Solo actualizar el display si el valor procesado tiene únicamente la unidad automática
-            if (hasOnlyAutoUnit(cssValue)) {
-                // Mantener solo el número en el input
-                const displayValue = cssValue.slice(0, -autoUnit.length);
-                setTextValue(displayValue);
-            }
             
             if(cssProperty && applyGlobalCSSChange) {
                 applyGlobalCSSChange(cssProperty, cssValue);
@@ -98,7 +86,6 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         </div>
     )
 }
-
 
 
 
