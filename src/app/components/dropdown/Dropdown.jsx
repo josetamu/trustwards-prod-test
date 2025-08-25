@@ -51,12 +51,12 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
       if (window.innerWidth < 767) {
         setFixedStyle({
           position: 'fixed',
-          top: toggleRect.bottom + 4,
+          top: toggleRect.bottom,
         });
       } else {
         setFixedStyle({
           position: 'fixed',
-          top: toggleRect.bottom + 4,
+          top: toggleRect.bottom,
           left: toggleRect.left,
         });
       }

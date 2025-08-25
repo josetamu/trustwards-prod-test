@@ -38,6 +38,7 @@ export function Tooltip({
   }, [responsivePosition]);
 
   // Positioning logic for sidebar
+  /*
   useEffect(() => {
     if (open && finalPosition === 'sidebar' && tooltipRef.current) {
       // Find the parent with the class .sidebarSites__site
@@ -64,6 +65,7 @@ export function Tooltip({
       setFixedStyle(null);
     }
   }, [open, finalPosition]);
+  */
 
   return (
     <AnimatePresence>
