@@ -93,17 +93,17 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel'},
-                    { name: 'Margin', type: 'panel'},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
                 ]
             },
             {
                 label: 'Size',
                 controls: [
-                    { name: 'Width', type: 'text' },
-                    { name: 'Max. Width', type: 'text' },
-                    { name: 'Height', type: 'text' },
-                    { name: 'Max. Height', type: 'text' },
+                    { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+                    { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                    { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+                    { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
                 ]
             },
             {
@@ -115,15 +115,15 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             {
                 label: 'Text',
                 controls: [
-                    { name: 'Font Size', type: 'text' },
-                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
-                    { name: 'Font Family', type: 'text' },
-                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
-                    { name: 'Line Height', type: 'text' },
-                    { name: 'Letter Spacing', type: 'text' },
-                    { name: 'Text Decoration', type: 'choose', category: 'decoration'},
-                    { name: 'Text Align', type: 'choose', category: 'text-align'},
+                    { name: 'Font Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
+                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'], cssProperty: 'text-transform' },
+                    { name: 'Font Family', type: 'text', cssProperty: 'font-family' },
+                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
+                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'], cssProperty: 'font-style' },
+                    { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
+                    { name: 'Letter Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
+                    { name: 'Text Decoration', type: 'choose', category: 'decoration', cssProperty: 'text-decoration' },
+                    { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align' },
                     { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
                 ]
             }
@@ -137,36 +137,36 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             { name: 'Tag', type: 'select', value: 'div', options: ['div', 'figure', 'img']},
             { name: 'Link to', type: 'text', placeholder: 'URL...'},
             { name: 'Alt', type: 'text', placeholder: 'Alt...'},
-            { name: 'Height', type: 'text'},
-            { name: 'Width', type: 'text'},
-            { name: 'Object Fit', type: 'select', value: 'fill', options: ['Fill', 'Contain', 'Cover', 'Scale-down', 'None']},
+            { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+            { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+            { name: 'Object Fit', type: 'select', value: 'fill', options: ['Fill', 'Contain', 'Cover', 'Scale-down', 'None'], cssProperty: 'object-fit' },
 
         ],
         body: [
             {
                 label: 'Layout',
                 controls: [
-                    { name: 'Direction', type: 'choose', category: 'direction'},
-                    { name: 'Justify', type: 'choose', category: 'justify'},
-                    { name: 'Align', type: 'choose', category: 'align'},
-                    { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap']},
-                    { name: 'Gap', type: 'text', placeholder: '0'},
+                    { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction' },
+                    { name: 'Justify', type: 'choose', category: 'justify', cssProperty: 'justify-content' },
+                    { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items' },
+                    { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap'], cssProperty: 'flex-wrap' },
+                    { name: 'Gap', type: 'text', placeholder: '0', cssProperty: 'gap', autoUnit: 'px'},
                 ]
             },
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel'},
-                    { name: 'Margin', type: 'panel'},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
                 ]
             },
             {
                 label: 'Size',
                 controls: [
-                    { name: 'Width', type: 'text'},
-                    { name: 'Max. Width', type: 'text'},
-                    { name: 'Height', type: 'text'},
-                    { name: 'Max. Height', type: 'text'},
+                    { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+                    { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                    { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+                    { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
                 ]
             },
             {
@@ -178,36 +178,36 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             {
                 label: 'Text',
                 controls: [
-                    { name: 'Font Size', type: 'text' },
-                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
-                    { name: 'Font Family', type: 'text' },
-                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
-                    { name: 'Line Height', type: 'text' },
-                    { name: 'Letter Spacing', type: 'text' },
-                    { name: 'Text Decoration', type: 'choose', category: 'decoration'},
-                    { name: 'Text Align', type: 'choose', category: 'text-align'},
+                    { name: 'Font Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
+                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'], cssProperty: 'text-transform' },
+                    { name: 'Font Family', type: 'text', cssProperty: 'font-family' },
+                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
+                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'], cssProperty: 'font-style' },
+                    { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
+                    { name: 'Letter Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
+                    { name: 'Text Decoration', type: 'choose', category: 'decoration', cssProperty: 'text-decoration' },
+                    { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align' },
                     { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
                 ]
             },
             {
                 label: 'Styles',
                 controls: [
-                    { name: 'Border Width', type: 'panel'},
-                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+                    { name: 'Border Width', type: 'panel', cssProperty: 'border-width', autoUnit: 'px'},
+                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'], cssProperty: 'border-style' },
                     { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
-                    { name: 'Border Radius', type: 'panel'},
-                    { name: 'Box Shadow X', type: 'text' },
-                    { name: 'Box Shadow Y', type: 'text' },
-                    { name: 'Blur', type: 'text' },
-                    { name: 'Spread', type: 'text' },
+                    { name: 'Border Radius', type: 'panel', cssProperty: 'border-radius' },
+                    { name: 'Box Shadow X', type: 'text', cssProperty: 'box-shadow-x', autoUnit: 'px'},
+                    { name: 'Box Shadow Y', type: 'text', cssProperty: 'box-shadow-y', autoUnit: 'px'},
+                    { name: 'Blur', type: 'text', cssProperty: 'box-shadow-blur', autoUnit: 'px'},
+                    { name: 'Spread', type: 'text', cssProperty: 'box-shadow-spread', autoUnit: 'px'},
                     { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
-                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
-                    { name: 'Z-Index', type: 'text' },
-                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
-                    { name: 'Opacity', type: 'text', value: '1' },
-                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
-                    { name: 'Transform', type: 'text'},
+                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'], cssProperty: 'position' },
+                    { name: 'Z-Index', type: 'text', cssProperty: 'z-index'},
+                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                    { name: 'Opacity', type: 'text', value: '1', cssProperty: 'opacity' },
+                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                    { name: 'Transform', type: 'text', cssProperty: 'transform' },
                 ]
             }
         ]
@@ -215,32 +215,32 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
 
     const dividerControls = {
         header: [
-            { name: 'Height', type: 'text', value: '2px' },
-            { name: 'Width', type: 'text', value: '100%' },
-            { name: 'Style', type: 'select', value: 'solid', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
-            { name: 'Direction', type: 'choose', category: 'direction'},
-            { name: 'Align', type: 'choose', category: 'align'},
+            { name: 'Height', type: 'text', value: '2px', cssProperty: 'height', autoUnit: 'px'},
+            { name: 'Width', type: 'text', value: '100%', cssProperty: 'width', autoUnit: 'px'},
+            { name: 'Style', type: 'select', value: 'solid', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'], cssProperty: 'border-style' },
+            { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction' },
+            { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items' },
             { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
         ],
         body: [
             {
                 label: 'Style',
                 controls: [
-                    { name: 'Border Width', type: 'panel'},
-                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+                    { name: 'Border Width', type: 'panel', cssProperty: 'border-width', autoUnit: 'px'},
+                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'], cssProperty: 'border-style' },
                     { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
-                    { name: 'Border Radius', type: 'panel'},
-                    { name: 'Box Shadow X', type: 'text' },
-                    { name: 'Box Shadow Y', type: 'text' },
-                    { name: 'Blur', type: 'text' },
-                    { name: 'Spread', type: 'text' },
+                    { name: 'Border Radius', type: 'panel', cssProperty: 'border-radius' },
+                    { name: 'Box Shadow X', type: 'text', cssProperty: 'box-shadow-x', autoUnit: 'px'},
+                    { name: 'Box Shadow Y', type: 'text', cssProperty: 'box-shadow-y', autoUnit: 'px'},
+                    { name: 'Blur', type: 'text', cssProperty: 'box-shadow-blur', autoUnit: 'px'},
+                    { name: 'Spread', type: 'text', cssProperty: 'box-shadow-spread', autoUnit: 'px'},
                     { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
-                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
-                    { name: 'Z-Index', type: 'text' },
-                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
-                    { name: 'Opacity', type: 'text', value: '1' },
-                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
-                    { name: 'Transform', type: 'text'},
+                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'], cssProperty: 'position' },
+                    { name: 'Z-Index', type: 'text', cssProperty: 'z-index' },
+                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                    { name: 'Opacity', type: 'text', value: '1', cssProperty: 'opacity' },
+                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                    { name: 'Transform', type: 'text', cssProperty: 'transform' },
                 ]
             }
         ]
@@ -254,27 +254,27 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             {
                 label: 'Layout',
                 controls: [
-                    { name: 'Direction', type: 'choose', category: 'direction'},
-                    { name: 'Justify', type: 'choose', category: 'justify'},
-                    { name: 'Align', type: 'choose', category: 'align'},
-                    { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap']},
-                    { name: 'Gap', type: 'text', placeholder: '0'},
+                    { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction' },
+                    { name: 'Justify', type: 'choose', category: 'justify', cssProperty: 'justify-content' },
+                    { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items' },
+                    { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap'], cssProperty: 'flex-wrap' },
+                    { name: 'Gap', type: 'text', placeholder: '0', cssProperty: 'gap', autoUnit: 'px'},
                 ]
             },
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel'},
-                    { name: 'Margin', type: 'panel'},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
                 ]
             },
             {
                 label: 'Size',
                 controls: [
-                    { name: 'Width', type: 'text'},
-                    { name: 'Max. Width', type: 'text'},
-                    { name: 'Height', type: 'text'},
-                    { name: 'Max. Height', type: 'text'},
+                    { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+                    { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                    { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+                    { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
                 ]
             },
             {
@@ -286,36 +286,36 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             {
                 label: 'Text',
                 controls: [
-                    { name: 'Font Size', type: 'text' },
-                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
-                    { name: 'Font Family', type: 'text' },
-                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
-                    { name: 'Line Height', type: 'text' },
-                    { name: 'Letter Spacing', type: 'text' },
-                    { name: 'Text Decoration', type: 'choose', category: 'decoration'},
-                    { name: 'Text Align', type: 'choose', category: 'text-align'},
+                    { name: 'Font Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
+                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'], cssProperty: 'text-transform' },
+                    { name: 'Font Family', type: 'text', cssProperty: 'font-family' },
+                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
+                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'], cssProperty: 'font-style' },
+                    { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
+                    { name: 'Letter Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
+                    { name: 'Text Decoration', type: 'choose', category: 'decoration', cssProperty: 'text-decoration' },
+                    { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align' },
                     { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'color' },
                 ]
             },
             {
                 label: 'Styles',
                 controls: [
-                    { name: 'Border Width', type: 'panel'},
-                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+                    { name: 'Border Width', type: 'panel', cssProperty: 'border-width', autoUnit: 'px'},
+                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'], cssProperty: 'border-style' },
                     { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'border-color' },
-                    { name: 'Border Radius', type: 'panel'},
-                    { name: 'Box Shadow X', type: 'text' },
-                    { name: 'Box Shadow Y', type: 'text' },
-                    { name: 'Blur', type: 'text' },
-                    { name: 'Spread', type: 'text' },
+                    { name: 'Border Radius', type: 'panel', cssProperty: 'border-radius' },
+                    { name: 'Box Shadow X', type: 'text', cssProperty: 'box-shadow-x', autoUnit: 'px'},
+                    { name: 'Box Shadow Y', type: 'text', cssProperty: 'box-shadow-y', autoUnit: 'px'},
+                    { name: 'Blur', type: 'text', cssProperty: 'box-shadow-blur', autoUnit: 'px'},
+                    { name: 'Spread', type: 'text', cssProperty: 'box-shadow-spread', autoUnit: 'px'},
                     { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'box-shadow' },
-                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
-                    { name: 'Z-Index', type: 'text' },
-                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
-                    { name: 'Opacity', type: 'text', value: '1' },
-                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
-                    { name: 'Transform', type: 'text'},
+                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'], cssProperty: 'position' },
+                    { name: 'Z-Index', type: 'text', cssProperty: 'z-index' },
+                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                    { name: 'Opacity', type: 'text', value: '1', cssProperty: 'opacity' },
+                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                    { name: 'Transform', type: 'text', cssProperty: 'transform' },
                 ]
             }
         ]

@@ -1,21 +1,199 @@
 'use client'
 import { Tooltip } from '@components/tooltip/Tooltip';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import React from 'react';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useCanvas } from '@contexts/CanvasContext';
+import { jsx } from 'react/jsx-runtime';
+
+
+
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 
-const TextType = ({name, value, placeholder, index}) => {
-    const [textValue, setTextValue] = useState(value || '');
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
+    
+    const savedValue = getGlobalCSSValue(cssProperty) || value || '';
+    const [textValue, setTextValue] = useState(savedValue);
+
+    useEffect(() => {
+        const newValue = getGlobalCSSValue(cssProperty) || value || '';
+        setTextValue(newValue);
+    }, [getGlobalCSSValue, cssProperty, value]);
+
+    const unitAdd = (inputValue) => {
+        if(!autoUnit || !inputValue) return inputValue;
+
+        const numberRegex = /^-?\d*\.?\d+$/;
+        if (numberRegex.test(inputValue.trim())) {
+            return `${inputValue.trim()}${autoUnit}`;
+        }
+        
+        return inputValue;
+    }
+
+    const handleChange = (e) => {
+        const newValue = e.target.value;
+        setTextValue(newValue);
+        if(cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, newValue);
+        }
+    };
+
+    const handleBlur = (e) => {
+        if (autoUnit && e.target.value){
+            const processedValue = unitAdd(e.target.value);
+            if(processedValue !== e.target.value){
+                setTextValue(processedValue);
+                if(cssProperty && applyGlobalCSSChange){
+                    applyGlobalCSSChange(cssProperty, processedValue);
+                }
+            }
+        }
+    }
+
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
-            <input type="text" className="tw-builder__settings-input" value={textValue} placeholder={placeholder} onChange={(e) => setTextValue(e.target.value)}/>
+            <input 
+            type="text" 
+            className="tw-builder__settings-input" 
+            value={textValue} 
+            placeholder={placeholder} 
+            onChange={handleChange}
+            onBlur={handleBlur}
+            />
         </div>
     )
 }
+
+const BoxShadowType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
+    const parseBoxShadow = (value) => {
+        if(!value || value === 'none') {
+            return {
+                x: 0,
+                y: 0,
+                blur: 0,
+                spread: 0,
+                color: '#000000',
+            };
+        }
+        
+        const regex = /(-?\d+px)\s+(-?\d+px)\s+(-?\d+px)\s+(-?\d+px)\s+(.*)/;
+        const match = value.match(regex);
+
+        if(match){
+            return {
+                x: match[1].replace('px', ''),
+                y: match[2].replace('px', ''),
+                blur: match[3].replace('px', ''),
+                spread: match[4].replace('px', ''),
+                color: match[5]
+            };
+        }
+        return {
+            x: 0,
+            y: 0,
+            blur: 0,
+            spread: 0,
+            color: '#000000',
+        };
+    };
+    
+    const savedValue = getGlobalCSSValue ? getGlobalCSSValue(cssProperty) : null;
+    const parsed = parseBoxShadow(savedValue);
+    
+    const [x, setX] = useState(parsed.x);
+    const [y, setY] = useState(parsed.y);
+    const [blur, setBlur] = useState(parsed.blur);
+    const [spread, setSpread] = useState(parsed.spread);
+    const [color, setColor] = useState(parsed.color);
+
+        // Update box-shadow CSS property
+        const updateBoxShadow = useCallback((newX, newY, newBlur, newSpread, newColor) => {
+            if (!applyGlobalCSSChange || !cssProperty) return;
+            
+            const boxShadowValue = `${newX}px ${newY}px ${newBlur}px ${newSpread}px ${newColor}`;
+            console.log('Updating box-shadow:', boxShadowValue);
+            applyGlobalCSSChange(cssProperty, boxShadowValue);
+        }, [applyGlobalCSSChange, cssProperty]);
+    
+        const handleXChange = (e) => {
+            const newX = e.target.value;
+            setX(newX);
+            updateBoxShadow(newX, y, blur, spread, color);
+        };
+    
+        const handleYChange = (e) => {
+            const newY = e.target.value;
+            setY(newY);
+            updateBoxShadow(x, newY, blur, spread, color);
+        };
+    
+        const handleBlurChange = (e) => {
+            const newBlur = e.target.value;
+            setBlur(newBlur);
+            updateBoxShadow(x, y, newBlur, spread, color);
+        };
+    
+        const handleSpreadChange = (e) => {
+            const newSpread = e.target.value;
+            setSpread(newSpread);
+            updateBoxShadow(x, y, blur, newSpread, color);
+        };
+    
+        const handleColorChange = (e) => {
+            const newColor = e.target.value;
+            setColor(newColor);
+            updateBoxShadow(x, y, blur, spread, newColor);
+        };
+        return (
+            <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+                <span className="tw-builder__settings-subtitle">{name}</span>
+                <div className="tw-builder__settings-box-shadow">
+                    <div className="tw-builder__settings-box-shadow-row">
+                        <input 
+                            type="text" 
+                            className="tw-builder__settings-input tw-builder__settings-input--small" 
+                            value={x} 
+                            placeholder="X"
+                            onChange={handleXChange}
+                        />
+                        <input 
+                            type="text" 
+                            className="tw-builder__settings-input tw-builder__settings-input--small" 
+                            value={y} 
+                            placeholder="Y"
+                            onChange={handleYChange}
+                        />
+                    </div>
+                    <div className="tw-builder__settings-box-shadow-row">
+                        <input 
+                            type="text" 
+                            className="tw-builder__settings-input tw-builder__settings-input--small" 
+                            value={blur} 
+                            placeholder="Blur"
+                            onChange={handleBlurChange}
+                        />
+                        <input 
+                            type="text" 
+                            className="tw-builder__settings-input tw-builder__settings-input--small" 
+                            value={spread} 
+                            placeholder="Spread"
+                            onChange={handleSpreadChange}
+                        />
+                    </div>
+                    <input 
+                        type="color" 
+                        className="tw-builder__settings-color-input" 
+                        value={color} 
+                        onChange={handleColorChange}
+                    />
+                </div>
+            </div>
+        );
+}
+
 
 const SelectType = ({name, value, options, index}) => {
     const [selectValue, setSelectValue] = useState(value);
@@ -701,13 +879,13 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
 
     const finalCSSProperty = cssProperty;
 
-        // Función para obtener el valor guardado del elemento
+        // Function to get the saved value of the element
         const getSavedValue = () => {
             if (!elementId || !idsCSSData) {
                 return { color: ``, hex: ``, percentage: `` };
             }
     
-            // Buscar el elemento en idsCSSData
+            // Search the element in idsCSSData
             const elementData = idsCSSData.find(item => item.id === elementId);
             if (!elementData || !elementData.properties) {
                 return { color: ``, hex: ``, percentage: `` };
@@ -718,9 +896,9 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
                 return { color: ``, hex: ``, percentage: `` };
             }
     
-            // Parsear el valor guardado
+            // Parse the saved value
             if (savedValue.startsWith('rgba(')) {
-                // Extraer valores rgba
+                // Extract rgba values
                 const rgbaMatch = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
                 if (rgbaMatch) {
                     const [, r, g, b, a] = rgbaMatch;
@@ -750,13 +928,13 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
             return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
         };
     
-        // Inicializar estados con valores guardados
+        // Initialize states with saved values
         const initialValues = getSavedValue();
         const [color, setColor] = useState(initialValues.color);
         const [hex, setHex] = useState(initialValues.hex);
         const [percentage, setPercentage] = useState(initialValues.percentage);
     
-        // Efecto para actualizar los valores cuando cambie el elemento seleccionado
+        // Effect to update the values when the element is selected
         useEffect(() => {
             const newValues = getSavedValue();
             setColor(newValues.color);
@@ -772,7 +950,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
         return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
     };
 
-     // Función para aplicar el estilo CSS
+     // Function to apply the CSS style
      const applyCSSChange = (newColor, newOpacity) => {
         if (!elementId || !cssProperty) return;
 
@@ -780,14 +958,14 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
         let finalValue;
         
         if (opacityValue < 100) {
-            // Si hay transparencia, usar rgba
+            // If there is transparency, use rgba
             finalValue = hexToRgba(newColor, opacityValue);
         } else {
-            // Si no hay transparencia, usar hex
+            // If there is no transparency, use hex
             finalValue = newColor;
         }
         
-        // Aplicar el cambio usando addCSSProperty
+        // Apply the change using addCSSProperty
         addCSSProperty('id', elementId, cssProperty, finalValue);
     };
 
@@ -1270,23 +1448,114 @@ const ChooseType = ({name, index, category}) => {
 }
 
 function ControlComponent({control, selectedId}) {
+    const {JSONtree, activeRoot, idsCSSData, classesCSSData, addCSSProperty} = useCanvas();
+
+    //state to store the selected element properties o  acnfedata
+    const [selectedElementData, setSelectedElementData] = useState(null);
+
+    //spreads the properties of the selected element
+    useEffect(() => {
+        if(!selectedId || !JSONtree || !JSONtree.roots) {
+            setSelectedElementData(null);
+            return;
+        }
+
+        const findElement = (node, targetId) => {
+            if(!node) return null;
+            if(node.id === targetId) return node;
+            if(node.children) {
+                for(const child of node.children) {
+                    const result = findElement(child, targetId);
+                    if(result) return result;
+                }
+            }
+            return null;
+        }
+
+        const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
+        if(!activeRootNode) {
+            setSelectedElementData(null);
+            return;
+        }
+
+        const selectedElement = findElement(activeRootNode, selectedId);
+        if(!selectedElement) {
+            setSelectedElementData(null);
+            return;
+        }
+
+        //find the css data for the selected element
+        const elementCssData = idsCSSData.find(i => i.id === selectedId);
+
+        const elementData = {
+            id: selectedElement.id,
+            elementType: selectedElement.elementType,
+            tagName: selectedElement.tagName,
+            classList: selectedElement.classList,
+            children: selectedElement.children,
+            nestable: selectedElement.nestable,
+            icon: selectedElement.icon,
+            label: selectedElement.label,
+            href: selectedElement.href,
+            innerText: selectedElement.innerText,
+            properties: elementCssData?.properties || {},
+
+            hasChildren: selectedElement.children && selectedElement.children.length > 0,
+            className: selectedElement.classList?.[0] || null,
+        }
+
+        setSelectedElementData(elementData);
+
+        console.log(elementData);
+
+     }, [selectedId, JSONtree, activeRoot, idsCSSData]);
+
+     const applyGlobalCSSChange = useCallback((cssProperty, value) => {
+        if(!selectedId || !cssProperty) return;
+
+        addCSSProperty('id', selectedId, cssProperty, value);
+
+     }, [selectedId, addCSSProperty]);
+
+     const getGlobalCSSValue = useCallback((cssProperty) => {
+        if(!selectedId || !cssProperty) return null;
+
+        return selectedElementData?.properties?.[cssProperty] || null;
+     }, [selectedElementData]);
+
+     const globalControlProps = {
+        selectedElementData,
+        applyGlobalCSSChange,
+        getGlobalCSSValue,
+        selectedId,
+     };
+    
+
     const whatType = (item, index) => {
+
+        const enhancedItem = {
+            ...item,
+            elementId: selectedId,
+            ...globalControlProps,
+        };
+
         switch(item.type) {
             case 'text':
-                return <TextType key={index} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
+                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
             case 'select':
-                return <SelectType key={index} name={item.name} value={item.value} options={item.options} index={index} />;
+                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} />;
             case 'super-select':
-                return <SuperSelectType key={index} name={item.name} index={index} value={item.value} category={item.category} />;
+                return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} />;
             case 'panel':
-                return <PanelType key={index} name={item.name} index={index} />;
+                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} />;
             case 'color':
-                return <ColorType key={index} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} elementId={item.elementId}/>;
+                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} elementId={item.elementId}/>;
             case 'image':
-                return <ImageType key={index} name={item.name} index={index} />;
+                return <ImageType key={index} {...enhancedItem} name={item.name} index={index} />;
             case 'choose':
-                return <ChooseType key={index} name={item.name} index={index} category={item.category} />;
-
+                return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} />;
+            case 'box-shadow':
+                return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} />;
         }
     }
     return (
@@ -1305,6 +1574,7 @@ function ControlComponent({control, selectedId}) {
                     label={section.label} 
                     controls={section.controls} 
                     whatType={whatType}
+                    globalControlProps={globalControlProps}
                     />
                 ))}
             </div>
