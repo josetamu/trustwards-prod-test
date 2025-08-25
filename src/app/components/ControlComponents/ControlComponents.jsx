@@ -11,17 +11,41 @@ import { jsx } from 'react/jsx-runtime';
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit}) => {
     
     const savedValue = getGlobalCSSValue(cssProperty) || value || '';
-    const [textValue, setTextValue] = useState(savedValue);
+
+    // Función para determinar si un valor tiene solo la unidad automática añadida
+    const hasOnlyAutoUnit = (val) => {
+        if (!val || !autoUnit) return false;
+        
+        // Si el valor termina con la unidad automática
+        if (val.endsWith(autoUnit)) {
+            const numberPart = val.slice(0, -autoUnit.length);
+            const numberRegex = /^-?\d*\.?\d+$/;
+            // Verificar que la parte antes de la unidad es solo un número
+            return numberRegex.test(numberPart.trim());
+        }
+        return false;
+    };
+    
+    // Función para extraer solo el número si tiene únicamente la unidad automática
+    const getDisplayValue = (val) => {
+        if (hasOnlyAutoUnit(val)) {
+            return val.slice(0, -autoUnit.length);
+        }
+        return val;
+    };
+    const displayValue = getDisplayValue(savedValue);
+    const [textValue, setTextValue] = useState(displayValue);
 
     useEffect(() => {
         const newValue = getGlobalCSSValue(cssProperty) || value || '';
-        setTextValue(newValue);
+        const newDisplayValue = getDisplayValue(newValue);
+        setTextValue(newDisplayValue);
     }, [getGlobalCSSValue, cssProperty, value]);
 
-    const unitAdd = (inputValue) => {
+    const processValue = (inputValue) => {
         if(!autoUnit || !inputValue) return inputValue;
 
         const numberRegex = /^-?\d*\.?\d+$/;
@@ -36,18 +60,26 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         const newValue = e.target.value;
         setTextValue(newValue);
         if(cssProperty && applyGlobalCSSChange) {
-            applyGlobalCSSChange(cssProperty, newValue);
+            const processedValue = processValue(newValue);
+            applyGlobalCSSChange(cssProperty, processedValue);
         }
     };
 
     const handleBlur = (e) => {
-        if (autoUnit && e.target.value){
-            const processedValue = unitAdd(e.target.value);
-            if(processedValue !== e.target.value){
-                setTextValue(processedValue);
-                if(cssProperty && applyGlobalCSSChange){
-                    applyGlobalCSSChange(cssProperty, processedValue);
-                }
+        const inputValue = e.target.value;
+        
+        if (autoUnit && inputValue) {
+            const cssValue = processValueForCSS(inputValue);
+            
+            // Solo actualizar el display si el valor procesado tiene únicamente la unidad automática
+            if (hasOnlyAutoUnit(cssValue)) {
+                // Mantener solo el número en el input
+                const displayValue = cssValue.slice(0, -autoUnit.length);
+                setTextValue(displayValue);
+            }
+            
+            if(cssProperty && applyGlobalCSSChange) {
+                applyGlobalCSSChange(cssProperty, cssValue);
             }
         }
     }
@@ -67,132 +99,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     )
 }
 
-const BoxShadowType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
-    const parseBoxShadow = (value) => {
-        if(!value || value === 'none') {
-            return {
-                x: 0,
-                y: 0,
-                blur: 0,
-                spread: 0,
-                color: '#000000',
-            };
-        }
-        
-        const regex = /(-?\d+px)\s+(-?\d+px)\s+(-?\d+px)\s+(-?\d+px)\s+(.*)/;
-        const match = value.match(regex);
 
-        if(match){
-            return {
-                x: match[1].replace('px', ''),
-                y: match[2].replace('px', ''),
-                blur: match[3].replace('px', ''),
-                spread: match[4].replace('px', ''),
-                color: match[5]
-            };
-        }
-        return {
-            x: 0,
-            y: 0,
-            blur: 0,
-            spread: 0,
-            color: '#000000',
-        };
-    };
-    
-    const savedValue = getGlobalCSSValue ? getGlobalCSSValue(cssProperty) : null;
-    const parsed = parseBoxShadow(savedValue);
-    
-    const [x, setX] = useState(parsed.x);
-    const [y, setY] = useState(parsed.y);
-    const [blur, setBlur] = useState(parsed.blur);
-    const [spread, setSpread] = useState(parsed.spread);
-    const [color, setColor] = useState(parsed.color);
-
-        // Update box-shadow CSS property
-        const updateBoxShadow = useCallback((newX, newY, newBlur, newSpread, newColor) => {
-            if (!applyGlobalCSSChange || !cssProperty) return;
-            
-            const boxShadowValue = `${newX}px ${newY}px ${newBlur}px ${newSpread}px ${newColor}`;
-            console.log('Updating box-shadow:', boxShadowValue);
-            applyGlobalCSSChange(cssProperty, boxShadowValue);
-        }, [applyGlobalCSSChange, cssProperty]);
-    
-        const handleXChange = (e) => {
-            const newX = e.target.value;
-            setX(newX);
-            updateBoxShadow(newX, y, blur, spread, color);
-        };
-    
-        const handleYChange = (e) => {
-            const newY = e.target.value;
-            setY(newY);
-            updateBoxShadow(x, newY, blur, spread, color);
-        };
-    
-        const handleBlurChange = (e) => {
-            const newBlur = e.target.value;
-            setBlur(newBlur);
-            updateBoxShadow(x, y, newBlur, spread, color);
-        };
-    
-        const handleSpreadChange = (e) => {
-            const newSpread = e.target.value;
-            setSpread(newSpread);
-            updateBoxShadow(x, y, blur, newSpread, color);
-        };
-    
-        const handleColorChange = (e) => {
-            const newColor = e.target.value;
-            setColor(newColor);
-            updateBoxShadow(x, y, blur, spread, newColor);
-        };
-        return (
-            <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-                <span className="tw-builder__settings-subtitle">{name}</span>
-                <div className="tw-builder__settings-box-shadow">
-                    <div className="tw-builder__settings-box-shadow-row">
-                        <input 
-                            type="text" 
-                            className="tw-builder__settings-input tw-builder__settings-input--small" 
-                            value={x} 
-                            placeholder="X"
-                            onChange={handleXChange}
-                        />
-                        <input 
-                            type="text" 
-                            className="tw-builder__settings-input tw-builder__settings-input--small" 
-                            value={y} 
-                            placeholder="Y"
-                            onChange={handleYChange}
-                        />
-                    </div>
-                    <div className="tw-builder__settings-box-shadow-row">
-                        <input 
-                            type="text" 
-                            className="tw-builder__settings-input tw-builder__settings-input--small" 
-                            value={blur} 
-                            placeholder="Blur"
-                            onChange={handleBlurChange}
-                        />
-                        <input 
-                            type="text" 
-                            className="tw-builder__settings-input tw-builder__settings-input--small" 
-                            value={spread} 
-                            placeholder="Spread"
-                            onChange={handleSpreadChange}
-                        />
-                    </div>
-                    <input 
-                        type="color" 
-                        className="tw-builder__settings-color-input" 
-                        value={color} 
-                        onChange={handleColorChange}
-                    />
-                </div>
-            </div>
-        );
-}
 
 
 const SelectType = ({name, value, options, index}) => {
@@ -1541,7 +1448,7 @@ function ControlComponent({control, selectedId}) {
 
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
+                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} autoUnit={item.autoUnit} />;
             case 'select':
                 return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} />;
             case 'super-select':
@@ -1554,8 +1461,6 @@ function ControlComponent({control, selectedId}) {
                 return <ImageType key={index} {...enhancedItem} name={item.name} index={index} />;
             case 'choose':
                 return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} />;
-            case 'box-shadow':
-                return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} />;
         }
     }
     return (
