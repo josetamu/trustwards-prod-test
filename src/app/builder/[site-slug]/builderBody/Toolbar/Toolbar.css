@@ -135,6 +135,10 @@
 }
 
 /*Block element*/
+.tw-block{
+    display: flex;
+    flex-direction: column;
+}
 .tw-builder__toolbar-dropdown-item-icon--block::before{
     content: "";
     width: 16px;
@@ -171,7 +175,11 @@
     width: 100%;
     height: 2px;
     background: var(--border-light-color);
+    display: flex;
+    flex-direction: column;
 }
+
+
 
 /*Text element*/
 .tw-builder__toolbar-dropdown-item-icon--text svg{

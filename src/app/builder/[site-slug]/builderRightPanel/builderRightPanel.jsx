@@ -35,6 +35,8 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
     // Get the class name to know the type of the selected element
     const selectedClassName = selectedElement?.classList[0];
 
+    
+
 
     /* const pruebaControls = {
         header: [
@@ -87,7 +89,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
 
         header: [
             { name: 'Tag', type: 'super-select', value: 'div', category: 'text'},
-            { name: 'Display', type: 'super-select', value: 'flex', category: 'display'},
+            { name: 'Display', type: 'super-select', value: 'flex', category: 'display', cssProperty: 'display' },
         ],
         body: [
             {
@@ -218,9 +220,8 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             { name: 'Height', type: 'text', value: '2px', cssProperty: 'height', autoUnit: 'px'},
             { name: 'Width', type: 'text', value: '100%', cssProperty: 'width', autoUnit: 'px'},
             { name: 'Style', type: 'select', value: 'solid', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'], cssProperty: 'border-style' },
-            { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction' },
-            { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items' },
-            { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
+            { name: 'Align', type: 'choose', category: 'justify', cssProperty: 'align-self' },
+            { name: 'Color', type: 'color', value: '#000000', opacity: '100%', elementId: selectedId, cssProperty: 'background-color' },
         ],
         body: [
             {

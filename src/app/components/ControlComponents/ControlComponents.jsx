@@ -11,10 +11,18 @@ import { jsx } from 'react/jsx-runtime';
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit, selectedElementData}) => {
     
     const [textValue, setTextValue] = useState(() => {
-        return getGlobalCSSValue(cssProperty) || value || '';
+        const savedValue = getGlobalCSSValue?.(cssProperty);
+        // Si no hay valor guardado Y hay un valor por defecto, aplicarlo automáticamente
+        if (!savedValue && value && cssProperty && applyGlobalCSSChange) {
+            setTimeout(() => {
+                const cssValue = autoUnit && value ? processValueForCSS(value) : value;
+                applyGlobalCSSChange(cssProperty, cssValue);
+            }, 0);
+        }
+        return savedValue || value || '';
     });
 
     const processValueForCSS = (inputValue) => {
@@ -71,6 +79,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             }
         }
     }
+    
 
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -89,13 +98,26 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
 
 
 
-const SelectType = ({name, value, options, index}) => {
-    const [selectValue, setSelectValue] = useState(value);
+const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
+
+    // Initialize with saved value from global CSS system
+    const [selectValue, setSelectValue] = useState(() => {
+        return getGlobalCSSValue?.(cssProperty) || value || '';
+    });
+    
     const measureRef = useRef(null);
     const [selectWidth, setSelectWidth] = useState(undefined);
 
+    // Update when selected element changes
     useEffect(() => {
-        if (!measureRef.current) return;
+        if (getGlobalCSSValue && cssProperty) {
+            const savedValue = getGlobalCSSValue(cssProperty);
+            setSelectValue(savedValue || value || '');
+        }
+    }, [getGlobalCSSValue, cssProperty, value]);
+
+    useEffect(() => {
+        if (!measureRef.current) return;    
         setSelectWidth(measureRef.current.offsetWidth + 4);
     }, [selectValue, options]);
 
@@ -109,6 +131,16 @@ const SelectType = ({name, value, options, index}) => {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
+    // Handle select change with global CSS application
+    const handleSelectChange = (e) => {
+        const newValue = e.target.value;
+        setSelectValue(newValue);
+        
+        // Apply to global CSS system
+        if (cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, newValue);
+        }
+    };
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
@@ -125,14 +157,14 @@ const SelectType = ({name, value, options, index}) => {
                         overflow: 'hidden'
                     }}
                 >
-                    {selectValue}
+                    {selectValue || value}
                 </span>
 
                 <select
                     className="tw-builder__settings-select"
                     style={{ width: selectWidth }}
                     value={selectValue}
-                    onChange={(e) => setSelectValue(e.target.value)}
+                    onChange={handleSelectChange}
                 >
                     {options.map((option, i) => (
                         <option key={i} value={option}>{option}</option>
@@ -150,8 +182,10 @@ const SelectType = ({name, value, options, index}) => {
     );
 };
 
-const SuperSelectType = ({name, index, value, category}) => {
-    const [superSelectValue, setSuperSelectValue] = useState(value);
+const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+    const [superSelectValue, setSuperSelectValue] = useState(() =>{
+        return getGlobalCSSValue?.(cssProperty) || value || '';
+    });
     const measureRef = useRef(null);
     const wrapMeasureRef = useRef(null);
     const flowMeasureRef = useRef(null);
@@ -160,14 +194,43 @@ const SuperSelectType = ({name, index, value, category}) => {
     const [flowSelectWidth, setFlowSelectWidth] = useState(undefined);
 
     const wrapSelectRef = useRef(null);
-    const [selectedWrap, setSelectedWrap] = useState('wrap');
-    const [selectedDirection, setSelectedDirection] = useState('column');
-    const [selectedAlign, setSelectedAlign] = useState('flex-star');
-    const [selectedJustify, setSelectedJustify] = useState('flex-start');
+    const [selectedWrap, setSelectedWrap] = useState(() =>{
+        return getGlobalCSSValue?.('flex-wrap') || 'wrap';
+    });
+    const [selectedDirection, setSelectedDirection] = useState(() => {
+        return getGlobalCSSValue?.('flex-direction') || 'column';
+    });
+    const [selectedAlign, setSelectedAlign] = useState(() => {
+        return getGlobalCSSValue?.('align-items') || 'flex-start';
+    });
+    const [selectedJustify, setSelectedJustify] = useState(() => {
+        return getGlobalCSSValue?.('justify-content') || 'flex-start';
+    });
     const [isReverse, setIsReverse] = useState(false);
-    const [selectedFlow, setSelectedFlow] = useState('row');
+    const [selectedFlow, setSelectedFlow] = useState(() => {
+        return getGlobalCSSValue?.('grid-auto-flow') || 'row';
+    });
     const flowSelectRef = useRef(null);
     const [activeTooltip, setActiveTooltip] = useState(null);
+
+    // Update when selected element changes
+    useEffect(() => {
+        if (getGlobalCSSValue && cssProperty) {
+            const savedValue = getGlobalCSSValue(cssProperty);
+            setSuperSelectValue(savedValue || value || '');
+        }
+    }, [selectedElementData, getGlobalCSSValue, cssProperty, value]);
+
+    
+
+    // Auto-apply default value when no saved value exists
+    useEffect(() => {
+        if (!cssProperty || !applyGlobalCSSChange) return;
+        const saved = getGlobalCSSValue?.(cssProperty);
+        if (!saved && value) {
+            applyGlobalCSSChange(cssProperty, value);
+        }
+    }, [selectedElementData, cssProperty, value, applyGlobalCSSChange, getGlobalCSSValue]);
 
     const handleMouseEnter = (tooltipId) => {
         setActiveTooltip(tooltipId);
@@ -178,20 +241,52 @@ const SuperSelectType = ({name, index, value, category}) => {
 
     const handleDirectionChange = (direction) => {
         setSelectedDirection(direction);
+        if (applyGlobalCSSChange) {
+            applyGlobalCSSChange('flex-direction', direction);
+        }
     };
     const handleJustifyChange = (justify) => {
         setSelectedJustify(justify);
+        if (applyGlobalCSSChange) {
+            applyGlobalCSSChange('justify-content', justify);
+        }
     };
     const handleFlowSelectChange = (flow) => {
         setSelectedFlow(flow);
+        if (applyGlobalCSSChange) {
+            applyGlobalCSSChange('grid-auto-flow', flow);
+        }
     };
     const handleReverseChange = () => {
-        setIsReverse(!isReverse);
+        const newReverse = !isReverse;
+        setIsReverse(newReverse);
+        
+        if (applyGlobalCSSChange) {
+            const finalDirection = newReverse ? `${selectedDirection}-reverse` : selectedDirection;
+            applyGlobalCSSChange('flex-direction', finalDirection);
+        }
     };
+    
 
     const handleAlignChange = (align) => {
         setSelectedAlign(align);
+        if (applyGlobalCSSChange) {
+            applyGlobalCSSChange('align-items', align);
+        }
     };
+    const handleWrapChange = (wrap) => {
+        setSelectedWrap(wrap);
+        if (applyGlobalCSSChange) {
+            applyGlobalCSSChange('flex-wrap', wrap);
+        }
+    };
+    const handleSuperSelectChange = (newValue) => {
+        setSuperSelectValue(newValue);
+        if (cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, newValue);
+        }
+    };
+
     useEffect(() => {
         if (!measureRef.current) return;
         setSelectWidth(measureRef.current.offsetWidth + 3);
@@ -240,7 +335,7 @@ const SuperSelectType = ({name, index, value, category}) => {
                 >
                     {superSelectValue}
                 </span>
-                <select className="tw-builder__settings-select" value={superSelectValue} onChange={(e) => setSuperSelectValue(e.target.value) } style={{ width: selectWidth }}>
+                <select className="tw-builder__settings-select" value={superSelectValue} onChange={(e) => handleSuperSelectChange(e.target.value) } style={{ width: selectWidth }}>
                     {category === 'text' && (
                         <>
                             <option className="tw-builder__settings-option" value="div">div</option>
@@ -300,7 +395,7 @@ const SuperSelectType = ({name, index, value, category}) => {
                         ref={wrapSelectRef}
                         className="tw-builder__settings-select"
                         value={selectedWrap}
-                        onChange={(e) => setSelectedWrap(e.target.value)}
+                        onChange={(e) => handleWrapChange(e.target.value)}
                         style={{ width: wrapSelectWidth }}
                     >   
                         <option className="tw-builder__settings-option" value="nowrap">No Wrap</option>
@@ -342,7 +437,7 @@ const SuperSelectType = ({name, index, value, category}) => {
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--active' : ''}`} onClick={() => setIsReverse(!isReverse)} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleReverseChange(!isReverse)} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
                                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1 3.5C0.723858 3.5 0.5 3.72386 0.5 4C0.5 4.27614 0.723858 4.5 1 4.5V4V3.5ZM13.1936 4.35355C13.3889 4.15829 13.3889 3.84171 13.1936 3.64645L10.0117 0.464466C9.81641 0.269204 9.49982 0.269204 9.30456 0.464466C9.1093 0.659728 9.1093 0.976311 9.30456 1.17157L12.133 4L9.30456 6.82843C9.1093 7.02369 9.1093 7.34027 9.30456 7.53553C9.49982 7.7308 9.81641 7.7308 10.0117 7.53553L13.1936 4.35355ZM1 4V4.5H12.8401V4V3.5H1V4Z" fill="currentColor"/>
                                     <path d="M12.8398 11.5C13.116 11.5 13.3398 11.2761 13.3398 11C13.3398 10.7239 13.116 10.5 12.8398 10.5V11V11.5ZM0.646195 10.6464C0.450933 10.8417 0.450933 11.1583 0.646195 11.3536L3.82818 14.5355C4.02344 14.7308 4.34002 14.7308 4.53528 14.5355C4.73054 14.3403 4.73054 14.0237 4.53528 13.8284L1.70686 11L4.53528 8.17157C4.73054 7.97631 4.73054 7.65973 4.53528 7.46447C4.34002 7.2692 4.02344 7.2692 3.82818 7.46447L0.646195 10.6464ZM12.8398 11V10.5L0.999749 10.5V11V11.5L12.8398 11.5V11Z" fill="currentColor"/>
@@ -748,79 +843,131 @@ const SuperSelectType = ({name, index, value, category}) => {
     )
 }
 
-const PanelType = ({name, index}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit, selectedElementData}) => {
+    const [topValue, setTopValue] = useState(() => {
+        const saved = getGlobalCSSValue?.(`${cssProperty}-top`);
+        return saved || '';
+    });
+    
+    const [rightValue, setRightValue] = useState(() => {
+        const saved = getGlobalCSSValue?.(`${cssProperty}-right`);
+        return saved || '';
+    });
+    
+    const [bottomValue, setBottomValue] = useState(() => {
+        const saved = getGlobalCSSValue?.(`${cssProperty}-bottom`);
+        return saved || '';
+    });
+    
+    const [leftValue, setLeftValue] = useState(() => {
+        const saved = getGlobalCSSValue?.(`${cssProperty}-left`);
+        return saved || '';
+    });
+
+        // Función para procesar valores con unidades (igual que en TextType)
+        const processValueForCSS = (inputValue) => {
+            if (!autoUnit || !inputValue) return inputValue;
+            const trimmedValue = inputValue.trim();
+            const validUnits = ['px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', '%', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'fr'];
+            const numberWithTextRegex = /^(-?\d*\.?\d+)(.*)$/;
+            const match = trimmedValue.match(numberWithTextRegex);
+            
+            if (match) {
+                const [, numberPart, unitPart] = match;
+                if (!unitPart || !validUnits.includes(unitPart)) {
+                    return `${numberPart}${autoUnit}`;
+                }
+                return trimmedValue;
+            }
+            return inputValue;
+        };
+    
+        // Handlers para cada input
+        const handleTopChange = (e) => {
+            const newValue = e.target.value;
+            setTopValue(newValue);
+            if (cssProperty && applyGlobalCSSChange) {
+                const cssValue = processValueForCSS(newValue);
+                applyGlobalCSSChange(`${cssProperty}-top`, cssValue);
+            }
+        };
+    
+        const handleRightChange = (e) => {
+            const newValue = e.target.value;
+            setRightValue(newValue);
+            if (cssProperty && applyGlobalCSSChange) {
+                const cssValue = processValueForCSS(newValue);
+                applyGlobalCSSChange(`${cssProperty}-right`, cssValue);
+            }
+        };
+    
+        const handleBottomChange = (e) => {
+            const newValue = e.target.value;
+            setBottomValue(newValue);
+            if (cssProperty && applyGlobalCSSChange) {
+                const cssValue = processValueForCSS(newValue);
+                applyGlobalCSSChange(`${cssProperty}-bottom`, cssValue);
+            }
+        };
+    
+        const handleLeftChange = (e) => {
+            const newValue = e.target.value;
+            setLeftValue(newValue);
+            if (cssProperty && applyGlobalCSSChange) {
+                const cssValue = processValueForCSS(newValue);
+                applyGlobalCSSChange(`${cssProperty}-left`, cssValue);
+            }
+        };
+
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
         <span className="tw-builder__settings-subtitle">{name}</span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input"/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid"/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input"/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange}/>
         </div>
     </div>
     )
 }
-const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
-    const { addCSSProperty, idsCSSData } = useCanvas();
-/*     const [color, setColor] = useState(`#${value}`);
-    const [hex, setHex] = useState(value);
-    const [percentage, setPercentage] = useState(opacity); */
+const ColorType = ({name, value, opacity, index, elementId, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
+
     const colorInputRef = useRef(null);
 
+    const getSavedValue = useCallback(() => {
+        const savedValue = getGlobalCSSValue?.(cssProperty);
+        if(!savedValue) return { color: ``, hex: ``, percentage: `` };
 
-    const finalCSSProperty = cssProperty;
-
-        // Function to get the saved value of the element
-        const getSavedValue = () => {
-            if (!elementId || !idsCSSData) {
-                return { color: ``, hex: ``, percentage: `` };
-            }
-    
-            // Search the element in idsCSSData
-            const elementData = idsCSSData.find(item => item.id === elementId);
-            if (!elementData || !elementData.properties) {
-                return { color: ``, hex: ``, percentage: `` };
-            }
-    
-            const savedValue = elementData.properties[finalCSSProperty];
-            if (!savedValue) {
-                return { color: ``, hex: ``, percentage: `` };
-            }
-    
-            // Parse the saved value
-            if (savedValue.startsWith('rgba(')) {
-                // Extract rgba values
-                const rgbaMatch = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
-                if (rgbaMatch) {
-                    const [, r, g, b, a] = rgbaMatch;
-                    const hexColor = rgbToHex(parseInt(r), parseInt(g), parseInt(b));
-                    const opacityPercent = Math.round(parseFloat(a) * 100);
-                    return {
-                        color: hexColor,
-                        hex: hexColor.toUpperCase().replace('#', ''),
-                        percentage: `${opacityPercent}%`
-                    };
-                }
-            } else if (savedValue.startsWith('#')) {
-                // Valor hex directo
+        if(savedValue.startsWith('rgba(')) {
+            const rgbaMatch = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+            if(rgbaMatch) {
+                const [, r, g, b, a] = rgbaMatch;
+                const hexColor = rgbToHex(parseInt(r), parseInt(g), parseInt(b));
+                const opacityPercent = Math.round(parseFloat(a) * 100);
+        
                 return {
-                    color: savedValue,
-                    hex: savedValue.toUpperCase().replace('#', ''),
-                    percentage: '100%'
+                    color: hexColor,
+                    hex: hexColor.toUpperCase().replace('#', ''),
+                    percentage: `${opacityPercent}%`
                 };
             }
+        } else if(savedValue.startsWith('#')) {
+            return {
+                color: savedValue,
+                hex: savedValue.toUpperCase().replace('#', ''),
+                percentage: '100%'
+            };
+        }
+        return { color: ``, hex: ``, percentage: `` };
+    }, [getGlobalCSSValue, cssProperty]);
     
-            // Fallback a valores por defecto
-            return { color: ``, hex: ``, percentage: `` };
-        };
-    
-        // Función auxiliar para convertir RGB a Hex
-        const rgbToHex = (r, g, b) => {
-            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-        };
+    const rgbToHex = (r, g, b) => {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    };
+
     
         // Initialize states with saved values
         const initialValues = getSavedValue();
@@ -834,7 +981,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
             setColor(newValues.color);
             setHex(newValues.hex);
             setPercentage(newValues.percentage);
-        }, [elementId, idsCSSData, finalCSSProperty]); 
+        }, [selectedElementData]); 
 
     //Function to convert hex to rgba with opacity
     const hexToRgba = (hex, opacity) => {
@@ -846,7 +993,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
 
      // Function to apply the CSS style
      const applyCSSChange = (newColor, newOpacity) => {
-        if (!elementId || !cssProperty) return;
+        if (!cssProperty) return;
 
         const opacityValue = parseInt(newOpacity.replace('%', ''));
         let finalValue;
@@ -859,17 +1006,42 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty}) => {
             finalValue = newColor;
         }
         
-        // Apply the change using addCSSProperty
-        addCSSProperty('id', elementId, cssProperty, finalValue);
+        // Apply the change using global function
+        if (applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, finalValue);
+        }
     };
 
+    // Add RAF throttling
+    const rafRef = useRef(null);
+
     //Function to change the color
-    const handleColorChange = (e) => {
+    const handleColorChange = useCallback((e) => {
         const newColor = e.target.value;
+        
+        // Update visual state immediately for responsive UI
         setColor(newColor);
         setHex(newColor.replace('#', '').toUpperCase());
-        applyCSSChange(newColor, percentage);
-    };
+        
+        // Use requestAnimationFrame to throttle CSS updates to display refresh rate
+        if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current);
+        }
+        
+        rafRef.current = requestAnimationFrame(() => {
+            applyCSSChange(newColor, percentage);
+        });
+    }, [percentage, applyCSSChange]);
+
+    // Cleanup RAF on unmount
+    useEffect(() => {
+        return () => {
+            if (rafRef.current) {
+                cancelAnimationFrame(rafRef.current);
+            }
+        };
+    }, []);
+
     //Function to change the color with the text input
     const handleHexChange = (e) => {
         let hexValue = e.target.value.toUpperCase().replace('#', '');
@@ -964,10 +1136,19 @@ const ImageType = ({name, index}) => {
     </div>
     )
 }
-const ChooseType = ({name, index, category}) => {
-    const [selectedChoose, setSelectedChoose] = useState(category);
+const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
+
+    const [selectedChoose, setSelectedChoose] = useState(getGlobalCSSValue?.(cssProperty) || category || '');
     const [isReverse, setIsReverse] = useState(false);
     const [activeTooltip, setActiveTooltip] = useState(null);
+
+    // Update when selected element changes
+    useEffect(() => {
+        if (getGlobalCSSValue && cssProperty) {
+            const savedValue = getGlobalCSSValue(cssProperty);
+            setSelectedChoose(savedValue || category || '');
+        }
+    }, [getGlobalCSSValue, cssProperty, category]);
 
     const handleMouseEnter = (tooltipId) => {
         setActiveTooltip(tooltipId);
@@ -975,9 +1156,29 @@ const ChooseType = ({name, index, category}) => {
     const handleMouseLeave = () => {
         setActiveTooltip(null);
     };
-    const handleChooseChange = (choose) => {
+    const handleChooseChange = useCallback((choose) => {
         setSelectedChoose(choose);
-    };
+        if (cssProperty && applyGlobalCSSChange) {
+            let finalValue = choose;
+            if(category === 'flex-direction' && isReverse) {
+                finalValue = choose === 'row'? 'row-reverse' : 'column-reverse';
+            }
+            applyGlobalCSSChange(cssProperty, finalValue);
+        }
+    }, [cssProperty, applyGlobalCSSChange, category, isReverse]);
+
+    const handleReverseToggle = useCallback(() => {
+        const newReverse = !isReverse;
+        setIsReverse(newReverse);
+        
+        // Apply reverse to CSS immediately if we have a direction selected
+        if (cssProperty && applyGlobalCSSChange && selectedChoose) {
+            const finalValue = newReverse 
+                ? (selectedChoose === 'row' ? 'row-reverse' : 'column-reverse')
+                : selectedChoose;
+            applyGlobalCSSChange(cssProperty, finalValue);
+        }
+    }, [isReverse, cssProperty, applyGlobalCSSChange, selectedChoose]);
 
     switch (category) {
         case 'direction':
@@ -1041,7 +1242,7 @@ const ChooseType = ({name, index, category}) => {
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--active' : ''}`} onClick={() => setIsReverse(!isReverse)} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--active' : ''}`} onClick={handleReverseToggle} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
                                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1 3.5C0.723858 3.5 0.5 3.72386 0.5 4C0.5 4.27614 0.723858 4.5 1 4.5V4V3.5ZM13.1936 4.35355C13.3889 4.15829 13.3889 3.84171 13.1936 3.64645L10.0117 0.464466C9.81641 0.269204 9.49982 0.269204 9.30456 0.464466C9.1093 0.659728 9.1093 0.976311 9.30456 1.17157L12.133 4L9.30456 6.82843C9.1093 7.02369 9.1093 7.34027 9.30456 7.53553C9.49982 7.7308 9.81641 7.7308 10.0117 7.53553L13.1936 4.35355ZM1 4V4.5H12.8401V4V3.5H1V4Z" fill="currentColor"/>
                                     <path d="M12.8398 11.5C13.116 11.5 13.3398 11.2761 13.3398 11C13.3398 10.7239 13.116 10.5 12.8398 10.5V11V11.5ZM0.646195 10.6464C0.450933 10.8417 0.450933 11.1583 0.646195 11.3536L3.82818 14.5355C4.02344 14.7308 4.34002 14.7308 4.53528 14.5355C4.73054 14.3403 4.73054 14.0237 4.53528 13.8284L1.70686 11L4.53528 8.17157C4.73054 7.97631 4.73054 7.65973 4.53528 7.46447C4.34002 7.2692 4.02344 7.2692 3.82818 7.46447L0.646195 10.6464ZM12.8398 11V10.5L0.999749 10.5V11V11.5L12.8398 11.5V11Z" fill="currentColor"/>
@@ -1296,15 +1497,15 @@ const ChooseType = ({name, index, category}) => {
                 <div className="tw-builder__settings-setting" key={index}>
                     <span className="tw-builder__settings-subtitle">{name}</span>
                     <div className="tw-builder__settings-actions">
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'left' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('left')} onMouseEnter={() => handleMouseEnter('left')} onMouseLeave={handleMouseLeave}>
                             <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.00146369 1.5C-0.00165555 1.33565 -0.00688098 1.03463 0.070398 0.8376C0.170525 0.582277 0.419789 0.313477 1.00122 0.139108C1.27423 0.057277 1.56389 0.0267693 1.85643 0.0130155C2.13307 6.87746e-08 2.47015 0 2.86099 0L9.13902 0C9.52986 0 9.86693 6.87746e-08 10.1436 0.0130155C10.4361 0.0267693 10.7257 0.057277 10.9987 0.139108C11.5802 0.313477 11.8295 0.582277 11.9296 0.8376C12.0069 1.03463 12.0017 1.33565 11.9985 1.5C12.0017 1.66435 12.0069 1.96537 11.9296 2.1624C11.8295 2.41772 11.5802 2.68652 10.9987 2.86089C10.7257 2.94272 10.4361 2.97323 10.1436 2.98698C9.86693 3 9.52986 3 9.13902 3H2.86099C2.47015 3 2.13306 3 1.85643 2.98698C1.56389 2.97323 1.27423 2.94272 1.00122 2.86089C0.419789 2.68652 0.170525 2.41772 0.070398 2.1624C-0.00688098 1.96537 -0.00165555 1.66435 0.00146369 1.5Z" fill="currentColor"/>
                                 <path d="M0.000731847 6.5C-0.000827773 6.33565 -0.00344049 6.03463 0.035199 5.8376C0.0852624 5.58228 0.209894 5.31348 0.50061 5.13911C0.637115 5.05728 0.781946 5.02677 0.928217 5.01302C1.06653 5 1.23508 5 1.4305 5H4.56951C4.76493 5 4.93347 5 5.07179 5.01302C5.21806 5.02677 5.36287 5.05728 5.49937 5.13911C5.7901 5.31348 5.91474 5.58228 5.96482 5.8376C6.00343 6.03463 6.00085 6.33565 5.99925 6.5C6.00085 6.66435 6.00343 6.96537 5.96482 7.1624C5.91474 7.41772 5.7901 7.68652 5.49937 7.86089C5.36287 7.94272 5.21806 7.97323 5.07179 7.98698C4.93347 8 4.76493 8 4.56951 8H1.4305C1.23508 8 1.06653 8 0.928217 7.98698C0.781946 7.97323 0.637115 7.94272 0.50061 7.86089C0.209894 7.68652 0.0852624 7.41772 0.035199 7.1624C-0.00344049 6.96537 -0.000827773 6.66435 0.000731847 6.5Z" fill="currentColor"/>
                                 <path d="M0.00109777 11.5C-0.00124166 11.3356 -0.00516074 11.0346 0.0527985 10.8376C0.127894 10.5823 0.314842 10.3135 0.750916 10.1391C0.955672 10.0573 1.17292 10.0268 1.39233 10.013C1.5998 10 1.85261 10 2.14574 10H6.85426C7.14739 10 7.4002 10 7.60768 10.013C7.8271 10.0268 8.04431 10.0573 8.24906 10.1391C8.68515 10.3135 8.87211 10.5823 8.94722 10.8376C9.00514 11.0346 9.00128 11.3356 8.99888 11.5C9.00128 11.6644 9.00514 11.9654 8.94722 12.1624C8.87211 12.4177 8.68515 12.6865 8.24906 12.8609C8.04431 12.9427 7.8271 12.9732 7.60768 12.987C7.4002 13 7.14739 13 6.85426 13H2.14574C1.85261 13 1.5998 13 1.39233 12.987C1.17292 12.9732 0.955672 12.9427 0.750916 12.8609C0.314842 12.6865 0.127894 12.4177 0.0527985 12.1624C-0.00516074 11.9654 -0.00124166 11.6644 0.00109777 11.5Z" fill="currentColor"/>
                             </svg>
                             <Tooltip
-                            message={'Start'}
-                            open={activeTooltip === 'flex-start'}
+                            message={'Left'}
+                            open={activeTooltip === 'left'}
                             responsivePosition={{ desktop: 'top', mobile: 'top' }}
                             width="auto"
                             />
@@ -1322,15 +1523,15 @@ const ChooseType = ({name, index, category}) => {
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('end')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'right' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('right')} onMouseEnter={() => handleMouseEnter('right')} onMouseLeave={handleMouseLeave}>
                             <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.00146369 1.5C-0.00165555 1.33565 -0.00688098 1.03463 0.070398 0.8376C0.170525 0.582277 0.419789 0.313477 1.00122 0.139108C1.27423 0.057277 1.56389 0.0267693 1.85643 0.0130155C2.13307 6.87746e-08 2.47015 0 2.86099 0L9.13902 0C9.52986 0 9.86693 6.87746e-08 10.1436 0.0130155C10.4361 0.0267693 10.7257 0.057277 10.9987 0.139108C11.5802 0.313477 11.8295 0.582277 11.9296 0.8376C12.0069 1.03463 12.0017 1.33565 11.9985 1.5C12.0017 1.66435 12.0069 1.96537 11.9296 2.1624C11.8295 2.41772 11.5802 2.68652 10.9987 2.86089C10.7257 2.94272 10.4361 2.97323 10.1436 2.98698C9.86693 3 9.52986 3 9.13902 3H2.86099C2.47015 3 2.13306 3 1.85643 2.98698C1.56389 2.97323 1.27423 2.94272 1.00122 2.86089C0.419789 2.68652 0.170525 2.41772 0.070398 2.1624C-0.00688098 1.96537 -0.00165555 1.66435 0.00146369 1.5Z" fill="currentColor"/>
                                 <path d="M6.00073 6.5C5.99917 6.33565 5.99656 6.03463 6.0352 5.8376C6.08526 5.58228 6.20989 5.31348 6.50061 5.13911C6.63711 5.05728 6.78195 5.02677 6.92822 5.01302C7.06653 5 7.23508 5 7.4305 5H10.5695C10.7649 5 10.9335 5 11.0718 5.01302C11.2181 5.02677 11.3629 5.05728 11.4994 5.13911C11.7901 5.31348 11.9147 5.58228 11.9648 5.8376C12.0034 6.03463 12.0009 6.33565 11.9993 6.5C12.0009 6.66435 12.0034 6.96537 11.9648 7.1624C11.9147 7.41772 11.7901 7.68652 11.4994 7.86089C11.3629 7.94272 11.2181 7.97323 11.0718 7.98698C10.9335 8 10.7649 8 10.5695 8H7.4305C7.23508 8 7.06653 8 6.92822 7.98698C6.78195 7.97323 6.63711 7.94272 6.50061 7.86089C6.20989 7.68652 6.08526 7.41772 6.0352 7.1624C5.99656 6.96537 5.99917 6.66435 6.00073 6.5Z" fill="currentColor"/>
                                 <path d="M3.0011 11.5C2.99876 11.3356 2.99484 11.0346 3.0528 10.8376C3.12789 10.5823 3.31484 10.3135 3.75092 10.1391C3.95567 10.0573 4.17292 10.0268 4.39233 10.013C4.5998 10 4.85261 10 5.14574 10H9.85426C10.1474 10 10.4002 10 10.6077 10.013C10.8271 10.0268 11.0443 10.0573 11.2491 10.1391C11.6852 10.3135 11.8721 10.5823 11.9472 10.8376C12.0051 11.0346 12.0013 11.3356 11.9989 11.5C12.0013 11.6644 12.0051 11.9654 11.9472 12.1624C11.8721 12.4177 11.6852 12.6865 11.2491 12.8609C11.0443 12.9427 10.8271 12.9732 10.6077 12.987C10.4002 13 10.1474 13 9.85426 13H5.14574C4.85261 13 4.5998 13 4.39233 12.987C4.17292 12.9732 3.95567 12.9427 3.75092 12.8609C3.31484 12.6865 3.12789 12.4177 3.0528 12.1624C2.99484 11.9654 2.99876 11.6644 3.0011 11.5Z" fill="currentColor"/>
                             </svg>
                             <Tooltip
-                            message={'End'}
-                            open={activeTooltip === 'end'}
+                            message={'Right'}
+                            open={activeTooltip === 'right'}
                             responsivePosition={{ desktop: 'top', mobile: 'top' }}
                             width="auto"
                             />
@@ -1346,6 +1547,8 @@ function ControlComponent({control, selectedId}) {
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
+
+    const selectedElementCSSData = idsCSSData.find(i => i.id === selectedId);
 
     //spreads the properties of the selected element
     useEffect(() => {
@@ -1379,7 +1582,7 @@ function ControlComponent({control, selectedId}) {
         }
 
         //find the css data for the selected element
-        const elementCssData = idsCSSData.find(i => i.id === selectedId);
+        const elementCssData = selectedElementCSSData;
 
         const elementData = {
             id: selectedElement.id,
@@ -1402,7 +1605,7 @@ function ControlComponent({control, selectedId}) {
 
         console.log(elementData);
 
-     }, [selectedId, JSONtree, activeRoot, idsCSSData]);
+     }, [selectedId, JSONtree?.roots, activeRoot, selectedElementCSSData]);
 
      const applyGlobalCSSChange = useCallback((cssProperty, value) => {
         if(!selectedId || !cssProperty) return;
@@ -1437,17 +1640,17 @@ function ControlComponent({control, selectedId}) {
             case 'text':
                 return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} autoUnit={item.autoUnit} />;
             case 'select':
-                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} />;
+                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>;
             case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} />;
+                return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty}/>;
             case 'panel':
-                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} />;
+                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
                 return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} elementId={item.elementId}/>;
             case 'image':
                 return <ImageType key={index} {...enhancedItem} name={item.name} index={index} />;
             case 'choose':
-                return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} />;
+                return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
         }
     }
     return (

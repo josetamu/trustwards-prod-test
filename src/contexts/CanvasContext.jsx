@@ -459,6 +459,8 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         setJSONtree(updated);
     };   
 
+
+
     /*
     * Elements creation
     */
@@ -525,6 +527,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                         label: "Divider",
                         classList: ["tw-divider"]
                     });
+                   
                 }
             break;
             case 'text': //Text
