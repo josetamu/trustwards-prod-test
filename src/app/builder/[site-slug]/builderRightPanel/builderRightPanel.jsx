@@ -322,10 +322,6 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
         ]
     }
 
-    
-
-    console.log(JSONtree);
-    console.log(JSONtree.roots);
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>
             <div className="tw-builder__right-header">

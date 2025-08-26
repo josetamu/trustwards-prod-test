@@ -182,9 +182,10 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
     );
 };
 
-const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
-    const [superSelectValue, setSuperSelectValue] = useState(() =>{
-        return getGlobalCSSValue?.(cssProperty) || value || '';
+const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId}) => {
+    const [superSelectValue, setSuperSelectValue] = useState(() => {
+        const savedValue = getGlobalCSSValue?.(cssProperty);
+        return savedValue || value || '';
     });
     const measureRef = useRef(null);
     const wrapMeasureRef = useRef(null);
@@ -219,7 +220,7 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
             const savedValue = getGlobalCSSValue(cssProperty);
             setSuperSelectValue(savedValue || value || '');
         }
-    }, [selectedElementData, getGlobalCSSValue, cssProperty, value]);
+    }, [ selectedId, getGlobalCSSValue, cssProperty, value]);
 
     
 
@@ -227,10 +228,15 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     useEffect(() => {
         if (!cssProperty || !applyGlobalCSSChange) return;
         const saved = getGlobalCSSValue?.(cssProperty);
+        console.log(`[${cssProperty}] Saved:`, saved, 'Default:', value); 
         if (!saved && value) {
-            applyGlobalCSSChange(cssProperty, value);
+            console.log(`Applying default value: ${value} to ${cssProperty}`);
+            setTimeout(() => {
+                applyGlobalCSSChange(cssProperty, value);
+            }, 0);
         }
-    }, [selectedElementData, cssProperty, value, applyGlobalCSSChange, getGlobalCSSValue]);
+    }, []);
+
 
     const handleMouseEnter = (tooltipId) => {
         setActiveTooltip(tooltipId);
@@ -238,6 +244,9 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     const handleMouseLeave = () => {
         setActiveTooltip(null);
     };
+
+
+
 
     const handleDirectionChange = (direction) => {
         setSelectedDirection(direction);
@@ -333,9 +342,9 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
                         overflow: 'hidden'
                     }}
                 >
-                    {superSelectValue}
+                    {superSelectValue || value}
                 </span>
-                <select className="tw-builder__settings-select" value={superSelectValue} onChange={(e) => handleSuperSelectChange(e.target.value) } style={{ width: selectWidth }}>
+                <select className="tw-builder__settings-select" value={superSelectValue} onChange={(e) => handleSuperSelectChange(e.target.value)} style={{ width: selectWidth }}>
                     {category === 'text' && (
                         <>
                             <option className="tw-builder__settings-option" value="div">div</option>
@@ -1603,7 +1612,6 @@ function ControlComponent({control, selectedId}) {
 
         setSelectedElementData(elementData);
 
-        console.log(elementData);
 
      }, [selectedId, JSONtree?.roots, activeRoot, selectedElementCSSData]);
 
@@ -1616,9 +1624,10 @@ function ControlComponent({control, selectedId}) {
 
      const getGlobalCSSValue = useCallback((cssProperty) => {
         if(!selectedId || !cssProperty) return null;
-
-        return selectedElementData?.properties?.[cssProperty] || null;
-     }, [selectedElementData]);
+    
+        const elementData = idsCSSData.find(item => item.id === selectedId);
+        return elementData?.properties?.[cssProperty] || null;
+     }, [idsCSSData, selectedId]);
 
      const globalControlProps = {
         selectedElementData,
