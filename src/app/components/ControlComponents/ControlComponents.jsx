@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import React from 'react';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useCanvas } from '@contexts/CanvasContext';
+import BuilderClasses from '../BuilderClasses/BuilderClasses';
 import { jsx } from 'react/jsx-runtime';
 
 
@@ -11,19 +12,28 @@ import { jsx } from 'react/jsx-runtime';
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit, selectedElementData}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
     
     const [textValue, setTextValue] = useState(() => {
-        const savedValue = getGlobalCSSValue?.(cssProperty);
-        // Si no hay valor guardado Y hay un valor por defecto, aplicarlo automáticamente
-        if (!savedValue && value && cssProperty && applyGlobalCSSChange) {
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+        const savedValue = savedJSONValue || savedCSSValue;
+
+
+        if (!savedValue && value) {
             setTimeout(() => {
-                const cssValue = autoUnit && value ? processValueForCSS(value) : value;
-                applyGlobalCSSChange(cssProperty, cssValue);
+                if (JSONProperty && applyGlobalJSONChange) {
+                    applyGlobalJSONChange(JSONProperty, value);
+                } else if (cssProperty && applyGlobalCSSChange) {
+                    const cssValue = autoUnit && value ? processValueForCSS(value) : value;
+                    applyGlobalCSSChange(cssProperty, cssValue);
+                }
             }, 0);
         }
         return savedValue || value || '';
     });
+
+
 
     const processValueForCSS = (inputValue) => {
         if (!autoUnit || !inputValue) return inputValue;
@@ -62,12 +72,14 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         const newValue = e.target.value;
         setTextValue(newValue);
         
-        if(cssProperty && applyGlobalCSSChange) {
+        // Priorizar JSON sobre CSS
+        if (JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, newValue);
+        } else if (cssProperty && applyGlobalCSSChange) {
             const cssValue = processValueForCSS(newValue);
             applyGlobalCSSChange(cssProperty, cssValue);
         }
     };
-
     const handleBlur = (e) => {
         const inputValue = e.target.value;
         
@@ -182,9 +194,11 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
     );
 };
 
-const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId}) => {
+const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
     const [superSelectValue, setSuperSelectValue] = useState(() => {
-        const savedValue = getGlobalCSSValue?.(cssProperty);
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+        const savedValue = savedJSONValue || savedCSSValue;
         return savedValue || value || '';
     });
     const measureRef = useRef(null);
@@ -207,35 +221,73 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     const [selectedJustify, setSelectedJustify] = useState(() => {
         return getGlobalCSSValue?.('justify-content') || 'flex-start';
     });
-    const [isReverse, setIsReverse] = useState(false);
+    const [isReverse, setIsReverse] = useState(() => {
+        const flexDirection = getGlobalCSSValue?.('flex-direction') || '';
+        return flexDirection.includes('-reverse');
+    });
     const [selectedFlow, setSelectedFlow] = useState(() => {
         return getGlobalCSSValue?.('grid-auto-flow') || 'row';
     });
     const flowSelectRef = useRef(null);
     const [activeTooltip, setActiveTooltip] = useState(null);
 
-    // Update when selected element changes
-    useEffect(() => {
-        if (getGlobalCSSValue && cssProperty) {
-            const savedValue = getGlobalCSSValue(cssProperty);
-            setSuperSelectValue(savedValue || value || '');
-        }
-    }, [ selectedId, getGlobalCSSValue, cssProperty, value]);
+// Update when selected element changes
+useEffect(() => {
+    if(!selectedElementData) return;
+
+    let savedValue = null;
+    if(JSONProperty && getGlobalJSONValue) {
+        savedValue = getGlobalJSONValue(JSONProperty);
+    } else if (cssProperty && getGlobalCSSValue) {
+        savedValue = getGlobalCSSValue(cssProperty);
+    }
+    setSuperSelectValue(savedValue || value || '');
+
+    const flexDirection = getGlobalCSSValue?.('flex-direction') || 'column';
+    const isCurrentlyReverse = flexDirection.includes('-reverse');
+    const baseDirection = isCurrentlyReverse 
+        ? flexDirection.replace('-reverse', '') 
+        : flexDirection;
+    
+    setIsReverse(isCurrentlyReverse);
+    setSelectedDirection(baseDirection);
+
+    setSelectedWrap(getGlobalCSSValue?.('flex-wrap') || 'wrap');
+    setSelectedAlign(getGlobalCSSValue?.('align-items') || 'flex-start');
+    setSelectedJustify(getGlobalCSSValue?.('justify-content') || 'flex-start');
+    setSelectedFlow(getGlobalCSSValue?.('grid-auto-flow') || 'row');
+}, [selectedId,selectedElementData, getGlobalCSSValue, cssProperty, value, getGlobalJSONValue, JSONProperty]);
 
     
-
     // Auto-apply default value when no saved value exists
+    const hasAppliedDefaultSuper = useRef(false);
+    
     useEffect(() => {
-        if (!cssProperty || !applyGlobalCSSChange) return;
-        const saved = getGlobalCSSValue?.(cssProperty);
-        console.log(`[${cssProperty}] Saved:`, saved, 'Default:', value); 
-        if (!saved && value) {
-            console.log(`Applying default value: ${value} to ${cssProperty}`);
-            setTimeout(() => {
-                applyGlobalCSSChange(cssProperty, value);
-            }, 0);
+        // Reset flag when selectedId changes
+        hasAppliedDefaultSuper.current = false;
+    }, [selectedId]);
+    
+    useEffect(() => {
+        // Solo ejecutar si selectedElementData está disponible y no hemos aplicado el default
+        if (!selectedElementData || hasAppliedDefaultSuper.current) return;
+        
+        let savedValue = null;
+
+        if(JSONProperty && getGlobalJSONValue) {
+            savedValue = getGlobalJSONValue(JSONProperty);
+        } else if (cssProperty && getGlobalCSSValue) {
+            savedValue = getGlobalCSSValue(cssProperty);
         }
-    }, []);
+
+        if (!savedValue && value) {
+            hasAppliedDefaultSuper.current = true;
+            if (JSONProperty && applyGlobalJSONChange) {
+                applyGlobalJSONChange(JSONProperty, value);
+            } else if (cssProperty && applyGlobalCSSChange) {
+                applyGlobalCSSChange(cssProperty, value);
+            }
+        }
+    }, [selectedElementData, JSONProperty, cssProperty, value]);
 
 
     const handleMouseEnter = (tooltipId) => {
@@ -251,7 +303,8 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     const handleDirectionChange = (direction) => {
         setSelectedDirection(direction);
         if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('flex-direction', direction);
+            const finalDirection = isReverse ? `${direction}-reverse` : direction;
+            applyGlobalCSSChange('flex-direction', finalDirection);
         }
     };
     const handleJustifyChange = (justify) => {
@@ -269,8 +322,9 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     const handleReverseChange = () => {
         const newReverse = !isReverse;
         setIsReverse(newReverse);
-        
+    
         if (applyGlobalCSSChange) {
+
             const finalDirection = newReverse ? `${selectedDirection}-reverse` : selectedDirection;
             applyGlobalCSSChange('flex-direction', finalDirection);
         }
@@ -290,8 +344,18 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
         }
     };
     const handleSuperSelectChange = (newValue) => {
+        console.log('SuperSelect cambio:', {
+            newValue,
+            JSONProperty,
+            applyGlobalJSONChange: !!applyGlobalJSONChange,
+            selectedId
+        });
         setSuperSelectValue(newValue);
-        if (cssProperty && applyGlobalCSSChange) {
+        if(JSONProperty && applyGlobalJSONChange){
+            console.log('Aplicando cambio JSON:', JSONProperty, newValue);
+            applyGlobalJSONChange(JSONProperty,newValue);
+        }else if (cssProperty && applyGlobalCSSChange) {
+            console.log('Aplicando cambio CSS:', cssProperty, newValue);
             applyGlobalCSSChange(cssProperty, newValue);
         }
     };
@@ -376,10 +440,16 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
             </div>
         </div>
         {superSelectValue === 'a' && (
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Link to</span>
-                <input type="text" className="tw-builder__settings-input tw-builder__settings-input--link" placeholder="URL..." />
-            </div>
+           <TextType
+           name="Link to"
+           value=""
+           placeholder="URL..."
+           JSONProperty="href"
+           applyGlobalJSONChange={applyGlobalJSONChange}
+           getGlobalJSONValue={getGlobalJSONValue}
+           selectedId={selectedId}
+           index="href"
+        />
         )}
         {superSelectValue === 'flex' && (
                     <>
@@ -599,54 +669,124 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
                             </button>
                         </div>
                     </div>
-                    <div className="tw-builder__settings-setting">
-                        <span className="tw-builder__settings-subtitle">Column Gap</span>
-                        <input type="text" className="tw-builder__settings-input" placeholder="normal" />
-                    </div>
-                    <div className="tw-builder__settings-setting">
-                        <span className="tw-builder__settings-subtitle">Row Gap</span>
-                        <input type="text" className="tw-builder__settings-input" placeholder="normal" />
-                    </div>
-                    <div className="tw-builder__settings-setting">
-                        <span className="tw-builder__settings-subtitle">Flex grow</span>
-                        <input type="text" className="tw-builder__settings-input" placeholder="0" />
-                    </div>
-                    <div className="tw-builder__settings-setting">
-                        <span className="tw-builder__settings-subtitle">Flex shrink</span>
-                        <input type="text" className="tw-builder__settings-input" placeholder="1" />
-                    </div>
-                    <div className="tw-builder__settings-setting">
-                        <span className="tw-builder__settings-subtitle">Flex basis</span>
-                        <input type="text" className="tw-builder__settings-input" placeholder="auto" />
-                    </div>
-                    <div className="tw-builder__settings-setting">
-                        <span className="tw-builder__settings-subtitle">Order</span>
-                        <input type="text" className="tw-builder__settings-input" placeholder="0" />
-                    </div>
+                    <TextType 
+                    name="Column Gap"
+                    value=""
+                    placeholder="normal"
+                    cssProperty="column-gap"
+                    autoUnit="px"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index="column-gap"
+                    />
+                    <TextType 
+                        name="Row Gap"
+                        value=""
+                        placeholder="normal"
+                        cssProperty="row-gap"
+                        autoUnit="px"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        selectedId={selectedId}
+                        index="row-gap"
+                    />
+                    <TextType 
+                        name="Flex grow"
+                        value=""
+                        placeholder="0"
+                        cssProperty="flex-grow"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        selectedId={selectedId}
+                        index="flex-grow"
+                    />
+                    <TextType 
+                        name="Flex shrink"
+                        value=""
+                        placeholder="1"
+                        cssProperty="flex-shrink"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        selectedId={selectedId}
+                        index="flex-shrink"
+                    />
+                    <TextType 
+                        name="Flex basis"
+                        value=""
+                        placeholder="auto"
+                        cssProperty="flex-basis"
+                        autoUnit="px"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        selectedId={selectedId}
+                        index="flex-basis"
+                    />
+                    <TextType 
+                        name="Order"
+                        value=""
+                        placeholder="0"
+                        cssProperty="order"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        selectedId={selectedId}
+                        index="order"
+                    />
                     </>
                 )}
         {superSelectValue === 'grid' && (
             <>
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Gap</span>
-                <input type="text" className="tw-builder__settings-input" placeholder="0" />
-            </div>
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Template columns</span>
-                <input type="text" className="tw-builder__settings-input"/>
-            </div>
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Template rows</span>
-                <input type="text" className="tw-builder__settings-input"/>
-            </div>
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Auto columns</span>
-                <input type="text" className="tw-builder__settings-input"/>
-            </div>
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Auto rows</span>
-                <input type="text" className="tw-builder__settings-input"/>
-            </div>
+        <TextType 
+            name="Gap"
+            value=""
+            placeholder="0"
+            cssProperty="gap"
+            autoUnit="px"
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            selectedId={selectedId}
+            index="gap"
+        />
+        <TextType 
+            name="Template columns"
+            value=""
+            placeholder="none"
+            cssProperty="grid-template-columns"
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            selectedId={selectedId}
+            index="grid-template-columns"
+        />
+        <TextType 
+            name="Template rows"
+            value=""
+            placeholder="none"
+            cssProperty="grid-template-rows"
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            selectedId={selectedId}
+            index="grid-template-rows"
+        />
+        <TextType 
+            name="Auto columns"
+            value=""
+            placeholder="none"
+            cssProperty="grid-auto-columns"
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            selectedId={selectedId}
+            index="grid-auto-columns"
+        />
+        <TextType 
+            name="Auto rows"
+            value=""
+            placeholder="none"
+            cssProperty="grid-auto-rows"
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            selectedId={selectedId}
+            index="grid-auto-rows"
+        />
             <div className="tw-builder__settings-setting">
                 <span className="tw-builder__settings-subtitle">Auto flow</span>
                 <div className="tw-builder__settings-select-container">
@@ -836,10 +976,16 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
                     </button>
                 </div>
             </div>
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Order</span>
-                <input type="text" className="tw-builder__settings-input" placeholder="0" />
-            </div>
+            <TextType 
+            name="Order"
+            value=""
+            placeholder="0"
+            cssProperty="order"
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            selectedId={selectedId}
+            index="grid-order"
+            />
             </>
         )}
         {(superSelectValue === 'block' || superSelectValue === 'inline-block' || superSelectValue === 'inline') && (
@@ -1552,12 +1698,14 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 }
 
 function ControlComponent({control, selectedId}) {
-    const {JSONtree, activeRoot, idsCSSData, classesCSSData, addCSSProperty} = useCanvas();
+    const {JSONtree, activeRoot, idsCSSData, classesCSSData, addCSSProperty, addJSONProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
 
     const selectedElementCSSData = idsCSSData.find(i => i.id === selectedId);
+
+    
 
     //spreads the properties of the selected element
     useEffect(() => {
@@ -1590,6 +1738,14 @@ function ControlComponent({control, selectedId}) {
             return;
         }
 
+        console.log('Elemento encontrado para selectedElementData:', {
+            id: selectedElement.id,
+            tagName: selectedElement.tagName,
+            tag: selectedElement.tag,
+            href: selectedElement.href,
+
+        });
+
         //find the css data for the selected element
         const elementCssData = selectedElementCSSData;
 
@@ -1609,7 +1765,7 @@ function ControlComponent({control, selectedId}) {
             hasChildren: selectedElement.children && selectedElement.children.length > 0,
             className: selectedElement.classList?.[0] || null,
         }
-
+        console.log('selectedElementData actualizado:', elementData);
         setSelectedElementData(elementData);
 
 
@@ -1629,12 +1785,41 @@ function ControlComponent({control, selectedId}) {
         return elementData?.properties?.[cssProperty] || null;
      }, [idsCSSData, selectedId]);
 
+     const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
+        console.log('appluGlobalJSONChange llamado:',{
+            selectedId,
+            JSONProperty,
+            value,
+            addJSONProperty: !!addJSONProperty
+        });
+
+        if(!selectedId || !JSONProperty) return null;
+
+        addJSONProperty(selectedId, JSONProperty, value);
+     },[selectedId, addJSONProperty]);
+
+     const getGlobalJSONValue = useCallback((JSONProperty)=>{
+        console.log('getGlobalJSONValue llamado', {
+            selectedId,
+            JSONProperty,
+            selectedElementData,
+            value: selectedElementData?.[JSONProperty]
+        })
+        if(!selectedId || !JSONProperty) return null;
+
+        return selectedElementData?.[JSONProperty] || null;
+     },[selectedElementData, selectedId]);
+
      const globalControlProps = {
         selectedElementData,
         applyGlobalCSSChange,
         getGlobalCSSValue,
+        applyGlobalJSONChange,
+        getGlobalJSONValue,
         selectedId,
      };
+
+     
     
 
     const whatType = (item, index) => {
@@ -1647,13 +1832,13 @@ function ControlComponent({control, selectedId}) {
 
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} autoUnit={item.autoUnit} />;
+                return <TextType key={`${index}-${selectedId}`} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} autoUnit={item.autoUnit} />;
             case 'select':
                 return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>;
             case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty}/>;
+                return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
             case 'panel':
-                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
+                return <PanelType key={`${index}-${selectedId}`} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
                 return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} elementId={item.elementId}/>;
             case 'image':
@@ -1665,9 +1850,7 @@ function ControlComponent({control, selectedId}) {
     return (
         <div className="tw-builder__settings">
             <div className="tw-builder__settings-header">
-                <div className="tw-builder__settings-classes">
-                    <span className="tw-builder__settings-id">#{selectedId}</span>
-                </div>
+                <BuilderClasses selectedId={selectedId} />
                 {control.header && control.header.map((item, index) => whatType(item, index))}
             </div>
             <div className="tw-builder__settings-body">

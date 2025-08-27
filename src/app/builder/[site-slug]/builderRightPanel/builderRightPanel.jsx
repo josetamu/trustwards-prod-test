@@ -88,7 +88,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
     const blockControls = {
 
         header: [
-            { name: 'Tag', type: 'super-select', value: 'div', category: 'text'},
+            { name: 'Tag', type: 'super-select', value: 'div', category: 'text', JSONProperty: 'tagName'},
             { name: 'Display', type: 'super-select', value: 'flex', category: 'display', cssProperty: 'display' },
         ],
         body: [
@@ -136,7 +136,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
 
         header: [
             { name: 'Image', type: 'image'},
-            { name: 'Tag', type: 'select', value: 'div', options: ['div', 'figure', 'img']},
+            { name: 'Tag', type: 'select', value: 'div', options: ['div', 'figure', 'img'], JSONProperty: 'tagName'},
             { name: 'Link to', type: 'text', placeholder: 'URL...'},
             { name: 'Alt', type: 'text', placeholder: 'Alt...'},
             { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
@@ -248,8 +248,8 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
     }
     const textControls = {
         header: [
-            { name: 'Tag', type: 'select', value: 'h3', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span']},
-            { name: 'Link to', type: 'text', placeholder: 'URL...'},
+            { name: 'Tag', type: 'select', value: 'h3', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span'], JSONProperty: 'tagName'},
+            { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
         ],
         body: [
             {
@@ -321,7 +321,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             }
         ]
     }
-
+1
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>
             <div className="tw-builder__right-header">

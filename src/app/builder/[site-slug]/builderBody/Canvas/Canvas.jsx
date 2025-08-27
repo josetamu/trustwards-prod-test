@@ -88,23 +88,20 @@ export const Canvas = () => {
             renderNode(child, selectedId)
         )
 
-        // Ensure node.id exists for React key prop
-        const nodeKey = node.id || `node-${Math.random()}`;
-
         // Track element for script execution once it is created
         trackElement(node);
         
         switch (node.tagName) {
             case 'img':
-                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, src: node.src, ...node.attributes });
+                return React.createElement(node.tagName, { key: node.id, ...nodeProps, src: node.src, ...node.attributes });
             case 'input':
-                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, type: node.attributes.type, name: node.attributes.name });
+                return React.createElement(node.tagName, { key: node.id, ...nodeProps, type: node.attributes.type, name: node.attributes.name });
             case 'svg':
-                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, ...node.attributes }, children);
+                return React.createElement(node.tagName, { key: node.id, ...nodeProps, ...node.attributes }, children);
             case 'path':
-                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, ...node.attributes });
+                return React.createElement(node.tagName, { key: node.id, ...nodeProps, ...node.attributes });
             default:
-                return React.createElement(node.tagName, { key: nodeKey, ...nodeProps, ...node.attributes }, node.text, children);
+                return React.createElement(node.tagName, { key: node.id, ...nodeProps, ...node.attributes }, node.text, children);
         }
     };
 
