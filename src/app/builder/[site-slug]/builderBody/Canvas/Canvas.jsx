@@ -3,9 +3,21 @@ import "./Canvas.css";
 import { useCanvas } from '@contexts/CanvasContext';
 import React, { useEffect } from "react";
 
+/*Elements*/
+import { Banner } from '@builderElements/Banner/Banner';
+import { Modal } from '@builderElements/Modal/Modal';
+import { Text } from '@builderElements/Text/Text';
+import { Button } from '@builderElements/Button/Button';
+import { Block } from '@builderElements/Block/Block';
+import { Divider } from '@builderElements/Divider/Divider';
+import { Image } from '@builderElements/Image/Image';
+import { Categories } from '@builderElements/Categories/Categories';
+import { Checkbox } from '@builderElements/Checkbox/Checkbox';
+import { Icon } from '@builderElements/Icon/Icon';
+
 export const Canvas = () => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
-        idsCSSData, classesCSSData, runElementScript } = useCanvas();
+        idsCSSData, classesCSSData, addCSSProperty, runElementScript } = useCanvas();
 
     /*
     * Custom hook to track elements after they are created and run their scripts
@@ -52,9 +64,7 @@ export const Canvas = () => {
 
             onClick: (e) => {
                 e.stopPropagation();
-                if(node.draggable !== false) { //If the node is not draggable, it can't be selected neither
-                    setSelectedId(node.id); // Set the clicked element as the selectedId
-                }
+                setSelectedId(node.id); // Set the clicked element as the selectedId
             },
 
             onContextMenu: (e) => {
@@ -64,7 +74,9 @@ export const Canvas = () => {
                 setSelectedId(node.id);
                 //setSelectedItem(node);
 
-                CallContextMenu(e, node);
+                if(!isRoot) { //If the node is not banner or modal, it can call the context menu
+                    CallContextMenu(e, node);
+                }
             },
 
             //Add canvas classes to the node (dont use addClass on this render because it will render JSONtree in a loop)
@@ -75,13 +87,13 @@ export const Canvas = () => {
                 ...(isActiveRoot ? ['tw-active-root'] : []), // Add the class tw-active-root to the classList of the active root element
             ].join(' '),
 
-            ...(isRoot || node.draggable === false ? {} : { //If the node is the root or the node is not draggable, don't make it draggable
+            ...(!isRoot ? { //Make all nodes draggable except banner and modal
                 draggable: true,
                 onDragStart: (e) => {
                     e.stopPropagation();
                     e.dataTransfer.setData("draggedElementId", node.id);
                 },
-            })
+            } : {})
         };
     
         const children = node.children?.map((child) => //Renders the children of the node (JSON tree) in loop
@@ -91,17 +103,27 @@ export const Canvas = () => {
         // Track element for script execution once it is created
         trackElement(node);
         
-        switch (node.tagName) {
-            case 'img':
-                return React.createElement(node.tagName, { key: node.id, ...nodeProps, src: node.src, ...node.attributes });
-            case 'input':
-                return React.createElement(node.tagName, { key: node.id, ...nodeProps, type: node.attributes.type, name: node.attributes.name });
-            case 'svg':
-                return React.createElement(node.tagName, { key: node.id, ...nodeProps, ...node.attributes }, children);
-            case 'path':
-                return React.createElement(node.tagName, { key: node.id, ...nodeProps, ...node.attributes });
-            default:
-                return React.createElement(node.tagName, { key: node.id, ...nodeProps, ...node.attributes }, node.text, children);
+        switch (node.elementType) {
+            case 'banner':
+                return Banner(node, nodeProps, children).render();
+            case 'modal':
+                return Modal(node, nodeProps, children).render();
+            case 'text':
+                return Text(node, nodeProps).render();
+            case 'button':
+                return Button(node, nodeProps).render();
+            case 'block':
+                return Block(node, nodeProps, children).render();
+            case 'divider':
+                return Divider(node, nodeProps).render();
+            case 'image':
+                return Image(node, nodeProps).render();
+            case 'categories':
+                return Categories(node, nodeProps, children).render();
+            case 'checkbox':
+                return Checkbox(node, nodeProps).render();
+            case 'icon':
+                return Icon(node, nodeProps).render();
         }
     };
 
@@ -299,6 +321,17 @@ export const Canvas = () => {
     }
 
     /*
+    * Remove drop indicator when drag leaves the canvas
+    */
+    const handleDragLeave = (e) => {
+        // Only remove if leaving the canvas entirely (not moving to a child element)
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            document.querySelectorAll('.tw-block--hover-drop').forEach(el => el.classList.remove('tw-block--hover-drop'));
+            setDropIndicator(null);
+        }
+    }
+
+    /*
     * Drop indicator
     */
     const [dropIndicator, setDropIndicator] = React.useState(null);
@@ -334,7 +367,7 @@ export const Canvas = () => {
         // Build the CSS content
         let cssContent = '';
 
-        //For each id, add its CSS selector and properties
+        //For each id, add its CSS selector and properties (if id is empty, it won't be added)
         JSONtree.idsCSSData.forEach(({ id, properties }) => {
             const propertyEntries = Object.entries(properties);
             if (propertyEntries.length > 0) {
@@ -346,7 +379,7 @@ export const Canvas = () => {
             }
         });
 
-        //For each class, add its CSS selector and properties
+        //For each class, add its CSS selector and properties (if class is empty, it won't be added)
         JSONtree.classesCSSData.forEach(({ className, properties }) => {
             const propertyEntries = Object.entries(properties);
             if (propertyEntries.length > 0) {
@@ -373,7 +406,7 @@ export const Canvas = () => {
     }
     useEffect(() => {
         createCSS(JSONtree);
-    }, [idsCSSData, classesCSSData]);
+    }, [JSONtree]);
 
     return (
         <div className="tw-builder__handlebars-canvas-wrapper">
@@ -383,6 +416,7 @@ export const Canvas = () => {
             onDragOver={handleDragOver} /*Handle where the element is being dragged over and will be dropped (using drop indicator)*/
             onDrop={handleDrop} /*Create element on drop (resposability transfered from toolbar)*/
             onMouseLeave={handleMouseLeave} /*Remove drop indicator instantly as soon as the mouse leaves the canvas*/
+            onDragLeave={handleDragLeave} /*Remove drop indicator when drag leaves the canvas*/
             >
                 {JSONtree && JSONtree.roots.map(root => renderNode(root, selectedId))} {/* Renders both root nodes */}
             </div>

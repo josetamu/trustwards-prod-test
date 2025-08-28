@@ -1,0 +1,29 @@
+.tw-categories__expander-input--category{
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+}
+.tw-categories__expander-switch{
+    position: absolute;
+    z-index: 1;
+
+    left: var(--switch-spacing);
+    top: var(--switch-spacing);
+    width: var(--switch-size);
+    height: var(--switch-size);
+    background: var(--switch-background);
+    border-radius: var(--switch-radius);
+    box-shadow: var(--switch-shadow);
+    transition: left var(--switch-duration);
+}
+.tw-categories__expander-checkbox:has(input:checked) {
+    background: var(--checked-color) !important;
+}
+.tw-categories__expander-checkbox input:checked + span {
+    left: var(--checked-left) !important;
+}

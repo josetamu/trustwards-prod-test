@@ -73,6 +73,9 @@ function Builder() {
   //Loader state
   const [loaderCompleted, setLoaderCompleted] = useState(false);
 
+  //Context menu state
+  const [clipboard, setClipboard] = useState(null);
+
   // Set userSettings based on modalType
   useEffect(() => {
     if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Plan') {
@@ -513,6 +516,8 @@ const renderModal = () => {
                       showNotification={showNotification}
                       className="tree-context-menu"
                       previousSelectedItem={contextMenu.previousSelectedItem}
+                      clipboard={clipboard}
+                      setClipboard={setClipboard}
                     />
       </div>
     </CanvasProvider>
