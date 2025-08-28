@@ -14,6 +14,53 @@
     padding: 5px;
     cursor: pointer;
 }
+.tw-builder__settings-classes-selected{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.tw-builder__settings-class{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    background-color: var(--builder-background);
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    position: relative;
+}
+.tw-builder__settings-class-name{
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--shadow-color);
+}
+.tw-builder__settings-class-remove{
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    cursor: pointer;
+    opacity: 0;
+    font-size: 7px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--panels-background);
+    background-color: rgba(255, 0, 0, 0.428);
+    padding: 1px 2px;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 10px;
+    width: 10px;
+}
+.tw-builder__settings-class:hover .tw-builder__settings-class-remove{
+    opacity: 1;
+}
 
 .tw-builder__settings-classes-pool {
     position: absolute;
@@ -56,12 +103,6 @@
 }
 
 .tw-builder__settings-classes-item{
-/*     cursor: pointer;
-    padding: 2px;
-    border-radius: 5px;
-    height: 20px;
-    display: flex;
-    align-items: center; */
     display: none;
 } 
 .tw-builder__settings-classes-item:hover{
@@ -101,3 +142,4 @@
 .tw-builder__settings-classes-item:has(.tw-builder__settings-classes-item-name) + .tw-builder__settings-classes-item--empty{
     display: none;
 }
+

@@ -410,7 +410,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const addClass = (id, className) => {
         const updateClass = (node) => {
             if (node.id === id) {
-                node.classList.push(className);
+                // Only add the class if it doesn't already exist
+                if (!node.classList.includes(className)) {
+                    node.classList.push(className);
+                }
                 return;
             }
             if (node.children) {

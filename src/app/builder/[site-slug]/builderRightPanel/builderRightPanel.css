@@ -42,6 +42,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    gap: 10px;
 }
 
 .tw-builder__settings-header{
@@ -52,7 +53,12 @@
     padding-bottom: 10px;
 }
 
-
+.tw-builder__settings-label{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: #000;
+}
 
 .tw-builder__settings-setting{
     display:flex;
