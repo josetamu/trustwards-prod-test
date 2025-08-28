@@ -313,7 +313,7 @@ html[data-theme="dark"] {
   --builder-background: #202020;
   --builder-text-color: #F5F5F5;
   --panels-background: #191919;
-  --canvas-background: #191919;
+  --canvas-background: #FFFFFF;
   --tooltip-background: #2B2B2B;
 
   --border-light-color: #2A2A2A;

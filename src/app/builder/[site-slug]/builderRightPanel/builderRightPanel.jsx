@@ -245,6 +245,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             }
         ]
     }
+    
     const textControls = {
         header: [
             { name: 'Tag', type: 'select', value: 'h3', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span']},
@@ -321,10 +322,6 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
         ]
     }
 
-    
-
-    console.log(JSONtree);
-    console.log(JSONtree.roots);
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>
             <div className="tw-builder__right-header">
@@ -333,7 +330,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             </div>
             <div className="tw-builder__right-body">
                 {/* If no element is selected, show the no selected item */}
-                {(!selectedId || selectedId === activeRoot) && <NoSelectedItem/>}
+                {!selectedId && <NoSelectedItem/>}
                 {/* Check the type element and show the correct controls */}
                 {selectedClassName === 'tw-text' && <ControlComponent control={textControls} selectedId={selectedId}/>}
                 {selectedClassName === 'tw-divider' && <ControlComponent control={dividerControls} selectedId={selectedId}/>}

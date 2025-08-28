@@ -1,7 +1,7 @@
 import './builderLeftPanel.css'
 import { useState, useEffect } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useCanvas } from "@contexts/CanvasContext";
 
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
@@ -10,7 +10,6 @@ import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
 const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
 
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu, setIsManualThemesOpen }) {
-    const router = useRouter()
     const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, setJSONtree } = useCanvas();
     
     // State management for dropdown visibility
@@ -56,7 +55,6 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 
     // Dropdown navigation handlers
     const handleGoToHome = () => {
-        router.push('/dashboard')
         setIsDropdownOpen(false)
     }
 
@@ -208,7 +206,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setSelectedId(item.id)
         
         // Call the context menu handler from builder with current selected item
-        CallContextMenu(e, item)
+        if(item.id !== "tw-root--banner" && item.id !== "tw-root--modal") {
+            CallContextMenu(e, item)
+        }
     }
 
 
@@ -520,9 +520,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
-                <span>Go to Home</span>
-            </button>
+            <Link href="/dashboard" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
+                <span>Back to Dashboard</span>
+            </Link>
             <div className="dropdown__divider"></div>
             <button className="dropdown__item tw-builder__dropdown-item" onClick={handleSiteSettings}>
                 <span>Site settings</span>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useReducer, useContext, useEffect, useCallback } from "react";
+import React, { createContext, useReducer, useContext, useEffect, useState, useCallback } from "react";
 import { JSfunctions } from '@contexts/JSfunctionsContext'; //Used by runElementScript() eval
 
 const CanvasContext = createContext(null);
@@ -300,11 +300,14 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 
             if (node.id === currentSelectedId) {
                 const newNode = { ...properties, id: generateUniqueId(JSONtree) }; //Creates a new node with the properties given and a unique id
+                addDefaultCSSProperties(newNode); //Add default CSS properties to the new node
 
                 // Assign unique IDs to all children recursively
                 const assignIdsRecursively = (children) => {
                     return children.map(child => {
                         const newChild = { ...child, id: generateUniqueId(JSONtree) };
+                        addDefaultCSSProperties(newChild); //Add default CSS properties to the new child
+
                         if (newChild.children) {
                             newChild.children = assignIdsRecursively(newChild.children);
                         }
@@ -330,8 +333,24 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
         };
 
+        const idsCSSDataToMerge = [];
+        const addDefaultCSSProperties = (node) => {
+            if(node.defaultCSS) {
+                idsCSSDataToMerge.push({ id: node.id, properties: node.defaultCSS }); //Add default width and height auto to img
+            }
+        }
+
+
+
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addElement
         add(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1], null); //Add the element in the current JSONtree, in the activeRoot
+
+        //Update the idsCSSData with the default CSS on idsCSSDataToMerge (the stylesheet func listens idsCSSData)
+        //update the updated JSONtree with the new idsCSSData
+        const finalIdsCSSData = [...idsCSSData, ...idsCSSDataToMerge];
+        setIdsCSSData(finalIdsCSSData);
+        updated.idsCSSData = finalIdsCSSData;
+
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };    
 
@@ -346,12 +365,17 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             node.children.forEach(remove);
         };
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the remove
-        if (updated.id == 'tw-root--banner' || updated.id == 'tw-root--modal') {
-            setJSONtree(null); //If the element to remove is the root, set the JSONtree to null
-        } else {
-            remove(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the element in the current JSONtree
-            setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
-        }
+        remove(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the element in the current JSONtree
+
+        //Update the idsCSSData by removing the id of the removed element (the stylesheet func listens idsCSSData)
+        //update the updated JSONtree with the new idsCSSData
+        const finalIdsCSSData = idsCSSData.filter((item) => item.id !== id);
+        setIdsCSSData(finalIdsCSSData);
+        updated.idsCSSData = finalIdsCSSData;
+
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+
+        setSelectedId(null);
     };
 
     /*
@@ -370,7 +394,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
         };
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addClass
-        updateClass(updated); //Add the class to the element in the current JSONtree
+        updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Add the class to the element in the current JSONtree
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
 
@@ -390,7 +414,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
         };
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeClass
-        updateClass(updated); //Remove the class from the element in the current JSONtree
+        updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the class from the element in the current JSONtree
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
 
@@ -449,466 +473,308 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * Elements creation
     */
     const createElement = (type, containerId, insertIndex) => {
-        switch(type) {
-            case 'block': //Block
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
+        // Element configurations
+        const elementConfigs = {
+            'block': {
+                elementType: "block",
+                icon: "block",
+                tagName: "div",
+                label: "Block",
+                children: [],
+                classList: ["tw-block"],
+                nestable: true,
+            },
+            'image': {
+                elementType: "image",
+                icon: "image",
+                tagName: "img",
+                label: "Image",
+                src: '/assets/builder-default-image.svg',
+                defaultCSS: {
+                    'width': 'auto',
+                    'height': 'auto',
+                    'display': 'block'
+                },
+                classList: ["tw-image"]
+            },
+            'divider': {
+                elementType: "divider",
+                icon: "divider",
+                tagName: "div",
+                label: "Divider",
+                classList: ["tw-divider"],
+                defaultCSS: { 'width': '100%', 'height': '2px', 'background-color': '#E6E6E6' }
+            },
+            'text': {
+                elementType: "text",
+                icon: "text",
+                tagName: "h3",
+                label: "Text",
+                text: "New Text 2",
+                classList: ["tw-text"],
+                defaultCSS: { 'color': '#000000', 'width': 'fit-content', 'min-width': 'fit-content' },
+            },
+            'accept-all': {
+                elementType: "button",
+                icon: "button",
+                tagName: "div",
+                label: "Accept all",
+                text: "Accept all",
+                classList: ["tw-accept-all"],
+                defaultCSS: { 
+                    'font-size': '14px',
+                    'color': '#fff',
+                    'text-align': 'center',
+                    'font-weight': '600',
+                    'letter-spacing': '-0.02em',
+                    'border-radius': '8px',
+                    'background': '#19D85C',
+                    'width': 'fit-content',
+                    'padding': '6px 12px'
+                }
+            },
+            'reject-all': {
+                elementType: "button",
+                icon: "button",
+                tagName: "div",
+                label: "Reject all",
+                text: "Reject all",
+                classList: ["tw-reject-all"],
+                defaultCSS: { 
+                    'font-size': '14px',
+                    'color': '#fff',
+                    'text-align': 'center',
+                    'font-weight': '600',
+                    'letter-spacing': '-0.02em',
+                    'border-radius': '8px',
+                    'background': '#FA243B',
+                    'width': 'fit-content',
+                    'padding': '6px 12px'
+                }
+            },
+            'open-modal': {
+                elementType: "button",
+                icon: "button",
+                tagName: "div",
+                label: "Open Modal",
+                text: "Settings",
+                classList: ["tw-open-modal"],
+                defaultCSS: { 
+                    'font-size': '14px',
+                    'color': '#fff',
+                    'text-align': 'center',
+                    'font-weight': '600',
+                    'letter-spacing': '-0.02em',
+                    'border-radius': '8px',
+                    'background': '#111111',
+                    'width': 'fit-content',
+                    'padding': '6px 12px'
+                }
+            },
+            'enable-categories': {
+                elementType: "button",
+                icon: "button",
+                tagName: "div",
+                label: "Enable Categories",
+                text: "Enable all",
+                classList: ["tw-enable-categories"],
+                defaultCSS: { 
+                    'font-size': '14px',
+                    'color': '#fff',
+                    'text-align': 'center',
+                    'font-weight': '600',
+                    'letter-spacing': '-0.02em',
+                    'border-radius': '8px',
+                    'background': '#111111',
+                    'width': 'fit-content',
+                    'padding': '6px 12px'
+                }
+            },
+            'disable-categories': {
+                elementType: "button",
+                icon: "button",
+                tagName: "div",
+                label: "Disable Categories",
+                text: "Disable all",
+                classList: ["tw-disable-categories"],
+                defaultCSS: { 
+                    'font-size': '14px',
+                    'color': '#fff',
+                    'text-align': 'center',
+                    'font-weight': '600',
+                    'letter-spacing': '-0.02em',
+                    'border-radius': '8px',
+                    'background': '#111111',
+                    'width': 'fit-content',
+                    'padding': '6px 12px'
+                }
+            },
+            'save-categories': {
+                elementType: "button",
+                icon: "button",
+                tagName: "div",
+                label: "Save Categories",
+                text: "Save",
+                classList: ["tw-save-categories"],
+                defaultCSS: { 
+                    'font-size': '14px',
+                    'color': '#fff',
+                    'text-align': 'center',
+                    'font-weight': '600',
+                    'letter-spacing': '-0.02em',
+                    'border-radius': '8px',
+                    'background': '#0099FE',
+                    'width': 'fit-content',
+                    'padding': '6px 12px'
+                }
+            },
+            'categories': {
+                elementType: "categories",
+                icon: "categories",
+                tagName: "div",
+                label: "Categories",
+                classList: ["tw-block", "tw-categories"],
+                script: 'categoriesElementsFunction()',
+                attributes: {
+                    'data-duration': '0.6s',
+                },
+                defaultCSS: {
+                    "--expanded-icon-rotate": "45deg",
+                    "--expanded-icon-duration": "0.2s"
+                },
+                children: [
+                    {
                         elementType: "block",
                         icon: "block",
-                        tagName: "div",
-                        label: "Block",
-                        children: [],
-                        classList: ["tw-block"],
-                        nestable: true,
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "block",
-                        icon: "block",
-                        tagName: "div",
-                        label: "Block",
-                        children: [],
-                        classList: ["tw-block"],
-                        nestable: true,
-                    });
-                }
-            break;
-            case 'image': //Image
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "image",
-                        icon: "image",
-                        tagName: "img",
-                        label: "Image",
-                        src: '/assets/builder-default-image.svg',
-                        classList: ["tw-image"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "image",
-                        icon: "image",
-                        tagName: "img",
-                        label: "Image",
-                        src: '/assets/builder-default-image.svg',
-                        classList: ["tw-image"]
-                    });
-                }
-            break;
-            case 'divider': //Divider
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "divider",
-                        icon: "divider",
-                        tagName: "div",
-                        label: "Divider",
-                        classList: ["tw-divider"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "divider",
-                        icon: "divider",
-                        tagName: "div",
-                        label: "Divider",
-                        classList: ["tw-divider"]
-                    });
-                }
-            break;
-            case 'text': //Text
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "text",
-                        icon: "text",
-                        tagName: "h3",
-                        label: "Text",
-                        text: "New Text",
-                        classList: ["tw-text"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "text",
-                        icon: "text",
-                        tagName: "h3",
-                        label: "Text",
-                        text: "New Text",
-                        classList: ["tw-text"]
-                    });
-                }
-            break;
-            case 'accept-all': //Accept all
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Accept all",
-                        text: "Accept all",
-                        classList: ["tw-accept-all"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Accept all",
-                        text: "Accept all",
-                        classList: ["tw-accept-all"]
-                    });
-                }
-            break;
-            case 'reject-all': //Reject all
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Reject all",
-                        text: "Reject all",
-                        classList: ["tw-reject-all"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Reject all",
-                        text: "Reject all",
-                        classList: ["tw-reject-all"]
-                    });
-                }
-            break;
-            case 'open-modal': //Open modal
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Open Modal",
-                        text: "Settings",
-                        classList: ["tw-open-modal"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Open Modal",
-                        text: "Settings",
-                        classList: ["tw-open-modal"]
-                    });
-                }
-            break;
-            case 'enable-categories': //Enable categories
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Enable Categories",
-                        text: "Enable all",
-                        classList: ["tw-enable-categories"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Enable Categories",
-                        text: "Enable all",
-                        classList: ["tw-enable-categories"]
-                    });
-                }
-            break;
-            case 'disable-categories': //Disable categories
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Disable Categories",
-                        text: "Disable all",
-                        classList: ["tw-disable-categories"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Disable Categories",
-                        text: "Disable all",
-                        classList: ["tw-disable-categories"]
-                    });
-                }
-            break;
-            case 'save-categories': //Save categories
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Save Categories",
-                        text: "Save",
-                        classList: ["tw-save-categories"]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        elementType: "button",
-                        icon: "button",
-                        tagName: "div",
-                        label: "Save Categories",
-                        text: "Save",
-                        classList: ["tw-save-categories"]
-                    });
-                }
-            break;
-            case 'categories': //Categories (block type)
-                if(containerId && insertIndex) { //Added from drag&drop
-                    addElement({
-                        elementType: "categories",
-                        icon: "categories",
-                        tagName: "div",
-                        label: "Categories",
-                        classList: ["tw-block", "tw-categories"],
+                        tagName: "div", //Expander
+                        label: "Expander",
+                        classList: ["tw-block", "tw-categories__expander"],
                         script: 'categoriesElementsFunction()',
-                        attributes: {
-                            'data-duration': '0.6s',
+                        defaultCSS: {
+                            'display': 'flex',
+                            'flex-direction': 'column',
+                            'cursor': 'pointer'
                         },
                         children: [
                             {
                                 elementType: "block",
                                 icon: "block",
-                                tagName: "div", //Expander
-                                label: "Expander",
-                                classList: ["tw-block", "tw-categories__expander"],
+                                tagName: "div", //Expander Header
+                                label: "Header",
+                                classList: ["tw-block", "tw-categories__expander-header"],
+                                defaultCSS: {
+                                    'display': 'flex',
+                                    'justify-content': 'space-between',
+                                    'align-items': 'center'
+                                },
                                 children: [
                                     {
                                         elementType: "block",
                                         icon: "block",
-                                        tagName: "div", //Expander Header
-                                        label: "Header",
-                                        classList: ["tw-block", "tw-categories__expander-header"],
+                                        tagName: "div", //Expander Header Label
+                                        label: "Label",
+                                        classList: ["tw-block", "tw-categories__expander-header-title"],
+                                        defaultCSS: {
+                                            'display': 'flex',
+                                            'align-items': 'center',
+                                            'gap': '10px'
+                                        },
                                         children: [
                                             {
-                                                elementType: "block",
+                                                elementType: "icon",
                                                 icon: "block",
-                                                tagName: "div", //Expander Header Label
-                                                label: "Label",
-                                                classList: ["tw-block", "tw-categories__expander-header-title"],
-                                                children: [
-                                                    {
-                                                        elementType: "block",
-                                                        icon: "block",
-                                                        tagName: "div", //Expander Header Label Icon
-                                                        label: "Icon",
-                                                        children: [
-                                                            {
-                                                                tagName: "svg",
-                                                                attributes: {
-                                                                    xmlns: "http://www.w3.org/2000/svg",
-                                                                    viewBox: "0 0 24 24",
-                                                                    color: "currentColor",
-                                                                    fill: "none"
-                                                                },
-                                                                classList: [],
-                                                                draggable: false,
-                                                                children: [
-                                                                    {
-                                                                        tagName: "path",
-                                                                        attributes: {
-                                                                            fillRule: "evenodd",
-                                                                            clipRule: "evenodd",
-                                                                            d: "M12 2.75C12.6904 2.75 13.25 3.30964 13.25 4V10.75H20C20.6904 10.75 21.25 11.3096 21.25 12C21.25 12.6904 20.6904 13.25 20 13.25H13.25V20C13.25 20.6904 12.6904 21.25 12 21.25C11.3096 21.25 10.75 20.6904 10.75 20V13.25H4C3.30964 13.25 2.75 12.6904 2.75 12C2.75 11.3096 3.30964 10.75 4 10.75H10.75V4C10.75 3.30964 11.3096 2.75 12 2.75Z",
-                                                                            fill: "currentColor"
-                                                                        },
-                                                                        classList: [],
-                                                                        draggable: false,
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        classList: ["tw-categories__expander-icon"],
-                                                    },
-                                                    {
-                                                        elementType: "text",
-                                                        icon: "text",
-                                                        tagName: "span", //Expander Header Label Title
-                                                        label: "Text",
-                                                        classList: ["tw-text"],
-                                                        text: "Category",
-                                                    },
-                                                ],
+                                                tagName: "div", //Expander Header Label Icon
+                                                label: "Icon",
+                                                classList: ["tw-categories__expander-icon"],
+                                                defaultCSS: {
+                                                    'width': "14px",
+                                                    'height': "14px",
+                                                    'color': "#000",
+                                                    'display': "flex",
+                                                    'align-items': "center",
+                                                    'justify-content': "center"
+                                                }
                                             },
                                             {
-                                                elementType: "block",
-                                                icon: "block",
-                                                tagName: "div", //Expander Switch
-                                                label: "Switch",
-                                                children: [
-                                                    {
-                                                        tagName: "input",
-                                                        attributes: {
-                                                            type: "checkbox",
-                                                            name: "category",
-                                                        },
-                                                        classList: ["tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
-                                                        draggable: false,
-                                                    },
-                                                    {
-                                                        tagName: "span",
-                                                        classList: ["tw-categories__expander-toggle-icon"],
-                                                        draggable: false,
-                                                    }
-                                                ],
-                                                classList: ["tw-categories__expander-toggle", "tw-categories__expander-toggle--category"],
+                                                elementType: "text",
+                                                icon: "text",
+                                                tagName: "span", //Expander Header Label Title
+                                                label: "Text",
+                                                classList: ["tw-text"],
+                                                text: "Category",
+                                                defaultCSS: { 'color': '#000000', 'width': 'fit-content', 'min-width': 'fit-content' }
                                             },
                                         ],
                                     },
                                     {
-                                        elementType: "block",
+                                        elementType: "checkbox",
                                         icon: "block",
-                                        tagName: "div", //Expander content
-                                        label: "Block",
-                                        classList: ["tw-block", "tw-categories__expander-content"],
-                                        children: [
-                                            {
-                                                elementType: "text",
-                                                icon: "text",
-                                                tagName: "p", //Expander Content Paragraph
-                                                label: "Text",
-                                                classList: ["tw-text"],
-                                                text: "Here goes a great description of the category.",
-                                            },
-                                            
-                                        ],
+                                        tagName: "div", //Expander Switch
+                                        label: "Checkbox",
+                                        classList: ["tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
+                                        defaultCSS: {
+                                            'position': "relative",
+                                            'width': "26px",
+                                            'height': "16px",
+                                            'background-color': "#555",
+                                            'border-radius': "100px",
+                                            'cursor': "pointer",
+                                            'display': "flex",
+                                            'align-items': "center",
+                                            'transition': "background 0.2s",
+                                            "--checked-color": "#0099FE",
+                                            "--checked-left": "12px",
+                                            "--switch-spacing": "2px",
+                                            "--switch-size": "12px",
+                                            "--switch-background": "#FFFFFF",
+                                            "--switch-radius": "100px",
+                                            "--switch-shadow": "0 4px 4px #00000020",
+                                            "--switch-duration": "0.2s"
+                                        }
                                     },
                                 ],
                             },
-                        ]
-                    }, containerId, insertIndex);
-                } else { //Added from toolbar
-                    addElement({
-                        type: "categories",
-                        icon: "categories",
-                        tagName: "div",
-                        label: "Categories",
-                        classList: ["tw-block", "tw-categories"],
-                        script: 'categoriesElementsFunction()',
-                        attributes: {
-                            'data-duration': '0.6s',
-                        },
-                        children: [
                             {
                                 elementType: "block",
                                 icon: "block",
-                                tagName: "div", //Expander
-                                label: "Expander",
-                                classList: ["tw-block", "tw-categories__expander"],
+                                tagName: "div", //Expander content
+                                label: "Block",
+                                classList: ["tw-block", "tw-categories__expander-content"],
+                                defaultCSS: {
+                                    'height': "0",
+                                    'overflow': "hidden",
+                                    'transition': "height 0.2s"
+                                },
                                 children: [
                                     {
-                                        elementType: "block",
-                                        icon: "block",
-                                        tagName: "div", //Expander Header
-                                        label: "Header",
-                                        classList: ["tw-block", "tw-categories__expander-header"],
-                                        children: [
-                                            {
-                                                elementType: "block",
-                                                icon: "block",
-                                                tagName: "div", //Expander Header Label
-                                                label: "Label",
-                                                classList: ["tw-block", "tw-categories__expander-header-title"],
-                                                children: [
-                                                    {
-                                                        elementType: "block",
-                                                        icon: "block",
-                                                        tagName: "div", //Expander Header Label Icon
-                                                        label: "Icon",
-                                                        children: [
-                                                            {
-                                                                tagName: "svg",
-                                                                attributes: {
-                                                                    xmlns: "http://www.w3.org/2000/svg",
-                                                                    viewBox: "0 0 24 24",
-                                                                    color: "currentColor",
-                                                                    fill: "none"
-                                                                },
-                                                                classList: [],
-                                                                draggable: false, //cant be displayed, selectable or draggable
-                                                                children: [
-                                                                    {
-                                                                        tagName: "path",
-                                                                        attributes: {
-                                                                            fillRule: "evenodd",
-                                                                            clipRule: "evenodd",
-                                                                            d: "M12 2.75C12.6904 2.75 13.25 3.30964 13.25 4V10.75H20C20.6904 10.75 21.25 11.3096 21.25 12C21.25 12.6904 20.6904 13.25 20 13.25H13.25V20C13.25 20.6904 12.6904 21.25 12 21.25C11.3096 21.25 10.75 20.6904 10.75 20V13.25H4C3.30964 13.25 2.75 12.6904 2.75 12C2.75 11.3096 3.30964 10.75 4 10.75H10.75V4C10.75 3.30964 11.3096 2.75 12 2.75Z",
-                                                                            fill: "currentColor"
-                                                                        },
-                                                                        classList: [],
-                                                                        draggable: false, //cant be displayed, selectable or draggable
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        classList: ["tw-categories__expander-icon"],
-                                                    },
-                                                    {
-                                                        elementType: "text",
-                                                        icon: "text",
-                                                        tagName: "span", //Expander Header Label Title
-                                                        label: "Text",
-                                                        classList: ["tw-text"],
-                                                        text: "Category",
-                                                    },
-                                                ],
-                                            },
-                                            {
-                                                elementType: "switch",
-                                                icon: "switch",
-                                                tagName: "div", //Expander Switch
-                                                label: "Switch",
-                                                children: [
-                                                    {
-                                                        tagName: "input",
-                                                        attributes: {
-                                                            type: "checkbox",
-                                                            name: "category",
-                                                        },
-                                                        classList: ["tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
-                                                        draggable: false, //cant be displayed, selectable or draggable
-                                                    },
-                                                    {
-                                                        tagName: "span",
-                                                        classList: ["tw-categories__expander-toggle-icon"],
-                                                        draggable: false, //cant be displayed, selectable or draggable
-                                                    }
-                                                ],
-                                                classList: ["tw-categories__expander-toggle", "tw-categories__expander-toggle--category"],
-                                            },
-                                        ],
+                                        elementType: "text",
+                                        icon: "text",
+                                        tagName: "p", //Expander Content Paragraph
+                                        label: "Text",
+                                        classList: ["tw-text"],
+                                        text: "Here goes a great description of the category.",
+                                        defaultCSS: { 'color': '#000000' }
                                     },
-                                    {
-                                        elementType: "block",
-                                        icon: "block",
-                                        tagName: "div", //Expander content
-                                        label: "Block",
-                                        classList: ["tw-block", "tw-categories__expander-content"],
-                                        children: [
-                                            {
-                                                elementType: "text",
-                                                icon: "text",
-                                                tagName: "p", //Expander Content Paragraph
-                                                label: "Text",
-                                                classList: ["tw-text"],
-                                                text: "Here goes a great description of the category.",
-                                            },
-                                            
-                                        ],
-                                    },
+                                    
                                 ],
                             },
-                        ]
-                    });
-                }
-            break;
+                        ],
+                    },
+                ]
+            }
+        };
+
+        // Get element configuration
+        const config = elementConfigs[type];
+        if (!config) return; // Invalid element type
+
+        // Add element with appropriate parameters
+        if (containerId && (insertIndex !== null && insertIndex !== undefined)) {
+            // Added from drag&drop
+            addElement(config, containerId, insertIndex);
+        } else {
+            // Added from toolbar
+            addElement(config);
         }
     }
 
