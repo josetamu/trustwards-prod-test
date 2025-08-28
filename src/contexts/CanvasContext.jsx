@@ -403,25 +403,36 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     };
 
     /*
-    * Add class to an element
+    * Add class to an element (and to classesCSSData if it doesn't exist)
     * id - The id of the element to add the class to
     * className - The class to add to the element
     */
     const addClass = (id, className) => {
-        const updateClass = (node) => {
+        const addClassToElement = (node) => {
             if (node.id === id) {
-                // Only add the class if it doesn't already exist
+                // Only add the class to the element if it doesn't have it already
                 if (!node.classList.includes(className)) {
                     node.classList.push(className);
                 }
                 return;
             }
             if (node.children) {
-                node.children.forEach(updateClass);
+                node.children.forEach(addClassToElement);
             }
         };
+
+
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addClass
-        updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Add the class to the element in the current JSONtree
+        addClassToElement(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Add the class to the element in the current JSONtree
+
+        // Check if the class exists in the updated classesCSSData, if not add it
+        if (!updated.classesCSSData.some(item => item.className === className)) {
+            updated.classesCSSData.push({
+                className: className,
+                properties: {}
+            });
+        }
+
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
 
@@ -442,6 +453,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         };
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeClass
         updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the class from the element in the current JSONtree
+
+        // Check if the class exists in the updated classesCSSData, if it does, remove it
+        if (updated.classesCSSData.some(item => item.className === className)) {
+            updated.classesCSSData = updated.classesCSSData.filter(item => item.className !== className);
+        }
+
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
 
