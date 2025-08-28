@@ -10,7 +10,7 @@ import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
 const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
 
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu, setIsManualThemesOpen }) {
-    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, setJSONtree } = useCanvas();
+    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, setJSONtree, createElement } = useCanvas();
     
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -23,6 +23,11 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const [draggedItem, setDraggedItem] = useState(null)
     const [dragOverItem, setDragOverItem] = useState(null)
     const [dragPosition, setDragPosition] = useState(null) // 'before', 'after', 'inside'
+    
+    // New state for toolbar element drag and drop
+    const [toolbarDragOverItem, setToolbarDragOverItem] = useState(null)
+    const [toolbarDragPosition, setToolbarDragPosition] = useState(null)
+    const [isToolbarDrag, setIsToolbarDrag] = useState(false)
 
 
 
@@ -110,6 +115,120 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         }
     }, [selectedId, selectedItem])
 
+    // Global drag detection for toolbar elements
+    useEffect(() => {
+        const handleGlobalDragStart = (e) => {
+            // Check if this is a toolbar element drag
+            if (e.dataTransfer.types.includes("elementType")) {
+                setIsToolbarDrag(true)
+                // Clear internal tree drag states when toolbar drag starts
+                setDraggedItem(null)
+                setDragOverItem(null)
+                setDragPosition(null)
+            }
+        }
+
+        const handleGlobalDragEnd = () => {
+            setIsToolbarDrag(false)
+        }
+
+        document.addEventListener('dragstart', handleGlobalDragStart)
+        document.addEventListener('dragend', handleGlobalDragEnd)
+
+        return () => {
+            document.removeEventListener('dragstart', handleGlobalDragStart)
+            document.removeEventListener('dragend', handleGlobalDragEnd)
+        }
+    }, [])
+
+    // New functions for toolbar element drag and drop
+    const handleToolbarDragOver = (e, item) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'copy'
+        
+        const rect = e.currentTarget.getBoundingClientRect()
+        const y = e.clientY - rect.top
+        const height = rect.height
+        
+        // Determine drop position
+        let position = 'inside'
+        if (y < height * 0.25) {
+            position = 'before'
+        } else if (y > height * 0.75) {
+            position = 'after'
+        }
+        
+        setToolbarDragOverItem(item)
+        setToolbarDragPosition(position)
+        setIsToolbarDrag(true)
+    }
+
+    const handleToolbarDragLeave = (e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            setToolbarDragOverItem(null)
+            setToolbarDragPosition(null)
+            setIsToolbarDrag(false)
+        }
+    }
+
+    const handleToolbarDrop = (e, targetItem) => {
+        e.preventDefault()
+        
+        const elementType = e.dataTransfer.getData("elementType")
+        if (!elementType) return
+
+        // Determine where to insert the element based on position
+        let containerId = null
+        let insertIndex = null
+
+        if (toolbarDragPosition === 'inside') {
+            // Check if the target item allows children
+            if (targetItem.children !== undefined) {
+                // Insert inside the target item
+                containerId = targetItem.id
+                insertIndex = null // Will be added at the end
+            } else {
+                // If target doesn't allow children, insert after it instead
+                const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+                const parentInfo = findParentById(currentTreeData, targetItem.id)
+                
+                if (parentInfo) {
+                    containerId = parentInfo.parent ? parentInfo.parent.id : activeRoot
+                    insertIndex = parentInfo.index + 1
+                } else {
+                    containerId = activeRoot
+                    insertIndex = null
+                }
+            }
+        } else {
+            // Insert before or after the target item
+            const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+            const parentInfo = findParentById(currentTreeData, targetItem.id)
+            
+            if (parentInfo) {
+                containerId = parentInfo.parent ? parentInfo.parent.id : activeRoot
+                // Calculate the correct insert index
+                if (toolbarDragPosition === 'before') {
+                    insertIndex = parentInfo.index
+                } else { // 'after'
+                    insertIndex = parentInfo.index + 1
+                }
+            } else {
+                // If no parent found, add to root
+                containerId = activeRoot
+                insertIndex = null
+            }
+        }
+
+        // Create the element using the existing createElement function
+        createElement(elementType, containerId, insertIndex)
+        
+        // Reset toolbar drag states
+        setToolbarDragOverItem(null)
+        setToolbarDragPosition(null)
+        setIsToolbarDrag(false)
+    }
+
     // Drag and drop handlers
     const handleDragStart = (e, item) => {
         setDraggedItem(item)
@@ -174,11 +293,29 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         const currentParent = findParentById(activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData, draggedItem.id)
         const targetParent = dragPosition === 'inside' ? targetItem : findParentById(activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData, targetItem.id)
         
+        // Prevent move if dropping on the same element
+        if (targetItem.id === draggedItem.id) {
+            setDraggedItem(null)
+            setDragOverItem(null)
+            setDragPosition(null)
+            return
+        }
+        
+        // Prevent move if dropping inside the same container (same parent)
+        if (dragPosition === 'inside' && currentParent && 
+            currentParent.parent === targetItem) {
+            // Same container, don't move
+            setDraggedItem(null)
+            setDragOverItem(null)
+            setDragPosition(null)
+            return
+        }
+        
         // Only prevent move if it's the same parent AND same position (before/after the same element)
         if (dragPosition !== 'inside' && currentParent && targetParent && 
-            currentParent.parent.id === targetParent.parent.id && 
-            targetItem.id === draggedItem.id) {
-            // Same parent and same element, don't move
+            currentParent.parent === targetParent.parent && 
+            currentParent.index === targetParent.index) {
+            // Same parent and same position, don't move
             setDraggedItem(null)
             setDragOverItem(null)
             setDragPosition(null)
@@ -280,6 +417,15 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         } else {
             setModalTreeData(newTreeData)
         }
+        
+        // Sync changes back to the canvas context
+        const newJSONtree = { ...JSONtree }
+        if (activeTab === 'tw-root--banner') {
+            newJSONtree.roots[0] = newTreeData[0]
+        } else {
+            newJSONtree.roots[1] = newTreeData[1]
+        }
+        setJSONtree(newJSONtree)
     }
 
     // Check if an item is a descendant of the dragged item
@@ -375,6 +521,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         const isParentSelected = parentId && selectedItem === parentId
         const isDragging = draggedItem && draggedItem.id === item.id
         const isDragOver = dragOverItem && dragOverItem.id === item.id
+        
+        // New toolbar drag over states
+        const isToolbarDragOver = toolbarDragOverItem && toolbarDragOverItem.id === item.id
 
         // Determine which classes to apply
         let headerClasses = ['tw-builder__tree-item-header']
@@ -405,6 +554,14 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             }
         }
 
+        // Add toolbar drag over classes
+        if (isToolbarDragOver) {
+            headerClasses.push('tw-builder__tree-item-header--toolbar-drag-over')
+            if (toolbarDragPosition === 'inside' && !item.children) {
+                headerClasses.push('tw-builder__tree-item-header--non-nestable')
+            }
+        }
+
         // Determine container classes
         let containerClasses = ['tw-builder__tree-item']
         if (isSelected && !isExpanded) {
@@ -430,7 +587,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 style={{ 
                     // After level 2, items maintain the same padding and use horizontal overflow
                     paddingLeft: `${Math.min(level, 1) * 16}px`, 
-                    position: 'relative'
+                    position: 'relative',
+                    '--drag-indent': `${Math.min(level, 1) * 16}px` // CSS variable for drag state
                 }}
             >
                 {/* Drop line before */}
@@ -438,19 +596,49 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     <div className="tw-builder__drop-line tw-builder__drop-line--before"></div>
                 )}
                 
+                {/* Toolbar drop line before */}
+                {isToolbarDragOver && toolbarDragPosition === 'before' && (
+                    <div className="tw-builder__drop-line tw-builder__drop-line--before tw-builder__drop-line--toolbar"></div>
+                )}
+                
                 {/* Tree item header */}
                 <div 
                     className={headerClasses.join(' ')}
                     style={{ position: 'relative', zIndex: 1 }}
                     onClick={() => handleItemClick(item.id)}
-                    draggable={true}
+                    draggable={!isToolbarDrag} // Disable internal drag when toolbar drag is active
                     onDragStart={(e) => handleDragStart(e, item)}
                     onDragEnd={handleDragEnd}
-                    onDragOver={(e) => handleDragOver(e, item)}
-                    onDragLeave={handleDragLeave}
-                    onDrop={(e) => handleDrop(e, item)}
+                    onDragOver={(e) => {
+                        if (isToolbarDrag) {
+                            // Handle toolbar drag
+                            handleToolbarDragOver(e, item)
+                        } else {
+                            // Handle internal tree drag
+                            handleDragOver(e, item)
+                        }
+                    }}
+                    onDragLeave={(e) => {
+                        if (isToolbarDrag) {
+                            // Handle toolbar drag
+                            handleToolbarDragLeave(e)
+                        } else {
+                            // Handle internal tree drag
+                            handleDragLeave(e)
+                        }
+                    }}
+                    onDrop={(e) => {
+                        // Check if this is a toolbar element drop
+                        const elementType = e.dataTransfer.getData("elementType")
+                        if (elementType) {
+                            handleToolbarDrop(e, item)
+                        } else {
+                            handleDrop(e, item)
+                        }
+                    }}
                     onContextMenu={(e) => handleContextMenu(e, item)}
                     data-position={isDragOver ? dragPosition : null}
+                    data-toolbar-position={isToolbarDragOver ? toolbarDragPosition : null}
                 >
                     {/* Expand/collapse button for items with children */}
                     {hasChildren && (
@@ -512,6 +700,11 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 {/* Drop line after */}
                 {isDragOver && dragPosition === 'after' && draggedItem && !isChildOfDraggedItem(item.id) && draggedItem.id !== item.id && (
                     <div className="tw-builder__drop-line tw-builder__drop-line--after"></div>
+                )}
+                
+                {/* Toolbar drop line after */}
+                {isToolbarDragOver && toolbarDragPosition === 'after' && (
+                    <div className="tw-builder__drop-line tw-builder__drop-line--after tw-builder__drop-line--toolbar"></div>
                 )}
             </div>
         )
@@ -613,7 +806,21 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 
                 {/* Tree view content that changes based on active tab */}
                 <div className="tw-builder__tree-content">
-                    <div className="tw-builder__tree-container">
+                    <div 
+                        className="tw-builder__tree-container"
+                        onDragOver={(e) => {
+                            // Detect toolbar drag at container level
+                            if (e.dataTransfer.types.includes("elementType")) {
+                                setIsToolbarDrag(true)
+                            }
+                        }}
+                        onDragLeave={(e) => {
+                            // Reset toolbar drag state when leaving container
+                            if (!e.currentTarget.contains(e.relatedTarget)) {
+                                setIsToolbarDrag(false)
+                            }
+                        }}
+                    >
                         {activeTab === 'tw-root--banner' && bannerTreeData.map((item, index) => renderTreeItem(item, 0, null, index === bannerTreeData.length - 1))}
                         {activeTab === 'tw-root--modal' && modalTreeData.map((item, index) => renderTreeItem(item, 0, null, index === modalTreeData.length - 1))}
                     </div>
