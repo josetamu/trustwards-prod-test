@@ -454,11 +454,6 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeClass
         updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the class from the element in the current JSONtree
 
-        // Check if the class exists in the updated classesCSSData, if it does, remove it
-        if (updated.classesCSSData.some(item => item.className === className)) {
-            updated.classesCSSData = updated.classesCSSData.filter(item => item.className !== className);
-        }
-
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
 
