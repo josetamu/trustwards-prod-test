@@ -8,6 +8,7 @@ export default function BuilderClasses({selectedId,showNotification}) {
     const [isOpen, setIsOpen] = useState(false);
     //search classes
     const [search, setSearch] = useState("");
+    const [activeClass, setActiveClass] = useState(null);
     const {classesCSSData, addClass,JSONtree,activeRoot,removeClass} = useCanvas();
     const poolRef = useRef(null);
     
@@ -61,6 +62,7 @@ const createNewClass = (newClass) => {
         return false; // Indicate class was not created
     }
     addClass(selectedId, newClass);
+    setActiveClass(newClass);
     return true; // Indicate class was created
 };
 
@@ -77,6 +79,7 @@ const handleKeyPress = (e) => {
 
 const eliminateClass = (className) => {
     removeClass(selectedId, className);
+    setActiveClass(null);
     showNotification("Class removed");
 }
 
@@ -97,12 +100,13 @@ const eliminateClass = (className) => {
         <div className="tw-builder__settings-classes">
             <span className="tw-builder__settings-id" onClick={() => {
                 setIsOpen(!isOpen);
-            }}>#{selectedId}</span>
+            }}> {activeClass ? `.${activeClass}` : `#${selectedId}`}</span>
             <div className="tw-builder__settings-classes-selected">
                 {filteredClasses.map((className, index) => (
                     <div className="tw-builder__settings-class" key={index}>
                         <span className="tw-builder__settings-class-name">.{className}</span>
                         <span className="tw-builder__settings-class-remove" onClick={(e) => {
+                            e.stopPropagation();
                             eliminateClass(className);
                         }}>x</span>
                     </div>
