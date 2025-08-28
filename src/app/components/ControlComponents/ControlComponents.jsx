@@ -1695,7 +1695,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     }
 }
 
-function ControlComponent({control, selectedId, showNotification}) {
+function ControlComponent({control, selectedId, showNotification, selectedLabel}) {
     const {JSONtree, activeRoot, idsCSSData, classesCSSData, addCSSProperty, addJSONProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
@@ -1833,6 +1833,7 @@ function ControlComponent({control, selectedId, showNotification}) {
     }
     return (
         <div className="tw-builder__settings">
+            <span className="tw-builder__settings-label">{selectedLabel}</span>
             <div className="tw-builder__settings-header">
                 <BuilderClasses selectedId={selectedId} showNotification={showNotification}/>
                 {control.header && control.header.map((item, index) => whatType(item, index))}

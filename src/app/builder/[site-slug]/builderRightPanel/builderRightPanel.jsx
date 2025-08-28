@@ -34,6 +34,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
     //const selectedElement = findElement(JSONtree, selectedId);
     // Get the class name to know the type of the selected element
     const selectedClassName = selectedElement?.classList[0];
+    const selectedLabel = selectedElement?.label;
 
     
 
@@ -333,11 +334,10 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 {/* If no element is selected, show the no selected item */}
                 {!selectedId && <NoSelectedItem/>}
                 {/* Check the type element and show the correct controls */}
-                {selectedClassName === 'tw-text' && <ControlComponent control={textControls} selectedId={selectedId} showNotification={showNotification}/>}
-                {selectedClassName === 'tw-divider' && <ControlComponent control={dividerControls} selectedId={selectedId} showNotification={showNotification}/>}
-{/*                 {selectedClassName === 'tw-builder__image' && <ImageControls selectedId={selectedId}/>} */}
-                {selectedClassName === 'tw-block' && <ControlComponent control={blockControls} selectedId={selectedId} showNotification={showNotification}/>}
-                {selectedClassName === 'tw-image' && <ControlComponent control={imageControls} selectedId={selectedId} showNotification={showNotification}/>}
+                {selectedClassName === 'tw-text' && <ControlComponent control={textControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel}/>}
+                {selectedClassName === 'tw-divider' && <ControlComponent control={dividerControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel}/>}
+                {selectedClassName === 'tw-block' && <ControlComponent control={blockControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel}/>}
+                {selectedClassName === 'tw-image' && <ControlComponent control={imageControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel}/>}
             </div>
         </div>
     )

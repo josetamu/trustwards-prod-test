@@ -8,7 +8,7 @@ export default function BuilderClasses({selectedId,showNotification}) {
     const [isOpen, setIsOpen] = useState(false);
     //search classes
     const [search, setSearch] = useState("");
-    const {classesCSSData, addClass,JSONtree,activeRoot} = useCanvas();
+    const {classesCSSData, addClass,JSONtree,activeRoot,removeClass} = useCanvas();
     const poolRef = useRef(null);
     
     const findElement = (node, targetId) => {
@@ -52,25 +52,33 @@ export default function BuilderClasses({selectedId,showNotification}) {
     }, [isOpen]);
 
 const createNewClass = (newClass) => {
-
-
+    // Check if the class already exists in the selected element's classList
+    if (
+        !selectedElement ||
+        !newClass ||
+        selectedElement.classList.includes(newClass)
+    ) {
+        return false; // Indicate class was not created
+    }
     addClass(selectedId, newClass);
-
-
-}
-
-
+    return true; // Indicate class was created
+};
 
 const handleKeyPress = (e) => {
     if (e.key === "Enter") {
-        createNewClass(search);
-        showNotification("Class created"); 
+        const created = createNewClass(search);
+        if (created) {
+            showNotification("Class created");
+        }
         setSearch("");
         setIsOpen(false);
     }
 }
 
-
+const eliminateClass = (className) => {
+    removeClass(selectedId, className);
+    showNotification("Class removed");
+}
 
 //filter All classes to see in the pool
     const AllClasses = classesCSSData
@@ -81,7 +89,6 @@ const handleKeyPress = (e) => {
     const filteredClasses = selectedElement ? 
         selectedElement.classList
             .slice(1)
-            .filter(className => className.includes(search))
         : [];
 
     
@@ -94,7 +101,10 @@ const handleKeyPress = (e) => {
             <div className="tw-builder__settings-classes-selected">
                 {filteredClasses.map((className, index) => (
                     <div className="tw-builder__settings-class" key={index}>
-                        <span className="tw-builder__settings-class-name">{className}</span>
+                        <span className="tw-builder__settings-class-name">.{className}</span>
+                        <span className="tw-builder__settings-class-remove" onClick={(e) => {
+                            eliminateClass(className);
+                        }}>x</span>
                     </div>
                 ))}
             </div>
