@@ -186,16 +186,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * value - the value of the property (if empty string "", the property will be removed)
     */
     const addCSSProperty = (type, selector, property, value) => {
-        console.log('addCSSProperty called with:', { type, selector, property, value });
-        console.log('canvas idsCSSData',idsCSSData);
         let updatedIdsCSSData = idsCSSData;
         let updatedClassesCSSData = classesCSSData;
-        console.log('updatedIdsCSSData',updatedIdsCSSData);
         switch(type) {
             case 'id': {
                 // Check if the selector already exists in idsCSSData
                 const existingIdIndex = idsCSSData.findIndex(item => item.id === selector);
-                console.log('Existing ID index:', existingIdIndex);
                 
                 if (existingIdIndex !== -1) {
                     // If value is empty string, remove the property
@@ -210,14 +206,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                         const updatedProperties = { ...idsCSSData[existingIdIndex].properties, [property]: value };
                         updatedIdsCSSData = [...idsCSSData];
                         updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
-                        console.log('Updated CSS data:', updatedIdsCSSData);
                         setIdsCSSData(updatedIdsCSSData);
                     }
                 } else {
                     // If it doesn't exist and value is not empty, add a new entry with the selector and property
                     if (value !== "") {
                         updatedIdsCSSData = [...idsCSSData, { id: selector, properties: { [property]: value } }];
-                        console.log('New CSS data:', updatedIdsCSSData);
                         setIdsCSSData(updatedIdsCSSData);
                     }
                 }
@@ -254,13 +248,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         
         // Use the updated data (not the potentially stale state)
         const updated = deepCopy(JSONtree); 
-        console.log('ANTES: ',updated);
         updated.idsCSSData = updatedIdsCSSData;
         updated.classesCSSData = updatedClassesCSSData;
-        console.log('Updated JSONtree:', updated);
         setJSONtree(updated);
-        console.log('despues: ',updated);
-        console.log('nuevo updatedIdsCSSData',updatedIdsCSSData);
     };
 
     /*
@@ -362,7 +352,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addElement
         add(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1], null); //Add the element in the current JSONtree, in the activeRoot
 
-        //Update the idsCSSData with the default CSS on idsCSSDataToMerge (the stylesheet func listens idsCSSData)
+        //Update the idsCSSData with the default CSS on idsCSSDataToMerge
         //update the updated JSONtree with the new idsCSSData
         const finalIdsCSSData = [...idsCSSData, ...idsCSSDataToMerge];
         setIdsCSSData(finalIdsCSSData);
@@ -378,15 +368,32 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const removeElement = (id) => {
         const remove = (node) => {
             if (!node.children) return;
-            node.children = node.children.filter((child) => child.id !== id);
-            node.children.forEach(remove);
+
+            node.children = node.children.filter((child) => {
+                if (child.id === id) {
+                    childIdsToRemove(child);
+                    return false;
+                }
+                return true;
+            });
         };
+
+        const idsDataToRemove = [];
+        const childIdsToRemove = (node) => {
+            idsDataToRemove.push(node.id); //push each node id and its children to the idsDataToRemove array
+            if (node.children && node.children.length > 0) {
+                node.children.forEach(childIdsToRemove);
+            }
+        }
+
+
+
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the remove
         remove(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the element in the current JSONtree
 
-        //Update the idsCSSData by removing the id of the removed element (the stylesheet func listens idsCSSData)
+        //Update the idsCSSData by removing the id of the removed element
         //update the updated JSONtree with the new idsCSSData
-        const finalIdsCSSData = idsCSSData.filter((item) => item.id !== id);
+        const finalIdsCSSData = idsCSSData.filter(item => !idsDataToRemove.includes(item.id));
         setIdsCSSData(finalIdsCSSData);
         updated.idsCSSData = finalIdsCSSData;
 
@@ -395,7 +402,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         setSelectedId(null);
     };
 
-/*
+    /*
     * Add class to an element
     * id - The id of the element to add the class to
     * className - The class to add to the element
