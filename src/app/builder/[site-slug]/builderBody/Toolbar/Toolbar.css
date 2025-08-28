@@ -135,6 +135,12 @@
 }
 
 /*Block element*/
+.tw-block{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 50px;
+}
 .tw-builder__toolbar-dropdown-item-icon--block::before{
     content: "";
     width: 16px;
