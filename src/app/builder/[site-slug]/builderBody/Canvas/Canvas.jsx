@@ -17,7 +17,7 @@ import { Icon } from '@builderElements/Icon/Icon';
 
 export const Canvas = () => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
-        idsCSSData, classesCSSData, addCSSProperty, runElementScript } = useCanvas();
+        runElementScript } = useCanvas();
 
     /*
     * Custom hook to track elements after they are created and run their scripts

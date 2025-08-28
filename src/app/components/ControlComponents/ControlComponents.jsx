@@ -1696,18 +1696,15 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 }
 
 function ControlComponent({control, selectedId, showNotification, selectedLabel}) {
-    const {JSONtree, activeRoot, idsCSSData, classesCSSData, addCSSProperty, addJSONProperty} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
 
-
-    /*
-    console.log('idsCSSData',idsCSSData);
-    console.log('JSONtree idsCSSData',JSONtree.idsCSSData);
-    console.log('JSONtree',JSONtree);
-    console.log('selectedElementData',selectedElementData);
-    */
+    //console.log('JSONtree idsCSSData',JSONtree.idsCSSData);
+    //console.log('JSONtree',JSONtree);
+    //console.log('selectedElementData',selectedElementData);
+    
 
 
     //spreads the properties of the selected element
