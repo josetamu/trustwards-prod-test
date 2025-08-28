@@ -1702,13 +1702,12 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
     const [selectedElementData, setSelectedElementData] = useState(null);
 
 
-
-    
+    /*
     console.log('idsCSSData',idsCSSData);
     console.log('JSONtree idsCSSData',JSONtree.idsCSSData);
     console.log('JSONtree',JSONtree);
     console.log('selectedElementData',selectedElementData);
-
+    */
 
 
     //spreads the properties of the selected element
