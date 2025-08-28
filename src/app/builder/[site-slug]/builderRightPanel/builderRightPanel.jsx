@@ -321,8 +321,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             }
         ]
     }
-    console.log(JSONtree);
-1
+
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>
             <div className="tw-builder__right-header">
@@ -333,11 +332,11 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 {/* If no element is selected, show the no selected item */}
                 {(!selectedId || selectedId === activeRoot) && <NoSelectedItem/>}
                 {/* Check the type element and show the correct controls */}
-                {selectedClassName === 'tw-text' && <ControlComponent control={textControls} selectedId={selectedId}/>}
-                {selectedClassName === 'tw-divider' && <ControlComponent control={dividerControls} selectedId={selectedId}/>}
+                {selectedClassName === 'tw-text' && <ControlComponent control={textControls} selectedId={selectedId} showNotification={showNotification}/>}
+                {selectedClassName === 'tw-divider' && <ControlComponent control={dividerControls} selectedId={selectedId} showNotification={showNotification}/>}
 {/*                 {selectedClassName === 'tw-builder__image' && <ImageControls selectedId={selectedId}/>} */}
-                {selectedClassName === 'tw-block' && <ControlComponent control={blockControls} selectedId={selectedId}/>}
-                {selectedClassName === 'tw-image' && <ControlComponent control={imageControls} selectedId={selectedId}/>}
+                {selectedClassName === 'tw-block' && <ControlComponent control={blockControls} selectedId={selectedId} showNotification={showNotification}/>}
+                {selectedClassName === 'tw-image' && <ControlComponent control={imageControls} selectedId={selectedId} showNotification={showNotification}/>}
             </div>
         </div>
     )

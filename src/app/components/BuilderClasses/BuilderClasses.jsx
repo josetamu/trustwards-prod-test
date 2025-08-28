@@ -3,34 +3,37 @@ import "./BuilderClasses.css";
 import { useCanvas } from "@contexts/CanvasContext";
 
 
-export default function BuilderClasses({selectedId}) {
-    const [isOpen, setIsOpen] = useState(false);
-    const {classesCSSData, JSONtree, activeRoot} = useCanvas();
-    const poolRef = useRef(null);
 
- // Function to find the element in the JSON tree
-        const findElement = (node, targetId) => {
-            if(!node) return null;
-            if (node.id === targetId) {
-                return node;
-            }
-            if (node.children) {
-                for (const child of node.children) {
-                    const found = findElement(child, targetId);
-                    if (found) return found;
-                }
-            }
-            return null;
-        };
+export default function BuilderClasses({selectedId,showNotification}) {
+    const [isOpen, setIsOpen] = useState(false);
+    //search classes
+    const [search, setSearch] = useState("");
+    const {classesCSSData, addClass,JSONtree,activeRoot} = useCanvas();
+    const poolRef = useRef(null);
     
-        // Get the selected element
-        let selectedElement = null;
-        if(JSONtree && JSONtree.roots && selectedId) {
-            const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
-            if(activeRootNode) {
-                selectedElement = findElement(activeRootNode, selectedId);
+    const findElement = (node, targetId) => {
+        if(!node) return null;
+        if (node.id === targetId) {
+            return node;
+        }
+        if (node.children) {
+            for (const child of node.children) {
+                const found = findElement(child, targetId);
+                if (found) return found;
             }
         }
+        return null;
+    };
+
+    // Get the selected element (se recalcula cada vez que cambie JSONtree o selectedId)
+    let selectedElement = null;
+    if(JSONtree && JSONtree.roots && selectedId) {
+        const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
+        if(activeRootNode) {
+            selectedElement = findElement(activeRootNode, selectedId);
+        }
+    }
+
  
     //close pool when clicking outside
     useEffect(() => {
@@ -48,21 +51,38 @@ export default function BuilderClasses({selectedId}) {
         };
     }, [isOpen]);
 
+const createNewClass = (newClass) => {
 
 
-    //search classes
-    const [search, setSearch] = useState("");
+    addClass(selectedId, newClass);
 
+
+}
+
+
+
+const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+        createNewClass(search);
+        showNotification("Class created"); 
+        setSearch("");
+        setIsOpen(false);
+    }
+}
+
+
+
+//filter All classes to see in the pool
     const AllClasses = classesCSSData
     .map(item => item.className)
     .filter(className => className.includes(search));
 
+    //filter element's classes, excluding the first element
     const filteredClasses = selectedElement ? 
-    selectedElement.classList.filter(className => 
-        className.includes(search) && 
-        classesCSSData.some(item => item.className === className)
-    )
-    : [];
+        selectedElement.classList
+            .slice(1)
+            .filter(className => className.includes(search))
+        : [];
 
     
 
@@ -81,22 +101,21 @@ export default function BuilderClasses({selectedId}) {
             {isOpen && (
                 <div className="tw-builder__settings-classes-pool" ref={poolRef}>
                     <div className="tw-builder__settings-classes-searcher">
-                        <input className="tw-builder__settings-classes-search" type="text" placeholder="Class name..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                        <input className="tw-builder__settings-classes-search" type="text" placeholder="Class name..." value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleKeyPress}/>
                     </div>
                    <div className="tw-builder__settings-classes-list">
                     {AllClasses.map((className, index) => (
-                        <div className="tw-builder__settings-classes-item" key={index}>
+                        <div className="tw-builder__settings-classes-item" key={index} onClick={() => {
+                            if(selectedId) {
+                                addClass(selectedId, className);
+                            }
+                        }}>
                             <span className="tw-builder__settings-classes-item-name">{className}</span>
                         </div>
                     ))}
                     <div className="tw-builder__settings-classes-item--empty">
                         <span className="tw-builder__settings-classes-item-name">Create a new CSS class</span>
                     </div>
-{/*                     {filteredClasses.length === 0 && (
-                        <div className="tw-builder__settings-classes-item--empty">
-                            <span className="tw-builder__settings-classes-item-name">Create a new CSS class</span>
-                        </div>
-                    )} */}
                     </div>
                 </div>
             )}

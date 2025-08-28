@@ -187,10 +187,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     */
     const addCSSProperty = (type, selector, property, value) => {
         console.log('addCSSProperty called with:', { type, selector, property, value });
-        
+        console.log('canvas idsCSSData',idsCSSData);
         let updatedIdsCSSData = idsCSSData;
         let updatedClassesCSSData = classesCSSData;
-        
+        console.log('updatedIdsCSSData',updatedIdsCSSData);
         switch(type) {
             case 'id': {
                 // Check if the selector already exists in idsCSSData
@@ -254,10 +254,13 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         
         // Use the updated data (not the potentially stale state)
         const updated = deepCopy(JSONtree); 
+        console.log('ANTES: ',updated);
         updated.idsCSSData = updatedIdsCSSData;
         updated.classesCSSData = updatedClassesCSSData;
         console.log('Updated JSONtree:', updated);
         setJSONtree(updated);
+        console.log('despues: ',updated);
+        console.log('nuevo updatedIdsCSSData',updatedIdsCSSData);
     };
 
     /*
@@ -368,46 +371,45 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         }
     };
 
-    /*
+/*
     * Add class to an element
     * id - The id of the element to add the class to
     * className - The class to add to the element
     */
-    const addClass = (id, className) => {
-        const updateClass = (node) => {
-            if (node.id === id) {
-                node.classList.push(className);
-                return;
-            }
-            if (node.children) {
-                node.children.forEach(updateClass);
-            }
-        };
-        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addClass
-        updateClass(updated); //Add the class to the element in the current JSONtree
-        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+const addClass = (id, className) => {
+    const updateClass = (node) => {
+        if (node.id === id) {
+            node.classList.push(className);
+            return;
+        }
+        if (node.children) {
+            node.children.forEach(updateClass);
+        }
     };
+    const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addClass
+    updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Add the class to the element in the current JSONtree
+    setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+};
 
-    /*
-    * Remove class from an element
-    * id - The id of the element to remove the class from
-    * className - The class to remove from the element
-    */
-    const removeClass = (id, className) => {
-        const updateClass = (node) => {
-            if (node.id === id) {
-                node.classList = node.classList.filter((cls) => cls !== className);
-                return;
-            }
-            if (node.children) {
-                node.children.forEach(updateClass);
-            }
-        };
-        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeClass
-        updateClass(updated); //Remove the class from the element in the current JSONtree
-        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+/*
+* Remove class from an element
+* id - The id of the element to remove the class from
+* className - The class to remove from the element
+*/
+const removeClass = (id, className) => {
+    const updateClass = (node) => {
+        if (node.id === id) {
+            node.classList = node.classList.filter((cls) => cls !== className);
+            return;
+        }
+        if (node.children) {
+            node.children.forEach(updateClass);
+        }
     };
-
+    const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeClass
+    updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the class from the element in the current JSONtree
+    setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+};
     /*
     * Move element (used by drag & drop)
     * elementId - The id of the element to move

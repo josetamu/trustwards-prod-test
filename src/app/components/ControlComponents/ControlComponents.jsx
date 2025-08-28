@@ -33,6 +33,12 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         return savedValue || value || '';
     });
 
+    useEffect(() => {
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+        const savedValue = savedJSONValue || savedCSSValue;
+        setTextValue(savedValue || value || '');
+    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
 
     const processValueForCSS = (inputValue) => {
@@ -344,18 +350,10 @@ useEffect(() => {
         }
     };
     const handleSuperSelectChange = (newValue) => {
-        console.log('SuperSelect cambio:', {
-            newValue,
-            JSONProperty,
-            applyGlobalJSONChange: !!applyGlobalJSONChange,
-            selectedId
-        });
         setSuperSelectValue(newValue);
         if(JSONProperty && applyGlobalJSONChange){
-            console.log('Aplicando cambio JSON:', JSONProperty, newValue);
             applyGlobalJSONChange(JSONProperty,newValue);
         }else if (cssProperty && applyGlobalCSSChange) {
-            console.log('Aplicando cambio CSS:', cssProperty, newValue);
             applyGlobalCSSChange(cssProperty, newValue);
         }
     };
@@ -1697,15 +1695,21 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     }
 }
 
-function ControlComponent({control, selectedId}) {
+function ControlComponent({control, selectedId, showNotification}) {
     const {JSONtree, activeRoot, idsCSSData, classesCSSData, addCSSProperty, addJSONProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
 
-    const selectedElementCSSData = idsCSSData.find(i => i.id === selectedId);
+
 
     
+    console.log('idsCSSData',idsCSSData);
+    console.log('JSONtree idsCSSData',JSONtree.idsCSSData);
+    console.log('JSONtree',JSONtree);
+    console.log('selectedElementData',selectedElementData);
+
+
 
     //spreads the properties of the selected element
     useEffect(() => {
@@ -1737,17 +1741,8 @@ function ControlComponent({control, selectedId}) {
             setSelectedElementData(null);
             return;
         }
-
-        console.log('Elemento encontrado para selectedElementData:', {
-            id: selectedElement.id,
-            tagName: selectedElement.tagName,
-            tag: selectedElement.tag,
-            href: selectedElement.href,
-
-        });
-
         //find the css data for the selected element
-        const elementCssData = selectedElementCSSData;
+        const elementCssData = JSONtree.idsCSSData?.find(item => item.id === selectedId);
 
         const elementData = {
             id: selectedElement.id,
@@ -1765,33 +1760,26 @@ function ControlComponent({control, selectedId}) {
             hasChildren: selectedElement.children && selectedElement.children.length > 0,
             className: selectedElement.classList?.[0] || null,
         }
-        console.log('selectedElementData actualizado:', elementData);
         setSelectedElementData(elementData);
 
 
-     }, [selectedId, JSONtree?.roots, activeRoot, selectedElementCSSData]);
+     }, [selectedId, JSONtree, activeRoot]);
 
      const applyGlobalCSSChange = useCallback((cssProperty, value) => {
         if(!selectedId || !cssProperty) return;
 
         addCSSProperty('id', selectedId, cssProperty, value);
 
-     }, [selectedId, addCSSProperty]);
+     }, [selectedId, addCSSProperty, JSONtree]);
 
      const getGlobalCSSValue = useCallback((cssProperty) => {
         if(!selectedId || !cssProperty) return null;
     
-        const elementData = idsCSSData.find(item => item.id === selectedId);
+        const elementData = JSONtree.idsCSSData.find(item => item.id === selectedId);
         return elementData?.properties?.[cssProperty] || null;
-     }, [idsCSSData, selectedId]);
+     }, [JSONtree, selectedId]);
 
      const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
-        console.log('appluGlobalJSONChange llamado:',{
-            selectedId,
-            JSONProperty,
-            value,
-            addJSONProperty: !!addJSONProperty
-        });
 
         if(!selectedId || !JSONProperty) return null;
 
@@ -1799,15 +1787,10 @@ function ControlComponent({control, selectedId}) {
      },[selectedId, addJSONProperty]);
 
      const getGlobalJSONValue = useCallback((JSONProperty)=>{
-        console.log('getGlobalJSONValue llamado', {
-            selectedId,
-            JSONProperty,
-            selectedElementData,
-            value: selectedElementData?.[JSONProperty]
-        })
         if(!selectedId || !JSONProperty) return null;
 
         return selectedElementData?.[JSONProperty] || null;
+    
      },[selectedElementData, selectedId]);
 
      const globalControlProps = {
@@ -1829,10 +1812,11 @@ function ControlComponent({control, selectedId}) {
             elementId: selectedId,
             ...globalControlProps,
         };
-
+                
+           
         switch(item.type) {
             case 'text':
-                return <TextType key={`${index}-${selectedId}`} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} autoUnit={item.autoUnit} />;
+                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} autoUnit={item.autoUnit} />;
             case 'select':
                 return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>;
             case 'super-select':
@@ -1850,7 +1834,7 @@ function ControlComponent({control, selectedId}) {
     return (
         <div className="tw-builder__settings">
             <div className="tw-builder__settings-header">
-                <BuilderClasses selectedId={selectedId} />
+                <BuilderClasses selectedId={selectedId} showNotification={showNotification}/>
                 {control.header && control.header.map((item, index) => whatType(item, index))}
             </div>
             <div className="tw-builder__settings-body">
