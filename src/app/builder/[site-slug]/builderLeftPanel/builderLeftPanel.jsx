@@ -2,6 +2,7 @@ import './builderLeftPanel.css'
 import { useState, useEffect } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCanvas } from "@contexts/CanvasContext";
 
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
