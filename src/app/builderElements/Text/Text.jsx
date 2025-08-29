@@ -2,12 +2,13 @@
 
 import './Text.css';
 
-export const Text = (node, nodeProps = {}) => {
+export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
     // nodeProps adds HTML id and classList
 
     const id = node.id;
     const Tag = node.tagName;
     const text = node.text;
+
 
     const dataAttributes = node.attributes;
     /*
@@ -18,34 +19,34 @@ export const Text = (node, nodeProps = {}) => {
 
     const groupControls =  {
             header: [
-                { name: 'Tag', type: 'select', value: 'h3', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span']},
-                { name: 'Link to', type: 'text', placeholder: 'URL...'},
+                { name: 'Tag', type: 'select', value: 'h3', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span'], JSONProperty: 'tagName'},
+                { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
             ],
             body: [
                 {
                     label: 'Layout',
                     controls: [
-                        { name: 'Direction', type: 'choose', category: 'direction'},
-                        { name: 'Justify', type: 'choose', category: 'justify'},
-                        { name: 'Align', type: 'choose', category: 'align'},
-                        { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap']},
-                        { name: 'Gap', type: 'text', placeholder: '0'},
+                        { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction'},
+                        { name: 'Justify', type: 'choose', category: 'justify', cssProperty: 'justify-content'},
+                        { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items'},
+                        { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap'], cssProperty: 'flex-wrap'},
+                        { name: 'Gap', type: 'text', placeholder: '0', cssProperty: 'gap', autoUnit: 'px'},
                     ]
                 },
                 {
                     label: 'Spacing',
                     controls: [
-                        { name: 'Padding', type: 'panel'},
-                        { name: 'Margin', type: 'panel'},
+                        { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
+                        { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
                     ]
                 },
                 {
                     label: 'Size',
                     controls: [
-                        { name: 'Width', type: 'text'},
-                        { name: 'Max. Width', type: 'text'},
-                        { name: 'Height', type: 'text'},
-                        { name: 'Max. Height', type: 'text'},
+                        { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+                        { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                        { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+                        { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
                     ]
                 },
                 {
@@ -57,36 +58,36 @@ export const Text = (node, nodeProps = {}) => {
                 {
                     label: 'Text',
                     controls: [
-                        { name: 'Font Size', type: 'text' },
-                        { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
-                        { name: 'Font Family', type: 'text' },
-                        { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-                        { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
-                        { name: 'Line Height', type: 'text' },
-                        { name: 'Letter Spacing', type: 'text' },
-                        { name: 'Text Decoration', type: 'choose', category: 'decoration'},
-                        { name: 'Text Align', type: 'choose', category: 'text-align'},
+                        { name: 'Font Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
+                        { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'], cssProperty: 'text-transform' },
+                        { name: 'Font Family', type: 'text', cssProperty: 'font-family' },
+                        { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
+                        { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'], cssProperty: 'font-style' },
+                        { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
+                        { name: 'Letter Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
+                        { name: 'Text Decoration', type: 'choose', category: 'decoration', cssProperty: 'text-decoration'},
+                        { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},
                         { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'color' },
                     ]
                 },
                 {
                     label: 'Styles',
                     controls: [
-                        { name: 'Border Width', type: 'panel'},
-                        { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+                        { name: 'Border Width', type: 'panel', cssProperty: 'border-width', autoUnit: 'px'},
+                        { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'], cssProperty: 'border-style' },
                         { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'border-color' },
-                        { name: 'Border Radius', type: 'panel'},
-                        { name: 'Box Shadow X', type: 'text' },
-                        { name: 'Box Shadow Y', type: 'text' },
-                        { name: 'Blur', type: 'text' },
-                        { name: 'Spread', type: 'text' },
+                        { name: 'Border Radius', type: 'panel', cssProperty: 'border-radius', autoUnit: 'px'},
+                        { name: 'Box Shadow X', type: 'text', cssProperty: 'box-shadow-x', autoUnit: 'px'},
+                        { name: 'Box Shadow Y', type: 'text', cssProperty: 'box-shadow-y', autoUnit: 'px'},
+                        { name: 'Blur', type: 'text', cssProperty: 'box-shadow-blur', autoUnit: 'px'},
+                        { name: 'Spread', type: 'text', cssProperty: 'box-shadow-spread', autoUnit: 'px'},
                         { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'box-shadow' },
-                        { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
-                        { name: 'Z-Index', type: 'text' },
-                        { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
-                        { name: 'Opacity', type: 'text', value: '1' },
-                        { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
-                        { name: 'Transform', type: 'text'},
+                        { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'], cssProperty: 'position' },
+                        { name: 'Z-Index', type: 'text', cssProperty: 'z-index' },
+                        { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                        { name: 'Opacity', type: 'text', value: '1', cssProperty: 'opacity' },
+                        { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                        { name: 'Transform', type: 'text', cssProperty: 'transform'},
                     ]
                 }
             ]
@@ -94,8 +95,28 @@ export const Text = (node, nodeProps = {}) => {
 
     const render = () => {
         return (
-            <Tag key={id} {...nodeProps} {...dataAttributes}>{text}</Tag>
-        )
+            <Tag
+              key={id}
+              {...nodeProps}
+              {...dataAttributes}
+              {...(Tag === 'a' && node.href ? { href: node.href } : {})}
+            >
+              {node.href && Tag !== 'a' && !anchorAncestor
+                ? (
+                    <a
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                      target="_blank"
+                      href={node.href}
+                      tabIndex={-1}
+                      onClick={e => e.preventDefault()}
+                      aria-disabled="true"
+                    >
+                      {text}
+                    </a>
+                  )
+                : text}
+            </Tag>
+          )
     }
 
     return {

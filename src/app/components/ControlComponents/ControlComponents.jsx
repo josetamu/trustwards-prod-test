@@ -114,12 +114,13 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     )
 }
 
-
-
-const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
+const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange}) => {
 
     // Initialize with saved value from global CSS system
     const [selectValue, setSelectValue] = useState(() => {
+        if(JSONProperty && getGlobalJSONValue) {
+            return getGlobalJSONValue(JSONProperty) || value || '';
+        } 
         return getGlobalCSSValue?.(cssProperty) || value || '';
     });
     
@@ -128,11 +129,14 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
 
     // Update when selected element changes
     useEffect(() => {
-        if (getGlobalCSSValue && cssProperty) {
+        if (JSONProperty && getGlobalJSONValue) {
+            const savedValue = getGlobalJSONValue(JSONProperty);
+            setSelectValue(savedValue || value || '');
+        } else if (getGlobalCSSValue && cssProperty) {
             const savedValue = getGlobalCSSValue(cssProperty);
             setSelectValue(savedValue || value || '');
         }
-    }, [getGlobalCSSValue, cssProperty, value]);
+    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
     useLayoutEffect(() => {
         if (!measureRef.current) return;    
@@ -149,13 +153,17 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    // Handle select change with global CSS application
+    // Handle select change with global CSS or JSON application
     const handleSelectChange = (e) => {
         const newValue = e.target.value;
         setSelectValue(newValue);
         
-        // Apply to global CSS system
-        if (cssProperty && applyGlobalCSSChange) {
+        // Apply to global JSON system if JSONProperty is provided
+        if (JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, newValue);
+        }
+        // Apply to global CSS system if cssProperty is provided
+        else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
         }
     };
@@ -407,7 +415,7 @@ useEffect(() => {
                     {superSelectValue || value}
                 </span>
                 <select className="tw-builder__settings-select" value={superSelectValue} onChange={(e) => handleSuperSelectChange(e.target.value)} style={{ width: selectWidth }}>
-                    {category === 'text' && (
+                    {category === 'block' && (
                         <>
                             <option className="tw-builder__settings-option" value="div">div</option>
                             <option className="tw-builder__settings-option" value="a">a</option>
@@ -426,6 +434,19 @@ useEffect(() => {
                             <option className="tw-builder__settings-option" value="inline-block">Inline Block</option>
                             <option className="tw-builder__settings-option" value="inline">Inline</option>
                             <option className="tw-builder__settings-option" value="none">None</option>
+                        </>
+                    )}
+                    {category === 'text' && (
+                        <>
+                            <option className="tw-builder__settings-option" value="h1">h1</option>
+                            <option className="tw-builder__settings-option" value="h2">h2</option>
+                            <option className="tw-builder__settings-option" value="h3">h3</option>
+                            <option className="tw-builder__settings-option" value="h4">h4</option>
+                            <option className="tw-builder__settings-option" value="h5">h5</option>
+                            <option className="tw-builder__settings-option" value="h6">h6</option>
+                            <option className="tw-builder__settings-option" value="p">p</option>
+                            <option className="tw-builder__settings-option" value="span">span</option>
+                            <option className="tw-builder__settings-option" value="a">a</option>
                         </>
                     )}
                 </select>
@@ -1017,6 +1038,14 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         return saved || '';
     });
 
+    useEffect(() => {
+        if(!getGlobalCSSValue || !cssProperty) return;
+        setTopValue(getGlobalCSSValue?.(`${cssProperty}-top`) || '');
+        setRightValue(getGlobalCSSValue?.(`${cssProperty}-right`) || '');
+        setBottomValue(getGlobalCSSValue?.(`${cssProperty}-bottom`) || '');
+        setLeftValue(getGlobalCSSValue?.(`${cssProperty}-left`) || '');
+    }, [selectedElementData, getGlobalCSSValue, cssProperty]);
+
         // Función para procesar valores con unidades (igual que en TextType)
         const processValueForCSS = (inputValue) => {
             if (!autoUnit || !inputValue) return inputValue;
@@ -1076,12 +1105,12 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
         <span className="tw-builder__settings-subtitle">{name}</span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange}/>
             <div className="tw-builder__settings-spacing-mid">
                 <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange}/>
                 <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange}/>
         </div>
     </div>
     )
@@ -1701,12 +1730,6 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
 
-
-    console.log('JSONtree',JSONtree);
-
-    
-
-
     //spreads the properties of the selected element
     useEffect(() => {
         if(!selectedId || !JSONtree || !JSONtree.roots) {
@@ -1798,7 +1821,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
         selectedId,
      };
 
-     
+     console.log(JSONtree)
     
 
     const whatType = (item, index) => {

@@ -509,6 +509,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 icon: "block",
                 tagName: "div",
                 label: "Block",
+                href: null,
                 children: [],
                 classList: ["tw-block"],
                 nestable: true,

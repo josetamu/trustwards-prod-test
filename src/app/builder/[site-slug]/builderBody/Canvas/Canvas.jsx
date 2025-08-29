@@ -52,11 +52,12 @@ export const Canvas = () => {
     * setSelectedId - When an element is clicked, set it as the selectedId
     * selectedId - Current element selected
     */
-    const renderNode = (node, selectedId) => {
+    const renderNode = (node, selectedId, hasAnchorAncestor = false) => {
         const isSelected = node.id === selectedId;
         const isRoot = node.id === 'tw-root--banner' || node.id === 'tw-root--modal';
         const isActiveRoot = node.id === activeRoot;
-
+        
+        const anchorAncestor = hasAnchorAncestor || node.tagName === 'a';
         // Set the node properties from its JSON (id, classes, tag, children, etc..)
         const nodeProps = {
             id: node.id, // Add the node.id as the real id
@@ -95,25 +96,24 @@ export const Canvas = () => {
                 },
             } : {})
         };
-    
+
         const children = node.children?.map((child) => //Renders the children of the node (JSON tree) in loop
-            renderNode(child, selectedId)
+            renderNode(child, selectedId, anchorAncestor)
         )
 
         // Track element for script execution once it is created
         trackElement(node);
-        
         switch (node.elementType) {
             case 'banner':
                 return Banner(node, nodeProps, children).render();
             case 'modal':
                 return Modal(node, nodeProps, children).render();
             case 'text':
-                return Text(node, nodeProps).render();
+                return Text(node, nodeProps, anchorAncestor).render();
             case 'button':
                 return Button(node, nodeProps).render();
             case 'block':
-                return Block(node, nodeProps, children).render();
+                return Block(node, nodeProps, children, anchorAncestor).render();
             case 'divider':
                 return Divider(node, nodeProps).render();
             case 'image':
