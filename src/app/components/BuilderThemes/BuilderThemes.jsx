@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 
 export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThemesOpen, setIsManualThemesOpen, showNotification, siteSlug}) {
-    const { setJSONtree, setIdsCSSData, setClassesCSSData } = useCanvas();
+    const { setJSONtree } = useCanvas();
     const [activeTheme, setActiveTheme] = useState(null);
 
     const blank = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": [], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": [], "tagName": "div", "children": [], "nestable": true}]};
@@ -23,69 +23,48 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
     /*
     * When clicking Save button, update the theme in real time, save it on the site DB, and declare first time as false to close the themes modal
     * Set JSONtree structure
-    * setIdsCSSData and setClassesCSSData have to be updated to create the theme stylesheet by Canvas.jsx createCSS function
     */
     const saveTheme = () => {
         if(activeTheme || !isFirstTime){
             switch(activeTheme){
                 case 'blank':
                     setJSONtree(blank);
-                    setIdsCSSData(blank.idsCSSData);
-                    setClassesCSSData(blank.classesCSSData);
                     save(blank);
                     break;
                 case 'trustwards-light':
                     setJSONtree(trustwardsLight);
-                    setIdsCSSData(trustwardsLight.idsCSSData);
-                    setClassesCSSData(trustwardsLight.classesCSSData);
                     save(trustwardsLight);
                     break;
                 case 'trustwards-dark':
                     setJSONtree(trustwardsDark);
-                    setIdsCSSData(trustwardsDark.idsCSSData);
-                    setClassesCSSData(trustwardsDark.classesCSSData);
                     save(trustwardsDark);
                     break;
                 case 'oregano':
                     setJSONtree(oregano);
-                    setIdsCSSData(oregano.idsCSSData);
-                    setClassesCSSData(oregano.classesCSSData);
                     save(oregano);
                     break;
                 case 'nebula':
                     setJSONtree(nebula);
-                    setIdsCSSData(nebula.idsCSSData);
-                    setClassesCSSData(nebula.classesCSSData);
                     save(nebula);
                     break;
                 case 'quiero':
                     setJSONtree(quiero);
-                    setIdsCSSData(quiero.idsCSSData);
-                    setClassesCSSData(quiero.classesCSSData);
                     save(quiero);
                     break;
                 case 'avocado':
                     setJSONtree(avocado);
-                    setIdsCSSData(avocado.idsCSSData);
-                    setClassesCSSData(avocado.classesCSSData);
                     save(avocado);
                     break;
                 case 'mito':
                     setJSONtree(mito);
-                    setIdsCSSData(mito.idsCSSData);
-                    setClassesCSSData(mito.classesCSSData);
                     save(mito);
                     break;
                 case 'grainient':
                     setJSONtree(grainient);
-                    setIdsCSSData(grainient.idsCSSData);
-                    setClassesCSSData(grainient.classesCSSData);
                     save(grainient);
                     break;
                 case 'brutal':
                     setJSONtree(brutal);
-                    setIdsCSSData(brutal.idsCSSData);
-                    setClassesCSSData(brutal.classesCSSData);
                     save(brutal);
                     break;
                 default:

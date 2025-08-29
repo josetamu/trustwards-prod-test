@@ -1,0 +1,7 @@
+/*Empty block (only for builder)*/
+.tw-builder__canvas .tw-block--empty{
+    outline: 1px solid #E6E6E6;
+    outline-offset: -1px;
+    min-height: 50px;
+    width: 100%;
+}

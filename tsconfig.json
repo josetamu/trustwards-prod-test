@@ -22,6 +22,7 @@
       "@app/*": ["src/app/*"],
       "@dashboard/*": ["src/app/dashboard/*"],
       "@components/*": ["src/app/components/*"],
+      "@builderElements/*": ["src/app/builderElements/*"],
       "@contexts/*": ["src/contexts/*"],
     },
     "plugins": [

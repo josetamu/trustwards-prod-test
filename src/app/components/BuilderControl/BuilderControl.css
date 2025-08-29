@@ -3,7 +3,10 @@
     flex-direction: column;
     gap: 10px;
     border-bottom: 1px solid var(--border-light-color);
-    padding-bottom: 10px;
+
+}
+.tw-builder__control:first-child .tw-builder__control-header{
+    padding-top: 10px;
 }
 
 .tw-builder__control-header{
@@ -12,6 +15,8 @@
     align-items: center;
     flex-direction: row;
     cursor: pointer;
+    padding-bottom: 10px;
+    
 }
 .tw-builder__control-label{
     font-size: var(--font-size-small);
@@ -32,4 +37,5 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding-bottom: 10px;
 }

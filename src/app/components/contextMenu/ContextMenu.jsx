@@ -13,7 +13,9 @@ export function ContextMenu({
     animationType = 'SCALE_TOP',
     targetItem = null,
     showNotification = null,
-    previousSelectedItem = null
+    previousSelectedItem = null,
+    clipboard = null,
+    setClipboard = null
 }) {
     const containerRef = useRef(null);
     const menuRef = useRef(null);
@@ -30,9 +32,6 @@ export function ContextMenu({
         deepCopy,
         setSelectedItem
     } = useCanvas();
-
-    // Clipboard state for copy/paste operations
-    const [clipboard, setClipboard] = useState(null);
 
     // Restore selected item when context menu closes
     useEffect(() => {
@@ -145,63 +144,35 @@ export function ContextMenu({
 
     // Paste a copied item inside the target item
     const handlePaste = () => {
-        if (!clipboard || !targetItem || !JSONtree || !setJSONtree) return;
+        if (!clipboard || !targetItem || !addElement) return;
         
-        // Create a deep copy of the clipboard item
+        // Create a deep copy of the clipboard item without the id (addElement will generate new IDs)
         const copiedItem = deepCopy(clipboard);
-        
-        // Generate new unique IDs for the copied item and all its descendants
-        const updateIdsRecursively = (node) => {
-            node.id = generateUniqueId(JSONtree);
-            if (node.children) {
-                node.children.forEach(updateIdsRecursively);
-            }
-        };
-        updateIdsRecursively(copiedItem);
-        
-        const updated = deepCopy(JSONtree);
-        const currentRoot = activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1];
+        delete copiedItem.id; // Remove the original ID so addElement can generate new ones
         
         // Use the children attribute from CanvasContext to determine if element can accept children
         if (targetItem.children) {
             // Target can accept children, paste inside it
-            const addToTarget = (node) => {
-                if (node.id === targetItem.id) {
-                    if (!node.children) node.children = [];
-                    node.children.push(copiedItem);
-                    return true;
-                }
-                if (node.children) {
-                    for (const child of node.children) {
-                        if (addToTarget(child)) return true;
-                    }
-                }
-                return false;
-            };
-            
-            if (addToTarget(currentRoot)) {
-                setJSONtree(updated);
-            }
+            addElement(copiedItem, targetItem.id);
         } else {
             // Target cannot accept children, paste at the same level
+            const currentRoot = activeRoot === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1];
             const parentInfo = findParentById([currentRoot], targetItem.id);
             
             if (parentInfo) {
                 // Insert the copied item after the target item at the same level
                 const insertIndex = parentInfo.index + 1;
-                parentInfo.parent.children.splice(insertIndex, 0, copiedItem);
-                setJSONtree(updated);
+                addElement(copiedItem, parentInfo.parent.id, insertIndex);
             } else {
                 // If target item is a root, add to the root level
-                currentRoot.children.push(copiedItem);
-                setJSONtree(updated);
+                addElement(copiedItem, targetItem.id);
             }
         }
     };
 
     // Duplicate an item and all its descendants at the same level
     const handleDuplicate = () => {
-        if (!targetItem || !JSONtree || !setJSONtree) return;
+        if (!targetItem || !addElement) return;
         
         // Find the parent of the target item
         const currentRoot = activeRoot === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1];
@@ -209,29 +180,13 @@ export function ContextMenu({
         
         if (!parentInfo) return;
         
-        // Create a deep copy of the target item
+        // Create a deep copy of the target item without the id (addElement will generate new IDs)
         const duplicatedItem = deepCopy(targetItem);
+        delete duplicatedItem.id; // Remove the original ID so addElement can generate new ones
         
-        // Generate new unique IDs for the duplicated item and all its descendants
-        const updateIdsRecursively = (node) => {
-            node.id = generateUniqueId(JSONtree);
-            if (node.children) {
-                node.children.forEach(updateIdsRecursively);
-            }
-        };
-        updateIdsRecursively(duplicatedItem);
-        
-        // Insert the duplicated item after the original at the same level
-        const updated = deepCopy(JSONtree);
-        const targetRoot = activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1];
-        
-        // Find the parent in the updated tree
-        const updatedParentInfo = findParentById([targetRoot], targetItem.id);
-        if (updatedParentInfo) {
-            const insertIndex = updatedParentInfo.index + 1;
-            updatedParentInfo.parent.children.splice(insertIndex, 0, duplicatedItem);
-            setJSONtree(updated);
-        }
+        // Use addElement to properly duplicate the item with all its CSS data and initialization
+        const insertIndex = parentInfo.index + 1;
+        addElement(duplicatedItem, parentInfo.parent.id, insertIndex);
     };
 
     // Wrap an item in a new block container

@@ -19,7 +19,7 @@ export function categoriesElementsFunction() {
             
             // Define event handlers as named functions
             const headerClickHandler = (event) => {
-                if (event.target.classList.contains('tw-categories__expander-checkbox')) {
+                if (event.target.classList.contains('tw-categories__expander-input')) {
                     return;
                 }
                 if (expander.classList.toggle('tw-categories__expander--open')) {

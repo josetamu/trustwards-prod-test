@@ -1,0 +1,6 @@
+.tw-categories__expander-icon{
+    transition: transform var(--expanded-icon-duration);
+}
+.tw-categories__expander--open .tw-categories__expander-icon {
+    transform: rotate(var(--expanded-icon-rotate));
+}
