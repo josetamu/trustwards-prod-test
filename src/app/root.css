@@ -157,7 +157,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   --subtitle-color: #666666;
   --label-color: #222222;
   --icons-color: #999999;
-  --tooltip-background: #FFFFFF;
+
+  /* Builder - User Tooltip*/
+  --user-tooltip-background: #FFFFFF;
+  --user-tooltip-color: #333333;
 
   /*Builder - Themes Modal*/
   --themes-modal-background: #FFFFFF;
@@ -323,6 +326,10 @@ html[data-theme="dark"] {
   --subtitle-color: #AAAAAA;
   --label-color: #F5F5F5;
   --icons-color: #999999;
+
+  /* Builder - User Tooltip*/
+  --user-tooltip-background: #2B2B2B;
+  --user-tooltip-color: #F5F5F5;
 
   /*Builder - Themes Modal*/
   --themes-modal-background: #191919;

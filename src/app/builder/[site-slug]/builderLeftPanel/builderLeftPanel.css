@@ -1,12 +1,11 @@
 /* Builder Left Panel */
-.tw-builder__left-panel{
+.tw-builder__left-panel {
     background-color: var(--panels-background);
     border-radius: var(--panels-radius);
     border: 1px solid var(--border-light-color);
     box-shadow: 0 2px 4px 0 var(--shadow-light-color);
     display: flex;
     flex-direction: column;
-
     height: 100%;
     max-height: 100%;
     overflow: hidden;
@@ -53,7 +52,7 @@
     transform: rotate(180deg);
 }
 
-/* Logo button */
+/* Logo Button */
 .tw-builder__logo-button {
     display: flex;
     align-items: center;
@@ -94,13 +93,12 @@
     padding: 5px 8px;
     color: var(--body-strong-color);
 }
-.dropdown__item.tw-builder__dropdown-item.tw-builder__dropdown-item--home,
-.dropdown__item.tw-builder__dropdown-item.tw-builder__dropdown-item--help {
+.dropdown__item.tw-builder__dropdown-item--home,
+.dropdown__item.tw-builder__dropdown-item--help {
     padding: 8px;
 }
 
-
-/* Tab and Tree container */
+/* Tab and Tree Container */
 .tw-builder__tab-tree-container {
     padding: 0 10px;
 }
@@ -188,7 +186,7 @@
     flex-direction: column;
     width: 100%;
     min-width: max-content;
-    overflow: auto;
+    position: relative;
 }
 
 /* ==========================================================================
@@ -200,7 +198,48 @@
     position: relative;
 }
 
-/* Tree item header */
+
+/* ==========================================================================
+   TREE ITEM STATES
+   ========================================================================== */
+
+/* Tree item collapsed state */
+.tw-builder__tree-item--collapsed .tw-builder__tree-children {
+    display: none;
+}
+
+/* Tree item collapsed header */
+.tw-builder__tree-item--collapsed .tw-builder__tree-item-header--selected {
+    border-radius: 8px;
+}
+
+/* Tree item without children */
+.tw-builder__tree-item:not(.tw-builder__tree-item--has-children) .tw-builder__tree-item-header--selected {
+    border-radius: 8px;
+}
+
+/* ==========================================================================
+   TREE ITEM DEEP NESTING
+   ========================================================================== */
+
+/* Tree item deep nesting (level 6 and above to avoid collapsing) */
+.tw-builder__tree-item--deep-nesting {
+    min-width: 100px;
+}
+
+.tw-builder__tree-item--deep-nesting .tw-builder__tree-item-header {
+    min-width: 100%;
+}
+
+.tw-builder__tree-item--deep-nesting .tw-builder__tree-item-label {
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Tree Item Header */
 .tw-builder__tree-item-header {
     display: flex;
     align-items: center;
@@ -218,32 +257,129 @@
     background-color: var(--tree-item-hover-background);
 }
 
-/* Tree item header selected state */
+.tw-builder__tree-item-header:active {
+    cursor: grabbing;
+}
+
+/* Tree Item Header States */
 .tw-builder__tree-item-header--selected {
     background-color: var(--tree-item-selected-background);
     color: var(--tree-item-selected-color);
     border-radius: 8px 8px 0 0;
 }
 
-/* Tree item header child selected state */
+/* ==========================================================================
+   TREE ITEM SELECTED STATES
+   ========================================================================== */
+
+/* Selected tree item icon colors */
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-square-icon {
+    background-color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-text-icon {
+    color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-image-icon {
+    fill: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-divider-icon {
+    background-color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-button-icon {
+    background-color: var(--tree-item-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-button-icon::after {
+    background-color: var(--square-icon-background);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-selected-color);
+}
+
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-label {
+    color: var(--tree-item-selected-color);
+}
+
 .tw-builder__tree-item-header--child-selected {
     background-color: transparent;
     color: var(--tree-item-child-selected-color);
     border-radius: 0 0 8px 8px;
 }
 
-/* Tree item header child selected intermediate state (no border radius) */
+/* Child selected intermediate tree item icon colors */
+.tw-builder__tree-item-header--child-selected .tw-builder__tree-item-square-icon {
+    background-color: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--child-selected .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-child-selected-color);
+}
+
+.tw-builder__tree-item-header--child-selected .tw-builder__tree-item-label {
+    color: var(--child-selected-color);
+}
+
 .tw-builder__tree-item-header--child-selected-intermediate {
     background-color: transparent;
     color: var(--tree-item-child-selected-color);
 }
 
-/* Tree item header collapsed state */
+.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-item-square-icon {
+    background-color: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-child-selected-color);
+}
+
+.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-item-label {
+    color: var(--child-selected-color);
+}
+
 .tw-builder__tree-item-header--collapsed {
     border-radius: 8px;
 }
 
-/* Tree item header dragging state */
+.tw-builder__tree-item-header--collapsed-parent-with-selected-child {
+    background-color: var(--tree-childs-background);
+    color: var(--tree-item-child-selected-color);
+    border-radius: 8px;
+}
+
+.tw-builder__tree-item-header--collapsed-parent-with-selected-child:hover {
+    background-color: var(--tree-childs-background) !important;
+}
+
+.tw-builder__tree-item-header--collapsed-parent-with-selected-child * {
+    color: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--collapsed-parent-with-selected-child .tw-builder__tree-item-square-icon {
+    background-color: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--collapsed-parent-with-selected-child .tw-builder__tree-item-image-icon {
+    fill: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--collapsed-parent-with-selected-child .tw-builder__tree-item-divider-icon {
+    background-color: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--collapsed-parent-with-selected-child .tw-builder__tree-item-button-icon {
+    background-color: var(--tree-item-child-selected-color);
+}
+
+.tw-builder__tree-item-header--collapsed-parent-with-selected-child .tw-builder__tree-item-button-icon::after {
+    background-color: var(--square-icon-background);
+}
+
+/* Tree Item Header Drag States */
 .tw-builder__tree-item-header--dragging {
     opacity: 1;
     transform: scale(0.95);
@@ -261,12 +397,15 @@
     color: var(--tree-item-selected-color);
 }
 
-/* Tree item header drag over inside position - icon colors */
-.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-square-icon {
+/* Tree item header drag over inside position icons */
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-square-icon,
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-divider-icon,
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-button-icon {
     background-color: var(--tree-item-selected-color);
 }
 
-.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-text-icon {
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-text-icon,
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-label {
     color: var(--tree-item-selected-color);
 }
 
@@ -274,37 +413,67 @@
     fill: var(--tree-item-selected-color);
 }
 
-.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-divider-icon {
-    background-color: var(--tree-item-selected-color);
-}
-
-.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-button-icon {
-    background-color: var(--tree-item-selected-color);
-}
-
 .tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-selected-color);
 }
 
-.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-label {
-    color: var(--tree-item-selected-color);
+
+/* Tree item header drag over for before/after positions */
+.tw-builder__tree-item-header--drag-over[data-position="before"],
+.tw-builder__tree-item-header--drag-over[data-position="after"] {
+    background-color: transparent;
+    color: inherit;
 }
 
-/* Tree item header toolbar drag over state */
+.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-square-icon,
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-square-icon {
+    background-color: var(--square-icon-background);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-text-icon,
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-text-icon {
+    color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-image-icon,
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-image-icon {
+    fill: var(--square-icon-background);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-divider-icon,
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-divider-icon {
+    background-color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-button-icon,
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-button-icon {
+    background-color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-expand-button,
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-expand-button {
+    color: var(--tree-expand-button-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-label,
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-label {
+    color: var(--subtitle-color);
+}
+
+/* Tree Item Header Toolbar Drag States */
 .tw-builder__tree-item-header--toolbar-drag-over {
-    background-color: var(--tree-item-hover-background);
-    border: 2px dashed var(--accent-color);
+    background-color: transparent;
 }
 
 /* Tree item header toolbar drag over inside position */
 .tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] {
     background-color: var(--tree-item-selected-background);
     color: var(--tree-item-selected-color);
-    border: 2px solid var(--accent-color);
 }
 
-/* Tree item header toolbar drag over inside position - icon colors */
-.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-square-icon {
+.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-square-icon,
+.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-divider-icon,
+.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-button-icon {
     background-color: var(--tree-item-selected-color);
 }
 
@@ -316,29 +485,12 @@
     fill: var(--tree-item-selected-color);
 }
 
-.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-divider-icon {
-    background-color: var(--tree-item-selected-color);
-}
-
-.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-button-icon {
-    background-color: var(--tree-item-selected-color);
-}
-
 .tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-selected-color);
 }
 
 .tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-label {
     color: var(--tree-item-selected-color);
-}
-
-/* Tree item header cursor */
-.tw-builder__tree-item-header {
-    cursor: pointer;
-}
-
-.tw-builder__tree-item-header:active {
-    cursor: grabbing;
 }
 
 /* ==========================================================================
@@ -352,7 +504,6 @@
     justify-content: center;
     position: relative;
     z-index: 1;
-
     width: 8px;
     height: 8px;
 }
@@ -399,22 +550,19 @@
     min-width: 11px;
     height: 8px;
     margin-top: 1px;
-
     background-color: var(--tree-text-icon-color);
     border-radius: 2px;
-
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 .tw-builder__tree-item-button-icon::after {
     content: "";
     position: absolute;
-
     width: 4px;
     height: 1px;
     border-radius: 100px;
-
     background-color: #FFFFFF;
 }
 
@@ -429,23 +577,6 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* A partir del nivel 6: ancho mínimo fijo para evitar que se encoja más */
-.tw-builder__tree-item--deep-nesting {
-    min-width: 100px;
-}
-
-.tw-builder__tree-item--deep-nesting .tw-builder__tree-item-header {
-    min-width: 100%;
-}
-
-.tw-builder__tree-item--deep-nesting .tw-builder__tree-item-label {
-    min-width: 0;
-    flex-shrink: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -484,86 +615,6 @@
     background-color: transparent;
 }
 
-/* ==========================================================================
-   TREE ITEM STATES
-   ========================================================================== */
-
-/* Tree item collapsed state */
-.tw-builder__tree-item--collapsed .tw-builder__tree-children {
-    display: none;
-}
-
-/* Tree item collapsed header */
-.tw-builder__tree-item--collapsed .tw-builder__tree-item-header--selected {
-    border-radius: 8px;
-}
-
-/* Tree item without children */
-.tw-builder__tree-item:not(.tw-builder__tree-item--has-children) .tw-builder__tree-item-header--selected {
-    border-radius: 8px;
-}
-
-/* ==========================================================================
-   TREE ITEM SELECTED STATES
-   ========================================================================== */
-
-/* Selected tree item icon colors */
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-square-icon {
-    background-color: var(--tree-item-selected-color);
-}
-
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-text-icon {
-    color: var(--tree-item-selected-color);
-}
-
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-image-icon {
-    fill: var(--tree-item-selected-color);
-}
-
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-divider-icon {
-    background-color: var(--tree-item-selected-color);
-}
-
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-button-icon {
-    background-color: var(--tree-item-selected-color);
-}
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-button-icon::after{
-    background-color: var(--square-icon-background);
-}
-
-.tw-builder__tree-item-header--selected .tw-builder__tree-expand-button {
-    color: var(--tree-expand-button-selected-color);
-}
-
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-label {
-    color: var(--tree-item-selected-color);
-}
-
-/* Child selected tree item icon colors */
-.tw-builder__tree-item-header--child-selected .tw-builder__tree-item-square-icon {
-    background-color: var(--tree-item-child-selected-color);
-}
-
-.tw-builder__tree-item-header--child-selected .tw-builder__tree-expand-button {
-    color: var(--tree-expand-button-child-selected-color);
-}
-
-.tw-builder__tree-item-header--child-selected .tw-builder__tree-item-label {
-    color: var(--child-selected-color);
-}
-
-/* Child selected intermediate tree item icon colors */
-.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-item-square-icon {
-    background-color: var(--tree-item-child-selected-color);
-}
-
-.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-expand-button {
-    color: var(--tree-expand-button-child-selected-color);
-}
-
-.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-item-label {
-    color: var(--child-selected-color);
-}
 
 /* ==========================================================================
    TREE ITEM DRAGGING CONTAINER
@@ -590,8 +641,9 @@
     opacity: 1;
 }
 
-/* Dragging container icon colors */
-.tw-builder__tree-item--dragging-container .tw-builder__tree-item-square-icon {
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-square-icon,
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-divider-icon,
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-button-icon {
     background-color: var(--square-icon-background);
 }
 
@@ -603,24 +655,25 @@
     fill: var(--tree-text-icon-color);
 }
 
-.tw-builder__tree-item--dragging-container .tw-builder__tree-item-divider-icon {
-    background-color: var(--tree-text-icon-color);
-}
-
-.tw-builder__tree-item--dragging-container .tw-builder__tree-item-button-icon {
-    background-color: var(--tree-text-icon-color);
-}
-
 .tw-builder__tree-item--dragging-container .tw-builder__tree-expand-button {
-    color: var(--tree-expand-button-color);
-}
-
-.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-color);
 }
 
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-label {
     color: var(--subtitle-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children {
+    opacity: 1;
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-item {
+    opacity: 1;
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-item-label {
+    color: var(--subtitle-color);
+    opacity: 1;
 }
 
 /* Dragging container parent header override */
@@ -630,7 +683,7 @@
     opacity: 1;
 }
 
-.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-square-icon{
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-square-icon {
     background-color: var(--square-icon-background);
 }
 
@@ -656,20 +709,6 @@
 
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-label {
     color: var(--subtitle-color);
-}
-
-/* Dragging container children opacity */
-.tw-builder__tree-item--dragging-container .tw-builder__tree-children {
-    opacity: 1;
-}
-
-.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-item {
-    opacity: 1;
-}
-
-.tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-item-label {
-    color: var(--subtitle-color);
-    opacity: 1;
 }
 
 /* ==========================================================================
@@ -727,34 +766,23 @@
 
 /* Toolbar drop line styles */
 .tw-builder__drop-line--toolbar {
-    background-color: var(--accent-color);
-    box-shadow: 0 0 4px rgba(var(--accent-color-rgb), 0.5);
-    height: 3px;
-    border-radius: 3px;
+    background-color: #3b82f6;
+    box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+    height: 2px;
+    border-radius: 2px;
 }
 
 /* Toolbar drop line before position */
 .tw-builder__drop-line--toolbar.tw-builder__drop-line--before {
-    top: -3px;
+    top: -2px;
 }
 
 /* Toolbar drop line after position */
 .tw-builder__drop-line--toolbar.tw-builder__drop-line--after {
-    bottom: -3px;
+    bottom: -2px;
 }
 
-/* Toolbar drop line inside position */
+/* Toolbar drop line inside position - HIDDEN when inside */
 .tw-builder__drop-line--toolbar.tw-builder__drop-line--inside {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 3px;
-    background-color: var(--accent-color);
-    box-shadow: 0 0 4px rgba(var(--accent-color-rgb), 0.5);
-    border-radius: 3px;
-    z-index: 100;
-    pointer-events: none;
+    display: none;
 }
-

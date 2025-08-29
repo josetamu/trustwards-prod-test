@@ -6,12 +6,9 @@ import { useCanvas } from "@contexts/CanvasContext";
 
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
 
-// Helper function to deep copy objects
-const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
-
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu, setIsManualThemesOpen }) {
     const router = useRouter()
-    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, setJSONtree, createElement } = useCanvas();
+    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, setJSONtree, createElement, moveElement } = useCanvas();
     
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -29,8 +26,17 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const [toolbarDragOverItem, setToolbarDragOverItem] = useState(null)
     const [toolbarDragPosition, setToolbarDragPosition] = useState(null)
     const [isToolbarDrag, setIsToolbarDrag] = useState(false)
-
-
+    
+    // State to track previous selection when internal tree drag starts
+    const [previousTreeSelection, setPreviousTreeSelection] = useState(null)
+    
+    // State to track previous selection when toolbar drag starts
+    const [previousToolbarSelection, setPreviousToolbarSelection] = useState(null)
+    
+    // State to track when we're creating a new element from toolbar
+    const [isCreatingElement, setIsCreatingElement] = useState(false)
+    const [pendingElementType, setPendingElementType] = useState(null)
+    const [previousTreeState, setPreviousTreeState] = useState(null)
 
     // Handle right panel opening when an element is selected and both panels are closed
     useEffect(() => {
@@ -60,37 +66,34 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const handleDropdownClose = () => setIsDropdownOpen(false)
 
     // Dropdown navigation handlers
-    const handleGoToHome = () => {
-        router.push('/dashboard')
+    const handleDropdownAction = (action) => {
         setIsDropdownOpen(false)
-    }
-
-    const handleSiteSettings = () => {
-        openChangeModal('settings')
-        setIsDropdownOpen(false)
-    }
-
-    const handleTheme = () => {
-        setIsManualThemesOpen(true)
-        setIsDropdownOpen(false)
-    }
-
-    const handleAppearance = () => {
-        setModalType('Appearance')
-        setIsModalOpen(true)
-        setIsDropdownOpen(false)
-    }
-
-    const handleUpgradeToPro = () => {
-        setModalType('Plan')
-        setIsModalOpen(true)
-        setIsDropdownOpen(false)
-    }
-
-    const handleHelp = () => {
-        setModalType('Support')
-        setIsModalOpen(true)
-        setIsDropdownOpen(false)
+        
+        switch (action) {
+            case 'home':
+                router.push('/dashboard')
+                break
+            case 'settings':
+                openChangeModal('settings')
+                break
+            case 'theme':
+                setIsManualThemesOpen(true)
+                break
+            case 'appearance':
+                setModalType('Appearance')
+                setIsModalOpen(true)
+                break
+            case 'upgrade':
+                setModalType('Plan')
+                setIsModalOpen(true)
+                break
+            case 'help':
+                setModalType('Support')
+                setIsModalOpen(true)
+                break
+            default:
+                break
+        }
     }
 
     // Toggle expansion state of tree items (expand/collapse)
@@ -121,16 +124,30 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     useEffect(() => {
         const handleGlobalDragStart = (e) => {
             // Check if this is a toolbar element drag
-            if (e.dataTransfer.types.includes("elementType")) {
+            if (e.dataTransfer.types.includes("elementtype")) {
                 setIsToolbarDrag(true)
                 // Clear internal tree drag states when toolbar drag starts
                 setDraggedItem(null)
                 setDragOverItem(null)
                 setDragPosition(null)
+                
+                // Deselect the element that was selected when drag starts from toolbar
+                if (selectedItem) {
+                    // Save the previous selection to restore it if drag is cancelled
+                    setPreviousToolbarSelection(selectedItem)
+                    setSelectedItem(null)
+                    setSelectedId(null)
+                }
             }
         }
 
         const handleGlobalDragEnd = () => {
+            // If toolbar drag was cancelled (no drop occurred), restore the previous selection
+            if (isToolbarDrag && previousToolbarSelection) {
+                setSelectedItem(previousToolbarSelection)
+                setSelectedId(previousToolbarSelection)
+                setPreviousToolbarSelection(null)
+            }
             setIsToolbarDrag(false)
         }
 
@@ -141,7 +158,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             document.removeEventListener('dragstart', handleGlobalDragStart)
             document.removeEventListener('dragend', handleGlobalDragEnd)
         }
-    }, [])
+    }, [selectedItem, setSelectedItem, setSelectedId, previousToolbarSelection])
 
     // New functions for toolbar element drag and drop
     const handleToolbarDragOver = (e, item) => {
@@ -157,6 +174,12 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         if (y < height * 0.25) {
             position = 'before'
         } else if (y > height * 0.75) {
+            position = 'after'
+        }
+        
+        // Check if the item can have children (only allow 'inside' for nestable elements)
+        if (position === 'inside' && !item.children && !item.nestable) {
+            // If item can't have children, force position to 'after' instead
             position = 'after'
         }
         
@@ -179,19 +202,32 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         const elementType = e.dataTransfer.getData("elementType")
         if (!elementType) return
 
+        // Calculate position at drop time for accuracy
+        const rect = e.currentTarget.getBoundingClientRect()
+        const y = e.clientY - rect.top
+        const height = rect.height
+        
+        let position = 'inside'
+        if (y < height * 0.25) {
+            position = 'before'
+        } else if (y > height * 0.75) {
+            position = 'after'
+        }
+
         // Determine where to insert the element based on position
         let containerId = null
         let insertIndex = null
 
-        if (toolbarDragPosition === 'inside') {
+        if (position === 'inside') {
             // Check if the target item allows children
-            if (targetItem.children !== undefined) {
-                // Insert inside the target item
+            if (targetItem.nestable) {
+                // Insert inside the target item as a child
                 containerId = targetItem.id
-                insertIndex = null // Will be added at the end
+                // If the target has children, add at the end. If not, use 0 to insert as first child
+                insertIndex = targetItem.children && targetItem.children.length > 0 ? targetItem.children.length : 0
             } else {
                 // If target doesn't allow children, insert after it instead
-                const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+                const currentTreeData = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
                 const parentInfo = findParentById(currentTreeData, targetItem.id)
                 
                 if (parentInfo) {
@@ -204,13 +240,13 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             }
         } else {
             // Insert before or after the target item
-            const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+            const currentTreeData = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
             const parentInfo = findParentById(currentTreeData, targetItem.id)
             
             if (parentInfo) {
                 containerId = parentInfo.parent ? parentInfo.parent.id : activeRoot
                 // Calculate the correct insert index
-                if (toolbarDragPosition === 'before') {
+                if (position === 'before') {
                     insertIndex = parentInfo.index
                 } else { // 'after'
                     insertIndex = parentInfo.index + 1
@@ -222,13 +258,25 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             }
         }
 
-        // Create the element using the existing createElement function
+        // Save the current tree state before creating the element
+        const currentRoot = activeTab === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1]
+        setPreviousTreeState(JSON.stringify(currentRoot))
+        
+        // Create the element using createElement from canvas context for permanent storage
         createElement(elementType, containerId, insertIndex)
+        
+        // The element will be automatically added to JSONtree and persisted
+        // We need to track that we're creating a new element to select it later
+        setIsCreatingElement(true)
+        setPendingElementType(elementType)
         
         // Reset toolbar drag states
         setToolbarDragOverItem(null)
         setToolbarDragPosition(null)
         setIsToolbarDrag(false)
+        
+        // Clear previous toolbar selection since drop was successful
+        setPreviousToolbarSelection(null)
     }
 
     // Drag and drop handlers
@@ -236,9 +284,24 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setDraggedItem(item)
         e.dataTransfer.effectAllowed = 'move'
         e.dataTransfer.setData('text/html', '')
+        
+        // Deselect the element that was selected when the drag starts
+        if (selectedItem && selectedItem !== item.id) {
+            // Save the previous selection to restore it if drag is cancelled
+            setPreviousTreeSelection(selectedItem)
+            setSelectedItem(null)
+            setSelectedId(null)
+        }
     }
 
     const handleDragEnd = () => {
+        // If drag was cancelled (no drop occurred), restore the previous selection
+        if (draggedItem && selectedItem !== draggedItem.id && previousTreeSelection) {
+            setSelectedItem(previousTreeSelection)
+            setSelectedId(previousTreeSelection)
+            setPreviousTreeSelection(null)
+        }
+        
         setDraggedItem(null)
         setDragOverItem(null)
         setDragPosition(null)
@@ -277,29 +340,26 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         e.preventDefault()
         
         if (!draggedItem || draggedItem.id === targetItem.id) {
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
 
         // Check if target item allows children (has children attribute)
         if (dragPosition === 'inside' && !targetItem.children) {
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
 
         // Check if trying to drop in the exact same position (prevent unnecessary moves)
-        const currentParent = findParentById(activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData, draggedItem.id)
-        const targetParent = dragPosition === 'inside' ? targetItem : findParentById(activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData, targetItem.id)
+        const currentParent = findParentById(activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]], draggedItem.id)
+        const targetParent = dragPosition === 'inside' ? targetItem : findParentById(activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]], targetItem.id)
         
         // Prevent move if dropping on the same element
         if (targetItem.id === draggedItem.id) {
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
         
@@ -307,9 +367,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         if (dragPosition === 'inside' && currentParent && 
             currentParent.parent === targetItem) {
             // Same container, don't move
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
         
@@ -318,18 +377,26 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             currentParent.parent === targetParent.parent && 
             currentParent.index === targetParent.index) {
             // Same parent and same position, don't move
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
 
-        // Move the element in the current tree data
-        moveElement(draggedItem.id, targetItem.id, dragPosition)
+        // Move the element using canvas context moveElement
+        const success = moveElementFromCanvas(draggedItem.id, targetItem.id, dragPosition)
+        if (!success) {
+            // If the drop was invalid (e.g., dropping inside a root element),
+            // restore previous selection and do not clear drag states.
+            restoreSelectionAndCleanup()
+            return
+        }
         
         // Set the dragged item as the new selected item
         setSelectedItem(draggedItem.id)
         setSelectedId(draggedItem.id)
+        
+        // Clear previous selection since drop was successful
+        setPreviousTreeSelection(null)
         
         setDraggedItem(null)
         setDragOverItem(null)
@@ -363,76 +430,77 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         }
         return null
     }
+    
+    // Helper function to restore previous selection and clean up drag state
+    const restoreSelectionAndCleanup = () => {
+        if (previousTreeSelection) {
+            setSelectedItem(previousTreeSelection)
+            setSelectedId(previousTreeSelection)
+            setPreviousTreeSelection(null)
+        }
+        setDraggedItem(null)
+        setDragOverItem(null)
+        setDragPosition(null)
+    }
 
-    // Tree data manipulation
-    const moveElement = (draggedId, targetId, position) => {
-        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
-        const newTreeData = JSON.parse(JSON.stringify(currentTreeData))
+    // Tree data manipulation using canvas context
+    const moveElementFromCanvas = (draggedId, targetId, position) => {
+        // Get the current tree data from canvas context
+        const currentRoot = activeTab === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1]
         
-        // Find and remove the dragged element
-        const removeElement = (nodes) => {
-            for (let i = 0; i < nodes.length; i++) {
-                if (nodes[i].id === draggedId) {
-                    const [removed] = nodes.splice(i, 1)
-                    return removed
-                }
-                if (nodes[i].children) {
-                    const removed = removeElement(nodes[i].children)
-                    if (removed) return removed
+        // Find the target item to determine the parent and index
+        const findTargetInfo = (node, targetId) => {
+            if (node.id === targetId) {
+                return { node, parent: null, index: 0 }
+            }
+            if (node.children) {
+                for (let i = 0; i < node.children.length; i++) {
+                    if (node.children[i].id === targetId) {
+                        return { node: node.children[i], parent: node, index: i }
+                    }
+                    const result = findTargetInfo(node.children[i], targetId)
+                    if (result) return result
                 }
             }
             return null
         }
         
-        const draggedElement = removeElement(newTreeData)
-        if (!draggedElement) return
+        const targetInfo = findTargetInfo(currentRoot, targetId)
+        if (!targetInfo) return
         
-        // Insert the element based on position
-        const insertElement = (nodes) => {
-            for (let i = 0; i < nodes.length; i++) {
-                if (nodes[i].id === targetId) {
-                    if (position === 'inside') {
-                        if (!nodes[i].children) nodes[i].children = []
-                        // Add to the end (last position) instead of beginning
-                        nodes[i].children.push(draggedElement)
-                    } else if (position === 'before') {
-                        nodes.splice(i, 0, draggedElement)
-                    } else if (position === 'after') {
-                        nodes.splice(i + 1, 0, draggedElement)
-                    }
-                    return true
-                }
-                if (nodes[i].children) {
-                    if (insertElement(nodes[i].children)) return true
-                }
+        let containerId, insertIndex
+        
+        if (position === 'inside') {
+            // Drop inside the target item
+            containerId = targetId
+            insertIndex = targetInfo.node.children ? targetInfo.node.children.length : 0
+        } else {
+            // Drop before or after the target item
+            // Check if this is a valid drop operation
+            if (!targetInfo.parent) {
+                // Target is a root element, this is an invalid drop operation
+                // Return false to indicate the drop should be cancelled
+                return false
             }
-            return false
+            
+            containerId = targetInfo.parent.id
+            if (position === 'before') {
+                insertIndex = targetInfo.index
+            } else { // 'after'
+                insertIndex = targetInfo.index + 1
+            }
         }
         
-        insertElement(newTreeData)
-        
-        // Update the appropriate tree data
-        if (activeTab === 'tw-root--banner') {
-            setBannerTreeData(newTreeData)
-        } else {
-            setModalTreeData(newTreeData)
-        }
-        
-        // Sync changes back to the canvas context
-        const newJSONtree = { ...JSONtree }
-        if (activeTab === 'tw-root--banner') {
-            newJSONtree.roots[0] = newTreeData[0]
-        } else {
-            newJSONtree.roots[1] = newTreeData[1]
-        }
-        setJSONtree(newJSONtree)
+        // Use the canvas context moveElement function
+        moveElement(draggedId, containerId, insertIndex)
+        return true
     }
 
     // Check if an item is a descendant of the dragged item
     const isChildOfDraggedItem = (itemId) => {
         if (!draggedItem) return false
         
-        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+        const currentTreeData = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
         
         // Function to check if targetId is a descendant of ancestorId
         const isDescendantOf = (tree, targetId, ancestorId) => {
@@ -469,7 +537,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const isDescendantOfSelected = (itemId, selectedId) => {
         if (!selectedId || itemId === selectedId) return false
         
-        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+        const currentTreeData = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
         
         // Function to check if targetId is a descendant of ancestorId
         const isDescendantOf = (tree, targetId, ancestorId) => {
@@ -502,15 +570,105 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         return isDescendantOf(currentTreeData, itemId, selectedId)
     }
 
-    // Updates the tree banner and modal structures when the JSONtree changes (on load and in real time)
+    // Auto-expand blocks when JSONtree changes and they have children
     useEffect(() => {
         if(JSONtree) {
-            setBannerTreeData([JSONtree.roots[0]])
-            setModalTreeData([JSONtree.roots[1]])
+            // Auto-expand blocks that now have children
+            const autoExpandBlocks = (nodes) => {
+                nodes.forEach(node => {
+                    if (node.children && node.children.length > 0) {
+                        // If this node has children and wasn't expanded before, expand it
+                        if (!expandedItems.has(node.id)) {
+                            setExpandedItems(prev => new Set([...prev, node.id]))
+                        }
+                        // Recursively check children
+                        autoExpandBlocks(node.children)
+                    }
+                })
+            }
+            
+            // Check both banner and modal trees
+            if (JSONtree.roots[0]) autoExpandBlocks([JSONtree.roots[0]])
+            if (JSONtree.roots[1]) autoExpandBlocks([JSONtree.roots[1]])
         }
     },[JSONtree]);
-    const [bannerTreeData, setBannerTreeData] = useState([])
-    const [modalTreeData, setModalTreeData] = useState([])
+
+    // Effect to detect newly created elements and select them
+    useEffect(() => {
+        if (JSONtree && selectedId) {
+            // Find the selected element in the current tree
+            const findElement = (nodes, targetId) => {
+                for (const node of nodes) {
+                    if (node.id === targetId) return node
+                    if (node.children) {
+                        const found = findElement(node.children, targetId)
+                        if (found) return found
+                    }
+                }
+                return null
+            }
+            
+            const currentRoot = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
+            const element = findElement(currentRoot, selectedId)
+            
+            // If element exists, ensure it's selected
+            if (element) {
+                setSelectedItem(selectedId)
+            }
+        }
+    }, [JSONtree, selectedId, activeTab]);
+
+    // Effect to detect and select newly created elements from toolbar
+    useEffect(() => {
+        if (isCreatingElement && pendingElementType && JSONtree && previousTreeState) {
+            const currentRoot = activeTab === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1]
+            const previousRoot = JSON.parse(previousTreeState)
+            
+            // Find the newly created element by comparing the previous and current tree states
+            const findNewlyCreatedElement = (currentNode, previousNode, targetType) => {
+                // If this is a new node (not in previous state), check if it's the right type
+                if (!previousNode) {
+                    if (currentNode.elementType === targetType || currentNode.icon === targetType) {
+                        return currentNode
+                    }
+                }
+                
+                // If this node has children, check them
+                if (currentNode.children) {
+                    for (let i = 0; i < currentNode.children.length; i++) {
+                        const currentChild = currentNode.children[i]
+                        const previousChild = previousNode?.children?.[i]
+                        
+                        // If this child is new or different, check if it's the right type
+                        if (!previousChild || JSON.stringify(currentChild) !== JSON.stringify(previousChild)) {
+                            if (currentChild.elementType === targetType || currentChild.icon === targetType) {
+                                return currentChild
+                            }
+                            
+                            // Recursively check children
+                            const result = findNewlyCreatedElement(currentChild, previousChild, targetType)
+                            if (result) return result
+                        }
+                    }
+                }
+                
+                return null
+            }
+            
+            const newElement = findNewlyCreatedElement(currentRoot, previousRoot, pendingElementType)
+            if (newElement) {
+                console.log('🎯 Found and selecting newly created element:', newElement.id)
+                setSelectedItem(newElement.id)
+                setSelectedId(newElement.id)
+                setIsCreatingElement(false)
+                setPendingElementType(null)
+                setPreviousTreeState(null)
+            }
+        }
+    }, [JSONtree, isCreatingElement, pendingElementType, activeTab, setSelectedItem, setSelectedId, previousTreeState]);
+    
+
+
 
     // Tree item renderer
     const renderTreeItem = (item, level = 0, parentId = null, isLastChild = false) => {
@@ -533,6 +691,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             if (!isExpanded) {
                 headerClasses.push('tw-builder__tree-item-header--collapsed')
             }
+        } else if (hasChildren && !isExpanded && selectedItem && isDescendantOfSelected(selectedItem, item.id)) {
+            // If this is a collapsed parent that has a selected descendant, show as collapsed parent with selected child
+            headerClasses.push('tw-builder__tree-item-header--collapsed-parent-with-selected-child')
         } else if (isParentSelected || (selectedItem && isDescendantOfSelected(item.id, selectedItem))) {
             // This is either a direct child or any descendant of the selected item
             if (isParentSelected && isLastChild) {
@@ -547,18 +708,29 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         }
         
         if (isDragOver) {
-            headerClasses.push('tw-builder__tree-item-header--drag-over')
-            // Add non-nestable class if trying to drop inside a non-nestable item
-            if (dragPosition === 'inside' && !item.children) {
-                headerClasses.push('tw-builder__tree-item-header--non-nestable')
+            // Only apply drag over styling if the item can actually receive children
+            if (dragPosition === 'inside') {
+                if (item.children || item.nestable) {
+                    headerClasses.push('tw-builder__tree-item-header--drag-over')
+                }
+                // Don't apply any styling if item can't have children
+            } else {
+                // For 'before' and 'after' positions, always apply styling
+                headerClasses.push('tw-builder__tree-item-header--drag-over')
             }
         }
 
         // Add toolbar drag over classes
         if (isToolbarDragOver) {
-            headerClasses.push('tw-builder__tree-item-header--toolbar-drag-over')
-            if (toolbarDragPosition === 'inside' && !item.children) {
-                headerClasses.push('tw-builder__tree-item-header--non-nestable')
+            // Only apply toolbar drag over styling if the item can actually receive children
+            if (toolbarDragPosition === 'inside') {
+                if (item.children || item.nestable) {
+                    headerClasses.push('tw-builder__tree-item-header--toolbar-drag-over')
+                }
+                // Don't apply any styling if item can't have children
+            } else {
+                // For 'before' and 'after' positions, always apply styling
+                headerClasses.push('tw-builder__tree-item-header--toolbar-drag-over')
             }
         }
 
@@ -604,7 +776,6 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 {/* Tree item header */}
                 <div 
                     className={headerClasses.join(' ')}
-                    style={{ position: 'relative', zIndex: 1 }}
                     onClick={() => handleItemClick(item.id)}
                     draggable={!isToolbarDrag} // Disable internal drag when toolbar drag is active
                     onDragStart={(e) => handleDragStart(e, item)}
@@ -683,6 +854,11 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     </span>
                 </div>
                 
+                {/* Toolbar drop line inside - positioned over the item */}
+                {isToolbarDragOver && toolbarDragPosition === 'inside' && (
+                    <div className="tw-builder__drop-line tw-builder__drop-line--toolbar tw-builder__drop-line--inside"></div>
+                )}
+                
                 {/* Background extend for selected parent */}
                 {isParentSelected && (
                     <div className="tw-builder__tree-item-background-extend"></div>
@@ -713,24 +889,24 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
+            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={() => handleDropdownAction('home')}>
                 <span>Go to Home</span>
             </button>
             <div className="dropdown__divider"></div>
-            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleSiteSettings}>
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={() => handleDropdownAction('settings')}>
                 <span>Site settings</span>
             </button>
-            <button className="tw-builder__dropdown-item dropdown__item" onClick={handleTheme}>
+            <button className="tw-builder__dropdown-item dropdown__item" onClick={() => handleDropdownAction('theme')}>
                 <span>Theme</span>
             </button>
-            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleAppearance}>
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={() => handleDropdownAction('appearance')}>
                 <span>Appearance</span>
             </button>
-            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleUpgradeToPro}>
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={() => handleDropdownAction('upgrade')}>
                 <span>Upgrade to pro</span>
             </button>
             <div className="dropdown__divider"></div>
-            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--help" onClick={handleHelp}>
+            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--help" onClick={() => handleDropdownAction('help')}>
                 <span>Help</span>
             </button>
         </>
@@ -810,7 +986,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         className="tw-builder__tree-container"
                         onDragOver={(e) => {
                             // Detect toolbar drag at container level
-                            if (e.dataTransfer.types.includes("elementType")) {
+                            if (e.dataTransfer.types.includes("elementtype")) {
                                 setIsToolbarDrag(true)
                             }
                         }}
@@ -821,8 +997,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                             }
                         }}
                     >
-                        {activeTab === 'tw-root--banner' && bannerTreeData.map((item, index) => renderTreeItem(item, 0, null, index === bannerTreeData.length - 1))}
-                        {activeTab === 'tw-root--modal' && modalTreeData.map((item, index) => renderTreeItem(item, 0, null, index === modalTreeData.length - 1))}
+
+                        {activeTab === 'tw-root--banner' && JSONtree.roots[0] && [JSONtree.roots[0]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
+                        {activeTab === 'tw-root--modal' && JSONtree.roots[1] && [JSONtree.roots[1]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
                     </div>
                 </div>
             </div>
