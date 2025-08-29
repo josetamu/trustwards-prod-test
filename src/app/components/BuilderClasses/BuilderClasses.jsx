@@ -9,7 +9,7 @@ export default function BuilderClasses({selectedId,showNotification}) {
     //search classes
     const [search, setSearch] = useState("");
     const [activeClass, setActiveClass] = useState(null);
-    const {classesCSSData, addClass,JSONtree,activeRoot,removeClass} = useCanvas();
+    const {addClass,JSONtree,activeRoot,removeClass} = useCanvas();
     const poolRef = useRef(null);
     
     const findElement = (node, targetId) => {
@@ -84,7 +84,7 @@ const eliminateClass = (className) => {
 }
 
 //filter All classes to see in the pool
-    const AllClasses = classesCSSData
+    const AllClasses = JSONtree.classesCSSData
     .map(item => item.className)
     .filter(className => className.includes(search));
 

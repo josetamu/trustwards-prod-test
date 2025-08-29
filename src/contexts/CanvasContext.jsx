@@ -72,11 +72,9 @@ function treeReducer(state, action) {
 
 export const CanvasProvider = ({ children, siteData, CallContextMenu = null, setIsFirstTime }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
-    const [idsCSSData, setIdsCSSData] = React.useState([]);
-    const [classesCSSData, setClassesCSSData] = React.useState([]);
     const defaultTree = {
-        idsCSSData: idsCSSData, /*for each id, stores its right panel properties*/
-        classesCSSData: classesCSSData, /*for each class, stores its right panel properties*/
+        idsCSSData: [], /*for each id, stores its right panel properties*/
+        classesCSSData: [], /*for each class, stores its right panel properties*/
         activeRoot: "tw-root--banner", //stored active root
         isFirstTime: true, //stored if it is the first time on the builder to open the builder themes
         roots: [
@@ -117,8 +115,6 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 present: userJSON ? userJSON : defaultTree,
                 future: []
             };
-            setIdsCSSData(initialState.present.idsCSSData); //Set the idsData from the stored idsData
-            setClassesCSSData(initialState.present.classesCSSData); //Set the classesData from the stored classesData
             dispatch({ type: 'INIT', payload: initialState.present });
             setActiveRoot(initialState.present.activeRoot); //Set the active root as the initial root
             setActiveTab(initialState.present.activeRoot); //Set the active root as the initial tab
@@ -186,60 +182,54 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * value - the value of the property (if empty string "", the property will be removed)
     */
     const addCSSProperty = (type, selector, property, value) => {
-        let updatedIdsCSSData = idsCSSData;
-        let updatedClassesCSSData = classesCSSData;
+        let updatedIdsCSSData = JSONtree.idsCSSData;
+        let updatedClassesCSSData = JSONtree.classesCSSData;
         switch(type) {
             case 'id': {
                 // Check if the selector already exists in idsCSSData
-                const existingIdIndex = idsCSSData.findIndex(item => item.id === selector);
+                const existingIdIndex = JSONtree.idsCSSData.findIndex(item => item.id === selector);
                 
                 if (existingIdIndex !== -1) {
                     // If value is empty string, remove the property
                     if (value === "") {
-                        const updatedProperties = { ...idsCSSData[existingIdIndex].properties };
+                        const updatedProperties = { ...JSONtree.idsCSSData[existingIdIndex].properties };
                         delete updatedProperties[property];
-                        updatedIdsCSSData = [...idsCSSData];
-                        updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
-                        setIdsCSSData(updatedIdsCSSData);
+                        updatedIdsCSSData = [...JSONtree.idsCSSData];
+                        updatedIdsCSSData[existingIdIndex] = { ...JSONtree.idsCSSData[existingIdIndex], properties: updatedProperties };
                     } else {
                         // If it exists, update the existing properties modifying the new property value
-                        const updatedProperties = { ...idsCSSData[existingIdIndex].properties, [property]: value };
-                        updatedIdsCSSData = [...idsCSSData];
-                        updatedIdsCSSData[existingIdIndex] = { ...idsCSSData[existingIdIndex], properties: updatedProperties };
-                        setIdsCSSData(updatedIdsCSSData);
+                        const updatedProperties = { ...JSONtree.idsCSSData[existingIdIndex].properties, [property]: value };
+                        updatedIdsCSSData = [...JSONtree.idsCSSData];
+                        updatedIdsCSSData[existingIdIndex] = { ...JSONtree.idsCSSData[existingIdIndex], properties: updatedProperties };
                     }
                 } else {
                     // If it doesn't exist and value is not empty, add a new entry with the selector and property
                     if (value !== "") {
-                        updatedIdsCSSData = [...idsCSSData, { id: selector, properties: { [property]: value } }];
-                        setIdsCSSData(updatedIdsCSSData);
+                        updatedIdsCSSData = [...JSONtree.idsCSSData, { id: selector, properties: { [property]: value } }];
                     }
                 }
                 break;
             }
             case 'class': {
                 // Check if the selector already exists in classesCSSData
-                const existingClassIndex = classesCSSData.findIndex(item => item.className === selector);
+                const existingClassIndex = JSONtree.classesCSSData.findIndex(item => item.className === selector);
                 if (existingClassIndex !== -1) {
                     // If value is empty string, remove the property
                     if (value === "") {
-                        const updatedProperties = { ...classesCSSData[existingClassIndex].properties };
+                        const updatedProperties = { ...JSONtree.classesCSSData[existingClassIndex].properties };
                         delete updatedProperties[property];
-                        updatedClassesCSSData = [...classesCSSData];
-                        updatedClassesCSSData[existingClassIndex] = { ...classesCSSData[existingClassIndex], properties: updatedProperties };
-                        setClassesCSSData(updatedClassesCSSData);
+                        updatedClassesCSSData = [...JSONtree.classesCSSData];
+                        updatedClassesCSSData[existingClassIndex] = { ...JSONtree.classesCSSData[existingClassIndex], properties: updatedProperties };
                     } else {
                         // If it exists, update the existing properties modifying the new property value
-                        const updatedProperties = { ...classesCSSData[existingClassIndex].properties, [property]: value };
-                        updatedClassesCSSData = [...classesCSSData];
-                        updatedClassesCSSData[existingClassIndex] = { ...classesCSSData[existingClassIndex], properties: updatedProperties };
-                        setClassesCSSData(updatedClassesCSSData);
+                        const updatedProperties = { ...JSONtree.classesCSSData[existingClassIndex].properties, [property]: value };
+                        updatedClassesCSSData = [...JSONtree.classesCSSData];
+                        updatedClassesCSSData[existingClassIndex] = { ...JSONtree.classesCSSData[existingClassIndex], properties: updatedProperties };
                     }
                 } else {
                     // If it doesn't exist and value is not empty, add a new entry with the selector and property
                     if (value !== "") {
-                        updatedClassesCSSData = [...classesCSSData, { className: selector, properties: { [property]: value } }];
-                        setClassesCSSData(updatedClassesCSSData);
+                        updatedClassesCSSData = [...JSONtree.classesCSSData, { className: selector, properties: { [property]: value } }];
                     }
                 }
                 break;
@@ -354,8 +344,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 
         //Update the idsCSSData with the default CSS on idsCSSDataToMerge
         //update the updated JSONtree with the new idsCSSData
-        const finalIdsCSSData = [...idsCSSData, ...idsCSSDataToMerge];
-        setIdsCSSData(finalIdsCSSData);
+        const finalIdsCSSData = [...JSONtree.idsCSSData, ...idsCSSDataToMerge];
         updated.idsCSSData = finalIdsCSSData;
 
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
@@ -393,8 +382,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 
         //Update the idsCSSData by removing the id of the removed element
         //update the updated JSONtree with the new idsCSSData
-        const finalIdsCSSData = idsCSSData.filter(item => !idsDataToRemove.includes(item.id));
-        setIdsCSSData(finalIdsCSSData);
+        const finalIdsCSSData = JSONtree.idsCSSData.filter(item => !idsDataToRemove.includes(item.id));
         updated.idsCSSData = finalIdsCSSData;
 
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
@@ -851,7 +839,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
         moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-        idsCSSData, setIdsCSSData, classesCSSData, setClassesCSSData, addCSSProperty, addJSONProperty, runElementScript }}>
+        addCSSProperty, addJSONProperty, runElementScript }}>
             {children}
         </CanvasContext.Provider>
     );

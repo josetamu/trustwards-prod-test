@@ -1696,7 +1696,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 }
 
 function ControlComponent({control, selectedId, showNotification, selectedLabel}) {
-    const {JSONtree, activeRoot, idsCSSData, classesCSSData, addCSSProperty, addJSONProperty} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
