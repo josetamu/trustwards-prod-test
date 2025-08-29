@@ -366,9 +366,35 @@ export const Canvas = () => {
     //For each class, add its CSS selector and properties
     const createCSS = (JSONtree) => {
         const styleId = 'tw-dynamic-stylesheet';
+
+        //valid units. If user types for example 100 or 100a it will add px to the value
+        const validUnits = ['px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', 'deg', 'rad', 'grad', 'turn', 's', 'ms', 'hz', 'khz'];
+        //properties that need units. opacity is not in the list because it doesn't need units
+        const unitsProperties = ['width','max-width', 'height', 'max-height', 'font-size', 'line-height', 'border-width', 'border-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'gap', 'grid-gap', 'grid-column-gap', 'grid-row-gap'];
         
         // Build the CSS content
         let cssContent = '';
+
+        //function to validate and add units
+        const addUnits = (prop, value) => {
+            // If the property needs units and value is a number or doesn't have valid units
+            if (unitsProperties.includes(prop)) {
+                // Check if value is just a number (no units)
+                if (/^\d+$/.test(value)) {
+                    return `${value}px`;
+                }
+                // Check if value has valid units
+                const hasValidUnit = validUnits.some(unit => value.endsWith(unit));
+                if (!hasValidUnit) {
+                    // Extract the numeric part and add px
+                    const numericPart = value.match(/^[\d.]+/);
+                    if (numericPart) {
+                        return `${numericPart[0]}px`;
+                    }
+                }
+            }
+            return value;
+        };
 
         //For each id, add its CSS selector and properties (if id is empty, it won't be added)
         JSONtree.idsCSSData.forEach(({ id, properties }) => {
@@ -376,7 +402,9 @@ export const Canvas = () => {
             if (propertyEntries.length > 0) {
                 cssContent += `#${id} {\n`;
                 propertyEntries.forEach(([prop, value]) => {
-                    cssContent += `${prop}: ${value};\n`;
+                    //add units to the value if needed
+                    const validatedValue = addUnits(prop, value);
+                    cssContent += `${prop}: ${validatedValue};\n`;
                 });
                 cssContent += `}\n`;
             }
@@ -388,7 +416,9 @@ export const Canvas = () => {
             if (propertyEntries.length > 0) {
                 cssContent += `.${className} {\n`;
                 propertyEntries.forEach(([prop, value]) => {
-                    cssContent += `${prop}: ${value};\n`;
+                    //add units to the value if needed
+                    const validatedValue = addUnits(prop, value);
+                    cssContent += `${prop}: ${validatedValue};\n`;
                 });
                 cssContent += `}\n`;
             }

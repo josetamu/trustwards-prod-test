@@ -12,7 +12,7 @@ import { jsx } from 'react/jsx-runtime';
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
     
     const [textValue, setTextValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -25,8 +25,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
                 if (JSONProperty && applyGlobalJSONChange) {
                     applyGlobalJSONChange(JSONProperty, value);
                 } else if (cssProperty && applyGlobalCSSChange) {
-                    const cssValue = autoUnit && value ? processValueForCSS(value) : value;
-                    applyGlobalCSSChange(cssProperty, cssValue);
+                    applyGlobalCSSChange(cssProperty, value);
                 }
             }, 0);
         }
@@ -37,11 +36,13 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
         const savedValue = savedJSONValue || savedCSSValue;
-        setTextValue(savedValue || value || '');
+        if(!textValue) {
+            setTextValue(savedValue || value || '');
+        }
     }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
 
-    const processValueForCSS = (inputValue) => {
+/*     const processValueForCSS = (inputValue) => {
         if (!autoUnit || !inputValue) return inputValue;
 
         const trimmedValue = inputValue.trim();
@@ -50,7 +51,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         const validUnits = [
             'px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', '%', 
             'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'fr',
-            's', 'ms', 'deg', 'rad', 'grad', 'turn', 'hz', 'khz'
+            's', 'ms', 'deg', 'rad', 'grad', 'turn', 'hz', 'khz',
         ];
         
         // Regex para detectar número seguido de texto
@@ -72,31 +73,24 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         
         // Si no es un número con texto, devolver tal como está
         return inputValue;
-    }
+    } */
 
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextValue(newValue);
-        
-        // Priorizar JSON sobre CSS
-        if (JSONProperty && applyGlobalJSONChange) {
-            applyGlobalJSONChange(JSONProperty, newValue);
-        } else if (cssProperty && applyGlobalCSSChange) {
-            const cssValue = processValueForCSS(newValue);
-            applyGlobalCSSChange(cssProperty, cssValue);
-        }
+    
     };
+
     const handleBlur = (e) => {
         const inputValue = e.target.value;
-        
-        if (autoUnit && inputValue) {
-            const cssValue = processValueForCSS(inputValue);
-            
-            if(cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(cssProperty, cssValue);
-            }
+/*         const cssValue = processValueForCSS(inputValue); */
+    
+        if(JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, inputValue);
+        } else if (cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, inputValue);
         }
-    }
+    };
     
 
     return (
@@ -692,8 +686,7 @@ useEffect(() => {
                     name="Column Gap"
                     value=""
                     placeholder="normal"
-                    cssProperty="column-gap"
-                    autoUnit="px"
+                    cssProperty="column-gap"      
                     applyGlobalCSSChange={applyGlobalCSSChange}
                     getGlobalCSSValue={getGlobalCSSValue}
                     selectedId={selectedId}
@@ -704,7 +697,6 @@ useEffect(() => {
                         value=""
                         placeholder="normal"
                         cssProperty="row-gap"
-                        autoUnit="px"
                         applyGlobalCSSChange={applyGlobalCSSChange}
                         getGlobalCSSValue={getGlobalCSSValue}
                         selectedId={selectedId}
@@ -735,7 +727,6 @@ useEffect(() => {
                         value=""
                         placeholder="auto"
                         cssProperty="flex-basis"
-                        autoUnit="px"
                         applyGlobalCSSChange={applyGlobalCSSChange}
                         getGlobalCSSValue={getGlobalCSSValue}
                         selectedId={selectedId}
@@ -760,7 +751,6 @@ useEffect(() => {
             value=""
             placeholder="0"
             cssProperty="gap"
-            autoUnit="px"
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
             selectedId={selectedId}
@@ -1017,7 +1007,7 @@ useEffect(() => {
     )
 }
 
-const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit, selectedElementData}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [topValue, setTopValue] = useState(() => {
         const saved = getGlobalCSSValue?.(`${cssProperty}-top`);
         return saved || '';
@@ -1047,7 +1037,7 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     }, [selectedElementData, getGlobalCSSValue, cssProperty]);
 
         // Función para procesar valores con unidades (igual que en TextType)
-        const processValueForCSS = (inputValue) => {
+/*         const processValueForCSS = (inputValue) => {
             if (!autoUnit || !inputValue) return inputValue;
             const trimmedValue = inputValue.trim();
             const validUnits = ['px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', '%', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'fr'];
@@ -1062,55 +1052,68 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
                 return trimmedValue;
             }
             return inputValue;
-        };
+        }; */
     
         // Handlers para cada input
         const handleTopChange = (e) => {
             const newValue = e.target.value;
             setTopValue(newValue);
+
+        };
+        const handleTopBlur = (e) => {
+            const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                const cssValue = processValueForCSS(newValue);
-                applyGlobalCSSChange(`${cssProperty}-top`, cssValue);
+                applyGlobalCSSChange(`${cssProperty}-top`, inputValue);
             }
         };
     
         const handleRightChange = (e) => {
             const newValue = e.target.value;
             setRightValue(newValue);
+
+        };
+        const handleRightBlur = (e) => {
+            const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                const cssValue = processValueForCSS(newValue);
-                applyGlobalCSSChange(`${cssProperty}-right`, cssValue);
+                applyGlobalCSSChange(`${cssProperty}-right`, inputValue);
             }
         };
     
         const handleBottomChange = (e) => {
             const newValue = e.target.value;
             setBottomValue(newValue);
+
+        };
+        const handleBottomBlur = (e) => {
+            const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                const cssValue = processValueForCSS(newValue);
-                applyGlobalCSSChange(`${cssProperty}-bottom`, cssValue);
+                applyGlobalCSSChange(`${cssProperty}-bottom`, inputValue);
             }
         };
     
         const handleLeftChange = (e) => {
             const newValue = e.target.value;
             setLeftValue(newValue);
+
+        };
+        const handleLeftBlur = (e) => {
+            const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                const cssValue = processValueForCSS(newValue);
-                applyGlobalCSSChange(`${cssProperty}-left`, cssValue);
+                applyGlobalCSSChange(`${cssProperty}-left`, inputValue);
             }
         };
+        
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
         <span className="tw-builder__settings-subtitle">{name}</span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur}/>
         </div>
     </div>
     )
@@ -1213,7 +1216,7 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty, selecte
         rafRef.current = requestAnimationFrame(() => {
             applyCSSChange(newColor, percentage);
         });
-    }, [percentage, applyCSSChange]);
+    }, []);
 
     // Cleanup RAF on unmount
     useEffect(() => {
@@ -1835,7 +1838,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
            
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} autoUnit={item.autoUnit} />;
+                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
             case 'select':
                 return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>;
             case 'super-select':
