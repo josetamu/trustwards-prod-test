@@ -5,6 +5,8 @@
     position: relative;
 }
 .tw-builder__settings-id{
+    display: flex;
+    justify-content: space-between;
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
@@ -13,6 +15,20 @@
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
+}
+.tw-builder__settings-id--active{
+    background-color: var(--subtitle-color);
+    color: var(--builder-background);
+}
+.tw-builder__settings-class-unactive{
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--builder-background);
+}
+.tw-builder__settings-class-unactive:hover{
+    color: #ff0000;
 }
 .tw-builder__settings-classes-selected{
     display: flex;
@@ -31,12 +47,17 @@
     padding: 5px;
     cursor: pointer;
     position: relative;
+    color: var(--shadow-color);
+}
+.tw-builder__settings-class--active{
+    background-color: var(--subtitle-color);
+    color: var(--builder-background);
 }
 .tw-builder__settings-class-name{
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--shadow-color);
+    
 }
 .tw-builder__settings-class-remove{
     position: absolute;
@@ -48,7 +69,7 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--panels-background);
-    background-color: rgba(255, 0, 0, 0.428);
+    background-color: rgba(255, 0, 0, 0.749);
     padding: 1px 2px;
     border-radius: 100%;
     text-align: center;

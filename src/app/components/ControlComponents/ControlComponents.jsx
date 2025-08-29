@@ -1,6 +1,6 @@
 'use client'
 import { Tooltip } from '@components/tooltip/Tooltip';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import React from 'react';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useCanvas } from '@contexts/CanvasContext';
@@ -134,12 +134,12 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
         }
     }, [getGlobalCSSValue, cssProperty, value]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!measureRef.current) return;    
         setSelectWidth(measureRef.current.offsetWidth + 4);
     }, [selectValue, options]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const onResize = () => {
             if (!measureRef.current) return;
             setSelectWidth(measureRef.current.offsetWidth + 4);
@@ -358,22 +358,22 @@ useEffect(() => {
         }
     };
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!measureRef.current) return;
         setSelectWidth(measureRef.current.offsetWidth + 3);
     }, [superSelectValue]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!wrapMeasureRef.current) return;
         setWrapSelectWidth(wrapMeasureRef.current.offsetWidth + 7);
     }, [selectedWrap]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!flowMeasureRef.current) return;
         setFlowSelectWidth(flowMeasureRef.current.offsetWidth + 3);
     }, [selectedFlow, superSelectValue]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const onResize = () => {
             if (!measureRef.current) return;
             setSelectWidth(measureRef.current.offsetWidth + 3);
@@ -615,38 +615,38 @@ useEffect(() => {
                     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
                         <span className="tw-builder__settings-subtitle">Align</span>
                         <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
-                            <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')} onMouseEnter={() => handleMouseEnter('start')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')} onMouseEnter={() => handleMouseEnter('Astart')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 0.5C12 0.22386 11.7558 0 11.4545 0H0.545454C0.2442 0 0 0.22386 0 0.5C0 0.77614 0.2442 1 0.545454 1H11.4545C11.7558 1 12 0.77614 12 0.5Z" fill="currentColor"/>
                                 </svg>
                                 <Tooltip
                                 message={'Start'}
-                                open={activeTooltip === 'start'}
+                                open={activeTooltip === 'Astart'}
                                 responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action ${selectedAlign === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action ${selectedAlign === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('center')} onMouseEnter={() => handleMouseEnter('Acenter')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 2.5C1.9989 2.22608 1.99541 1.72438 2.04693 1.396C2.11368 0.970462 2.27986 0.522462 2.66748 0.231846C2.84949 0.0954617 3.0426 0.0446155 3.23762 0.0216924C3.42205 1.14624e-07 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 1.14624e-07 8.76238 0.0216924C8.95742 0.0446155 9.1505 0.0954617 9.3325 0.231846C9.72014 0.522462 9.88632 0.970462 9.95309 1.396C10.0046 1.72438 10.0011 2.22608 9.999 2.5C10.0011 2.77392 10.0046 3.27562 9.95309 3.604C9.88632 4.02954 9.72014 4.47754 9.3325 4.76815C9.1505 4.90454 8.95742 4.95538 8.76238 4.97831C8.57795 5 8.35324 5 8.09268 5H3.90733C3.64677 5 3.42204 5 3.23762 4.97831C3.0426 4.95538 2.84949 4.90454 2.66748 4.76815C2.27986 4.47754 2.11368 4.02954 2.04693 3.604C1.99541 3.27562 1.9989 2.77392 2.00098 2.5Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 2.5C12 2.22386 11.7558 2 11.4545 2H0.545454C0.2442 2 0 2.22386 0 2.5C0 2.77614 0.2442 3 0.545454 3H11.4545C11.7558 3 12 2.77614 12 2.5Z" fill="currentColor"/>
                                 </svg>
                                 <Tooltip
                                 message={'Center'}
-                                open={activeTooltip === 'center'}
+                                open={activeTooltip === 'Acenter'}
                                 responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedAlign === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-end')} onMouseEnter={() => handleMouseEnter('end')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedAlign === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-end')} onMouseEnter={() => handleMouseEnter('Aend')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 2C1.9989 1.78086 1.99541 1.37951 2.04693 1.1168C2.11368 0.776369 2.27986 0.417969 2.66748 0.185477C2.84949 0.0763693 3.0426 0.0356924 3.23762 0.0173539C3.42205 9.16995e-08 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 9.16995e-08 8.76238 0.0173539C8.95742 0.0356924 9.1505 0.0763693 9.3325 0.185477C9.72014 0.417969 9.88632 0.776369 9.95309 1.1168C10.0046 1.37951 10.0011 1.78086 9.999 2C10.0011 2.21914 10.0046 2.62049 9.95309 2.8832C9.88632 3.22363 9.72014 3.58203 9.3325 3.81452C9.1505 3.92363 8.95742 3.96431 8.76238 3.98265C8.57795 4 8.35324 4 8.09268 4H3.90733C3.64677 4 3.42204 4 3.23762 3.98265C3.0426 3.96431 2.84949 3.92363 2.66748 3.81452C2.27986 3.58203 2.11368 3.22363 2.04693 2.8832C1.99541 2.62049 1.9989 2.21914 2.00098 2Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 5.5C12 5.22386 11.7558 5 11.4545 5H0.545454C0.2442 5 0 5.22386 0 5.5C0 5.77614 0.2442 6 0.545454 6H11.4545C11.7558 6 12 5.77614 12 5.5Z" fill="currentColor"/>
                                 </svg>
                                 <Tooltip
                                 message={'End'}
-                                open={activeTooltip === 'end'}
+                                open={activeTooltip === 'Aend'}
                                 responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                 width="auto"
                                 />
@@ -1702,11 +1702,8 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
     const [selectedElementData, setSelectedElementData] = useState(null);
 
 
-    
-    console.log('idsCSSData',idsCSSData);
-    console.log('JSONtree idsCSSData',JSONtree.idsCSSData);
     console.log('JSONtree',JSONtree);
-    console.log('selectedElementData',selectedElementData);
+
     
 
 

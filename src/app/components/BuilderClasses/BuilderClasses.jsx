@@ -88,25 +88,44 @@ const eliminateClass = (className) => {
     .map(item => item.className)
     .filter(className => className.includes(search));
 
-    //filter element's classes, excluding the first element
-    const filteredClasses = selectedElement ? 
-        selectedElement.classList
-            .slice(1)
+    //filter element's classes, excluding those that are not in AllClasses
+    const filteredClasses = selectedElement
+        ? selectedElement.classList
+            .filter(className => AllClasses.includes(className))
         : [];
 
     
 
     return (
         <div className="tw-builder__settings-classes">
-            <span className="tw-builder__settings-id" onClick={() => {
+            <span className={`tw-builder__settings-id ${activeClass ? 'tw-builder__settings-id--active' : ''}`} onClick={() => {
                 setIsOpen(!isOpen);
-            }}> {activeClass ? `.${activeClass}` : `#${selectedId}`}</span>
+            }}>
+                {activeClass ? (
+                    <>
+                        .{activeClass}
+                        <span
+                            className="tw-builder__settings-class-unactive"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveClass(null);
+                            }}
+                        >
+                            x
+                        </span>
+                    </>
+                ) : (
+                    `#${selectedId}`
+                )}
+            </span>
             <div className="tw-builder__settings-classes-selected">
                 {filteredClasses.map((className, index) => (
-                    <div className="tw-builder__settings-class" key={index}>
+                    <div className={`tw-builder__settings-class ${activeClass === className ? 'tw-builder__settings-class--active' : ''}`} key={index} onClick={() => {
+                        setActiveClass(className);
+                    }}>
                         <span className="tw-builder__settings-class-name">.{className}</span>
                         <span className="tw-builder__settings-class-remove" onClick={(e) => {
-                            e.stopPropagation();
+                           /*  e.stopPropagation(); */
                             eliminateClass(className);
                         }}>x</span>
                     </div>
@@ -119,9 +138,11 @@ const eliminateClass = (className) => {
                     </div>
                    <div className="tw-builder__settings-classes-list">
                     {AllClasses.map((className, index) => (
-                        <div className="tw-builder__settings-classes-item" key={index} onClick={() => {
+                        <div className="tw-builder__settings-classes-item" key={index} onClick={(e) => {
                             if(selectedId) {
                                 addClass(selectedId, className);
+                                setActiveClass(className);
+                                setIsOpen(false);
                             }
                         }}>
                             <span className="tw-builder__settings-classes-item-name">{className}</span>
