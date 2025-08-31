@@ -79,9 +79,15 @@ const handleKeyPress = (e) => {
 
 const eliminateClass = (className) => {
     removeClass(selectedId, className);
-    setActiveClass(null);
     showNotification("Class removed");
+
 }
+
+useEffect(() => {
+    if (selectedElement && activeClass && !selectedElement.classList.includes(activeClass)) {
+        setActiveClass(null);
+    }
+}, [JSONtree, selectedId, activeClass]);
 
 //filter All classes to see in the pool
     const AllClasses = JSONtree.classesCSSData
@@ -124,7 +130,7 @@ const eliminateClass = (className) => {
                         setActiveClass(className);
                     }}>
                         <span className="tw-builder__settings-class-name">.{className}</span>
-                        <span className="tw-builder__settings-class-remove" onClick={(e) => {
+                        <span className="tw-builder__settings-class-remove" onClick={() => {
                            /*  e.stopPropagation(); */
                             eliminateClass(className);
                         }}>x</span>

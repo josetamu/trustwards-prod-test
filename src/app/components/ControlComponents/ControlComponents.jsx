@@ -42,38 +42,6 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
 
-/*     const processValueForCSS = (inputValue) => {
-        if (!autoUnit || !inputValue) return inputValue;
-
-        const trimmedValue = inputValue.trim();
-        
-        // Lista de unidades CSS válidas
-        const validUnits = [
-            'px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', '%', 
-            'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'fr',
-            's', 'ms', 'deg', 'rad', 'grad', 'turn', 'hz', 'khz',
-        ];
-        
-        // Regex para detectar número seguido de texto
-        const numberWithTextRegex = /^(-?\d*\.?\d+)(.*)$/;
-        const match = trimmedValue.match(numberWithTextRegex);
-        
-        if (match) {
-            const numberPart = match[1];
-            const unitPart = match[2];
-            
-            // Si no hay unidad o la unidad no es válida, añadir unidad automática
-            if (!unitPart || !validUnits.includes(unitPart)) {
-                return `${numberPart}${autoUnit}`;
-            }
-            
-            // Si tiene una unidad válida, devolver tal como está
-            return trimmedValue;
-        }
-        
-        // Si no es un número con texto, devolver tal como está
-        return inputValue;
-    } */
 
     const handleChange = (e) => {
         const newValue = e.target.value;
@@ -1196,9 +1164,8 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty, selecte
             applyGlobalCSSChange(cssProperty, finalValue);
         }
     };
-
-    // Add RAF throttling
-    const rafRef = useRef(null);
+    // Agregar timeout ref para el color
+    const colorTimeoutRef = useRef(null);
 
     //Function to change the color
     const handleColorChange = useCallback((e) => {
@@ -1208,21 +1175,22 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty, selecte
         setColor(newColor);
         setHex(newColor.replace('#', '').toUpperCase());
         
-        // Use requestAnimationFrame to throttle CSS updates to display refresh rate
-        if (rafRef.current) {
-            cancelAnimationFrame(rafRef.current);
+        // Limpiar timeout anterior si existe
+        if (colorTimeoutRef.current) {
+            clearTimeout(colorTimeoutRef.current);
         }
         
-        rafRef.current = requestAnimationFrame(() => {
+        // Aplicar CSS después de 300ms de inactividad
+        colorTimeoutRef.current = setTimeout(() => {
             applyCSSChange(newColor, percentage);
-        });
-    }, []);
+        }, 100);
+    }, [percentage, applyCSSChange]);
 
-    // Cleanup RAF on unmount
+    // Limpiar timeout al desmontar
     useEffect(() => {
         return () => {
-            if (rafRef.current) {
-                cancelAnimationFrame(rafRef.current);
+            if (colorTimeoutRef.current) {
+                clearTimeout(colorTimeoutRef.current);
             }
         };
     }, []);
@@ -1824,7 +1792,6 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
         selectedId,
      };
 
-     console.log(JSONtree)
     
 
     const whatType = (item, index) => {
