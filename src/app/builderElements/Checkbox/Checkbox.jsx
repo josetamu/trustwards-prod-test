@@ -62,16 +62,14 @@ export const Checkbox = (node, nodeProps = {}) => {
             {
                 label: 'Text',
                 controls: [
-                    { name: 'Font Size', type: 'text' },
-                    { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
-                    { name: 'Font Family', type: 'text' },
-                    { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-                    { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
-                    { name: 'Line Height', type: 'text' },
-                    { name: 'Letter Spacing', type: 'text' },
-                    { name: 'Text Decoration', type: 'choose', category: 'decoration'},
-                    { name: 'Text Align', type: 'choose', category: 'text-align'},
                     { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'color' },
+                    { name: 'Font', type: 'text', cssProperty: 'font-family' },
+                    { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
+                    { name: 'Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
+                    { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
+                    { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
+                    { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},
+                    
                 ]
             },
             {

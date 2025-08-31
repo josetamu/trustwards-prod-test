@@ -51,8 +51,6 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
 
     const handleBlur = (e) => {
         const inputValue = e.target.value;
-/*         const cssValue = processValueForCSS(inputValue); */
-    
         if(JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, inputValue);
         } else if (cssProperty && applyGlobalCSSChange) {
@@ -1651,11 +1649,37 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                     <span className="tw-builder__settings-subtitle">{name}</span>
                     <div className="tw-builder__settings-actions">
                         <button className={`tw-builder__settings-action ${selectedChoose === 'left' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('left')} onMouseEnter={() => handleMouseEnter('left')} onMouseLeave={handleMouseLeave}>
-                            <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.00146369 1.5C-0.00165555 1.33565 -0.00688098 1.03463 0.070398 0.8376C0.170525 0.582277 0.419789 0.313477 1.00122 0.139108C1.27423 0.057277 1.56389 0.0267693 1.85643 0.0130155C2.13307 6.87746e-08 2.47015 0 2.86099 0L9.13902 0C9.52986 0 9.86693 6.87746e-08 10.1436 0.0130155C10.4361 0.0267693 10.7257 0.057277 10.9987 0.139108C11.5802 0.313477 11.8295 0.582277 11.9296 0.8376C12.0069 1.03463 12.0017 1.33565 11.9985 1.5C12.0017 1.66435 12.0069 1.96537 11.9296 2.1624C11.8295 2.41772 11.5802 2.68652 10.9987 2.86089C10.7257 2.94272 10.4361 2.97323 10.1436 2.98698C9.86693 3 9.52986 3 9.13902 3H2.86099C2.47015 3 2.13306 3 1.85643 2.98698C1.56389 2.97323 1.27423 2.94272 1.00122 2.86089C0.419789 2.68652 0.170525 2.41772 0.070398 2.1624C-0.00688098 1.96537 -0.00165555 1.66435 0.00146369 1.5Z" fill="currentColor"/>
-                                <path d="M0.000731847 6.5C-0.000827773 6.33565 -0.00344049 6.03463 0.035199 5.8376C0.0852624 5.58228 0.209894 5.31348 0.50061 5.13911C0.637115 5.05728 0.781946 5.02677 0.928217 5.01302C1.06653 5 1.23508 5 1.4305 5H4.56951C4.76493 5 4.93347 5 5.07179 5.01302C5.21806 5.02677 5.36287 5.05728 5.49937 5.13911C5.7901 5.31348 5.91474 5.58228 5.96482 5.8376C6.00343 6.03463 6.00085 6.33565 5.99925 6.5C6.00085 6.66435 6.00343 6.96537 5.96482 7.1624C5.91474 7.41772 5.7901 7.68652 5.49937 7.86089C5.36287 7.94272 5.21806 7.97323 5.07179 7.98698C4.93347 8 4.76493 8 4.56951 8H1.4305C1.23508 8 1.06653 8 0.928217 7.98698C0.781946 7.97323 0.637115 7.94272 0.50061 7.86089C0.209894 7.68652 0.0852624 7.41772 0.035199 7.1624C-0.00344049 6.96537 -0.000827773 6.66435 0.000731847 6.5Z" fill="currentColor"/>
-                                <path d="M0.00109777 11.5C-0.00124166 11.3356 -0.00516074 11.0346 0.0527985 10.8376C0.127894 10.5823 0.314842 10.3135 0.750916 10.1391C0.955672 10.0573 1.17292 10.0268 1.39233 10.013C1.5998 10 1.85261 10 2.14574 10H6.85426C7.14739 10 7.4002 10 7.60768 10.013C7.8271 10.0268 8.04431 10.0573 8.24906 10.1391C8.68515 10.3135 8.87211 10.5823 8.94722 10.8376C9.00514 11.0346 9.00128 11.3356 8.99888 11.5C9.00128 11.6644 9.00514 11.9654 8.94722 12.1624C8.87211 12.4177 8.68515 12.6865 8.24906 12.8609C8.04431 12.9427 7.8271 12.9732 7.60768 12.987C7.4002 13 7.14739 13 6.85426 13H2.14574C1.85261 13 1.5998 13 1.39233 12.987C1.17292 12.9732 0.955672 12.9427 0.750916 12.8609C0.314842 12.6865 0.127894 12.4177 0.0527985 12.1624C-0.00516074 11.9654 -0.00124166 11.6644 0.00109777 11.5Z" fill="currentColor"/>
+                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_d_0_1)">
+                                <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <g filter="url(#filter1_d_0_1)">
+                                <rect x="4" y="6" width="6" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <defs>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                <filter id="filter1_d_0_1" x="0" y="4" width="14" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                </defs>
                             </svg>
+
                             <Tooltip
                             message={'Left'}
                             open={activeTooltip === 'left'}
@@ -1664,11 +1688,37 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             />
                         </button>
                         <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
-                            <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.00146369 1.5C-0.00165555 1.33565 -0.00688098 1.03463 0.070398 0.8376C0.170525 0.582277 0.419789 0.313477 1.00122 0.139108C1.27423 0.057277 1.56389 0.0267693 1.85643 0.0130155C2.13307 6.87746e-08 2.47015 0 2.86099 0L9.13902 0C9.52986 0 9.86693 6.87746e-08 10.1436 0.0130155C10.4361 0.0267693 10.7257 0.057277 10.9987 0.139108C11.5802 0.313477 11.8295 0.582277 11.9296 0.8376C12.0069 1.03463 12.0017 1.33565 11.9985 1.5C12.0017 1.66435 12.0069 1.96537 11.9296 2.1624C11.8295 2.41772 11.5802 2.68652 10.9987 2.86089C10.7257 2.94272 10.4361 2.97323 10.1436 2.98698C9.86693 3 9.52986 3 9.13902 3H2.86099C2.47015 3 2.13306 3 1.85643 2.98698C1.56389 2.97323 1.27423 2.94272 1.00122 2.86089C0.419789 2.68652 0.170525 2.41772 0.070398 2.1624C-0.00688098 1.96537 -0.00165555 1.66435 0.00146369 1.5Z" fill="currentColor"/>
-                                <path d="M3.00073 6.5C2.99917 6.33565 2.99656 6.03463 3.0352 5.8376C3.08526 5.58228 3.20989 5.31348 3.50061 5.13911C3.63711 5.05728 3.78195 5.02677 3.92822 5.01302C4.06653 5 4.23508 5 4.4305 5H7.56951C7.76493 5 7.93347 5 8.07179 5.01302C8.21806 5.02677 8.36287 5.05728 8.49937 5.13911C8.7901 5.31348 8.91474 5.58228 8.96482 5.8376C9.00343 6.03463 9.00085 6.33565 8.99925 6.5C9.00085 6.66435 9.00343 6.96537 8.96482 7.1624C8.91474 7.41772 8.7901 7.68652 8.49937 7.86089C8.36287 7.94272 8.21806 7.97323 8.07179 7.98698C7.93347 8 7.76493 8 7.56951 8H4.4305C4.23508 8 4.06653 8 3.92822 7.98698C3.78195 7.97323 3.63711 7.94272 3.50061 7.86089C3.20989 7.68652 3.08526 7.41772 3.0352 7.1624C2.99656 6.96537 2.99917 6.66435 3.00073 6.5Z" fill="currentColor"/>
-                                <path d="M1.5011 11.5C1.49876 11.3356 1.49484 11.0346 1.5528 10.8376C1.62789 10.5823 1.81484 10.3135 2.25092 10.1391C2.45567 10.0573 2.67292 10.0268 2.89233 10.013C3.0998 10 3.35261 10 3.64574 10H8.35426C8.64739 10 8.9002 10 9.10768 10.013C9.3271 10.0268 9.54431 10.0573 9.74906 10.1391C10.1852 10.3135 10.3721 10.5823 10.4472 10.8376C10.5051 11.0346 10.5013 11.3356 10.4989 11.5C10.5013 11.6644 10.5051 11.9654 10.4472 12.1624C10.3721 12.4177 10.1852 12.6865 9.74906 12.8609C9.54431 12.9427 9.3271 12.9732 9.10768 12.987C8.9002 13 8.64739 13 8.35426 13H3.64574C3.35261 13 3.0998 13 2.89233 12.987C2.67292 12.9732 2.45567 12.9427 2.25092 12.8609C1.81484 12.6865 1.62789 12.4177 1.5528 12.1624C1.49484 11.9654 1.49876 11.6644 1.5011 11.5Z" fill="currentColor"/>
+                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_d_0_1)">
+                                <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <g filter="url(#filter1_d_0_1)">
+                                <rect x="7" y="6" width="6" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <defs>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                <filter id="filter1_d_0_1" x="3" y="4" width="14" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                </defs>
                             </svg>
+
                             <Tooltip
                             message={'Center'}
                             open={activeTooltip === 'center'}
@@ -1677,11 +1727,37 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             />
                         </button>
                         <button className={`tw-builder__settings-action ${selectedChoose === 'right' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('right')} onMouseEnter={() => handleMouseEnter('right')} onMouseLeave={handleMouseLeave}>
-                            <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.00146369 1.5C-0.00165555 1.33565 -0.00688098 1.03463 0.070398 0.8376C0.170525 0.582277 0.419789 0.313477 1.00122 0.139108C1.27423 0.057277 1.56389 0.0267693 1.85643 0.0130155C2.13307 6.87746e-08 2.47015 0 2.86099 0L9.13902 0C9.52986 0 9.86693 6.87746e-08 10.1436 0.0130155C10.4361 0.0267693 10.7257 0.057277 10.9987 0.139108C11.5802 0.313477 11.8295 0.582277 11.9296 0.8376C12.0069 1.03463 12.0017 1.33565 11.9985 1.5C12.0017 1.66435 12.0069 1.96537 11.9296 2.1624C11.8295 2.41772 11.5802 2.68652 10.9987 2.86089C10.7257 2.94272 10.4361 2.97323 10.1436 2.98698C9.86693 3 9.52986 3 9.13902 3H2.86099C2.47015 3 2.13306 3 1.85643 2.98698C1.56389 2.97323 1.27423 2.94272 1.00122 2.86089C0.419789 2.68652 0.170525 2.41772 0.070398 2.1624C-0.00688098 1.96537 -0.00165555 1.66435 0.00146369 1.5Z" fill="currentColor"/>
-                                <path d="M6.00073 6.5C5.99917 6.33565 5.99656 6.03463 6.0352 5.8376C6.08526 5.58228 6.20989 5.31348 6.50061 5.13911C6.63711 5.05728 6.78195 5.02677 6.92822 5.01302C7.06653 5 7.23508 5 7.4305 5H10.5695C10.7649 5 10.9335 5 11.0718 5.01302C11.2181 5.02677 11.3629 5.05728 11.4994 5.13911C11.7901 5.31348 11.9147 5.58228 11.9648 5.8376C12.0034 6.03463 12.0009 6.33565 11.9993 6.5C12.0009 6.66435 12.0034 6.96537 11.9648 7.1624C11.9147 7.41772 11.7901 7.68652 11.4994 7.86089C11.3629 7.94272 11.2181 7.97323 11.0718 7.98698C10.9335 8 10.7649 8 10.5695 8H7.4305C7.23508 8 7.06653 8 6.92822 7.98698C6.78195 7.97323 6.63711 7.94272 6.50061 7.86089C6.20989 7.68652 6.08526 7.41772 6.0352 7.1624C5.99656 6.96537 5.99917 6.66435 6.00073 6.5Z" fill="currentColor"/>
-                                <path d="M3.0011 11.5C2.99876 11.3356 2.99484 11.0346 3.0528 10.8376C3.12789 10.5823 3.31484 10.3135 3.75092 10.1391C3.95567 10.0573 4.17292 10.0268 4.39233 10.013C4.5998 10 4.85261 10 5.14574 10H9.85426C10.1474 10 10.4002 10 10.6077 10.013C10.8271 10.0268 11.0443 10.0573 11.2491 10.1391C11.6852 10.3135 11.8721 10.5823 11.9472 10.8376C12.0051 11.0346 12.0013 11.3356 11.9989 11.5C12.0013 11.6644 12.0051 11.9654 11.9472 12.1624C11.8721 12.4177 11.6852 12.6865 11.2491 12.8609C11.0443 12.9427 10.8271 12.9732 10.6077 12.987C10.4002 13 10.1474 13 9.85426 13H5.14574C4.85261 13 4.5998 13 4.39233 12.987C4.17292 12.9732 3.95567 12.9427 3.75092 12.8609C3.31484 12.6865 3.12789 12.4177 3.0528 12.1624C2.99484 11.9654 2.99876 11.6644 3.0011 11.5Z" fill="currentColor"/>
+                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_d_0_1)">
+                                <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <g filter="url(#filter1_d_0_1)">
+                                <rect x="10" y="6" width="6" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <defs>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                <filter id="filter1_d_0_1" x="6" y="4" width="14" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                </defs>
                             </svg>
+
                             <Tooltip
                             message={'Right'}
                             open={activeTooltip === 'right'}
@@ -1693,6 +1769,69 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                 </div>
             );
     }
+}
+const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value}) => {
+    const [textareaValue, setTextareaValue] = useState(() => {
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        console.log(savedJSONValue);
+        console.log(getGlobalJSONValue?.(JSONProperty))
+        if (!savedJSONValue && value) {
+            setTimeout(() => {
+                if (JSONProperty && applyGlobalJSONChange) {
+                    applyGlobalJSONChange(JSONProperty, value);
+                } 
+            }, 0);
+        }
+        return savedJSONValue || value || '';
+    });
+
+    useEffect(() => {
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;    
+        if (!textareaValue) {
+            
+            setTextareaValue(savedJSONValue || value || '');
+        }
+    }, [getGlobalJSONValue, JSONProperty, value]);
+    
+    const handleChange = (e) => {
+        const newValue = e.target.value;
+        setTextareaValue(newValue);
+        
+        // Si el texto está vacío, usar el valor predeterminado
+        const finalValue = newValue.trim() === '' ? '' : newValue;
+        
+        if(JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, finalValue);
+        } 
+    };
+    const handleBlur = (e) => {
+        const inputValue = e.target.value;
+        
+        // Si está vacío, poner "New Text 2"
+        if (inputValue.trim() === '') {
+            const defaultText = "New Text 2";
+            
+            
+            if(JSONProperty && applyGlobalJSONChange) {
+                applyGlobalJSONChange(JSONProperty, defaultText);
+            } 
+        }
+    };
+
+    return (
+        <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <textarea 
+                name={name} 
+                id={index} 
+                placeholder={placeholder}
+                value={textareaValue}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="tw-builder__settings-textarea"
+            />
+        </div>
+    )
 }
 
 function ControlComponent({control, selectedId, showNotification, selectedLabel}) {
@@ -1777,11 +1916,28 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
      },[selectedId, addJSONProperty]);
 
      const getGlobalJSONValue = useCallback((JSONProperty)=>{
-        if(!selectedId || !JSONProperty) return null;
-
-        return selectedElementData?.[JSONProperty] || null;
+        if(!selectedId || !JSONProperty || !JSONtree?.roots) return null;
     
-     },[selectedElementData, selectedId]);
+        // Buscar el elemento en el árbol JSON
+        const findElement = (node, targetId) => {
+            if(!node) return null;
+            if(node.id === targetId) return node;
+            if(node.children) {
+                for(const child of node.children) {
+                    const result = findElement(child, targetId);
+                    if(result) return result;
+                }
+            }
+            return null;
+        };
+    
+        const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
+        if(!activeRootNode) return null;
+    
+        const selectedElement = findElement(activeRootNode, selectedId);
+        return selectedElement?.[JSONProperty] || null;
+    
+    },[JSONtree, selectedId, activeRoot]);
 
      const globalControlProps = {
         selectedElementData,
@@ -1801,7 +1957,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
             elementId: selectedId,
             ...globalControlProps,
         };
-                
+                console.log(JSONtree)
            
         switch(item.type) {
             case 'text':
@@ -1811,13 +1967,15 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
             case 'super-select':
                 return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
             case 'panel':
-                return <PanelType key={`${index}-${selectedId}`} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
+                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
                 return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} elementId={item.elementId}/>;
             case 'image':
                 return <ImageType key={index} {...enhancedItem} name={item.name} index={index} />;
             case 'choose':
                 return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
+            case 'textarea':
+                return <TextAreaType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
         }
     }
     return (
