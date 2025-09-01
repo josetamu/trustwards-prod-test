@@ -2,7 +2,7 @@
     width: 100%;
     min-height: 80px;
     padding: 8px 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--shadow-color);
     border-radius: 4px;
     font-family: inherit;
     font-size: 14px;
@@ -13,6 +13,58 @@
 
 .tw-builder__settings-textarea:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 2px rgba(var(--accent-color-rgb), 0.1);
+    border-color: var(--shadow-color);
+    box-shadow: 0 0 0 2px var(--box-shadow-color);
+}
+.tw-builder__settings-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 5%;
+    width: fit-content;
+    background: #111;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    list-style: none;
+    margin: 0;
+    padding: 4px 5px;
+    z-index: 20;
+  }
+
+  .tw-builder__settings-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: var(--font-size-mini);
+    position: relative;
+    white-space: nowrap;
+    font-weight: thin;
+
+  }
+  
+  .tw-builder__settings-option:hover {
+    background: var(--accent-bg-color); 
+    border-radius: 3px;
+  }
+
+
+  .tw-builder__settings-check {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 2px;
+
+  }
+  .tw-builder__settings-divider {
+    height: 1px;
+    background-color: #333;
+    margin: 4px 0;
+    cursor: default;
+    padding: 0 12px;
+}
+.tw-builder__settings-divider:hover {
+    background-color: #333;
 }

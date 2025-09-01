@@ -5,7 +5,7 @@ import React from 'react';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useCanvas } from '@contexts/CanvasContext';
 import BuilderClasses from '../BuilderClasses/BuilderClasses';
-import { jsx } from 'react/jsx-runtime';
+import './ControlComponents.css';
 
 
 
@@ -1657,8 +1657,8 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 <rect x="4" y="6" width="6" height="3" rx="1" fill="currentColor"/>
                                 </g>
                                 <defs>
-                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                                 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                                 <feOffset dy="2"/>
                                 <feGaussianBlur stdDeviation="2"/>
@@ -1667,8 +1667,8 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
                                 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
                                 </filter>
-                                <filter id="filter1_d_0_1" x="0" y="4" width="14" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <filter id="filter1_d_0_1" x="0" y="4" width="14" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                                 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                                 <feOffset dy="2"/>
                                 <feGaussianBlur stdDeviation="2"/>
@@ -1696,8 +1696,8 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 <rect x="7" y="6" width="6" height="3" rx="1" fill="currentColor"/>
                                 </g>
                                 <defs>
-                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                                 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                                 <feOffset dy="2"/>
                                 <feGaussianBlur stdDeviation="2"/>
@@ -1706,8 +1706,8 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
                                 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
                                 </filter>
-                                <filter id="filter1_d_0_1" x="3" y="4" width="14" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <filter id="filter1_d_0_1" x="3" y="4" width="14" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                                 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                                 <feOffset dy="2"/>
                                 <feGaussianBlur stdDeviation="2"/>
@@ -1735,8 +1735,8 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 <rect x="10" y="6" width="6" height="3" rx="1" fill="currentColor"/>
                                 </g>
                                 <defs>
-                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                                 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                                 <feOffset dy="2"/>
                                 <feGaussianBlur stdDeviation="2"/>
@@ -1745,8 +1745,8 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
                                 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
                                 </filter>
-                                <filter id="filter1_d_0_1" x="6" y="4" width="14" height="11" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <filter id="filter1_d_0_1" x="6" y="4" width="14" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                                 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                                 <feOffset dy="2"/>
                                 <feGaussianBlur stdDeviation="2"/>
@@ -1773,8 +1773,11 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value}) => {
     const [textareaValue, setTextareaValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
-        console.log(savedJSONValue);
-        console.log(getGlobalJSONValue?.(JSONProperty))
+        
+        if (savedJSONValue === "New Text 2") {
+            return '';
+        }
+        
         if (!savedJSONValue && value) {
             setTimeout(() => {
                 if (JSONProperty && applyGlobalJSONChange) {
@@ -1784,18 +1787,25 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
         }
         return savedJSONValue || value || '';
     });
+    const [hasDefaultText, setHasDefaultText] = useState(false);
 
     useEffect(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;    
         if (!textareaValue) {
-            
-            setTextareaValue(savedJSONValue || value || '');
+            if (savedJSONValue === "New Text 2") {
+                setTextareaValue('');
+            }else{
+                setTextareaValue(savedJSONValue || value || '');
+            }
         }
     }, [getGlobalJSONValue, JSONProperty, value]);
     
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextareaValue(newValue);
+        if (newValue.trim() !== '') {
+            setHasDefaultText(false);
+        }
         
         // Si el texto está vacío, usar el valor predeterminado
         const finalValue = newValue.trim() === '' ? '' : newValue;
@@ -1807,17 +1817,15 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     const handleBlur = (e) => {
         const inputValue = e.target.value;
         
-        // Si está vacío, poner "New Text 2"
         if (inputValue.trim() === '') {
             const defaultText = "New Text 2";
-            
-            
+            setHasDefaultText(true);
             if(JSONProperty && applyGlobalJSONChange) {
                 applyGlobalJSONChange(JSONProperty, defaultText);
             } 
         }
     };
-
+const displayValue = hasDefaultText ? "" : textareaValue;
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
@@ -1825,13 +1833,153 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
                 name={name} 
                 id={index} 
                 placeholder={placeholder}
-                value={textareaValue}
+                value={displayValue}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="tw-builder__settings-textarea"
             />
         </div>
     )
+}
+const NuevoSelect = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2}) =>{
+    const fontWeightMap = {
+        'Thin': '100',
+        'Extra Light': '200', 
+        'Light': '300',
+        'Normal': '400',
+        'Medium': '500',
+        'Semi Bold': '600',
+        'Bold': '700',
+        'Extra Bold': '800',
+        'Black': '900'
+    };
+    const fontWeightMapReverse = () => 
+        Object.fromEntries(
+            Object.entries(fontWeightMap).map(([key, value]) => [value, key])
+        )
+    const [selected, setSelected] = useState(() => {
+        if(JSONProperty && getGlobalJSONValue) {
+            return getGlobalJSONValue(JSONProperty) || value || '';
+        } 
+        if (name === 'Weight' && getGlobalCSSValue && cssProperty) {
+            const cssValue = getGlobalCSSValue(cssProperty);
+            const fontStyle = getGlobalCSSValue('font-style');
+            if (fontStyle === 'italic') {
+                const weightName = fontWeightMapReverse()[cssValue];
+                const italicOption = `${weightName} Italic`;
+                // Verificar si existe en options2
+                if (options2 && options2.includes(italicOption)) {
+                    return italicOption;
+                }
+            }
+
+            return fontWeightMapReverse()[cssValue] || cssValue || value || '';
+        }
+        return getGlobalCSSValue?.(cssProperty) || value || '';
+    });
+
+    const [open, setOpen] = useState(false);
+
+    
+    // Update when selected element changes
+    useEffect(() => {
+        if (JSONProperty && getGlobalJSONValue) {
+            const savedValue = getGlobalJSONValue(JSONProperty);
+            setSelected(savedValue || value || '');
+        } else if (getGlobalCSSValue && cssProperty) {
+            const savedValue = getGlobalCSSValue(cssProperty);
+
+            if (name === 'Weight') {
+                // Convertir valor CSS a valor legible para Weight
+                setSelected(fontWeightMapReverse()[savedValue] || savedValue || value || '');
+            } else {
+                setSelected(savedValue || value || '');
+            }
+        }
+    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value, options2]);
+
+    // Handle select change with global CSS or JSON application
+    const handleSelectChange = (e) => {
+        const newValue = e;
+        setSelected(newValue);
+        if(name === 'Weight') {
+            const fontWeight = fontWeightMap[newValue];
+            if(applyGlobalCSSChange) {
+                applyGlobalCSSChange(cssProperty, fontWeight);
+
+                if (newValue.includes('Italic')) {
+                    applyGlobalCSSChange('font-style', 'italic');
+                } else {
+                    applyGlobalCSSChange('font-style', 'normal');
+                }
+                return;
+            }
+        }
+        // Apply to global JSON system if JSONProperty is provided
+        if (JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, newValue);
+        }
+        // Apply to global CSS system if cssProperty is provided
+        else if (cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, newValue);
+        }
+    };
+
+    // Combine options for Weight
+    const allOptions = name === 'Weight' && options2 ? 
+        [...options, '---', ...options2] : 
+        options;
+
+    return (
+        <div className="tw-builder__settings-setting" key={index}>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <div className="tw-builder__settings-select-container">
+            {/* Botón principal */}
+            <button
+                onClick={() => setOpen(!open)}
+                className="tw-builder__settings-select"
+            >
+                {selected || value}
+            </button>
+            <span className="tw-builder__settings-arrow">
+                    <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                        <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+                    </svg>
+                </span>
+        
+            {/* Lista desplegable */}
+            {open && (
+                <ul className="tw-builder__settings-options">
+                {allOptions.map((opt) => (
+                    <li
+                    key={opt}
+                    onClick={() => {
+                        // No permitir click en el divider
+                        if (opt === '---') return;
+                        handleSelectChange(opt);
+                        setOpen(false);
+                    }}
+                    className={`tw-builder__settings-option ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
+                    >
+                    {opt === selected ? 
+                        <span className="tw-builder__settings-check"> 
+                            <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
+                            </svg>
+                        </span>
+                    : null}
+                    {opt === '---' ? '' : opt}
+
+                    </li>
+                ))}
+                </ul>
+            )}
+            </div>
+        </div>
+
+      );
+
 }
 
 function ControlComponent({control, selectedId, showNotification, selectedLabel}) {
@@ -1976,8 +2124,11 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
                 return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
             case 'textarea':
                 return <TextAreaType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
+            case 'newselect':
+                return <NuevoSelect key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} />;
         }
     }
+    console.log(JSONtree);
     return (
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>

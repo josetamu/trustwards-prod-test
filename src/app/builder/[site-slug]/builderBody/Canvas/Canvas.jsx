@@ -143,7 +143,8 @@ export const Canvas = () => {
             !e.target.closest('.tw-builder__logo-button') &&
             !e.target.closest('.tw-builder__settings-class-remove') &&
             !e.target.closest('.tw-builder__settings-class-unactive') &&
-            !e.target.closest('.tw-builder__settings-classes-item')) {
+            !e.target.closest('.tw-builder__settings-classes-item') &&
+            !e.target.closest('.tw-builder__settings-option')) {
                 setSelectedId(null);
                 setSelectedItem(null);
             }

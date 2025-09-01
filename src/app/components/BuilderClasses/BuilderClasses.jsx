@@ -151,7 +151,7 @@ useEffect(() => {
                                 setIsOpen(false);
                             }
                         }}>
-                            <span className="tw-builder__settings-classes-item-name">{className}</span>
+                            <span className="tw-builder__settings-classes-item-name">.{className}</span>
                         </div>
                     ))}
                     <div className="tw-builder__settings-classes-item--empty">

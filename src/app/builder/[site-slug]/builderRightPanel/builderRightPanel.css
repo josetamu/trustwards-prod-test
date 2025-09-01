@@ -101,6 +101,14 @@
 .tw-builder__settings-select:focus{
     outline: none;
 }
+.tw-builder__settings-select option{
+    background-color: #2B2B2B;
+    color: #fff;
+}
+.tw-builder__settings-select option:hover{
+    background-color: #0099FE;
+    color: #fff;
+}
 
 /* Flecha personalizada */
 .tw-builder__settings-arrow {
