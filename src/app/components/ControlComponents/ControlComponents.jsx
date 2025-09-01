@@ -36,9 +36,9 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
         const savedValue = savedJSONValue || savedCSSValue;
-        if(!textValue) {
+      
             setTextValue(savedValue || value || '');
-        }
+        
     }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
 
@@ -74,7 +74,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     )
 }
 
-const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange}) => {
+/* const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange}) => {
 
     // Initialize with saved value from global CSS system
     const [selectValue, setSelectValue] = useState(() => {
@@ -166,7 +166,7 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
             </div>
         </div>
     );
-};
+}; */
 
 const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
     const [superSelectValue, setSuperSelectValue] = useState(() => {
@@ -1084,7 +1084,7 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     </div>
     )
 }
-const ColorType = ({name, value, opacity, index, elementId, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
+const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
 
     const colorInputRef = useRef(null);
 
@@ -1791,13 +1791,12 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
 
     useEffect(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;    
-        if (!textareaValue) {
             if (savedJSONValue === "New Text 2") {
                 setTextareaValue('');
             }else{
                 setTextareaValue(savedJSONValue || value || '');
             }
-        }
+        
     }, [getGlobalJSONValue, JSONProperty, value]);
     
     const handleChange = (e) => {
@@ -1841,7 +1840,7 @@ const displayValue = hasDefaultText ? "" : textareaValue;
         </div>
     )
 }
-const NuevoSelect = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2}) =>{
+const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2}) =>{
     const fontWeightMap = {
         'Thin': '100',
         'Extra Light': '200', 
@@ -1981,7 +1980,29 @@ const NuevoSelect = ({name, value, options, index, JSONProperty, getGlobalJSONVa
       );
 
 }
+const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange}) => {
+    const [open, setOpen] = useState(false);
+    const [selected, setSelected] = useState(null);
+    return (
+        <div className="tw-builder__settings-setting" key={index}>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <div className="tw-builder__settings-pen-container">
+                <span className="tw-builder__settings-pen" onClick={() => setOpen(!open)}>
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.3815 0.493193C8.30876 0.486644 8.23552 0.486644 8.16278 0.493193C7.90608 0.516317 7.69916 0.63382 7.51218 0.780856C7.33673 0.918791 7.14298 1.1126 6.91819 1.33743L6.31055 1.94503L9.05176 4.6862L9.65935 4.07864C9.88419 3.85382 10.078 3.66003 10.2159 3.48462C10.363 3.29763 10.4805 3.09068 10.5036 2.83398C10.5101 2.76124 10.5101 2.68805 10.5036 2.61531C10.4805 2.35861 10.363 2.15166 10.2159 1.96468C10.078 1.78927 9.88419 1.59547 9.65935 1.37066C9.43456 1.14583 9.20754 0.918797 9.0321 0.780856C8.84511 0.63382 8.6382 0.516317 8.3815 0.493193Z" fill="#999999"/>
+                        <path d="M8.47787 5.26072L5.73671 2.51953L1.50458 6.75161C1.08775 7.16804 0.798073 7.45745 0.642951 7.83196C0.487828 8.20647 0.488023 8.61591 0.488305 9.20514L0.488332 10.1028C0.488332 10.3272 0.670213 10.5091 0.894582 10.5091H1.7923C2.38151 10.5094 2.79098 10.5096 3.16548 10.3544C3.53997 10.1994 3.82937 9.90969 4.2458 9.49282L8.47787 5.26072Z" fill="#999999"/>
+                        <path d="M8.3834 0.493193C8.31065 0.486644 8.23748 0.486644 8.16473 0.493193C7.90803 0.516317 7.70106 0.63382 7.51408 0.780856C7.33869 0.918791 7.14488 1.1126 6.92009 1.33743L6.3125 1.94503L9.05366 4.6862L9.66125 4.07864C9.88609 3.85382 10.0799 3.66003 10.2179 3.48462C10.3649 3.29763 10.4824 3.09068 10.5055 2.83398C10.512 2.76124 10.512 2.68805 10.5055 2.61531C10.4824 2.35861 10.3649 2.15166 10.2179 1.96468C10.0799 1.78927 9.88609 1.59547 9.66125 1.37066C9.43645 1.14583 9.20944 0.918797 9.034 0.780856C8.84701 0.63382 8.6401 0.516317 8.3834 0.493193Z" fill="white"/>
+                    </svg>
+                    {open && (
+                    <div className="tw-builder__settings-pen-controls">
 
+                    </div>
+                )}
+                </span>
+            </div>
+        </div>
+    )
+}
 function ControlComponent({control, selectedId, showNotification, selectedLabel}) {
     const {JSONtree, activeRoot, addCSSProperty, addJSONProperty} = useCanvas();
 
@@ -2110,22 +2131,24 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
         switch(item.type) {
             case 'text':
                 return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
-            case 'select':
-                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>;
+            /* case 'select':
+                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>; */
             case 'super-select':
                 return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
             case 'panel':
                 return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
-                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} elementId={item.elementId}/>;
+                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty}/>;
             case 'image':
                 return <ImageType key={index} {...enhancedItem} name={item.name} index={index} />;
             case 'choose':
                 return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
             case 'textarea':
                 return <TextAreaType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
-            case 'newselect':
-                return <NuevoSelect key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} />;
+            case 'select':
+                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} />;
+            case 'border-shadow':
+                return <BorderShadowType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} />;
         }
     }
     console.log(JSONtree);

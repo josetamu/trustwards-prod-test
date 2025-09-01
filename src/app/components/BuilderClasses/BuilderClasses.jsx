@@ -139,8 +139,11 @@ useEffect(() => {
             </div>
             {isOpen && (
                 <div className="tw-builder__settings-classes-pool" ref={poolRef}>
-                    <div className="tw-builder__settings-classes-searcher">
-                        <input className="tw-builder__settings-classes-search" type="text" placeholder="Class name..." value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleKeyPress}/>
+                    <div className="tw-builder__settings-classes-adder">
+                        <input className="tw-builder__settings-classes-add" type="text" placeholder="Class name..." value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleKeyPress}/>
+                        <div className="tw-builder__settings-classes-add">
+                            <span className="tw-builder__settings-classes-add-span">Add</span>
+                        </div>
                     </div>
                    <div className="tw-builder__settings-classes-list">
                     {AllClasses.map((className, index) => (
