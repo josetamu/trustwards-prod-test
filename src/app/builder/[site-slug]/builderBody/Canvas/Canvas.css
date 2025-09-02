@@ -17,7 +17,7 @@
 
 /*Drop indicator*/
 .tw-builder__canvas .tw-builder__drop-indicator {
-    background-color: #0099FE;
+    background-color: var(--drop-indicator-color);
     margin: 0;
     padding: 0;
     pointer-events: none;
@@ -27,7 +27,7 @@
     width: 100%;
 }
 .tw-builder__canvas .tw-block--hover-drop {
-    outline: 1px dashed #0099FE;
+    outline: 1px dashed var(--drop-indicator-color);
     outline-offset: -1px;
-    background-color: #0099FE15;
+    background-color: var(--drop-indicator-background);
 }

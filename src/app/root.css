@@ -201,6 +201,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   
   --child-selected-color: #666666;
   --tree-childs-background: #0099FE26;
+
+  /*Builder - Drop Indicator*/
+  --drop-indicator-color: #0099FE;
+  --drop-indicator-background: #0099FE15;
 }
 
 .sidebar__logo-img{
@@ -370,6 +374,10 @@ html[data-theme="dark"] {
   
   --child-selected-color: #999999;
   --tree-childs-background: #0099FE26;
+
+  /*Builder - Drop Indicator*/
+  --drop-indicator-color: #0099FE;
+  --drop-indicator-background: #0099FE15;
 }
 
 html[data-theme="dark"] .sidebar__logo-img{

@@ -445,7 +445,8 @@
 }
 
 .tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-text-icon,
-.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-label {
+.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-label,
+.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-block-icon {
     color: var(--tree-item-selected-color);
 }
 
@@ -522,7 +523,7 @@
     width: 4px;
     height: 1px;
     border-radius: 100px;
-    background-color: #FFFFFF;
+    background-color: var(--square-icon-background);
 }
 
 /* ==========================================================================
@@ -698,11 +699,10 @@
     left: 0;
     right: 0;
     height: 2px;
-    background-color: #3b82f6;
+    background-color: var(--drop-indicator-color);
     z-index: 100;
     border-radius: 2px;
     pointer-events: none;
-    box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
 }
 
 /* Drop line before position */
@@ -717,8 +717,7 @@
 
 /* Toolbar drop line styles */
 .tw-builder__drop-line--toolbar {
-    background-color: #3b82f6;
-    box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+    background-color: var(--drop-indicator-color);
     height: 2px;
     border-radius: 2px;
 }
