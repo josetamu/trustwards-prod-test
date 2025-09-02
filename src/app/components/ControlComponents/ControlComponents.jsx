@@ -1991,7 +1991,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
       );
 
 }
-const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, selectedElementData}) => {
+const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState(null);
     const [inset, setInset] = useState(false);
@@ -1999,15 +1999,99 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
     const [activeTooltip, setActiveTooltip] = useState(null);
     const containerRef = useRef(null);
 
-    useEffect(() => {
-        const onPenOpen = (e) => {
-            if (e.detail !== instanceId.current) {
-                setOpen(false);
-            }
+    // Helpers: parse y compose de box-shadow
+    const parseBoxShadow = useCallback((shadowStr) => {
+        if (!shadowStr || typeof shadowStr !== 'string') {
+            return { inset: false, x: '0', y: '0', blur: '0', spread: '0', color: '' };
+        }
+        const hasInset = /\binset\b/i.test(shadowStr);
+        // extraer color (rgba(...) o hex)
+        const colorMatch = shadowStr.match(/rgba\([^)]+\)|#[0-9a-fA-F]{3,6}/i);
+        const color = colorMatch ? colorMatch[0] : '';
+        let rest = shadowStr.replace(/\binset\b/gi, '').replace(color, '').trim();
+        const parts = rest.split(/\s+/).filter(Boolean);
+        // parts: [x, y, blur?, spread?] con unidades
+        const getNum = (s) => {
+            if (!s) return '0';
+            const m = s.match(/^(-?\d+(\.\d+)?)/);
+            return m ? m[1] : s;
         };
-        window.addEventListener('tw-pen-open', onPenOpen);
-        return () => window.removeEventListener('tw-pen-open', onPenOpen);
+        return {
+            inset: hasInset,
+            x: getNum(parts[0]),
+            y: getNum(parts[1]),
+            blur: getNum(parts[2]),
+            spread: getNum(parts[3]),
+            color
+        };
     }, []);
+
+    const composeBoxShadow = useCallback((parts) => {
+        const unitize = (v) => {
+            if (v == null || v === '') return '0px';
+            return /^[\-.\d]+$/.test(v) ? `${v}px` : v;
+        };
+        const tokens = [];
+        if (parts.inset) tokens.push('inset');
+        tokens.push(unitize(parts.x));
+        tokens.push(unitize(parts.y));
+        if (parts.blur && parts.blur !== '0') tokens.push(unitize(parts.blur));
+        else tokens.push(unitize(parts.blur)); // mantener blur aunque sea 0 para consistencia visual
+        if (parts.spread && parts.spread !== '0') tokens.push(unitize(parts.spread));
+        else tokens.push(unitize(parts.spread));
+        if (parts.color && parts.color !== '') tokens.push(parts.color);
+        return tokens.join(' ').trim();
+    }, []);
+
+    // Estados locales derivados del box-shadow real
+    const currentShadow = getGlobalCSSValue?.('box-shadow') || '';
+    const parsed = parseBoxShadow(currentShadow);
+
+    useEffect(() => {
+        setInset(!!parsed.inset);
+    }, [selectedElementData, currentShadow]);
+
+    // Wrappers para hijos: interceptan propiedades virtuales y componen box-shadow real
+    const wrappedGetCSS = useCallback((prop) => {
+        if (prop === 'box-shadow-x') return parsed.x || '0';
+        if (prop === 'box-shadow-y') return parsed.y || '0';
+        if (prop === 'box-shadow-blur') return parsed.blur || '0';
+        if (prop === 'box-shadow-spread') return parsed.spread || '0';
+        if (prop === 'box-shadow-color') return parsed.color || '';
+        // fallback
+        return getGlobalCSSValue?.(prop);
+    }, [getGlobalCSSValue, parsed.x, parsed.y, parsed.blur, parsed.spread, parsed.color]);
+
+    const wrappedApplyCSS = useCallback((prop, val) => {
+        let next = { ...parsed, inset };
+        switch (prop) {
+            case 'box-shadow-x':
+                next.x = (val ?? '').toString().trim();
+                break;
+            case 'box-shadow-y':
+                next.y = (val ?? '').toString().trim();
+                break;
+            case 'box-shadow-blur':
+                next.blur = (val ?? '').toString().trim();
+                break;
+            case 'box-shadow-spread':
+                next.spread = (val ?? '').toString().trim();
+                break;
+            case 'box-shadow-color':
+                next.color = (val ?? '').toString().trim();
+                break;
+            // permitir updates directos también
+            case 'box-shadow':
+                // si llega completo, respetar
+                if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
+                return;
+            default:
+                if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
+                return;
+        }
+        const finalStr = composeBoxShadow(next);
+        if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', finalStr);
+    }, [applyGlobalCSSChange, composeBoxShadow, parsed, inset]);
 
     const toggleOpen = () => {
         const next = !open;
@@ -2022,23 +2106,24 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                 containerRef.current.removeAttribute('data-pen');
             }
         }
-            
     };
 
+    useEffect(() => {
+        const onPenOpen = (e) => {
+            if (e.detail !== instanceId.current) setOpen(false);
+        };
+        window.addEventListener('tw-pen-open', onPenOpen);
+        return () => window.removeEventListener('tw-pen-open', onPenOpen);
+    }, []);
 
-    const handleMouseEnter = (tooltipId) => {
-        setActiveTooltip(tooltipId);
-    };
-    const handleMouseLeave = () => {
-        setActiveTooltip(null);
-    };
-    const handleChooseChange = (choose) => {
-        setSelected(choose);
-    };
+    const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
+    const handleMouseLeave = () => setActiveTooltip(null);
+    const handleChooseChange = (choose) => setSelected(choose);
+
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
-            <div className="tw-builder__settings-pen-container" ref={containerRef}>
+            <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
                 <span className="tw-builder__settings-pen" onClick={toggleOpen}>
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.3815 0.493193C8.30876 0.486644 8.23552 0.486644 8.16278 0.493193C7.90608 0.516317 7.69916 0.63382 7.51218 0.780856C7.33673 0.918791 7.14298 1.1126 6.91819 1.33743L6.31055 1.94503L9.05176 4.6862L9.65935 4.07864C9.88419 3.85382 10.078 3.66003 10.2159 3.48462C10.363 3.29763 10.4805 3.09068 10.5036 2.83398C10.5101 2.76124 10.5101 2.68805 10.5036 2.61531C10.4805 2.35861 10.363 2.15166 10.2159 1.96468C10.078 1.78927 9.88419 1.59547 9.65935 1.37066C9.43456 1.14583 9.20754 0.918797 9.0321 0.780856C8.84511 0.63382 8.6382 0.516317 8.3815 0.493193Z" fill="#999999"/>
@@ -2067,7 +2152,7 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                     getGlobalCSSValue={getGlobalCSSValue}
                                     selectedElementData={selectedElementData}
                                 />
-                                <div className="tw-builder__settings-setting">
+                               <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Width</span>
                                     <div className="tw-builder__settings-width">
                                         <input type="text" className="tw-builder__settings-input" />
@@ -2099,7 +2184,23 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                             </button> 
                                         </div>
                                     </div>
-
+                                    <div className="tw-builder__settings-units">
+                                        <div className="tw-builder__settings-units-label">
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                        </div>
+                                        <div className="tw-builder__settings-units-directions">
+                                            <span className="tw-builder__settings-units-direction">T</span>
+                                            <span className="tw-builder__settings-units-direction">R</span>
+                                            <span className="tw-builder__settings-units-direction">B</span>
+                                            <span className="tw-builder__settings-units-direction">L</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <SelectType
                                     name={'Style'}
@@ -2143,6 +2244,23 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                             </button> 
                                         </div>
                                     </div>
+                                    <div className="tw-builder__settings-units">
+                                        <div className="tw-builder__settings-units-label">
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                        </div>
+                                        <div className="tw-builder__settings-units-directions">
+                                            <span className="tw-builder__settings-units-direction">TL</span>
+                                            <span className="tw-builder__settings-units-direction">TR</span>
+                                            <span className="tw-builder__settings-units-direction">BR</span>
+                                            <span className="tw-builder__settings-units-direction">BL</span>
+                                        </div>
+                                    </div>
 
                                 </div>
                                 </>
@@ -2151,47 +2269,62 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                 <>
                                 <ColorType
                                     index={'box-shadow'}
-                                    cssProperty={'box-shadow'}
-                                    applyGlobalCSSChange={applyGlobalCSSChange}
-                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    cssProperty={'box-shadow-color'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
                                 />
                                 <TextType
                                     name={'X'}
-                                    index={'box-shadow'}
-                                    cssProperty={'box-shadow'}
-                                    applyGlobalCSSChange={applyGlobalCSSChange}
-                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    value={parsed.x}
+                                    index={'box-shadow-x'}
+                                    cssProperty={'box-shadow-x'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
                                 />
                                 <TextType
                                     name={'Y'}
-                                    index={'box-shadow'}
-                                    cssProperty={'box-shadow'}
-                                    applyGlobalCSSChange={applyGlobalCSSChange}
-                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    value={parsed.y}
+                                    index={'box-shadow-y'}
+                                    cssProperty={'box-shadow-y'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
                                 />
                                 <TextType
                                     name={'Blur'}
-                                    index={'box-shadow'}
-                                    cssProperty={'box-shadow'}
-                                    applyGlobalCSSChange={applyGlobalCSSChange}
-                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    value={parsed.blur}
+                                    index={'box-shadow-blur'}
+                                    cssProperty={'box-shadow-blur'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
                                 />
                                 <TextType
                                     name={'Spread'}
-                                    index={'box-shadow'}
-                                    cssProperty={'box-shadow'}
-                                    applyGlobalCSSChange={applyGlobalCSSChange}
-                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    value={parsed.spread}
+                                    index={'box-shadow-spread'}
+                                    cssProperty={'box-shadow-spread'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
                                 />
                                 <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Inset</span>
                                     <label className="tw-builder__settings-inset-container">
-                                        <input type="checkbox" className="tw-builder__settings-checkbox" checked={inset} onChange={(e) => setInset(e.target.checked)}/>
+                                        <input
+                                            type="checkbox"
+                                            className="tw-builder__settings-checkbox"
+                                            checked={!!inset}
+                                            onChange={(e) => {
+                                                const nextInset = e.target.checked;
+                                                setInset(nextInset);
+                                                const next = { ...parsed, inset: nextInset };
+                                                const finalStr = composeBoxShadow(next);
+                                                applyGlobalCSSChange?.('box-shadow', finalStr);
+                                            }}
+                                        />
                                         <span className="tw-builder__settings-inset"></span>
                                     </label>
                                 </div>

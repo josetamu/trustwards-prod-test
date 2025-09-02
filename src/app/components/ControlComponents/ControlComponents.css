@@ -228,10 +228,72 @@
 }
 
 
+
 /* add padding bottom to the right body content when the pen is open. This is to prevent the control being next to the panel */
 .tw-builder__right-body-content:has([data-pen="shadow"]){
     padding-bottom: 240px;
 }
 .tw-builder__right-body-content:has([data-pen="border"]){
-    padding-bottom: 150px;
+    padding-bottom: 270px;
+}
+
+.tw-builder__settings-pen-body .tw-builder__settings-setting{
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.tw-builder__settings-units{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: end;
+    gap: 5px;
+}
+.tw-builder__settings-units-label{
+    display: flex;
+    flex-direction: row;
+    background-color:#404040;;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+}
+.tw-builder__settings-units-divider{
+    width: 1px;
+    height: 17px;
+    background-color: #555555;
+
+}
+
+.tw-builder__settings-input--unit{
+    width: 25px !important;
+    height: 25px;
+    border-radius: 5px;
+    border: none;
+    background-color: transparent !important;
+    text-align: center;
+    font-size: var(--font-size-mini) !important;
+    font-weight: var(--font-weight) !important;
+    letter-spacing: var(--letter-spacing-negative) !important;
+}
+.tw-builder__settings-units-directions{
+    display: flex;
+    flex-direction: row;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+}
+.tw-builder__settings-units-direction{
+    width: 25px !important;
+    height: 25px;
+    border-radius: 5px;
+    border: none;
+    background-color: transparent !important;
+    color:#AAAAAA;
+    text-align: center;
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: var(--letter-spacing-negative) !important;
+    padding-right: 2px;
 }
