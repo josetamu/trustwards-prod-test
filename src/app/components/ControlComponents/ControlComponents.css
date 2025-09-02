@@ -41,8 +41,7 @@
     font-size: var(--font-size-mini);
     position: relative;
     white-space: nowrap;
-    font-weight: thin;
-
+    font-weight: var(--font-weight);
   }
   
   .tw-builder__settings-option:hover {
@@ -71,6 +70,7 @@
 .tw-builder__settings-pen-container {
     position: relative;
 }
+
 .tw-builder__settings-pen {
     display: flex;
     align-items: center;
@@ -83,12 +83,155 @@
 }
 .tw-builder__settings-pen-controls {
     position: absolute;
-    top: 110%;
+    top: 0;
     right: 10%;
     width: 175px;
-    height: 252px;
+    height: fit-content;
     border-radius: 5px;
     background-color: #2B2B2B;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
     z-index: 10;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.tw-builder__settings-pen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.tw-builder__settings-pen-name {
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: #F5F5F5;
+}
+.tw-builder__settings-pen-close {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666666;
+}
+.tw-builder__settings-pen-close:hover {
+    color: #F5F5F5;
+}
+
+.tw-builder__settings-pen-divider {
+    height: 1px;
+    background-color: #363636;
+
+}
+.tw-builder__settings-pen-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.tw-builder__settings-pen-body .tw-builder__settings-subtitle {
+    color:  #AAAAAA;
+}
+.tw-builder__settings-pen-body .tw-builder__settings-input {
+    background-color: #404040;
+    color: #F5F5F5;
+    width: 54px;
+
+}
+.tw-builder__settings-pen-body .tw-builder__settings-background{
+    background-color: #404040;
+}
+
+.tw-builder__settings-pen-body .tw-builder__settings-hex,
+.tw-builder__settings-pen-body .tw-builder__settings-percentage {
+    color: #F5F5F5;
+}
+
+.tw-builder__settings-pen-body .tw-builder__settings-color,
+.tw-builder__settings-pen-body .tw-builder__settings-percentages {
+    border-color: #555555;
+}
+
+.tw-builder__settings-inset-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 26px;
+    height: 16px;
+}
+.tw-builder__settings-checkbox {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.tw-builder__settings-inset {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #404040;
+    border-radius: 34px;
+    transition: .2s;
+    overflow: hidden;
+}
+
+.tw-builder__settings-inset:before {
+    position: absolute;
+    content: "";
+    height: 10px;
+    width: 10px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .2s;
+    border-radius: 50%;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+}
+  
+.tw-builder__settings-checkbox:checked + .tw-builder__settings-inset {
+    background-color: var(--accent-bg-color);
+}
+.tw-builder__settings-checkbox:checked + .tw-builder__settings-inset:before {
+    transform: translateX(10px);
+}
+
+.tw-builder__settings-pen-body .tw-builder__settings-select {
+    background-color: #2B2B2B;
+    color: #F5F5F5;
+}
+.tw-builder__settings-pen-body .tw-builder__settings-actions {
+    display: flex;
+    flex-direction: row;
+    background-color: #404040;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 5px;
+}
+
+.tw-builder__settings-pen-body .tw-builder__settings-action {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}
+.tw-builder__settings-pen-body .tw-builder__settings-action--active {
+    background-color: #666666;
+    color: #FFFFFF;
+    border-color: #666666;
+}
+.tw-builder__settings-width{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+   
+}
+
+
+/* add padding bottom to the right body content when the pen is open. This is to prevent the control being next to the panel */
+.tw-builder__right-body-content:has([data-pen="shadow"]){
+    padding-bottom: 240px;
+}
+.tw-builder__right-body-content:has([data-pen="border"]){
+    padding-bottom: 150px;
 }

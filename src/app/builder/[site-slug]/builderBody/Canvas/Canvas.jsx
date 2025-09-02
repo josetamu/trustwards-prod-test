@@ -144,7 +144,8 @@ export const Canvas = () => {
             !e.target.closest('.tw-builder__settings-class-remove') &&
             !e.target.closest('.tw-builder__settings-class-unactive') &&
             !e.target.closest('.tw-builder__settings-classes-item') &&
-            !e.target.closest('.tw-builder__settings-option')) {
+            !e.target.closest('.tw-builder__settings-option') &&
+            !e.target.closest('.tw-builder__settings-pen-controls')) {
                 setSelectedId(null);
                 setSelectedItem(null);
             }

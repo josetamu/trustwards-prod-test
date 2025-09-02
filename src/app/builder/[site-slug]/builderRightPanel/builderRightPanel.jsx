@@ -94,10 +94,12 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 <BuilderSave showNotification={showNotification} siteSlug={siteSlug}/>
             </div>
             <div className="tw-builder__right-body">
+                <div className="tw-builder__right-body-content">
                 {/* If no element is selected, show the no selected item */}
                 {(!selectedId || selectedId === 'tw-root--banner' || selectedId === 'tw-root--model') && <NoSelectedItem/>}
-                {/* Check the type element and show the correct controls */}
-                {currentControls && <ControlComponent control={currentControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel}/>}               
+                    {/* Check the type element and show the correct controls */}
+                    {currentControls && <ControlComponent control={currentControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel}/>}               
+                </div>
             </div>
         </div>
     )

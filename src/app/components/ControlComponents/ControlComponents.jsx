@@ -1878,8 +1878,19 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     });
 
     const [open, setOpen] = useState(false);
+    const containerRef = useRef(null);
 
-    
+    useEffect(() => {
+        if (!open) return;
+        const handleClickOutside = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [open]);
+
     // Update when selected element changes
     useEffect(() => {
         if (JSONProperty && getGlobalJSONValue) {
@@ -1932,7 +1943,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
-            <div className="tw-builder__settings-select-container">
+            <div className="tw-builder__settings-select-container" ref={containerRef}>
             {/* Botón principal */}
             <button
                 onClick={() => setOpen(!open)}
@@ -1980,25 +1991,215 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
       );
 
 }
-const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange}) => {
+const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, selectedElementData}) => {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState(null);
+    const [inset, setInset] = useState(false);
+    const instanceId = useRef(Symbol('pen'));
+    const [activeTooltip, setActiveTooltip] = useState(null);
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        const onPenOpen = (e) => {
+            if (e.detail !== instanceId.current) {
+                setOpen(false);
+            }
+        };
+        window.addEventListener('tw-pen-open', onPenOpen);
+        return () => window.removeEventListener('tw-pen-open', onPenOpen);
+    }, []);
+
+    const toggleOpen = () => {
+        const next = !open;
+        setOpen(next);
+        if (next) {
+            window.dispatchEvent(new CustomEvent('tw-pen-open', { detail: instanceId.current }));
+        }
+        if (containerRef.current) {
+            if (next) {
+                containerRef.current.setAttribute('data-pen', name?.toLowerCase());
+          } else {
+                containerRef.current.removeAttribute('data-pen');
+            }
+        }
+            
+    };
+
+
+    const handleMouseEnter = (tooltipId) => {
+        setActiveTooltip(tooltipId);
+    };
+    const handleMouseLeave = () => {
+        setActiveTooltip(null);
+    };
+    const handleChooseChange = (choose) => {
+        setSelected(choose);
+    };
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
-            <div className="tw-builder__settings-pen-container">
-                <span className="tw-builder__settings-pen" onClick={() => setOpen(!open)}>
+            <div className="tw-builder__settings-pen-container" ref={containerRef}>
+                <span className="tw-builder__settings-pen" onClick={toggleOpen}>
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.3815 0.493193C8.30876 0.486644 8.23552 0.486644 8.16278 0.493193C7.90608 0.516317 7.69916 0.63382 7.51218 0.780856C7.33673 0.918791 7.14298 1.1126 6.91819 1.33743L6.31055 1.94503L9.05176 4.6862L9.65935 4.07864C9.88419 3.85382 10.078 3.66003 10.2159 3.48462C10.363 3.29763 10.4805 3.09068 10.5036 2.83398C10.5101 2.76124 10.5101 2.68805 10.5036 2.61531C10.4805 2.35861 10.363 2.15166 10.2159 1.96468C10.078 1.78927 9.88419 1.59547 9.65935 1.37066C9.43456 1.14583 9.20754 0.918797 9.0321 0.780856C8.84511 0.63382 8.6382 0.516317 8.3815 0.493193Z" fill="#999999"/>
                         <path d="M8.47787 5.26072L5.73671 2.51953L1.50458 6.75161C1.08775 7.16804 0.798073 7.45745 0.642951 7.83196C0.487828 8.20647 0.488023 8.61591 0.488305 9.20514L0.488332 10.1028C0.488332 10.3272 0.670213 10.5091 0.894582 10.5091H1.7923C2.38151 10.5094 2.79098 10.5096 3.16548 10.3544C3.53997 10.1994 3.82937 9.90969 4.2458 9.49282L8.47787 5.26072Z" fill="#999999"/>
                         <path d="M8.3834 0.493193C8.31065 0.486644 8.23748 0.486644 8.16473 0.493193C7.90803 0.516317 7.70106 0.63382 7.51408 0.780856C7.33869 0.918791 7.14488 1.1126 6.92009 1.33743L6.3125 1.94503L9.05366 4.6862L9.66125 4.07864C9.88609 3.85382 10.0799 3.66003 10.2179 3.48462C10.3649 3.29763 10.4824 3.09068 10.5055 2.83398C10.512 2.76124 10.512 2.68805 10.5055 2.61531C10.4824 2.35861 10.3649 2.15166 10.2179 1.96468C10.0799 1.78927 9.88609 1.59547 9.66125 1.37066C9.43645 1.14583 9.20944 0.918797 9.034 0.780856C8.84701 0.63382 8.6401 0.516317 8.3834 0.493193Z" fill="white"/>
                     </svg>
-                    {open && (
+                </span>
+                {open && (
                     <div className="tw-builder__settings-pen-controls">
+                        <div className="tw-builder__settings-pen-header">
+                            <span className="tw-builder__settings-pen-name">{name}</span>
+                            <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
+                                <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 1L1.00034 5.99967M5.99967 6L1 1.00035" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </span>
+                        </div>
+                        <div className="tw-builder__settings-pen-divider"></div>
+                        <div className="tw-builder__settings-pen-body">
+                            {name === 'Border' && (
+                                <> 
+                                <ColorType
+                                    index={'border-color'}
+                                    cssProperty={'border-color'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <div className="tw-builder__settings-setting">
+                                    <span className="tw-builder__settings-subtitle">Width</span>
+                                    <div className="tw-builder__settings-width">
+                                        <input type="text" className="tw-builder__settings-input" />
+                                        <div className="tw-builder__settings-actions">
+                                            <button className={`tw-builder__settings-action ${selected === 'link' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('link')} onMouseEnter={() => handleMouseEnter('link')} onMouseLeave={handleMouseLeave}>
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect x="0.5" y="0.5" width="7" height="7" rx="1.5" stroke="currentColor"/>
+                                                </svg>
+                                                <Tooltip
+                                                message={'Link'}
+                                                open={activeTooltip === 'link'}
+                                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                                width="auto"
+                                                />
+                                            </button> 
+                                            <button className={`tw-builder__settings-action ${selected === 'unlink' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('unlink')} onMouseEnter={() => handleMouseEnter('unlink')} onMouseLeave={handleMouseLeave}>
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <line x1="0.5" y1="2" x2="0.5" y2="6" stroke="currentColor"/>
+                                                    <line x1="7.5" y1="2" x2="7.5" y2="6" stroke="currentColor"/>
+                                                    <line x1="6" y1="0.5" x2="2" y2="0.5" stroke="currentColor"/>
+                                                    <line x1="6" y1="7.5" x2="2" y2="7.5" stroke="currentColor"/>
+                                                </svg>
+                                                <Tooltip
+                                                message={'Unlink'}
+                                                open={activeTooltip === 'unlink'}
+                                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                                width="auto"
+                                                />
+                                            </button> 
+                                        </div>
+                                    </div>
 
+                                </div>
+                                <SelectType
+                                    name={'Style'}
+                                    value={'None'}
+                                    options={['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset']}
+                                    index={'border-style'}
+                                    cssProperty={'border-style'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <div className="tw-builder__settings-setting">
+                                    <span className="tw-builder__settings-subtitle">Radius</span>
+                                    <div className="tw-builder__settings-width">
+                                        <input type="text" className="tw-builder__settings-input" />
+                                        <div className="tw-builder__settings-actions">
+                                            <button className={`tw-builder__settings-action ${selected === 'rlink' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('rlink')} onMouseEnter={() => handleMouseEnter('rlink')} onMouseLeave={handleMouseLeave}>
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect x="0.5" y="0.5" width="7" height="7" rx="1.5" stroke="currentColor"/>
+                                                </svg>
+                                                <Tooltip
+                                                message={'Link'}
+                                                open={activeTooltip === 'rlink'}
+                                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                                width="auto"
+                                                />
+                                            </button> 
+                                            <button className={`tw-builder__settings-action ${selected === 'runlink' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('runlink')} onMouseEnter={() => handleMouseEnter('runlink')} onMouseLeave={handleMouseLeave}>
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <line x1="0.5" y1="2" x2="0.5" y2="6" stroke="currentColor"/>
+                                                    <line x1="7.5" y1="2" x2="7.5" y2="6" stroke="currentColor"/>
+                                                    <line x1="6" y1="0.5" x2="2" y2="0.5" stroke="currentColor"/>
+                                                    <line x1="6" y1="7.5" x2="2" y2="7.5" stroke="currentColor"/>
+                                                </svg>
+                                                <Tooltip
+                                                message={'Unlink'}
+                                                open={activeTooltip === 'runlink'}
+                                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                                width="auto"
+                                                />
+                                            </button> 
+                                        </div>
+                                    </div>
+
+                                </div>
+                                </>
+                            )}
+                            {name === 'Shadow' && (
+                                <>
+                                <ColorType
+                                    index={'box-shadow'}
+                                    cssProperty={'box-shadow'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <TextType
+                                    name={'X'}
+                                    index={'box-shadow'}
+                                    cssProperty={'box-shadow'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <TextType
+                                    name={'Y'}
+                                    index={'box-shadow'}
+                                    cssProperty={'box-shadow'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <TextType
+                                    name={'Blur'}
+                                    index={'box-shadow'}
+                                    cssProperty={'box-shadow'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <TextType
+                                    name={'Spread'}
+                                    index={'box-shadow'}
+                                    cssProperty={'box-shadow'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <div className="tw-builder__settings-setting">
+                                    <span className="tw-builder__settings-subtitle">Inset</span>
+                                    <label className="tw-builder__settings-inset-container">
+                                        <input type="checkbox" className="tw-builder__settings-checkbox" checked={inset} onChange={(e) => setInset(e.target.checked)}/>
+                                        <span className="tw-builder__settings-inset"></span>
+                                    </label>
+                                </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 )}
-                </span>
             </div>
         </div>
     )
@@ -2126,7 +2327,6 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
             elementId: selectedId,
             ...globalControlProps,
         };
-                console.log(JSONtree)
            
         switch(item.type) {
             case 'text':
@@ -2138,7 +2338,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
             case 'panel':
                 return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
-                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty}/>;
+                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
             case 'image':
                 return <ImageType key={index} {...enhancedItem} name={item.name} index={index} />;
             case 'choose':
@@ -2151,7 +2351,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
                 return <BorderShadowType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} />;
         }
     }
-    console.log(JSONtree);
+
     return (
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>

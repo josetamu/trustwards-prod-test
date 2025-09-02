@@ -35,7 +35,12 @@
     overflow-x: hidden;
     scrollbar-width: none;
 }
-
+.tw-builder__right-body-content{
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px; 
+}
 
 /* Controls css */
 .tw-builder__settings{
@@ -52,6 +57,7 @@
     border-bottom: 1px solid var(--border-light-color);
     padding-bottom: 10px;
 }
+
 
 .tw-builder__settings-label{
     font-size: var(--font-size-small);
@@ -124,6 +130,7 @@
 
 .tw-builder__settings-input{
     width: 60px;
+    height: 22px;
     padding: 5px;
     border-radius: 5px;
     border: none;

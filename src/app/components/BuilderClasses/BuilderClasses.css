@@ -97,7 +97,7 @@
     flex-direction: column;
     gap: 5px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border-light-color);
+
 }
 .tw-builder__settings-classes-adder {
     width: 100%;
@@ -182,11 +182,20 @@
     flex-direction: column;
     max-height: 150px;
     overflow-y: auto;
+    scrollbar-color: #444 transparent;
     scrollbar-width: thin;
-    scrollbar-gutter: stable; 
     width: 98%;
-
+    scrollbar-arrow-color: transparent;
 }
+
+
+.tw-builder__settings-classes-list::-webkit-scrollbar-button {
+    display: none;
+}
+
+
+
+
 .tw-builder__settings-classes-item{
     display: none;
 } 

@@ -79,7 +79,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                         { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
                         { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
                         {name: 'Border', type: 'border-shadow'},
-                        {name: 'Box Shadow', type: 'border-shadow'},
+                        {name: 'Shadow', type: 'border-shadow'},
                     ]
                 }
             ]
