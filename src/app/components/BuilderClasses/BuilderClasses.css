@@ -17,15 +17,16 @@
     cursor: pointer;
 }
 .tw-builder__settings-id--active{
-    background-color: var(--subtitle-color);
-    color: var(--builder-background);
+    background-color: #2B2B2B;
+    color: #FFFFFF;
+    
 }
 .tw-builder__settings-class-unactive{
     cursor: pointer;
     font-size: 10px;
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--builder-background);
+    color: #FFFFFF;
 }
 .tw-builder__settings-class-unactive:hover{
     color: #ff0000;
@@ -50,8 +51,8 @@
     color: var(--shadow-color);
 }
 .tw-builder__settings-class--active{
-    background-color: var(--subtitle-color);
-    color: var(--builder-background);
+    background-color: #2B2B2B;
+    color: #FFFFFF;
 }
 .tw-builder__settings-class-name{
     font-size: var(--font-size-mini);
@@ -91,7 +92,6 @@
     height: auto;
     background-color: #2B2B2B;
     z-index: 2;
-    padding: 10px;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -99,15 +99,17 @@
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--border-light-color);
 }
-.tw-builder__settings-classes-searcher {
+.tw-builder__settings-classes-adder {
     width: 100%;
     height: 25px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 20px 5px 10px 5px;
 
 }
-.tw-builder__settings-classes-search {
+
+.tw-builder__settings-classes-add-input {
     width: 100%;
     height: 100%;
     border-radius: 5px;
@@ -119,24 +121,81 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
 }
-.tw-builder__settings-classes-search::placeholder {
+.tw-builder__settings-classes-add{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    background-color: var(--accent-bg-color);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 2px 6.5px;
+    box-shadow: var(--blue-button-shadow);
+   
+}
+.tw-builder__settings-classes-add-span{
     color: #FFFFFF;
+    font-size: 11px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__settings-classes-add-input::placeholder {
+    color: #FFFFFF;
+}
+.tw-builder__settings-classes-add-input:focus {
+    outline: none;
+}
+.tw-builder__settings-classes-divider{
+    width: 100%;
+    height: 1px;
+    background-color: #363636;
+}
+
+.tw-builder__settings-classes-searcher {
+    width: 100%;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.tw-builder__settings-classes-search {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border: none;
+    padding: 5px 10px;
+    background-color: transparent;
+    color: #FFFFFF;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-classes-search:focus {
     outline: none;
 }
+.tw-builder__settings-classes-search::placeholder {
+    color: #FFFFFF;
+}
+.tw-builder__settings-classes-list{
+    padding: 0 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    max-height: 150px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable; 
+    width: 98%;
 
+}
 .tw-builder__settings-classes-item{
     display: none;
 } 
 .tw-builder__settings-classes-item:hover{
-    background-color: var(--panels-background);
-    color: var(--builder-color);
-    font-weight: var(--font-weight-bold);
+    background-color: var(--accent-bg-color);
 }
 .tw-builder__settings-classes-item:has(.tw-builder__settings-classes-item-name){
     cursor: pointer;
-    padding: 2px;
+    padding: 5px;
     border-radius: 5px;
     height: 20px;
     display: flex;
@@ -167,21 +226,3 @@
     display: none;
 }
 
-.tw-builder__settings-classes-add{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    background-color: var(--accent-bg-color);
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 5px  10px;
-    box-shadow: var(--blue-button-shadow);
-   
-}
-.tw-builder__settings-classes-add-span{
-    color: #FFFFFF;
-    font-size: 11px;
-    font-weight: var(--font-weight);
-    letter-spacing: var(--letter-spacing-negative);
-}

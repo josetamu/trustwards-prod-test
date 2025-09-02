@@ -6,7 +6,8 @@ import { useCanvas } from "@contexts/CanvasContext";
 
 export default function BuilderClasses({selectedId,showNotification}) {
     const [isOpen, setIsOpen] = useState(false);
-    //search classes
+    
+    const [newClass, setNewClass] = useState("");
     const [search, setSearch] = useState("");
     const [activeClass, setActiveClass] = useState(null);
     const {addClass,JSONtree,activeRoot,removeClass} = useCanvas();
@@ -66,13 +67,15 @@ const createNewClass = (newClass) => {
     return true; // Indicate class was created
 };
 
-const handleKeyPress = (e) => {
+const handleAddClass = (e) => {
     if (e.key === "Enter") {
-        const created = createNewClass(search);
+        const created = createNewClass(newClass);
         if (created) {
             showNotification("Class created");
+        } else if (newClass && selectedElement && selectedElement.classList.includes(newClass)) {
+            setActiveClass(newClass);
         }
-        setSearch("");
+        setNewClass("");
         setIsOpen(false);
     }
 }
@@ -140,12 +143,17 @@ useEffect(() => {
             {isOpen && (
                 <div className="tw-builder__settings-classes-pool" ref={poolRef}>
                     <div className="tw-builder__settings-classes-adder">
-                        <input className="tw-builder__settings-classes-add" type="text" placeholder="Class name..." value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleKeyPress}/>
+                        <input className="tw-builder__settings-classes-add-input" type="text" placeholder="Class name..." value={newClass} onChange={(e) => setNewClass(e.target.value)} onKeyDown={handleAddClass}/>
                         <div className="tw-builder__settings-classes-add">
                             <span className="tw-builder__settings-classes-add-span">Add</span>
                         </div>
                     </div>
-                   <div className="tw-builder__settings-classes-list">
+                    <div className="tw-builder__settings-classes-divider"></div>
+                   
+                    <div className="tw-builder__settings-classes-searcher">
+                        <input className="tw-builder__settings-classes-search" type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}/>
+                    </div>
+                    <div className="tw-builder__settings-classes-list">
                     {AllClasses.map((className, index) => (
                         <div className="tw-builder__settings-classes-item" key={index} onClick={(e) => {
                             if(selectedId) {
@@ -158,10 +166,11 @@ useEffect(() => {
                         </div>
                     ))}
                     <div className="tw-builder__settings-classes-item--empty">
-                        <span className="tw-builder__settings-classes-item-name">Create a new CSS class</span>
+                            <span className="tw-builder__settings-classes-item-name">Create a new CSS class</span>
+                        </div>
                     </div>
                     </div>
-                </div>
+             
             )}
         </div>
     )

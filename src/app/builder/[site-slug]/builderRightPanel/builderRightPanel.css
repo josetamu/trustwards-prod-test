@@ -57,7 +57,7 @@
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: #000;
+    color: var(--label-color);
 }
 
 .tw-builder__settings-setting{
