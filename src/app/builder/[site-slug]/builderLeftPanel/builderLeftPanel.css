@@ -273,11 +273,9 @@
    ========================================================================== */
 
 /* Selected tree item icon colors */
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-square-icon {
-    background-color: var(--tree-item-selected-color);
-}
 
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-text-icon {
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-text-icon,
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-block-icon {
     color: var(--tree-item-selected-color);
 }
 
@@ -285,10 +283,7 @@
     fill: var(--tree-item-selected-color);
 }
 
-.tw-builder__tree-item-header--selected .tw-builder__tree-item-divider-icon {
-    background-color: var(--tree-item-selected-color);
-}
-
+.tw-builder__tree-item-header--selected .tw-builder__tree-item-divider-icon,
 .tw-builder__tree-item-header--selected .tw-builder__tree-item-button-icon {
     background-color: var(--tree-item-selected-color);
 }
@@ -312,9 +307,6 @@
 }
 
 /* Child selected intermediate tree item icon colors */
-.tw-builder__tree-item-header--child-selected .tw-builder__tree-item-square-icon {
-    background-color: var(--tree-item-child-selected-color);
-}
 
 .tw-builder__tree-item-header--child-selected .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-child-selected-color);
@@ -329,9 +321,7 @@
     color: var(--tree-item-child-selected-color);
 }
 
-.tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-item-square-icon {
-    background-color: var(--tree-item-child-selected-color);
-}
+
 
 .tw-builder__tree-item-header--child-selected-intermediate .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-child-selected-color);
@@ -359,9 +349,7 @@
     color: var(--tree-item-child-selected-color);
 }
 
-.tw-builder__tree-item-header--collapsed-parent-with-selected-child .tw-builder__tree-item-square-icon {
-    background-color: var(--tree-item-child-selected-color);
-}
+
 
 .tw-builder__tree-item-header--collapsed-parent-with-selected-child .tw-builder__tree-item-image-icon {
     fill: var(--tree-item-child-selected-color);
@@ -397,8 +385,7 @@
     color: var(--tree-item-selected-color);
 }
 
-/* Tree item header drag over inside position icons */
-.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-square-icon,
+/* Tree item header drag over inside position - all child elements */
 .tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-divider-icon,
 .tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-button-icon {
     background-color: var(--tree-item-selected-color);
@@ -417,17 +404,11 @@
     color: var(--tree-expand-button-selected-color);
 }
 
-
-/* Tree item header drag over for before/after positions */
+/* Tree item header drag over for before/after positions - all child elements */
 .tw-builder__tree-item-header--drag-over[data-position="before"],
 .tw-builder__tree-item-header--drag-over[data-position="after"] {
     background-color: transparent;
     color: inherit;
-}
-
-.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-square-icon,
-.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-square-icon {
-    background-color: var(--square-icon-background);
 }
 
 .tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-text-icon,
@@ -441,23 +422,10 @@
 }
 
 .tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-divider-icon,
-.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-divider-icon {
-    background-color: var(--tree-text-icon-color);
-}
-
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-divider-icon,
 .tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-button-icon,
 .tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-button-icon {
     background-color: var(--tree-text-icon-color);
-}
-
-.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-expand-button,
-.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-expand-button {
-    color: var(--tree-expand-button-color);
-}
-
-.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-label,
-.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-label {
-    color: var(--subtitle-color);
 }
 
 /* Tree Item Header Toolbar Drag States */
@@ -465,19 +433,19 @@
     background-color: transparent;
 }
 
-/* Tree item header toolbar drag over inside position */
+/* Tree item header toolbar drag over inside position - all child elements */
 .tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] {
     background-color: var(--tree-item-selected-background);
     color: var(--tree-item-selected-color);
 }
 
-.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-square-icon,
 .tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-divider-icon,
 .tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-button-icon {
     background-color: var(--tree-item-selected-color);
 }
 
-.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-text-icon {
+.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-text-icon,
+.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-label {
     color: var(--tree-item-selected-color);
 }
 
@@ -487,10 +455,6 @@
 
 .tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-selected-color);
-}
-
-.tw-builder__tree-item-header--toolbar-drag-over[data-toolbar-position="inside"] .tw-builder__tree-item-label {
-    color: var(--tree-item-selected-color);
 }
 
 /* ==========================================================================
@@ -508,26 +472,21 @@
     height: 8px;
 }
 
-/* Square icon */
-.tw-builder__tree-item-square-icon {
-    width: 100%;
-    height: 100%;
-    background-color: var(--square-icon-background);
-    border-radius: 2px;
-    position: relative;
-    z-index: 1;
-}
+
 
 /* Text icon */
 .tw-builder__tree-item-text-icon {
-    font-size: 11px;
-    font-weight: bold;
     color: var(--tree-text-icon-color);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     z-index: 1;
+}
+
+/* Block icon */
+.tw-builder__tree-item-block-icon {
+    color: var(--tree-text-icon-color);
 }
 
 /* Image icon */
@@ -598,7 +557,7 @@
     justify-content: center;
     color: var(--tree-expand-button-color);
     position: relative;
-    z-index: 2;
+    z-index: 1;
 }
 
 /* Tree expand button collapsed state */
@@ -641,7 +600,6 @@
     opacity: 1;
 }
 
-.tw-builder__tree-item--dragging-container .tw-builder__tree-item-square-icon,
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-divider-icon,
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-button-icon {
     background-color: var(--square-icon-background);
@@ -663,10 +621,7 @@
     color: var(--subtitle-color);
 }
 
-.tw-builder__tree-item--dragging-container .tw-builder__tree-children {
-    opacity: 1;
-}
-
+.tw-builder__tree-item--dragging-container .tw-builder__tree-children,
 .tw-builder__tree-item--dragging-container .tw-builder__tree-children .tw-builder__tree-item {
     opacity: 1;
 }
@@ -683,9 +638,7 @@
     opacity: 1;
 }
 
-.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-square-icon {
-    background-color: var(--square-icon-background);
-}
+
 
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-text-icon {
     color: var(--tree-text-icon-color);
@@ -695,10 +648,7 @@
     fill: var(--tree-text-icon-color);
 }
 
-.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-divider-icon {
-    background-color: var(--tree-text-icon-color);
-}
-
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-divider-icon,
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-button-icon {
     background-color: var(--tree-text-icon-color);
 }
@@ -725,6 +675,7 @@
     background: var(--tree-childs-background);
     border-radius: 0;
     z-index: 0;
+    pointer-events: none;
 }
 
 /* Background extend for last child of selected parent - with border radius */

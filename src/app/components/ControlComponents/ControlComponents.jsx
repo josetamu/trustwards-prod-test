@@ -1703,7 +1703,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
 
 
     
-    console.log('idsCSSData',idsCSSData);
+
     console.log('JSONtree idsCSSData',JSONtree.idsCSSData);
     console.log('JSONtree',JSONtree);
     console.log('selectedElementData',selectedElementData);
