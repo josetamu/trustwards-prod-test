@@ -12,22 +12,27 @@ export default function BuilderClasses({selectedId,showNotification}) {
     const [activeClass, setActiveClass] = useState(null);
     const {addClass,JSONtree,activeRoot,removeClass} = useCanvas();
     const poolRef = useRef(null);
-    
+
+    //Function to find the element in the JSON tree
     const findElement = (node, targetId) => {
+        //If the node is not found, return null
         if(!node) return null;
+        //If find the element, return it
         if (node.id === targetId) {
             return node;
         }
+        //If the element has children, search through them
         if (node.children) {
             for (const child of node.children) {
                 const found = findElement(child, targetId);
                 if (found) return found;
             }
         }
+        //If nothing is found, return null
         return null;
     };
 
-    // Get the selected element (se recalcula cada vez que cambie JSONtree o selectedId)
+    // Get the selected element and store it selectedElement, if not set it to null
     let selectedElement = null;
     if(JSONtree && JSONtree.roots && selectedId) {
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
@@ -37,10 +42,11 @@ export default function BuilderClasses({selectedId,showNotification}) {
     }
 
  
-    //close pool when clicking outside
+    //Close pool when clicking outside
     useEffect(() => {
         if (!isOpen) return;
-
+        //Function to handle the click outside the pool. Use poolRef to check if the click is outside the pool. If target(click) is not the pool or the id, close the pool
+        //The id is also there because clicking in id open the pool, so we dont close and open again.
         const handleClickOutside = (event) => {
             if (poolRef.current && !poolRef.current.contains(event.target) && !event.target.classList.contains("tw-builder__settings-id")) {
                 setIsOpen(false);
@@ -62,11 +68,14 @@ const createNewClass = (newClass) => {
     ) {
         return false; // Indicate class was not created
     }
+    //Add the class to the selected element if it doesn't exist
     addClass(selectedId, newClass);
+    //Set the active class to the new class to show it instead of the id(user can set styles in the class)
     setActiveClass(newClass);
     return true; // Indicate class was created
 };
 
+//Function to handle the add class. Created by enter key, if it doesn't exist, create it and show the notification, if it exists, set the active class to it.
 const handleAddClass = (e) => {
     if (e.key === "Enter") {
         const created = createNewClass(newClass);
@@ -75,29 +84,32 @@ const handleAddClass = (e) => {
         } else if (newClass && selectedElement && selectedElement.classList.includes(newClass)) {
             setActiveClass(newClass);
         }
+        //Reset the new class and close the pool
         setNewClass("");
         setIsOpen(false);
     }
 }
 
+//Function to eliminate a class from the selected element using the removeClass function in Canvas.jsx and then show the notification
 const eliminateClass = (className) => {
     removeClass(selectedId, className);
     showNotification("Class removed");
 
 }
 
+//This useEffect desactivates the active class when we eliminate it. If this useEffect is not here, the active class will stay active even if it is eliminated.
 useEffect(() => {
     if (selectedElement && activeClass && !selectedElement.classList.includes(activeClass)) {
         setActiveClass(null);
     }
 }, [JSONtree, selectedId, activeClass]);
 
-//filter All classes to see in the pool
+//filter All classes to see in the pool. These are all the classes user has ever created
     const AllClasses = JSONtree.classesCSSData
     .map(item => item.className)
     .filter(className => className.includes(search));
 
-    //filter element's classes, excluding those that are not in AllClasses
+    //filter element's classes, excluding those that are not in AllClasses(classes that are being applied to the element)
     const filteredClasses = selectedElement
         ? selectedElement.classList
             .filter(className => AllClasses.includes(className))
@@ -110,6 +122,7 @@ useEffect(() => {
             <span className={`tw-builder__settings-id ${activeClass ? 'tw-builder__settings-id--active' : ''}`} onClick={() => {
                 setIsOpen(!isOpen);
             }}>
+                {/* If the active class is set, show it */}
                 {activeClass ? (
                     <>
                         .{activeClass}
@@ -124,6 +137,7 @@ useEffect(() => {
                         </span>
                     </>
                 ) : (
+                    {/* If the active class is not set, show the id */}
                     `#${selectedId}`
                 )}
             </span>
@@ -134,7 +148,6 @@ useEffect(() => {
                     }}>
                         <span className="tw-builder__settings-class-name">.{className}</span>
                         <span className="tw-builder__settings-class-remove" onClick={() => {
-                           /*  e.stopPropagation(); */
                             eliminateClass(className);
                         }}>x</span>
                     </div>

@@ -11,12 +11,14 @@ export default function BuilderSave({showNotification, siteSlug}) {
     const save = useCallback(async () => {
         setIsLoading(true);
         try {
-            // Simulate a delay of saving (replace)
+            // Simulate a delay of saving
             await new Promise(resolve => setTimeout(resolve, 1000));
+            //Update the site with the new JSONtree in supabase
             const {data, error} = await supabase
                 .from('Site')
                 .update({JSON: JSONtree})
                 .eq('id', siteSlug);
+            //Show a notification if the changes are saved successfully
             showNotification('Changes saved successfully');
         } catch (error) {
             showNotification('Error saving changes');

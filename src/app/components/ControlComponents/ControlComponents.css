@@ -283,6 +283,7 @@
     align-items: center;
     justify-content: center;
     width: fit-content;
+    padding-right: 3px;
 }
 .tw-builder__settings-units-direction{
     width: 25px !important;
@@ -295,5 +296,5 @@
     font-size: 8px;
     font-weight: 400;
     letter-spacing: var(--letter-spacing-negative) !important;
-    padding-right: 2px;
+    
 }

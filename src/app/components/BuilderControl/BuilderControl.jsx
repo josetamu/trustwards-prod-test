@@ -24,6 +24,7 @@ export default function BuilderControl({label, controls, whatType}) {
             {/* If the control is open, show the content */}
             {isOpen && (
                 <div className="tw-builder__control-content">
+                    {/* Map the controls and show the correct inputs */}
                     {controls.map((control, index) => whatType(control, index))}
                 </div>
             )}

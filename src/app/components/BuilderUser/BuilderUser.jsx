@@ -20,12 +20,12 @@ export default function BuilderUser({user, checkProfilePicture, profileStyle, se
             setModalType('Account');
             setIsModalOpen(true);
         }}>
-            {/* Show the user color */}
+            {/*If the user has no profile picture, show the user color */}
         <span className={`builder-user__color ${checkProfilePicture(user) === '' ? '' : 'builder-user__color--null'}`} 
         style={profileStyle(user)}>
           {user?.Name.charAt(0)}
         </span> 
-        {/* Show the user avatar */}
+        {/*If the user has a profile picture, show it */}
         <img className={`builder-user__avatar ${checkProfilePicture(user) === '' ? 'builder-user__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="avatar"/>
         <Tooltip
                 message={user?.Name || 'User'}

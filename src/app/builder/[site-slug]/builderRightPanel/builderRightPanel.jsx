@@ -22,18 +22,24 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
 
     // Function to find the element in the JSON tree
     const findElement = (node, targetId) => {
+        //If the node is not found, return null
         if(!node) return null;
+        //If find the element, return it
         if (node.id === targetId) {
             return node;
         }
+        //If the element has children, search through them
         if (node.children) {
             for (const child of node.children) {
                 const found = findElement(child, targetId);
                 if (found) return found;
             }
         }
+        //If nothing is found, return null
         return null;
     };
+
+    //Find the selected element and store it selectedElement, if not set it to null
     let selectedElement = null;
     if(JSONtree && JSONtree.roots) {
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
@@ -42,15 +48,12 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
         }
     }
 
-    // Function to get the selected element
-    //const selectedElement = findElement(JSONtree, selectedId);
-    // Get the class name to know the type of the selected element
-    const selectedClassName = selectedElement?.classList[0];
+    //get the label and type of the selected element
     const selectedLabel = selectedElement?.label;
     const selectedType = selectedElement?.elementType;
 
     const getControls = (selectedType) => {
-
+//Create a temporary node to get the controls
         const tempNode = {
             id: selectedId,
             tagName: 'div', 
@@ -60,6 +63,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
             src: ''
         }
 
+        //Switch the type of the selected element and return the correct controls
         switch(selectedType) {
             case 'block':
                 return Block(tempNode, {}, []).groupControls;
@@ -83,6 +87,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
         }
     };
 
+    //Store the controls for the selected element to use in ControlComponent react element
     const currentControls = getControls(selectedType);
 
 
@@ -90,12 +95,13 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>
             <div className="tw-builder__right-header">
+                {/* React element for right panel header: Avatar and save builder button */}
                 <BuilderUser user={user} checkProfilePicture={checkProfilePicture} profileStyle={profileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen}></BuilderUser>
                 <BuilderSave showNotification={showNotification} siteSlug={siteSlug}/>
             </div>
             <div className="tw-builder__right-body">
                 <div className="tw-builder__right-body-content">
-                {/* If no element is selected, show the no selected item */}
+                {/* If no element is selected, show the NoSelectedItem react element */}
                 {(!selectedId || selectedId === 'tw-root--banner' || selectedId === 'tw-root--model') && <NoSelectedItem/>}
                     {/* Check the type element and show the correct controls */}
                     {currentControls && <ControlComponent control={currentControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel}/>}               
