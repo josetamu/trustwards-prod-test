@@ -7,15 +7,118 @@ import Link from 'next/link'
 function Web() {
   return (
     <div className="tw-root">
-      <div className="tw-root__header">
-        <Link href="/dashboard" className="tw-root__dashboard-button">Dashboard</Link>
-      </div>
+      <header className="tw-header">
+        <div className="tw-header__left-wrapper">
+          <div className="tw-header__logo">
+            <svg width="31" height="25" viewBox="0 0 31 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_d_1242_10)">
+              <path d="M4 0H27V4.63636H4V0Z" fill="url(#paint0_linear_1242_10)"/>
+              <path d="M10.1333 17V7.72727H19.3333L10.1333 17Z" fill="url(#paint1_linear_1242_10)"/>
+              <path d="M16.2667 17V7.72727H23.9333L16.2667 17Z" fill="url(#paint2_linear_1242_10)"/>
+              </g>
+              <defs>
+              <filter id="filter0_d_1242_10" x="0" y="0" width="31" height="25" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+              <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+              <feOffset dy="4"/>
+              <feGaussianBlur stdDeviation="2"/>
+              <feComposite in2="hardAlpha" operator="out"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1242_10"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1242_10" result="shape"/>
+              </filter>
+              <linearGradient id="paint0_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
+              <stop stopColor="white"/>
+              <stop offset="1" stopColor="#1C6DE8"/>
+              </linearGradient>
+              <linearGradient id="paint1_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
+              <stop stopColor="white"/>
+              <stop offset="1" stopColor="#1C6DE8"/>
+              </linearGradient>
+              <linearGradient id="paint2_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
+              <stop stopColor="white"/>
+              <stop offset="1" stopColor="#1C6DE8"/>
+              </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <nav className="tw-header__nav">
+            <Link href="#" className="tw-header__nav-item">Features</Link>
+            <Link href="#" className="tw-header__nav-item">Useful</Link>
+            <Link href="#" className="tw-header__nav-item">Pricing</Link>
+          </nav>
+        </div>
+        
+        <div className="tw-header__actions">
+          <button className="tw-header__cta tw-header__cta--black">Login</button>
+          <Link href="/dashboard" className="tw-header__cta tw-header__cta--blue">Dashboard</Link>
+        </div>
+      </header>
+      
+      <section className="tw-hero">
+        <div className="tw-hero__announcement">
+          <span>Introducing Trustwards →</span>
+        </div>
+        <h1 className="tw-hero__title">
+          Consent should be easier and beautiful. Now it is.
+        </h1>
+        <button className="tw-hero__cta">Try for free</button>
+      </section>
+
+      <section className="tw-features">
+        <div className="tw-features__grid">
+          <div className="tw-feature-card">
+            <div className="tw-feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="2" fill="white"/>
+                <rect x="3" y="8" width="18" height="2" fill="white"/>
+                <rect x="3" y="12" width="18" height="2" fill="white"/>
+                <rect x="3" y="16" width="12" height="2" fill="white"/>
+              </svg>
+            </div>
+            <h3 className="tw-feature-card__title">Builder & Themes</h3>
+            <p className="tw-feature-card__description">Go with a ready made theme, or create your own in the builder.</p>
+          </div>
+
+          <div className="tw-feature-card">
+            <div className="tw-feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="3" fill="white"/>
+              </svg>
+            </div>
+            <h3 className="tw-feature-card__title">Auto Comply</h3>
+            <p className="tw-feature-card__description">Install Trustwards on your site and start complying automatically.</p>
+          </div>
+
+          <div className="tw-feature-card">
+            <div className="tw-feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="2" fill="white"/>
+                <rect x="3" y="8" width="18" height="2" fill="white"/>
+                <rect x="3" y="12" width="18" height="2" fill="white"/>
+                <path d="M3 16L9 20L21 16" stroke="white" strokeWidth="2" fill="none"/>
+              </svg>
+            </div>
+            <h3 className="tw-feature-card__title">Consent Management Platform</h3>
+            <p className="tw-feature-card__description">Scan cookies, review your Proof of Consent, integrate Google Consent Mode v2 and more!</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="tw-video">
+        <div className="tw-video__placeholder">
+          <span>Video por seccion</span>
+        </div>
+      </section>
       
       <main className="tw-main-content">
         <h1>Web</h1>
       </main>
 
+
       <div className="tw-footer-container">
+      {/* Footer Section */}
         <footer className="tw-footer">
           
           <div className="tw-footer__inner">
@@ -130,47 +233,22 @@ function Web() {
           </div>
         </footer>
 
-        {/* Newsletter Section - Parte blanca que se revela */}
+        {/* Newsletter Section */}
         <div className="tw-newsletter">
           <div className="tw-newsletter__content">
             <div className="tw-newsletter__logo">
-              <svg width="60" height="48" viewBox="0 0 31 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g filter="url(#filter0_d_1257_259_newsletter)">
-                <path d="M4 0H27V4.63636H4V0Z" fill="url(#paint0_linear_1257_259_newsletter)"/>
-                <path d="M10.1333 17V7.72727H19.3333L10.1333 17Z" fill="url(#paint1_linear_1257_259_newsletter)"/>
-                <path d="M16.2667 17V7.72727H23.9333L16.2667 17Z" fill="url(#paint2_linear_1257_259_newsletter)"/>
-                </g>
-                <defs>
-                <filter id="filter0_d_1257_259_newsletter" x="0" y="0" width="31" height="25" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                <feOffset dy="4"/>
-                <feGaussianBlur stdDeviation="2"/>
-                <feComposite in2="hardAlpha" operator="out"/>
-                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1257_259"/>
-                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1257_259" result="shape"/>
-                </filter>
-                <linearGradient id="paint0_linear_1257_259_newsletter" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#1C6DE8"/>
-                <stop offset="1" stopColor="#1C6DE8"/>
-                </linearGradient>
-                <linearGradient id="paint1_linear_1257_259_newsletter" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#1C6DE8"/>
-                <stop offset="1" stopColor="#1C6DE8"/>
-                </linearGradient>
-                <linearGradient id="paint2_linear_1257_259_newsletter" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#1C6DE8"/>
-                <stop offset="1" stopColor="#1C6DE8"/>
-                </linearGradient>
-                </defs>
+              <svg width="300" height="220" viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 0H300V60H0V0Z" fill="black"/>
+                <path d="M80 220V100H200L80 220Z" fill="black"/>
+                <path d="M160 220V100H260L160 220Z" fill="black"/>
               </svg>
             </div>
-            <div className="tw-newsletter__text">
-              <h2 className="tw-newsletter__title">Get Trustwards and regulations updates in your inbox</h2>
-              <p className="tw-newsletter__subtitle">no spam we promise :)</p>
-            </div>
-            <div className="tw-newsletter__form">
+            <div className="tw-newsletter__right-wrapper">
+              <div className="tw-newsletter__right-wrapper__content">
+                <h2 className="tw-newsletter__title">Get Trustwards and regulations updates in your inbox</h2>
+                <p className="tw-newsletter__span">no spam we promise :)</p>
+              </div>
+              <div className="tw-newsletter__form">
               <input 
                 type="email" 
                 placeholder="Your Email" 
@@ -178,12 +256,10 @@ function Web() {
               />
               <button className="tw-newsletter__button">Subscribe</button>
             </div>
+            </div>
           </div>
         </div>
       </div>
-      
-      {/* Espacio extra para activar el scroll y el efecto */}
-      <div style={{ height: '100vh' }}></div>
     </div>
   );
 }
