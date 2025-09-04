@@ -137,7 +137,7 @@ useEffect(() => {
                         </span>
                     </>
                 ) : (
-                    {/* If the active class is not set, show the id */}
+                    /*If the active class is not set, show the id */
                     `#${selectedId}`
                 )}
             </span>

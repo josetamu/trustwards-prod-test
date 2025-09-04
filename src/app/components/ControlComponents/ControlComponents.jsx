@@ -1258,7 +1258,7 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         }
     };
     //Function to get the final color. This is used to mix the color with the transparency
-    const finalColor = color && color !== '' ? hexToRgba(color, parseInt(percentage.replace('%', ''))) : 'transparent';
+    const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage || '100%').replace('%', ''))) : 'transparent';
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -1999,23 +1999,30 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
     const [activeTooltip, setActiveTooltip] = useState(null);
     const containerRef = useRef(null);
 
-    // Helpers: parse y compose de box-shadow
+  //Function to parse the box-shadow string in parts
     const parseBoxShadow = useCallback((shadowStr) => {
+        //If the shadowStr is not a string, return the default values
         if (!shadowStr || typeof shadowStr !== 'string') {
             return { inset: false, x: '0', y: '0', blur: '0', spread: '0', color: '' };
         }
+        //Check if the shadowStr has inset
         const hasInset = /\binset\b/i.test(shadowStr);
-        // extraer color (rgba(...) o hex)
+
+        //Check if the shadowStr has color
         const colorMatch = shadowStr.match(/rgba\([^)]+\)|#[0-9a-fA-F]{3,6}/i);
         const color = colorMatch ? colorMatch[0] : '';
+        //Remove the inset and color from the shadowStr
         let rest = shadowStr.replace(/\binset\b/gi, '').replace(color, '').trim();
+        //convert the shadowStr to an array, taking out the empty spaces.   
         const parts = rest.split(/\s+/).filter(Boolean);
-        // parts: [x, y, blur?, spread?] con unidades
+        //Function to get the number from the shadowStr
         const getNum = (s) => {
             if (!s) return '0';
+            //If the s is not a number, return 0
             const m = s.match(/^(-?\d+(\.\d+)?)/);
             return m ? m[1] : s;
         };
+        //Return the parsed shadowStr
         return {
             inset: hasInset,
             x: getNum(parts[0]),
@@ -2026,44 +2033,57 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
         };
     }, []);
 
+    //Function to compose the box-shadow string from the parts
     const composeBoxShadow = useCallback((parts) => {
         const unitize = (v) => {
             if (v == null || v === '') return '0px';
             return /^[\-.\d]+$/.test(v) ? `${v}px` : v;
         };
+        //Create an array to store the parts
         const tokens = [];
+        //Add the inset part if it is true
         if (parts.inset) tokens.push('inset');
+        //Add the x part
         tokens.push(unitize(parts.x));
+        //Add the y part
         tokens.push(unitize(parts.y));
+        //Add the blur part if it is not 0 and not null
         if (parts.blur && parts.blur !== '0') tokens.push(unitize(parts.blur));
-        else tokens.push(unitize(parts.blur)); // mantener blur aunque sea 0 para consistencia visual
+        else tokens.push(unitize(parts.blur)); 
+        //Add the spread part if it is not 0 and not null
         if (parts.spread && parts.spread !== '0') tokens.push(unitize(parts.spread));
         else tokens.push(unitize(parts.spread));
+        //Add the color part if it is not null and not empty
         if (parts.color && parts.color !== '') tokens.push(parts.color);
+        //Join the parts and return the string
         return tokens.join(' ').trim();
     }, []);
 
-    // Estados locales derivados del box-shadow real
+    //Get the current box-shadow string from the global CSS value
     const currentShadow = getGlobalCSSValue?.('box-shadow') || '';
+    //Parse the box-shadow string in parts. Create an object with the parts. Example: { inset: false, x: '1', y: '1', blur: '10', spread: '1', color: '#ff0000' }
     const parsed = parseBoxShadow(currentShadow);
 
     useEffect(() => {
+        //Set the inset part if it is true
         setInset(!!parsed.inset);
     }, [selectedElementData, currentShadow]);
 
-    // Wrappers para hijos: interceptan propiedades virtuales y componen box-shadow real
+    //Function get the box-shadow string from JSONtree and parse it in parts. Get each part to use it in the controls.
     const wrappedGetCSS = useCallback((prop) => {
         if (prop === 'box-shadow-x') return parsed.x || '0';
         if (prop === 'box-shadow-y') return parsed.y || '0';
         if (prop === 'box-shadow-blur') return parsed.blur || '0';
         if (prop === 'box-shadow-spread') return parsed.spread || '0';
         if (prop === 'box-shadow-color') return parsed.color || '';
-        // fallback
+      
         return getGlobalCSSValue?.(prop);
     }, [getGlobalCSSValue, parsed.x, parsed.y, parsed.blur, parsed.spread, parsed.color]);
 
+    //Function apply the box-shadow string to the CSS and JSON.
     const wrappedApplyCSS = useCallback((prop, val) => {
         let next = { ...parsed, inset };
+        //Switch the property to apply the value to the correct part.
         switch (prop) {
             case 'box-shadow-x':
                 next.x = (val ?? '').toString().trim();
@@ -2080,19 +2100,21 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
             case 'box-shadow-color':
                 next.color = (val ?? '').toString().trim();
                 break;
-            // permitir updates directos también
+           
             case 'box-shadow':
-                // si llega completo, respetar
+              
                 if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
                 return;
             default:
                 if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
                 return;
         }
+        //Compose the box-shadow string from the parts and then apply it to the CSS.
         const finalStr = composeBoxShadow(next);
         if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', finalStr);
     }, [applyGlobalCSSChange, composeBoxShadow, parsed, inset]);
 
+    //Function to open and close the border/shadow controls.
     const toggleOpen = () => {
         const next = !open;
         setOpen(next);
@@ -2451,6 +2473,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
         selectedId,
      };
 
+     console.log(JSONtree);
     
 
     const whatType = (item, index) => {
