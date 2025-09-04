@@ -7,119 +7,222 @@ import Link from 'next/link'
 function Web() {
   return (
     <div className="tw-root">
-      <header className="tw-header">
-        <div className="tw-header__left-wrapper">
-          <div className="tw-header__logo">
-            <svg width="31" height="25" viewBox="0 0 31 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g filter="url(#filter0_d_1242_10)">
-              <path d="M4 0H27V4.63636H4V0Z" fill="url(#paint0_linear_1242_10)"/>
-              <path d="M10.1333 17V7.72727H19.3333L10.1333 17Z" fill="url(#paint1_linear_1242_10)"/>
-              <path d="M16.2667 17V7.72727H23.9333L16.2667 17Z" fill="url(#paint2_linear_1242_10)"/>
-              </g>
-              <defs>
-              <filter id="filter0_d_1242_10" x="0" y="0" width="31" height="25" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-              <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-              <feOffset dy="4"/>
-              <feGaussianBlur stdDeviation="2"/>
-              <feComposite in2="hardAlpha" operator="out"/>
-              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1242_10"/>
-              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1242_10" result="shape"/>
-              </filter>
-              <linearGradient id="paint0_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
-              <stop stopColor="white"/>
-              <stop offset="1" stopColor="#1C6DE8"/>
-              </linearGradient>
-              <linearGradient id="paint1_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
-              <stop stopColor="white"/>
-              <stop offset="1" stopColor="#1C6DE8"/>
-              </linearGradient>
-              <linearGradient id="paint2_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
-              <stop stopColor="white"/>
-              <stop offset="1" stopColor="#1C6DE8"/>
-              </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <nav className="tw-header__nav">
-            <Link href="#" className="tw-header__nav-item">Features</Link>
-            <Link href="#" className="tw-header__nav-item">Useful</Link>
-            <Link href="#" className="tw-header__nav-item">Pricing</Link>
-          </nav>
-        </div>
-        
-        <div className="tw-header__actions">
-          <button className="tw-header__cta tw-header__cta--black">Login</button>
-          <Link href="/dashboard" className="tw-header__cta tw-header__cta--blue">Dashboard</Link>
-        </div>
-      </header>
-      
-      <section className="tw-hero">
-        <div className="tw-hero__announcement">
-          <span>Introducing Trustwards →</span>
-        </div>
-        <h1 className="tw-hero__title">
-          Consent should be easier and beautiful. Now it is.
-        </h1>
-        <button className="tw-hero__cta">Try for free</button>
-      </section>
-
-      <section className="tw-features">
-        <div className="tw-features__grid">
-          <div className="tw-feature-card">
-            <div className="tw-feature-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="4" width="18" height="2" fill="white"/>
-                <rect x="3" y="8" width="18" height="2" fill="white"/>
-                <rect x="3" y="12" width="18" height="2" fill="white"/>
-                <rect x="3" y="16" width="12" height="2" fill="white"/>
+      <main className="tw-main">
+        <header className="tw-header">
+          <div className="tw-header__left-wrapper">
+            <div className="tw-header__logo">
+              <svg width="31" height="25" viewBox="0 0 31 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g filter="url(#filter0_d_1242_10)">
+                <path d="M4 0H27V4.63636H4V0Z" fill="url(#paint0_linear_1242_10)"/>
+                <path d="M10.1333 17V7.72727H19.3333L10.1333 17Z" fill="url(#paint1_linear_1242_10)"/>
+                <path d="M16.2667 17V7.72727H23.9333L16.2667 17Z" fill="url(#paint2_linear_1242_10)"/>
+                </g>
+                <defs>
+                <filter id="filter0_d_1242_10" x="0" y="0" width="31" height="25" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset dy="4"/>
+                <feGaussianBlur stdDeviation="2"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1242_10"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1242_10" result="shape"/>
+                </filter>
+                <linearGradient id="paint0_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
+                <stop stopColor="white"/>
+                <stop offset="1" stopColor="#1C6DE8"/>
+                </linearGradient>
+                <linearGradient id="paint1_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
+                <stop stopColor="white"/>
+                <stop offset="1" stopColor="#1C6DE8"/>
+                </linearGradient>
+                <linearGradient id="paint2_linear_1242_10" x1="15.5" y1="0" x2="15.5" y2="17" gradientUnits="userSpaceOnUse">
+                <stop stopColor="white"/>
+                <stop offset="1" stopColor="#1C6DE8"/>
+                </linearGradient>
+                </defs>
               </svg>
             </div>
-            <h3 className="tw-feature-card__title">Builder & Themes</h3>
+            <nav className="tw-header__nav">
+              <Link href="#" className="tw-header__nav-item">Features</Link>
+              <Link href="#" className="tw-header__nav-item">Useful</Link>
+              <Link href="#" className="tw-header__nav-item">Pricing</Link>
+            </nav>
+          </div>
+          
+          <div className="tw-header__actions">
+            <button className="tw-cta tw-cta--mini tw-header__cta">Login</button>
+            <Link href="/dashboard" className="tw-cta tw-cta--mini">Dashboard</Link>
+          </div>
+        </header>
+        <div className="tw-hero">
+        <div className="tw-hero__top">
+          <div className="tw-hero__announcement">
+            <span>Introducing Trustwards →</span>
+          </div>
+          <h1 className="tw-hero__title">
+            Consent should be easier and beautiful. Now it is.
+          </h1>
+          <button className="tw-cta tw-cta--mini">Try for free</button>
+        </div>
+        <div className="tw-features">
+        <div className="tw-features__grid">
+          <div className="tw-feature-card">
+            <div className="tw-feature-card__header">
+              <div className="tw-feature-card__icon">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clipPath="url(#clip0_1242_193)">
+                  <path d="M11.2495 5H4.49811L4.48047 11.25H9.24952C10.3541 11.25 11.2495 10.3545 11.2495 9.25V5Z" fill="currentColor"/>
+                  <path d="M3.98162 11.25L3.48095 11.2486L3.49858 5H0.75V9.25C0.75 10.3545 1.64543 11.25 2.75 11.25H3.98162Z" fill="currentColor"/>
+                  <path d="M2.75 0.75C1.64543 0.75 0.75 1.64543 0.75 2.75V4H11.25V2.75C11.25 1.64543 10.3546 0.75 9.25 0.75H2.75Z" fill="currentColor"/>
+                  </g>
+                  <defs>
+                  <clipPath id="clip0_1242_193">
+                  <rect width="12" height="12" fill="white"/>
+                  </clipPath>
+                  </defs>
+                </svg>
+              </div>
+              <span className="tw-feature-card__title">Builder & Themes</span>
+            </div>
             <p className="tw-feature-card__description">Go with a ready made theme, or create your own in the builder.</p>
           </div>
 
           <div className="tw-feature-card">
-            <div className="tw-feature-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="3" fill="white"/>
-              </svg>
+            <div className="tw-feature-card__header">
+              <div className="tw-feature-card__icon">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5.99998 12C5.16998 12 4.38998 11.8426 3.65999 11.5278C2.92999 11.213 2.29499 10.7861 1.75499 10.2472C1.215 9.70827 0.787597 9.07406 0.472798 8.34457C0.158 7.61508 0.000399999 6.83606 0 6.00749C0 5.25843 0.144999 4.52434 0.434998 3.80524C0.724997 3.08614 1.13 2.44434 1.64999 1.87985C2.16999 1.31536 2.79499 0.860924 3.52499 0.516554C4.25498 0.172185 5.05498 0 5.92498 0C6.13498 0 6.34998 0.00998756 6.56998 0.0299626C6.78998 0.0499376 7.01498 0.0848939 7.24497 0.134831C7.15497 0.58427 7.18497 1.00874 7.33497 1.40824C7.48497 1.80774 7.70997 2.13973 8.00997 2.40419C8.30997 2.66866 8.66757 2.85104 9.08277 2.95131C9.49797 3.05159 9.92536 3.02662 10.365 2.8764C10.105 3.46567 10.1426 4.02996 10.4778 4.56929C10.813 5.10861 11.3104 5.38826 11.97 5.40824C11.98 5.5181 11.9876 5.62037 11.9928 5.71506C11.998 5.80974 12.0004 5.91221 12 6.02247C12 6.84145 11.8424 7.61288 11.5272 8.33678C11.212 9.06067 10.7846 9.69488 10.245 10.2394C9.70537 10.7839 9.07037 11.2134 8.33997 11.5278C7.60957 11.8422 6.82958 11.9996 5.99998 12ZM5.09998 4.80899C5.34998 4.80899 5.56258 4.7217 5.73778 4.54712C5.91298 4.37253 6.00038 4.1602 5.99998 3.91011C5.99958 3.66003 5.91218 3.44789 5.73778 3.27371C5.56338 3.09953 5.35078 3.01204 5.09998 3.01124C4.84918 3.01044 4.63678 3.09793 4.46278 3.27371C4.28878 3.44949 4.20119 3.66162 4.19999 3.91011C4.19879 4.1586 4.28638 4.37094 4.46278 4.54712C4.63918 4.7233 4.85158 4.81059 5.09998 4.80899ZM3.89999 7.80524C4.14999 7.80524 4.36258 7.71795 4.53778 7.54337C4.71298 7.36879 4.80038 7.15645 4.79998 6.90637C4.79958 6.65628 4.71218 6.44414 4.53778 6.26996C4.36338 6.09578 4.15079 6.00829 3.89999 6.00749C3.64919 6.00669 3.43679 6.09418 3.26279 6.26996C3.08879 6.44574 3.00119 6.65788 2.99999 6.90637C2.99879 7.15486 3.08639 7.36719 3.26279 7.54337C3.43919 7.71955 3.65159 7.80684 3.89999 7.80524ZM7.79997 8.40449C7.96997 8.40449 8.11257 8.34697 8.22777 8.23191C8.34297 8.11685 8.40037 7.97463 8.39997 7.80524C8.39957 7.63586 8.34197 7.49363 8.22717 7.37858C8.11237 7.26352 7.96997 7.20599 7.79997 7.20599C7.62997 7.20599 7.48757 7.26352 7.37277 7.37858C7.25797 7.49363 7.20037 7.63586 7.19997 7.80524C7.19957 7.97463 7.25717 8.11705 7.37277 8.23251C7.48837 8.34797 7.63077 8.40529 7.79997 8.40449Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <span className="tw-feature-card__title">Auto Comply</span>
             </div>
-            <h3 className="tw-feature-card__title">Auto Comply</h3>
             <p className="tw-feature-card__description">Install Trustwards on your site and start complying automatically.</p>
           </div>
 
           <div className="tw-feature-card">
-            <div className="tw-feature-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="4" width="18" height="2" fill="white"/>
-                <rect x="3" y="8" width="18" height="2" fill="white"/>
-                <rect x="3" y="12" width="18" height="2" fill="white"/>
-                <path d="M3 16L9 20L21 16" stroke="white" strokeWidth="2" fill="none"/>
-              </svg>
+            <div className="tw-feature-card__header">
+              <div className="tw-feature-card__icon">
+                <svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g filter="url(#filter0_d_1242_200)">
+                  <path d="M4 0H20V3.27273H4V0Z" fill="currentColor"/>
+                  <path d="M8.26667 12V5.45455H14.6667L8.26667 12Z" fill="currentColor"/>
+                  <path d="M12.5333 12V5.45455H17.8667L12.5333 12Z" fill="currentColor"/>
+                  </g>
+                  <defs>
+                  <filter id="filter0_d_1242_200" x="0" y="0" width="24" height="20" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                  <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                  <feOffset dy="4"/>
+                  <feGaussianBlur stdDeviation="2"/>
+                  <feComposite in2="hardAlpha" operator="out"/>
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1242_200"/>
+                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1242_200" result="shape"/>
+                  </filter>
+                  </defs>
+                </svg>
+              </div>
+              <span className="tw-feature-card__title">Consent Management Platform</span>
             </div>
-            <h3 className="tw-feature-card__title">Consent Management Platform</h3>
             <p className="tw-feature-card__description">Scan cookies, review your Proof of Consent, integrate Google Consent Mode v2 and more!</p>
           </div>
         </div>
-      </section>
-
-      <section className="tw-video">
-        <div className="tw-video__placeholder">
-          <span>Video por seccion</span>
+        <div className="tw-video">
+          <div className="tw-video__placeholder">
+            <span>Video por seccion</span>
+          </div>
         </div>
-      </section>
-      
-      <main className="tw-main-content">
-        <h1>Web</h1>
-      </main>
+             </div>
+       </div>
+       
+       {/* Span Section */}
+       <div className="tw-span-section">
+         <div className="tw-span-section__content">
+           <h1 className="tw-span-section__h1">
+           Within 43 seconds: Set beautiful Cookies. Comply with worldwide regulations.
+           Scan your Cookies. Download user consents.
+           </h1>
+           <button className="tw-cta">Get started</button>
+         </div>
+       </div>
 
+       {/* Platform Section */}
+      <div className="tw-platform-section">
+        <div className="tw-platform-section__content">
+          <span className="tw-platform-section__brand">Trustwards</span>
+          <h3 className="tw-platform-section__title">All-in-one consent platform</h3>
+          <p className="tw-platform-section__paragraph">
+            Trustwards combines all necessary features to comply regulations with a user-friendly interface, making it easy to design and manage consent on your website.
+          </p>
+        </div>
+         
+        <div className="tw-platform-features">
+          <div className="tw-platform-features__grid">
+            <div className="tw-platform-features__left-grid">
+              <div className="tw-platform-feature-card tw-platform-feature-card--dashboard">
+                <span className="tw-platform-feature-card__label">Dashboard</span>
+              </div>
+              <div className="tw-platform-feature-card">
+                <span className="tw-platform-feature-card__label">Scanner</span>
+              </div>
+              <div className="tw-platform-feature-card">
+                <span className="tw-platform-feature-card__label">Multi-language</span>
+              </div>
+            </div>
+            <div className="tw-platform-feature-card">
+              <span className="tw-platform-feature-card__label">Scanner</span>
+            </div>
+          </div>
+          <div className="tw-platform-feature__bottom-section">
+            <div className="tw-platform-feature-card">
+              <span className="tw-platform-feature-card__label">Academy</span>
+            </div>
+            <div className="tw-platform-feature-card tw-platform-feature-card--builder">
+              <span className="tw-platform-feature-card__label">Builder</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div className="tw-footer-container">
-      {/* Footer Section */}
-        <footer className="tw-footer">
+      {/* Themes Section */}
+      <div className="tw-themes-section">
+        <div className="tw-themes-section__content">
+          <div className="tw-themes-section__header">
+            <span className="tw-themes-section__label">Themes</span>
+            <div className="tw-themes-section__header-content">
+              <h2 className="tw-themes-section__title">Ready-made themes that fits your site.</h2>
+              <button className="tw-cta">Start for free</button>
+            </div>
+            <p className="tw-themes-section__paragraph">
+              Pick a theme you like, customize it to reflect your unique style without any coding, and publish it instantly with ease.
+            </p>
+          </div>
+          
+          <div className="tw-themes-section__bottom-content">
+            <div className="tw-themes-section__grid">
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+              <div className="tw-theme-preview"></div>
+            </div>
+            
+            <Link href="#" className="tw-themes-section__browse-link">Browse themes →</Link>
+          </div>
+        </div>
+      </div>
+
+        <div className="tw-footer-container">
+        {/* Footer Section */}
+          <footer className="tw-footer">
           
           <div className="tw-footer__inner">
             <div className="tw-footer__left-wrapper">
@@ -158,9 +261,7 @@ function Web() {
                 </svg>
               </div>
               <p className="tw-footer__paragraph">Join Trustwards today. No credit card required.</p>
-              <div className="tw-footer__button-wrapper">
-                <button className="tw-footer__button">Get started</button>
-              </div>
+                <button className="tw-cta tw-cta--mini">Get started</button>
             </div>
 
             <div className="tw-footer__right-wrapper">
@@ -254,12 +355,13 @@ function Web() {
                 placeholder="Your Email" 
                 className="tw-newsletter__input"
               />
-              <button className="tw-newsletter__button">Subscribe</button>
+              <button className="tw-cta">Subscribe</button>
             </div>
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
