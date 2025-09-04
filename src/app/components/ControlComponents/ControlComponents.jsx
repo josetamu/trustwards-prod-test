@@ -1999,6 +1999,10 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
     const [activeTooltip, setActiveTooltip] = useState(null);
     const containerRef = useRef(null);
 
+    //Border states
+    const [widthLinked, setWidthLinked] = useState(false);
+    const [radiusLinked, setRadiusLinked] = useState(false);
+
   //Function to parse the box-shadow string in parts
     const parseBoxShadow = useCallback((shadowStr) => {
         //If the shadowStr is not a string, return the default values
@@ -2016,43 +2020,35 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
         //convert the shadowStr to an array, taking out the empty spaces.   
         const parts = rest.split(/\s+/).filter(Boolean);
         //Function to get the number from the shadowStr
-        const getNum = (s) => {
-            if (!s) return '0';
-            //If the s is not a number, return 0
-            const m = s.match(/^(-?\d+(\.\d+)?)/);
-            return m ? m[1] : s;
-        };
+
         //Return the parsed shadowStr
         return {
             inset: hasInset,
-            x: getNum(parts[0]),
-            y: getNum(parts[1]),
-            blur: getNum(parts[2]),
-            spread: getNum(parts[3]),
+            x: parts[0],
+            y: parts[1],
+            blur: parts[2],
+            spread: parts[3],
             color
         };
     }, []);
 
     //Function to compose the box-shadow string from the parts
     const composeBoxShadow = useCallback((parts) => {
-        const unitize = (v) => {
-            if (v == null || v === '') return '0px';
-            return /^[\-.\d]+$/.test(v) ? `${v}px` : v;
-        };
+
         //Create an array to store the parts
         const tokens = [];
         //Add the inset part if it is true
         if (parts.inset) tokens.push('inset');
         //Add the x part
-        tokens.push(unitize(parts.x));
+        tokens.push(parts.x);
         //Add the y part
-        tokens.push(unitize(parts.y));
+        tokens.push(parts.y);
         //Add the blur part if it is not 0 and not null
-        if (parts.blur && parts.blur !== '0') tokens.push(unitize(parts.blur));
-        else tokens.push(unitize(parts.blur)); 
+        if (parts.blur && parts.blur !== '0') tokens.push(parts.blur);
+        else tokens.push(parts.blur); 
         //Add the spread part if it is not 0 and not null
-        if (parts.spread && parts.spread !== '0') tokens.push(unitize(parts.spread));
-        else tokens.push(unitize(parts.spread));
+        if (parts.spread && parts.spread !== '0') tokens.push(parts.spread);
+        else tokens.push(parts.spread);
         //Add the color part if it is not null and not empty
         if (parts.color && parts.color !== '') tokens.push(parts.color);
         //Join the parts and return the string

@@ -379,6 +379,38 @@ export const Canvas = () => {
 
         //function to validate and add units
         const addUnits = (prop, value) => {
+            //As box-shadow is a special case because it has one css property but 6 controls, we need to validate and add units to it separately
+            if (prop === 'box-shadow') {
+                //Add px to the value if it is a number. If it has units, keep them
+                const unitizeLen = (t) => (/^-?\d+(\.\d+)?$/.test(t) ? `${t}px` : t);
+                //Take the color apart not mix it with the other values
+                const colorMatch = value.match(/rgba?\([^)]+\)|hsla?\([^)]+\)|#[0-9a-fA-F]{3,8}/);
+                const color = colorMatch ? colorMatch[0] : null;
+                //Add blank spaces around the inset and color for the correct tokenization
+                let v = String(value || '').replace(/\binset\b/gi, ' inset ').trim();
+                if (color) v = v.replace(color, ' ' + color + ' ');
+                //Split the value into tokens
+                const tokens = v.split(/\s+/).filter(Boolean);
+        
+                let inset = false, lens = [], rest = [];
+                //Split the tokens into inset, lens and rest(inset || x, y, blur, spread || color)
+                for (const t of tokens) {
+                    if (/^inset$/i.test(t)) inset = true;
+                    else if (color && t === color) rest.push(color);
+                    else lens.push(t);
+                }
+                //Add px to the lens if it is a number. If it has units, keep them
+                lens = lens.map((t, i) => (i < 4 ? unitizeLen(t) : t));
+        
+                const out = [];
+                //Add the inset to the out array if it is true
+                if (inset) out.push('inset');
+                //Add the lens and rest to the out array
+                out.push(...lens, ...rest);
+                //Join the out array and return the string(Box-shadow string)
+                return out.join(' ');
+            }
+
             // If the property needs units and value is a number or doesn't have valid units
             if (unitsProperties.includes(prop)) {
                 // Check if value is just a number (no units)
