@@ -227,7 +227,7 @@ export function ContextMenu({
     // Remove an item and all its descendants from the tree
     const handleRemove = () => {
         if (!targetItem || !removeElement) return;
-        
+
         removeElement(targetItem.id);
     };
 

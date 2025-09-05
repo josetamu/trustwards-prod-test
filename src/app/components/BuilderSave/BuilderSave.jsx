@@ -2,6 +2,7 @@ import './BuilderSave.css';
 import { useState, useEffect, useCallback } from 'react';
 import { useCanvas } from '@contexts/CanvasContext';
 import { supabase } from '../../../supabase/supabaseClient';
+import { createCDN } from '@contexts/CDNsContext';
 
 export default function BuilderSave({showNotification, siteSlug}) {
     const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +19,8 @@ export default function BuilderSave({showNotification, siteSlug}) {
                 .update({JSON: JSONtree})
                 .eq('id', siteSlug);
             showNotification('Changes saved successfully');
+
+            createCDN(siteSlug); //Finally, update the CDN
         } catch (error) {
             showNotification('Error saving changes');
         } finally {

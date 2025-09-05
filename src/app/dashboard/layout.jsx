@@ -16,6 +16,8 @@ import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
 import { useSidebarSettings } from '../../contexts/SidebarSettingsContext';
 
+import { createCDN } from '@contexts/CDNsContext';
+
 import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
 export const useDashboard = () => useContext(DashboardContext);
@@ -458,6 +460,9 @@ const handleBackdropClick = useCallback((e) => {
           showNotification('Error creating site');
           return;
         }
+
+        //Create the CDN for the new site
+        createCDN(data[0].id);
 
         // Update the webs state immediately with the new site
         setWebs(prevWebs => [...prevWebs, data[0]]);
