@@ -157,7 +157,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   --subtitle-color: #666666;
   --label-color: #222222;
   --icons-color: #999999;
-  --tooltip-background: #FFFFFF;
+
+  /* Builder - User Tooltip*/
+  --user-tooltip-background: #FFFFFF;
+  --user-tooltip-color: #333333;
 
   /*Builder - Themes Modal*/
   --themes-modal-background: #FFFFFF;
@@ -198,6 +201,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   
   --child-selected-color: #666666;
   --tree-childs-background: #0099FE26;
+
+  /*Builder - Drop Indicator*/
+  --drop-indicator-color: #0099FE;
+  --drop-indicator-background: #0099FE15;
 }
 
 .sidebar__logo-img{
@@ -324,6 +331,10 @@ html[data-theme="dark"] {
   --label-color: #F5F5F5;
   --icons-color: #999999;
 
+  /* Builder - User Tooltip*/
+  --user-tooltip-background: #2B2B2B;
+  --user-tooltip-color: #F5F5F5;
+
   /*Builder - Themes Modal*/
   --themes-modal-background: #191919;
   --free-badge-background: #2B2B2B;
@@ -363,6 +374,10 @@ html[data-theme="dark"] {
   
   --child-selected-color: #999999;
   --tree-childs-background: #0099FE26;
+
+  /*Builder - Drop Indicator*/
+  --drop-indicator-color: #0099FE;
+  --drop-indicator-background: #0099FE15;
 }
 
 html[data-theme="dark"] .sidebar__logo-img{

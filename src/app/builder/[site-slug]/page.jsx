@@ -467,6 +467,8 @@ const renderModal = () => {
         showNotification={showNotification}
         CallContextMenu={handleContextMenu}
         setIsManualThemesOpen={setIsManualThemesOpen}
+        clipboard={clipboard}
+        setClipboard={setClipboard}
       />
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
       
