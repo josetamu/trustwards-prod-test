@@ -17,7 +17,7 @@ import { Icon } from '@builderElements/Icon/Icon';
 
 export const Canvas = () => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
-        runElementScript } = useCanvas();
+        runElementScript, notifyElementCreatedFromToolbar } = useCanvas();
 
     /*
     * Custom hook to track elements after they are created and run their scripts
@@ -258,6 +258,9 @@ export const Canvas = () => {
             moveElement(draggedId, containerId, insertIndex);
         } 
         else if (type) {
+            // Notify the context that we're creating an element from toolbar
+            notifyElementCreatedFromToolbar();
+            
             //Finally, create the element
             createElement(type, containerId, insertIndex);
         }

@@ -2,15 +2,14 @@ import './builderLeftPanel.css'
 import { useState, useEffect } from 'react'
 import { Dropdown } from '../../../components/dropdown/Dropdown'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCanvas } from "@contexts/CanvasContext";
 
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
 
-// Helper function to deep copy objects
-const deepCopy = (obj) => structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
-
-function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu, setIsManualThemesOpen }) {
-    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, setJSONtree, createElement } = useCanvas();
+function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu, setIsManualThemesOpen, clipboard, setClipboard }) {
+    const router = useRouter()
+    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, createElement, moveElement, deepCopy, handleToolbarDragStart, handleToolbarDragEnd, isToolbarDragActive, notifyElementCreatedFromToolbar } = useCanvas();
     
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -27,9 +26,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // New state for toolbar element drag and drop
     const [toolbarDragOverItem, setToolbarDragOverItem] = useState(null)
     const [toolbarDragPosition, setToolbarDragPosition] = useState(null)
-    const [isToolbarDrag, setIsToolbarDrag] = useState(false)
-
-
+    
+    // State to track previous selection when internal tree drag starts
+    const [previousTreeSelection, setPreviousTreeSelection] = useState(null)
 
     // Handle right panel opening when an element is selected and both panels are closed
     useEffect(() => {
@@ -37,6 +36,13 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             setIsRightPanelOpen(true);
         }
     }, [selectedId, isPanelOpen, isRightPanelOpen, setIsRightPanelOpen, userManuallyClosed]);
+
+    // Reset userManuallyClosed when a new element is selected (allows panel to open for new selections)
+    useEffect(() => {
+        if (selectedId && selectedId !== activeRoot) {
+            setUserManuallyClosed(false);
+        }
+    }, [selectedId, activeRoot]);
 
     // Reset userManuallyClosed when user opens panels
     useEffect(() => {
@@ -59,36 +65,34 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const handleDropdownClose = () => setIsDropdownOpen(false)
 
     // Dropdown navigation handlers
-    const handleGoToHome = () => {
+    const handleDropdownAction = (action) => {
         setIsDropdownOpen(false)
-    }
-
-    const handleSiteSettings = () => {
-        openChangeModal('settings')
-        setIsDropdownOpen(false)
-    }
-
-    const handleTheme = () => {
-        setIsManualThemesOpen(true)
-        setIsDropdownOpen(false)
-    }
-
-    const handleAppearance = () => {
-        setModalType('Appearance')
-        setIsModalOpen(true)
-        setIsDropdownOpen(false)
-    }
-
-    const handleUpgradeToPro = () => {
-        setModalType('Plan')
-        setIsModalOpen(true)
-        setIsDropdownOpen(false)
-    }
-
-    const handleHelp = () => {
-        setModalType('Support')
-        setIsModalOpen(true)
-        setIsDropdownOpen(false)
+        
+        switch (action) {
+            case 'home':
+                router.push('/dashboard')
+                break
+            case 'settings':
+                openChangeModal('settings')
+                break
+            case 'theme':
+                setIsManualThemesOpen(true)
+                break
+            case 'appearance':
+                setModalType('Appearance')
+                setIsModalOpen(true)
+                break
+            case 'upgrade':
+                setModalType('Plan')
+                setIsModalOpen(true)
+                break
+            case 'help':
+                setModalType('Support')
+                setIsModalOpen(true)
+                break
+            default:
+                break
+        }
     }
 
     // Toggle expansion state of tree items (expand/collapse)
@@ -119,17 +123,20 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     useEffect(() => {
         const handleGlobalDragStart = (e) => {
             // Check if this is a toolbar element drag
-            if (e.dataTransfer.types.includes("elementType")) {
-                setIsToolbarDrag(true)
+            if (e.dataTransfer.types.includes("elementtype")) {
                 // Clear internal tree drag states when toolbar drag starts
                 setDraggedItem(null)
                 setDragOverItem(null)
                 setDragPosition(null)
+                
+                // Notify the context that toolbar drag started
+                handleToolbarDragStart()
             }
         }
 
         const handleGlobalDragEnd = () => {
-            setIsToolbarDrag(false)
+            // Notify the context that toolbar drag ended
+            handleToolbarDragEnd()
         }
 
         document.addEventListener('dragstart', handleGlobalDragStart)
@@ -139,7 +146,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             document.removeEventListener('dragstart', handleGlobalDragStart)
             document.removeEventListener('dragend', handleGlobalDragEnd)
         }
-    }, [])
+    }, [handleToolbarDragStart, handleToolbarDragEnd])
 
     // New functions for toolbar element drag and drop
     const handleToolbarDragOver = (e, item) => {
@@ -158,16 +165,20 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             position = 'after'
         }
         
+        // Check if the item can have children (only allow 'inside' for nestable elements)
+        if (position === 'inside' && !item.children && !item.nestable) {
+            // If item can't have children, force position to 'after' instead
+            position = 'after'
+        }
+        
         setToolbarDragOverItem(item)
         setToolbarDragPosition(position)
-        setIsToolbarDrag(true)
     }
 
     const handleToolbarDragLeave = (e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) {
             setToolbarDragOverItem(null)
             setToolbarDragPosition(null)
-            setIsToolbarDrag(false)
         }
     }
 
@@ -177,19 +188,32 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         const elementType = e.dataTransfer.getData("elementType")
         if (!elementType) return
 
+        // Calculate position at drop time for accuracy
+        const rect = e.currentTarget.getBoundingClientRect()
+        const y = e.clientY - rect.top
+        const height = rect.height
+        
+        let position = 'inside'
+        if (y < height * 0.25) {
+            position = 'before'
+        } else if (y > height * 0.75) {
+            position = 'after'
+        }
+
         // Determine where to insert the element based on position
         let containerId = null
         let insertIndex = null
 
-        if (toolbarDragPosition === 'inside') {
-            // Check if the target item allows children
-            if (targetItem.children !== undefined) {
-                // Insert inside the target item
+        if (position === 'inside') {
+            // GLOBAL NESTING DETECTION: Use the global function for ANY element
+            if (canAcceptChildren(targetItem)) {
+                // Insert inside the target item as a child
                 containerId = targetItem.id
-                insertIndex = null // Will be added at the end
+                // If the target has children, add at the end. If not, use 0 to insert as first child
+                insertIndex = targetItem.children && targetItem.children.length > 0 ? targetItem.children.length : 0
             } else {
                 // If target doesn't allow children, insert after it instead
-                const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+                const currentTreeData = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
                 const parentInfo = findParentById(currentTreeData, targetItem.id)
                 
                 if (parentInfo) {
@@ -202,13 +226,13 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             }
         } else {
             // Insert before or after the target item
-            const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+            const currentTreeData = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
             const parentInfo = findParentById(currentTreeData, targetItem.id)
             
             if (parentInfo) {
                 containerId = parentInfo.parent ? parentInfo.parent.id : activeRoot
                 // Calculate the correct insert index
-                if (toolbarDragPosition === 'before') {
+                if (position === 'before') {
                     insertIndex = parentInfo.index
                 } else { // 'after'
                     insertIndex = parentInfo.index + 1
@@ -220,13 +244,15 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             }
         }
 
-        // Create the element using the existing createElement function
+        // Notify the context that we're creating an element from toolbar
+        notifyElementCreatedFromToolbar();
+        
+        // Create the element using createElement from canvas context for permanent storage
         createElement(elementType, containerId, insertIndex)
         
         // Reset toolbar drag states
         setToolbarDragOverItem(null)
         setToolbarDragPosition(null)
-        setIsToolbarDrag(false)
     }
 
     // Drag and drop handlers
@@ -234,9 +260,24 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setDraggedItem(item)
         e.dataTransfer.effectAllowed = 'move'
         e.dataTransfer.setData('text/html', '')
+        
+        // Deselect the element that was selected when the drag starts
+        if (selectedItem && selectedItem !== item.id) {
+            // Save the previous selection to restore it if drag is cancelled
+            setPreviousTreeSelection(selectedItem)
+            setSelectedItem(null)
+            setSelectedId(null)
+        }
     }
 
     const handleDragEnd = () => {
+        // If drag was cancelled (no drop occurred), restore the previous selection
+        if (draggedItem && selectedItem !== draggedItem.id && previousTreeSelection) {
+            setSelectedItem(previousTreeSelection)
+            setSelectedId(previousTreeSelection)
+            setPreviousTreeSelection(null)
+        }
+        
         setDraggedItem(null)
         setDragOverItem(null)
         setDragPosition(null)
@@ -274,30 +315,42 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const handleDrop = (e, targetItem) => {
         e.preventDefault()
         
+        // Prevent dropping root elements (Banner, Modal) anywhere
+        if (draggedItem.id === 'tw-root--banner' || draggedItem.id === 'tw-root--modal') {
+            restoreSelectionAndCleanup()
+            return
+        }
+        
         if (!draggedItem || draggedItem.id === targetItem.id) {
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
 
-        // Check if target item allows children (has children attribute)
-        if (dragPosition === 'inside' && !targetItem.children) {
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+        // CRITICAL FIX: Prevent dropping a parent element inside its own descendants
+        // This prevents the parent and all its children from being deleted
+        if (isChildOfDraggedItem(targetItem.id)) {
+            // Cannot drop a parent inside its own child - this would create circular references
+            // and cause the element to disappear
+            restoreSelectionAndCleanup()
             return
         }
+
+            // GLOBAL NESTING DETECTION: Automatically detect if ANY element can accept children
+    if (dragPosition === 'inside' && !canAcceptChildren(targetItem)) {
+        // Restore previous selection since no move occurred
+        restoreSelectionAndCleanup()
+        return
+    }
 
         // Check if trying to drop in the exact same position (prevent unnecessary moves)
-        const currentParent = findParentById(activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData, draggedItem.id)
-        const targetParent = dragPosition === 'inside' ? targetItem : findParentById(activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData, targetItem.id)
+        const currentParent = findParentById(activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]], draggedItem.id)
+        const targetParent = dragPosition === 'inside' ? targetItem : findParentById(activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]], targetItem.id)
         
         // Prevent move if dropping on the same element
         if (targetItem.id === draggedItem.id) {
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
         
@@ -305,9 +358,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         if (dragPosition === 'inside' && currentParent && 
             currentParent.parent === targetItem) {
             // Same container, don't move
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
         
@@ -316,18 +368,26 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             currentParent.parent === targetParent.parent && 
             currentParent.index === targetParent.index) {
             // Same parent and same position, don't move
-            setDraggedItem(null)
-            setDragOverItem(null)
-            setDragPosition(null)
+            // Restore previous selection since no move occurred
+            restoreSelectionAndCleanup()
             return
         }
 
-        // Move the element in the current tree data
-        moveElement(draggedItem.id, targetItem.id, dragPosition)
+        // Move the element using canvas context moveElement
+        const success = moveElementFromCanvas(draggedItem.id, targetItem.id, dragPosition)
+        if (!success) {
+            // If the drop was invalid (e.g., dropping inside a root element),
+            // restore previous selection and do not clear drag states.
+            restoreSelectionAndCleanup()
+            return
+        }
         
         // Set the dragged item as the new selected item
         setSelectedItem(draggedItem.id)
         setSelectedId(draggedItem.id)
+        
+        // Clear previous selection since drop was successful
+        setPreviousTreeSelection(null)
         
         setDraggedItem(null)
         setDragOverItem(null)
@@ -363,76 +423,246 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         }
         return null
     }
-
-    // Tree data manipulation
-    const moveElement = (draggedId, targetId, position) => {
-        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
-        const newTreeData = JSON.parse(JSON.stringify(currentTreeData))
+    
+    // GLOBAL ELEMENT DETECTION: Automatically detect if ANY element can accept children
+    // This works for ALL existing and future elements
+    const canAcceptChildren = (item) => {
+        // If element has children array, it can accept more children
+        if (item.children !== undefined) return true;
         
-        // Find and remove the dragged element
-        const removeElement = (nodes) => {
-            for (let i = 0; i < nodes.length; i++) {
-                if (nodes[i].id === draggedId) {
-                    const [removed] = nodes.splice(i, 1)
-                    return removed
+        // If element has nestable property explicitly set to true
+        if (item.nestable === true) return true;
+        
+        // If element is a root element (banner, modal)
+        if (item.id === 'tw-root--banner' || item.id === 'tw-root--modal') return true;
+        
+        // Default: element cannot accept children
+        return false;
+    };
+    
+    // Helper function to restore previous selection and clean up drag state
+    const restoreSelectionAndCleanup = () => {
+        if (previousTreeSelection) {
+            setSelectedItem(previousTreeSelection)
+            setSelectedId(previousTreeSelection)
+            setPreviousTreeSelection(null)
+        }
+        setDraggedItem(null)
+        setDragOverItem(null)
+        setDragPosition(null)
+    }
+
+    // Keyboard accessibility functions
+    // Copy selected element and all its descendants
+    const handleCopy = () => {
+        if (!selectedItem || !setClipboard || !deepCopy) return;
+        
+        // Don't allow copying root elements
+        if (selectedItem === 'tw-root--banner' || selectedItem === 'tw-root--modal') {
+            if (showNotification) {
+                showNotification("Cannot copy root elements", "top", false);
+            }
+            return;
+        }
+        
+        // Find the selected element in the current tree
+        const findElement = (nodes, targetId) => {
+            for (const node of nodes) {
+                if (node.id === targetId) return node;
+                if (node.children) {
+                    const found = findElement(node.children, targetId);
+                    if (found) return found;
                 }
-                if (nodes[i].children) {
-                    const removed = removeElement(nodes[i].children)
-                    if (removed) return removed
+            }
+            return null;
+        };
+        
+        const currentRoot = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]];
+        const element = findElement(currentRoot, selectedItem);
+        
+        if (element) {
+            // Store the element in clipboard for pasting
+            setClipboard(deepCopy(element));
+            
+            // Show notification
+            if (showNotification) {
+                showNotification("Copied to clipboard", "top", false);
+            }
+        }
+    };
+
+    // Paste copied element
+    const handlePaste = () => {
+        if (!clipboard || !addElement || !deepCopy) return;
+        
+        // If no element is selected, paste at the end of the tree (like toolbar elements)
+        if (!selectedItem) {
+            const currentRoot = activeTab === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1];
+            
+            if (currentRoot) {
+                // Create a deep copy of the clipboard item without the id (addElement will generate new IDs)
+                const copiedItem = deepCopy(clipboard);
+                delete copiedItem.id; // Remove the original ID so addElement can generate new ones
+                
+                // Add to the end of the root tree (last position)
+                addElement(copiedItem, currentRoot.id);
+                
+
+            }
+            return;
+        }
+        
+        // Don't allow pasting into root elements (only into their children)
+        if (selectedItem === 'tw-root--banner' || selectedItem === 'tw-root--modal') {
+            if (showNotification) {
+                showNotification("Cannot paste into root elements", "top", false);
+            }
+            return;
+        }
+        
+        // Find the target element in the current tree
+        const findElement = (nodes, targetId) => {
+            for (const node of nodes) {
+                if (node.id === targetId) return node;
+                if (node.children) {
+                    const found = findElement(node.children, targetId);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        
+        const currentRoot = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]];
+        const targetElement = findElement(currentRoot, selectedItem);
+        
+        if (targetElement) {
+            // Create a deep copy of the clipboard item without the id (addElement will generate new IDs)
+            const copiedItem = deepCopy(clipboard);
+            delete copiedItem.id; // Remove the original ID so addElement can generate new ones
+            
+            // GLOBAL NESTING DETECTION: Use the global function for ANY element
+            if (canAcceptChildren(targetElement)) {
+                // Target can accept children, paste inside it
+                addElement(copiedItem, targetElement.id);
+            } else {
+                // Target cannot accept children, paste at the same level
+                const parentInfo = findParentById(currentRoot, targetElement.id);
+                
+                if (parentInfo) {
+                    // Insert the copied item after the target item at the same level
+                    const insertIndex = parentInfo.index + 1;
+                    addElement(copiedItem, parentInfo.parent.id, insertIndex);
+                } else {
+                    // If target item is a root, add to the root level
+                    addElement(copiedItem, targetElement.id);
+                }
+            }
+            
+
+        }
+    };
+
+    // Delete selected element and all its descendants
+    const handleDelete = () => {
+        if (!selectedItem || !removeElement) return;
+        
+        // Don't allow deleting root elements
+        if (selectedItem === 'tw-root--banner' || selectedItem === 'tw-root--modal') {
+            if (showNotification) {
+                showNotification("Cannot delete root elements", "top", false);
+            }
+            return;
+        }
+        
+        // Remove the selected element (this will also remove all descendants)
+        removeElement(selectedItem);
+        
+        // Clear selection after deletion
+        setSelectedItem(null);
+        setSelectedId(null);
+
+    };
+
+    // Tree data manipulation using canvas context
+    const moveElementFromCanvas = (draggedId, targetId, position) => {
+        // Get the current tree data from canvas context
+        const currentRoot = activeTab === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1]
+        
+        // Find the target item to determine the parent and index
+        const findTargetInfo = (node, targetId) => {
+            if (node.id === targetId) {
+                return { node, parent: null, index: 0 }
+            }
+            if (node.children) {
+                for (let i = 0; i < node.children.length; i++) {
+                    if (node.children[i].id === targetId) {
+                        return { node: node.children[i], parent: node, index: i }
+                    }
+                    const result = findTargetInfo(node.children[i], targetId)
+                    if (result) return result
                 }
             }
             return null
         }
         
-        const draggedElement = removeElement(newTreeData)
-        if (!draggedElement) return
+        const targetInfo = findTargetInfo(currentRoot, targetId)
+        if (!targetInfo) return false
         
-        // Insert the element based on position
-        const insertElement = (nodes) => {
-            for (let i = 0; i < nodes.length; i++) {
-                if (nodes[i].id === targetId) {
-                    if (position === 'inside') {
-                        if (!nodes[i].children) nodes[i].children = []
-                        // Add to the end (last position) instead of beginning
-                        nodes[i].children.push(draggedElement)
-                    } else if (position === 'before') {
-                        nodes.splice(i, 0, draggedElement)
-                    } else if (position === 'after') {
-                        nodes.splice(i + 1, 0, draggedElement)
-                    }
-                    return true
-                }
-                if (nodes[i].children) {
-                    if (insertElement(nodes[i].children)) return true
+        // ADDITIONAL SAFETY CHECK: Prevent moving an element inside itself or its descendants
+        // This is a double-check to ensure the validation in handleDrop is respected
+        const isInvalidMove = (node, draggedId) => {
+            if (node.id === draggedId) return true
+            if (node.children) {
+                for (const child of node.children) {
+                    if (isInvalidMove(child, draggedId)) return true
                 }
             }
             return false
         }
         
-        insertElement(newTreeData)
-        
-        // Update the appropriate tree data
-        if (activeTab === 'tw-root--banner') {
-            setBannerTreeData(newTreeData)
-        } else {
-            setModalTreeData(newTreeData)
+        if (position === 'inside' && isInvalidMove(targetInfo.node, draggedId)) {
+            // This would create a circular reference - prevent the move
+            return false
         }
         
-        // Sync changes back to the canvas context
-        const newJSONtree = { ...JSONtree }
-        if (activeTab === 'tw-root--banner') {
-            newJSONtree.roots[0] = newTreeData[0]
+        let containerId, insertIndex
+        
+        if (position === 'inside') {
+            // GLOBAL NESTING DETECTION: Use the global function for ANY element
+            if (!canAcceptChildren(targetInfo.node)) {
+                // Cannot drop inside this element
+                return false;
+            }
+            
+            containerId = targetId
+            insertIndex = targetInfo.node.children ? targetInfo.node.children.length : 0
         } else {
-            newJSONtree.roots[1] = newTreeData[1]
+            // Drop before or after the target item
+            // Check if this is a valid drop operation
+            if (!targetInfo.parent) {
+                // Target is a root element, this is an invalid drop operation
+                // Return false to indicate the drop should be cancelled
+                return false
+            }
+            
+            containerId = targetInfo.parent.id
+            if (position === 'before') {
+                insertIndex = targetInfo.index
+            } else { // 'after'
+                insertIndex = targetInfo.index + 1
+            }
         }
-        setJSONtree(newJSONtree)
+        
+        // Use the canvas context moveElement function
+        moveElement(draggedId, containerId, insertIndex)
+        return true
     }
 
     // Check if an item is a descendant of the dragged item
     const isChildOfDraggedItem = (itemId) => {
         if (!draggedItem) return false
         
-        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+        const currentTreeData = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
         
         // Function to check if targetId is a descendant of ancestorId
         const isDescendantOf = (tree, targetId, ancestorId) => {
@@ -460,6 +690,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 }
             }
             return false
+
         }
 
         return isDescendantOf(currentTreeData, itemId, draggedItem.id)
@@ -469,7 +700,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const isDescendantOfSelected = (itemId, selectedId) => {
         if (!selectedId || itemId === selectedId) return false
         
-        const currentTreeData = activeTab === 'tw-root--banner' ? bannerTreeData : modalTreeData
+        const currentTreeData = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
         
         // Function to check if targetId is a descendant of ancestorId
         const isDescendantOf = (tree, targetId, ancestorId) => {
@@ -502,19 +733,90 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         return isDescendantOf(currentTreeData, itemId, selectedId)
     }
 
-    // Updates the tree banner and modal structures when the JSONtree changes (on load and in real time)
+    // Auto-expand blocks when JSONtree changes and they have children
     useEffect(() => {
         if(JSONtree) {
-            setBannerTreeData([JSONtree.roots[0]])
-            setModalTreeData([JSONtree.roots[1]])
+            // Auto-expand blocks that now have children
+            const autoExpandBlocks = (nodes) => {
+                nodes.forEach(node => {
+                    if (node.children && node.children.length > 0) {
+                        // If this node has children and wasn't expanded before, expand it
+                        if (!expandedItems.has(node.id)) {
+                            setExpandedItems(prev => new Set([...prev, node.id]))
+                        }
+                        // Recursively check children
+                        autoExpandBlocks(node.children)
+                    }
+                })
+            }
+            
+            // Check both banner and modal trees
+            if (JSONtree.roots[0]) autoExpandBlocks([JSONtree.roots[0]])
+            if (JSONtree.roots[1]) autoExpandBlocks([JSONtree.roots[1]])
         }
     },[JSONtree]);
-    const [bannerTreeData, setBannerTreeData] = useState([])
-    const [modalTreeData, setModalTreeData] = useState([])
+
+    // Effect to detect newly created elements and select them
+    useEffect(() => {
+        if (JSONtree && selectedId) {
+            // Find the selected element in the current tree
+            const findElement = (nodes, targetId) => {
+                for (const node of nodes) {
+                    if (node.id === targetId) return node
+                    if (node.children) {
+                        const found = findElement(node.children, targetId)
+                        if (found) return found
+                    }
+                }
+                return null
+            }
+            
+            const currentRoot = activeTab === 'tw-root--banner' ? [JSONtree.roots[0]] : [JSONtree.roots[1]]
+            const element = findElement(currentRoot, selectedId)
+            
+            // If element exists, ensure it's selected
+            if (element) {
+                setSelectedItem(selectedId)
+            }
+        }
+    }, [JSONtree, selectedId, activeTab]);
+
+
+
+    // Keyboard accessibility event listener
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Only handle keyboard shortcuts when the left panel is open and focused
+            if (!isPanelOpen) return;
+            
+            const isCtrlOrCmd = e.ctrlKey || e.metaKey; // Handles both Windows (Ctrl) and macOS (Cmd)
+
+            if (isCtrlOrCmd && e.key === 'c') {
+                e.preventDefault();
+                handleCopy();
+            }
+
+            if (isCtrlOrCmd && e.key === 'v') {
+                e.preventDefault();
+                handlePaste();
+            }
+
+            // Handle Backspace key for deletion
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                handleDelete();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedItem, clipboard, activeTab, JSONtree, isPanelOpen, handleDelete]);
 
     // Tree item renderer
     const renderTreeItem = (item, level = 0, parentId = null, isLastChild = false) => {
-        const draggableChildren = item.children ? item.children.filter(child => child.draggable !== false) : []
+        // Filter out null/undefined children before processing to prevent errors
+        const validChildren = item.children ? item.children.filter(child => child && child.id) : []
+        const draggableChildren = validChildren.filter(child => child.draggable !== false)
         const hasChildren = draggableChildren.length > 0
         const isExpanded = expandedItems.has(item.id)
         const isSelected = selectedItem === item.id
@@ -523,7 +825,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         const isDragOver = dragOverItem && dragOverItem.id === item.id
         
         // New toolbar drag over states
-        const isToolbarDragOver = toolbarDragOverItem && toolbarDragOverItem.id === item.id
+        const isToolbarDragOver = isToolbarDragActive && toolbarDragOverItem && toolbarDragOverItem.id === item.id
 
         // Determine which classes to apply
         let headerClasses = ['tw-builder__tree-item-header']
@@ -533,6 +835,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             if (!isExpanded) {
                 headerClasses.push('tw-builder__tree-item-header--collapsed')
             }
+        } else if (hasChildren && !isExpanded && selectedItem && isDescendantOfSelected(selectedItem, item.id)) {
+            // If this is a collapsed parent that has a selected descendant, show as collapsed parent with selected child
+            headerClasses.push('tw-builder__tree-item-header--collapsed-parent-with-selected-child')
         } else if (isParentSelected || (selectedItem && isDescendantOfSelected(item.id, selectedItem))) {
             // This is either a direct child or any descendant of the selected item
             if (isParentSelected && isLastChild) {
@@ -547,18 +852,29 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         }
         
         if (isDragOver) {
-            headerClasses.push('tw-builder__tree-item-header--drag-over')
-            // Add non-nestable class if trying to drop inside a non-nestable item
-            if (dragPosition === 'inside' && !item.children) {
-                headerClasses.push('tw-builder__tree-item-header--non-nestable')
+            // Only apply drag over styling if the item can actually receive children
+            if (dragPosition === 'inside') {
+                if (item.children || item.nestable) {
+                    headerClasses.push('tw-builder__tree-item-header--drag-over')
+                }
+                // Don't apply any styling if item can't have children
+            } else {
+                // For 'before' and 'after' positions, always apply styling
+                headerClasses.push('tw-builder__tree-item-header--drag-over')
             }
         }
 
         // Add toolbar drag over classes
         if (isToolbarDragOver) {
-            headerClasses.push('tw-builder__tree-item-header--toolbar-drag-over')
-            if (toolbarDragPosition === 'inside' && !item.children) {
-                headerClasses.push('tw-builder__tree-item-header--non-nestable')
+            // Only apply toolbar drag over styling if the item can actually receive children
+            if (toolbarDragPosition === 'inside') {
+                if (item.children || item.nestable) {
+                    headerClasses.push('tw-builder__tree-item-header--toolbar-drag-over')
+                }
+                // Don't apply any styling if item can't have children
+            } else {
+                // For 'before' and 'after' positions, always apply styling
+                headerClasses.push('tw-builder__tree-item-header--toolbar-drag-over')
             }
         }
 
@@ -604,13 +920,12 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 {/* Tree item header */}
                 <div 
                     className={headerClasses.join(' ')}
-                    style={{ position: 'relative', zIndex: 1 }}
                     onClick={() => handleItemClick(item.id)}
-                    draggable={!isToolbarDrag} // Disable internal drag when toolbar drag is active
+                    draggable={!isToolbarDragActive} // Disable internal drag when toolbar drag is active
                     onDragStart={(e) => handleDragStart(e, item)}
                     onDragEnd={handleDragEnd}
                     onDragOver={(e) => {
-                        if (isToolbarDrag) {
+                        if (isToolbarDragActive) {
                             // Handle toolbar drag
                             handleToolbarDragOver(e, item)
                         } else {
@@ -619,7 +934,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         }
                     }}
                     onDragLeave={(e) => {
-                        if (isToolbarDrag) {
+                        if (isToolbarDragActive) {
                             // Handle toolbar drag
                             handleToolbarDragLeave(e)
                         } else {
@@ -660,9 +975,15 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         {(() => {
                             switch (item.icon) {
                                 case 'text':
-                                    return <span className="tw-builder__tree-item-text-icon">T</span>;
+                                    return <span className="tw-builder__tree-item-text-icon">
+                                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 2.125V1H7V2.125M4 1V7M2.875 7H5.125" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                    </span>;
                                 case 'block':
-                                    return <div className="tw-builder__tree-item-square-icon"></div>;
+                                    return <svg className="tw-builder__tree-item-block-icon" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect width="8" height="8" rx="2" fill="currentColor"/>
+                                            </svg>;
                                 case 'image':
                                     return  <svg className="tw-builder__tree-item-image-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" fill="none">
                                                 <path fillRule="evenodd" clipRule="evenodd" d="M7.04346 0.875H6.9566C5.68731 0.874989 4.67532 0.874977 3.88191 0.981645C3.06269 1.09179 2.38964 1.32519 1.85742 1.85742C1.32519 2.38964 1.09179 3.06269 0.981645 3.88191C0.874977 4.67532 0.874989 5.68724 0.875 6.95654V7.04346C0.874989 8.31273 0.874977 9.3247 0.981645 10.1181C1.09179 10.9373 1.32519 11.6104 1.85742 12.1426C2.38964 12.6748 3.06269 12.9082 3.88191 13.0184C4.67533 13.125 5.68726 13.125 6.9566 13.125H7.0434C8.31273 13.125 9.32464 13.125 10.1181 13.0184C10.9373 12.9082 11.6104 12.6748 12.1426 12.1426C12.6748 11.6104 12.9082 10.9373 13.0184 10.1181C13.125 9.3247 13.125 8.31273 13.125 7.0434V6.9566C13.125 5.68726 13.125 4.67533 13.0184 3.88191C12.9082 3.06269 12.6748 2.38964 12.1426 1.85742C11.6104 1.32519 10.9373 1.09179 10.1181 0.981645C9.3247 0.874977 8.31273 0.874989 7.04346 0.875ZM3.20833 4.375C3.20833 3.73067 3.73067 3.20833 4.375 3.20833C5.01933 3.20833 5.54167 3.73067 5.54167 4.375C5.54167 5.01933 5.01933 5.54167 4.375 5.54167C3.73067 5.54167 3.20833 5.01933 3.20833 4.375ZM4.03773 11.8621C3.9666 11.8525 3.8987 11.8421 3.83382 11.8308C4.94496 10.4869 6.0774 9.12911 7.34936 8.27622C8.08436 7.78342 8.8403 7.47897 9.63906 7.44147C10.3393 7.40851 11.106 7.57907 11.9561 8.05729C11.9501 8.84537 11.9299 9.46108 11.8624 9.96263C11.7697 10.6525 11.5973 11.0383 11.318 11.3176C11.0386 11.597 10.6528 11.7693 9.96298 11.8621C9.25639 11.9571 8.32306 11.9583 7.00035 11.9583C5.67769 11.9583 4.74437 11.9571 4.03773 11.8621Z"/>
@@ -672,7 +993,9 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                                 case 'button':
                                     return <div className="tw-builder__tree-item-button-icon"></div>;
                                 default:
-                                    return <div className="tw-builder__tree-item-square-icon"></div>;
+                                    return <svg className="tw-builder__tree-item-block-icon" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect width="8" height="8" rx="2" fill="currentColor"/>
+                                            </svg>;
                             }
                         })()}
                     </div>
@@ -683,6 +1006,11 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     </span>
                 </div>
                 
+                {/* Toolbar drop line inside - positioned over the item */}
+                {isToolbarDragOver && toolbarDragPosition === 'inside' && (
+                    <div className="tw-builder__drop-line tw-builder__drop-line--toolbar tw-builder__drop-line--inside"></div>
+                )}
+                
                 {/* Background extend for selected parent */}
                 {isParentSelected && (
                     <div className="tw-builder__tree-item-background-extend"></div>
@@ -691,9 +1019,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 {/* Render children if item is expanded */}
                 {hasChildren && isExpanded && (
                     <div className="tw-builder__tree-children">
-                        {item.children
-                            .filter(child => child.draggable !== false) // Filter out non-draggable elements
-                            .map((child, index, filteredChildren) => renderTreeItem(child, level + 1, item.id, index === filteredChildren.length - 1))}
+                        {draggableChildren.map((child, index) => renderTreeItem(child, level + 1, item.id, index === draggableChildren.length - 1))}
                     </div>
                 )}
                 
@@ -713,24 +1039,24 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <Link href="/dashboard" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={handleGoToHome}>
+            <Link href="/dashboard" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={() => handleDropdownAction('home')}>
                 <span>Back to Dashboard</span>
             </Link>
             <div className="dropdown__divider"></div>
-            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleSiteSettings}>
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={() => handleDropdownAction('settings')}>
                 <span>Site settings</span>
             </button>
-            <button className="tw-builder__dropdown-item dropdown__item" onClick={handleTheme}>
+            <button className="tw-builder__dropdown-item dropdown__item" onClick={() => handleDropdownAction('theme')}>
                 <span>Theme</span>
             </button>
-            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleAppearance}>
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={() => handleDropdownAction('appearance')}>
                 <span>Appearance</span>
             </button>
-            <button className="dropdown__item tw-builder__dropdown-item" onClick={handleUpgradeToPro}>
+            <button className="dropdown__item tw-builder__dropdown-item" onClick={() => handleDropdownAction('upgrade')}>
                 <span>Upgrade to pro</span>
             </button>
             <div className="dropdown__divider"></div>
-            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--help" onClick={handleHelp}>
+            <button className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--help" onClick={() => handleDropdownAction('help')}>
                 <span>Help</span>
             </button>
         </>
@@ -809,20 +1135,15 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     <div 
                         className="tw-builder__tree-container"
                         onDragOver={(e) => {
-                            // Detect toolbar drag at container level
-                            if (e.dataTransfer.types.includes("elementType")) {
-                                setIsToolbarDrag(true)
-                            }
+                            // Toolbar drag detection is now handled by the context
                         }}
                         onDragLeave={(e) => {
-                            // Reset toolbar drag state when leaving container
-                            if (!e.currentTarget.contains(e.relatedTarget)) {
-                                setIsToolbarDrag(false)
-                            }
+                            // Toolbar drag state is now managed by the context
                         }}
                     >
-                        {activeTab === 'tw-root--banner' && bannerTreeData.map((item, index) => renderTreeItem(item, 0, null, index === bannerTreeData.length - 1))}
-                        {activeTab === 'tw-root--modal' && modalTreeData.map((item, index) => renderTreeItem(item, 0, null, index === modalTreeData.length - 1))}
+
+                        {activeTab === 'tw-root--banner' && JSONtree.roots[0] && [JSONtree.roots[0]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
+                        {activeTab === 'tw-root--modal' && JSONtree.roots[1] && [JSONtree.roots[1]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
                     </div>
                 </div>
             </div>
@@ -831,3 +1152,4 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
 }
 
 export default BuilderLeftPanel;
+

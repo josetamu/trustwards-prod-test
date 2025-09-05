@@ -24,6 +24,8 @@
       "@components/*": ["src/app/components/*"],
       "@builderElements/*": ["src/app/builderElements/*"],
       "@contexts/*": ["src/contexts/*"],
+      "@supabase/*": ["src/supabase/*"],
+      "@defaultCDNscript/*": ["src/app/scanner-test/*"],
     },
     "plugins": [
       {
@@ -38,7 +40,7 @@
     "next-env.d.ts",
     "src/app/dashboard/DashboardContext.tsx",
     "./dist/types/**/*.ts"
-  ],
+, "src/app/api/scan/route.js"  ],
   "exclude": [
     "node_modules"
   ]

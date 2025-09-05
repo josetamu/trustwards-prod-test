@@ -127,6 +127,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const [activeRoot, setActiveRoot] = React.useState(null);
     const [activeTab, setActiveTab] = React.useState(null); //State to track which tab is currently active (banner or modal)
     const [selectedItem, setSelectedItem] = React.useState(null) //State to track which item is currently selected in the tree
+    
+    // State to track toolbar drag operations (only usable for detecting the creation of elements from toolbar into left panel's tree or canvas)
+    const [isToolbarDragActive, setIsToolbarDragActive] = React.useState(false);
+    const [previousSelectionBeforeToolbarDrag, setPreviousSelectionBeforeToolbarDrag] = React.useState(null);
+    const [isCreatingElementFromToolbar, setIsCreatingElementFromToolbar] = React.useState(false);
+    const [previousTreeStateBeforeCreation, setPreviousTreeStateBeforeCreation] = React.useState(null);
 
     //this happens when changing the tab: changes active root, nothing is selected, sets the active tab and updates the real JSONtree
     const updateActiveRoot = (newActiveRoot) => {
@@ -373,27 +379,21 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * id - The id of the element to remove from the JSONtree
     */
     const removeElement = (id) => {
+        const idsDataToRemove = [];
+
         const remove = (node) => {
             if (!node.children) return;
-
+            
             node.children = node.children.filter((child) => {
                 if (child.id === id) {
-                    childIdsToRemove(child);
+                    idsDataToRemove.push(child.id);
                     return false;
                 }
+
+                remove(child);
                 return true;
             });
         };
-
-        const idsDataToRemove = [];
-        const childIdsToRemove = (node) => {
-            idsDataToRemove.push(node.id); //push each node id and its children to the idsDataToRemove array
-            if (node.children && node.children.length > 0) {
-                node.children.forEach(childIdsToRemove);
-            }
-        }
-
-
 
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the remove
         remove(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the element in the current JSONtree
@@ -427,7 +427,6 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
         };
 
-
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addClass
         addClassToElement(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Add the class to the element in the current JSONtree
 
@@ -457,6 +456,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 node.children.forEach(updateClass);
             }
         };
+        
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeClass
         updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the class from the element in the current JSONtree
 
@@ -828,6 +828,52 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     }
 
     /*
+    * Toolbar drag management functions
+    * NOTE: These functions are ONLY for use by Canvas and LeftPanel components
+    */
+    
+    // Called when toolbar drag starts
+    const handleToolbarDragStart = () => {
+        setIsToolbarDragActive(true);
+        // Save current selection to restore if drag is cancelled
+        if (selectedId) {
+            setPreviousSelectionBeforeToolbarDrag(selectedId);
+            setSelectedId(null);
+            setSelectedItem(null);
+        }
+    };
+    
+    // Called when toolbar drag ends (either successful or cancelled)
+    const handleToolbarDragEnd = () => {
+        setIsToolbarDragActive(false);
+        // If we were creating an element, don't restore previous selection
+        // The new element will be selected automatically
+        if (!isCreatingElementFromToolbar && previousSelectionBeforeToolbarDrag) {
+            // Use a small delay to allow any new element selection to complete
+            setTimeout(() => {
+                if (!selectedId) {
+                    setSelectedId(previousSelectionBeforeToolbarDrag);
+                    setSelectedItem(previousSelectionBeforeToolbarDrag);
+                }
+                setPreviousSelectionBeforeToolbarDrag(null);
+            }, 50);
+        } else if (isCreatingElementFromToolbar) {
+            // Clear the creation state
+            setIsCreatingElementFromToolbar(false);
+            setPreviousTreeStateBeforeCreation(null);
+            setPreviousSelectionBeforeToolbarDrag(null);
+        }
+    };
+    
+    // Called when canvas/left panel is about to create an element from toolbar
+    const notifyElementCreatedFromToolbar = () => {
+        setIsCreatingElementFromToolbar(true);
+        // Save current tree state to detect the new element later
+        const currentRoot = activeRoot === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1];
+        setPreviousTreeStateBeforeCreation(JSON.stringify(currentRoot));
+    };
+
+    /*
     * Remove a JSON property (for HTML and Javascript (attr) controls)
     * id - The id of the element to remove the property from
     * property - The property to remove
@@ -856,10 +902,60 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
 
+    // Effect to detect and select newly created elements from toolbar (AUTOMATIC - NO COMPONENT CALLS THIS)
+    useEffect(() => {
+        if (isCreatingElementFromToolbar && previousTreeStateBeforeCreation && JSONtree) {
+            const currentRoot = activeRoot === 'tw-root--banner' ? JSONtree.roots[0] : JSONtree.roots[1];
+            const previousRoot = JSON.parse(previousTreeStateBeforeCreation);
+            
+            // Find the newly created element by comparing current and previous tree states
+            const findNewlyCreatedElement = (currentNode, previousNode) => {
+                // If this is a new node (not in previous state), it's our target
+                if (!previousNode) {
+                    return currentNode;
+                }
+                
+                // If this node has children, check them
+                if (currentNode.children) {
+                    for (let i = 0; i < currentNode.children.length; i++) {
+                        const currentChild = currentNode.children[i];
+                        const previousChild = previousNode?.children?.[i];
+                        
+                        // If this child is completely new (didn't exist before), it's our target
+                        if (!previousChild) {
+                            return currentChild;
+                        }
+                        
+                        // If this child has a different ID, it's new
+                        if (currentChild.id !== previousChild.id) {
+                            return currentChild;
+                        }
+                        
+                        // Recursively check children
+                        const result = findNewlyCreatedElement(currentChild, previousChild);
+                        if (result) return result;
+                    }
+                }
+                
+                return null;
+            };
+            
+            const newElement = findNewlyCreatedElement(currentRoot, previousRoot);
+            if (newElement) {
+                setSelectedId(newElement.id);
+                setSelectedItem(newElement.id);
+                // Clear the creation state
+                setIsCreatingElementFromToolbar(false);
+                setPreviousTreeStateBeforeCreation(null);
+                setPreviousSelectionBeforeToolbarDrag(null);
+            }
+        }
+    }, [JSONtree, isCreatingElementFromToolbar, previousTreeStateBeforeCreation, activeRoot, setSelectedId, setSelectedItem]);
+
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
-        moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-        addCSSProperty, addJSONProperty, runElementScript }}>
+            moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive }}>
             {children}
         </CanvasContext.Provider>
     );

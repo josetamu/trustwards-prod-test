@@ -16,6 +16,8 @@ import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
 import { useSidebarSettings } from '../../contexts/SidebarSettingsContext';
 
+import { createCDN } from '@contexts/CDNsContext';
+
 import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
 export const useDashboard = () => useContext(DashboardContext);
@@ -228,7 +230,7 @@ const SiteStyle = (site) => {
   const _loginDevUser = async () => {
     await supabase.auth.signInWithPassword({
       /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'oscar.abad.brickscore@gmail.com',  
+      email: 'darezo.2809@gmail.com',  
       password: 'TW.141109'
     });
   };
@@ -458,6 +460,9 @@ const handleBackdropClick = useCallback((e) => {
           showNotification('Error creating site');
           return;
         }
+
+        //Create the CDN for the new site
+        createCDN(data[0].id);
 
         // Update the webs state immediately with the new site
         setWebs(prevWebs => [...prevWebs, data[0]]);
