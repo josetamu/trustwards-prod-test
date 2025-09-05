@@ -52,11 +52,12 @@ export const Canvas = () => {
     * setSelectedId - When an element is clicked, set it as the selectedId
     * selectedId - Current element selected
     */
-    const renderNode = (node, selectedId) => {
+    const renderNode = (node, selectedId, hasAnchorAncestor = false) => {
         const isSelected = node.id === selectedId;
         const isRoot = node.id === 'tw-root--banner' || node.id === 'tw-root--modal';
         const isActiveRoot = node.id === activeRoot;
-
+        
+        const anchorAncestor = hasAnchorAncestor || node.tagName === 'a';
         // Set the node properties from its JSON (id, classes, tag, children, etc..)
         const nodeProps = {
             id: node.id, // Add the node.id as the real id
@@ -95,25 +96,24 @@ export const Canvas = () => {
                 },
             } : {})
         };
-    
+
         const children = node.children?.map((child) => //Renders the children of the node (JSON tree) in loop
-            renderNode(child, selectedId)
+            renderNode(child, selectedId, anchorAncestor)
         )
 
         // Track element for script execution once it is created
         trackElement(node);
-        
         switch (node.elementType) {
             case 'banner':
                 return Banner(node, nodeProps, children).render();
             case 'modal':
                 return Modal(node, nodeProps, children).render();
             case 'text':
-                return Text(node, nodeProps).render();
+                return Text(node, nodeProps, anchorAncestor).render();
             case 'button':
                 return Button(node, nodeProps).render();
             case 'block':
-                return Block(node, nodeProps, children).render();
+                return Block(node, nodeProps, children, anchorAncestor).render();
             case 'divider':
                 return Divider(node, nodeProps).render();
             case 'image':
@@ -140,7 +140,12 @@ export const Canvas = () => {
             !e.target.closest('.tw-context-menu') &&
             !e.target.closest('.builder-save__text') &&
             !e.target.closest('.tw-builder__panel-toggle-btn') &&
-            !e.target.closest('.tw-builder__logo-button')) {
+            !e.target.closest('.tw-builder__logo-button') &&
+            !e.target.closest('.tw-builder__settings-class-remove') &&
+            !e.target.closest('.tw-builder__settings-class-unactive') &&
+            !e.target.closest('.tw-builder__settings-classes-item') &&
+            !e.target.closest('.tw-builder__settings-option') &&
+            !e.target.closest('.tw-builder__settings-pen-controls')) {
                 setSelectedId(null);
                 setSelectedItem(null);
             }
@@ -366,9 +371,67 @@ export const Canvas = () => {
     //For each class, add its CSS selector and properties
     const createCSS = (JSONtree) => {
         const styleId = 'tw-dynamic-stylesheet';
+
+        //valid units. If user types for example 100 or 100a it will add px to the value
+        const validUnits = ['px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', 'deg', 'rad', 'grad', 'turn', 's', 'ms', 'hz', 'khz'];
+        //properties that need units. opacity is not in the list because it doesn't need units
+        const unitsProperties = ['width','max-width', 'height', 'max-height', 'font-size', 'line-height', 'border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-radius','border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'gap', 'grid-gap', 'grid-column-gap', 'grid-row-gap', 'column-gap', 'row-gap','flex-basis'];
         
         // Build the CSS content
         let cssContent = '';
+
+        //function to validate and add units
+        const addUnits = (prop, value) => {
+            //As box-shadow is a special case because it has one css property but 6 controls, we need to validate and add units to it separately
+            if (prop === 'box-shadow') {
+                //Add px to the value if it is a number. If it has units, keep them
+                const unitizeLen = (t) => (/^-?\d+(\.\d+)?$/.test(t) ? `${t}px` : t);
+                //Take the color apart not mix it with the other values
+                const colorMatch = value.match(/rgba?\([^)]+\)|hsla?\([^)]+\)|#[0-9a-fA-F]{3,8}/);
+                const color = colorMatch ? colorMatch[0] : null;
+                //Add blank spaces around the inset and color for the correct tokenization
+                let v = String(value || '').replace(/\binset\b/gi, ' inset ').trim();
+                if (color) v = v.replace(color, ' ' + color + ' ');
+                //Split the value into tokens
+                const tokens = v.split(/\s+/).filter(Boolean);
+        
+                let inset = false, lens = [], rest = [];
+                //Split the tokens into inset, lens and rest(inset || x, y, blur, spread || color)
+                for (const t of tokens) {
+                    if (/^inset$/i.test(t)) inset = true;
+                    else if (color && t === color) rest.push(color);
+                    else lens.push(t);
+                }
+                //Add px to the lens if it is a number. If it has units, keep them
+                lens = lens.map((t, i) => (i < 4 ? unitizeLen(t) : t));
+        
+                const out = [];
+                //Add the inset to the out array if it is true
+                if (inset) out.push('inset');
+                //Add the lens and rest to the out array
+                out.push(...lens, ...rest);
+                //Join the out array and return the string(Box-shadow string)
+                return out.join(' ');
+            }
+
+            // If the property needs units and value is a number or doesn't have valid units
+            if (unitsProperties.includes(prop)) {
+                // Check if value is just a number (no units)
+                if (/^\d+$/.test(value)) {
+                    return `${value}px`;
+                }
+                // Check if value has valid units
+                const hasValidUnit = validUnits.some(unit => value.endsWith(unit));
+                if (!hasValidUnit) {
+                    // Extract the numeric part and add px
+                    const numericPart = value.match(/^[\d.]+/);
+                    if (numericPart) {
+                        return `${numericPart[0]}px`;
+                    }
+                }
+            }
+            return value;
+        };
 
         //For each id, add its CSS selector and properties (if id is empty, it won't be added)
         JSONtree.idsCSSData.forEach(({ id, properties }) => {
@@ -376,7 +439,9 @@ export const Canvas = () => {
             if (propertyEntries.length > 0) {
                 cssContent += `#${id} {\n`;
                 propertyEntries.forEach(([prop, value]) => {
-                    cssContent += `${prop}: ${value};\n`;
+                    //add units to the value if needed
+                    const validatedValue = addUnits(prop, value);
+                    cssContent += `${prop}: ${validatedValue};\n`;
                 });
                 cssContent += `}\n`;
             }
@@ -388,7 +453,9 @@ export const Canvas = () => {
             if (propertyEntries.length > 0) {
                 cssContent += `.${className} {\n`;
                 propertyEntries.forEach(([prop, value]) => {
-                    cssContent += `${prop}: ${value};\n`;
+                    //add units to the value if needed
+                    const validatedValue = addUnits(prop, value);
+                    cssContent += `${prop}: ${validatedValue};\n`;
                 });
                 cssContent += `}\n`;
             }

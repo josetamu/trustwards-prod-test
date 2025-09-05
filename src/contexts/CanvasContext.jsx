@@ -187,67 +187,85 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * property - the CSS property: color, background-color, padding, margin, etc...
     * value - the value of the property (if empty string "", the property will be removed)
     */
-    const addCSSProperty = (type, selector, property, value) => {
+    const addCSSProperty = (type, selector, propertyOrObject, value) => {
         let updatedIdsCSSData = JSONtree.idsCSSData;
         let updatedClassesCSSData = JSONtree.classesCSSData;
-        switch(type) {
-            case 'id': {
-                // Check if the selector already exists in idsCSSData
-                const existingIdIndex = JSONtree.idsCSSData.findIndex(item => item.id === selector);
-                
-                if (existingIdIndex !== -1) {
-                    // If value is empty string, remove the property
-                    if (value === "") {
-                        const updatedProperties = { ...JSONtree.idsCSSData[existingIdIndex].properties };
-                        delete updatedProperties[property];
-                        updatedIdsCSSData = [...JSONtree.idsCSSData];
-                        updatedIdsCSSData[existingIdIndex] = { ...JSONtree.idsCSSData[existingIdIndex], properties: updatedProperties };
-                    } else {
-                        // If it exists, update the existing properties modifying the new property value
-                        const updatedProperties = { ...JSONtree.idsCSSData[existingIdIndex].properties, [property]: value };
-                        updatedIdsCSSData = [...JSONtree.idsCSSData];
-                        updatedIdsCSSData[existingIdIndex] = { ...JSONtree.idsCSSData[existingIdIndex], properties: updatedProperties };
-                    }
+    
+        // Normalize to object
+        const propertiesToAdd =
+            typeof propertyOrObject === "object" && propertyOrObject !== null
+                ? propertyOrObject
+                : { [propertyOrObject]: value };
+    
+        // If a property has value === "", we remove it
+        const cleanProperties = (oldProps, newProps) => {
+            const updated = { ...oldProps };
+            Object.entries(newProps).forEach(([prop, val]) => {
+                if (val === "") {
+                    delete updated[prop];
                 } else {
-                    // If it doesn't exist and value is not empty, add a new entry with the selector and property
-                    if (value !== "") {
-                        updatedIdsCSSData = [...JSONtree.idsCSSData, { id: selector, properties: { [property]: value } }];
-                    }
+                    updated[prop] = val;
+                }
+            });
+            return updated;
+        };
+    
+        switch (type) {
+            case "id": {
+                const existingIdIndex = JSONtree.idsCSSData.findIndex(
+                    (item) => item.id === selector
+                );
+    
+                if (existingIdIndex !== -1) {
+                    const updatedProperties = cleanProperties(
+                        JSONtree.idsCSSData[existingIdIndex].properties,
+                        propertiesToAdd
+                    );
+                    updatedIdsCSSData = [...JSONtree.idsCSSData];
+                    updatedIdsCSSData[existingIdIndex] = {
+                        ...JSONtree.idsCSSData[existingIdIndex],
+                        properties: updatedProperties,
+                    };
+                } else {
+                    updatedIdsCSSData = [
+                        ...JSONtree.idsCSSData,
+                        { id: selector, properties: propertiesToAdd },
+                    ];
                 }
                 break;
             }
-            case 'class': {
-                // Check if the selector already exists in classesCSSData
-                const existingClassIndex = JSONtree.classesCSSData.findIndex(item => item.className === selector);
+    
+            case "class": {
+                const existingClassIndex = JSONtree.classesCSSData.findIndex(
+                    (item) => item.className === selector
+                );
+    
                 if (existingClassIndex !== -1) {
-                    // If value is empty string, remove the property
-                    if (value === "") {
-                        const updatedProperties = { ...JSONtree.classesCSSData[existingClassIndex].properties };
-                        delete updatedProperties[property];
-                        updatedClassesCSSData = [...JSONtree.classesCSSData];
-                        updatedClassesCSSData[existingClassIndex] = { ...JSONtree.classesCSSData[existingClassIndex], properties: updatedProperties };
-                    } else {
-                        // If it exists, update the existing properties modifying the new property value
-                        const updatedProperties = { ...JSONtree.classesCSSData[existingClassIndex].properties, [property]: value };
-                        updatedClassesCSSData = [...JSONtree.classesCSSData];
-                        updatedClassesCSSData[existingClassIndex] = { ...JSONtree.classesCSSData[existingClassIndex], properties: updatedProperties };
-                    }
+                    const updatedProperties = cleanProperties(
+                        JSONtree.classesCSSData[existingClassIndex].properties,
+                        propertiesToAdd
+                    );
+                    updatedClassesCSSData = [...JSONtree.classesCSSData];
+                    updatedClassesCSSData[existingClassIndex] = {
+                        ...JSONtree.classesCSSData[existingClassIndex],
+                        properties: updatedProperties,
+                    };
                 } else {
-                    // If it doesn't exist and value is not empty, add a new entry with the selector and property
-                    if (value !== "") {
-                        updatedClassesCSSData = [...JSONtree.classesCSSData, { className: selector, properties: { [property]: value } }];
-                    }
+                    updatedClassesCSSData = [
+                        ...JSONtree.classesCSSData,
+                        { className: selector, properties: propertiesToAdd },
+                    ];
                 }
                 break;
             }
         }
-        
-        // Use the updated data (not the potentially stale state)
-        const updated = deepCopy(JSONtree); 
+    
+        const updated = deepCopy(JSONtree);
         updated.idsCSSData = updatedIdsCSSData;
         updated.classesCSSData = updatedClassesCSSData;
         setJSONtree(updated);
     };
+    
 
     /*
     * Add a JSON property (for HTML and Javascript (attr) controls)
@@ -361,27 +379,21 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * id - The id of the element to remove from the JSONtree
     */
     const removeElement = (id) => {
+        const idsDataToRemove = [];
+
         const remove = (node) => {
             if (!node.children) return;
-
+            
             node.children = node.children.filter((child) => {
                 if (child.id === id) {
-                    childIdsToRemove(child);
+                    idsDataToRemove.push(child.id);
                     return false;
                 }
+
+                remove(child);
                 return true;
             });
         };
-
-        const idsDataToRemove = [];
-        const childIdsToRemove = (node) => {
-            idsDataToRemove.push(node.id); //push each node id and its children to the idsDataToRemove array
-            if (node.children && node.children.length > 0) {
-                node.children.forEach(childIdsToRemove);
-            }
-        }
-
-
 
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the remove
         remove(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the element in the current JSONtree
@@ -415,7 +427,6 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
         };
 
-
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addClass
         addClassToElement(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Add the class to the element in the current JSONtree
 
@@ -445,6 +456,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 node.children.forEach(updateClass);
             }
         };
+        
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the removeClass
         updateClass(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1]); //Remove the class from the element in the current JSONtree
 
@@ -515,6 +527,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 icon: "block",
                 tagName: "div",
                 label: "Block",
+                href: null,
                 children: [],
                 classList: ["tw-block"],
                 nestable: true,
@@ -526,9 +539,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Image",
                 src: '/assets/builder-default-image.svg',
                 defaultCSS: {
-                    'width': 'auto',
-                    'height': 'auto',
-                    'display': 'block'
+                    'width': '200px',
+                    'height': '200px',
+                    'display': 'block',
+                    'object-fit': 'cover'
                 },
                 classList: ["tw-image"]
             },
@@ -940,8 +954,8 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
-        moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-        addCSSProperty, addJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive }}>
+            moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive }}>
             {children}
         </CanvasContext.Provider>
     );

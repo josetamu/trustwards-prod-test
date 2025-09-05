@@ -27,6 +27,7 @@
 
 .tw-builder__control-icon{
     display: none;
+    color: var(--label-color);
 }
 .tw-builder__control-icon--active{
     display: flex;

@@ -35,7 +35,12 @@
     overflow-x: hidden;
     scrollbar-width: none;
 }
-
+.tw-builder__right-body-content{
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px; 
+}
 
 /* Controls css */
 .tw-builder__settings{
@@ -53,11 +58,12 @@
     padding-bottom: 10px;
 }
 
+
 .tw-builder__settings-label{
     font-size: var(--font-size-small);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
-    color: #000;
+    color: var(--label-color);
 }
 
 .tw-builder__settings-setting{
@@ -101,6 +107,14 @@
 .tw-builder__settings-select:focus{
     outline: none;
 }
+.tw-builder__settings-select option{
+    background-color: #2B2B2B;
+    color: #fff;
+}
+.tw-builder__settings-select option:hover{
+    background-color: #0099FE;
+    color: #fff;
+}
 
 /* Flecha personalizada */
 .tw-builder__settings-arrow {
@@ -116,6 +130,7 @@
 
 .tw-builder__settings-input{
     width: 60px;
+    height: 22px;
     padding: 5px;
     border-radius: 5px;
     border: none;
@@ -149,6 +164,7 @@
     padding: 1px;
     align-items: stretch;
     justify-content: center;
+    position: relative;
 }
 .tw-builder__settings-actions--column{
     width: 100%;
@@ -169,12 +185,16 @@
     position: relative;
 }
 .tw-builder__settings-action--active{
-    background-color: #fff;
     color: var(--text-color);
-    border: 1px solid var(--border-light-color);
-    border-radius: 7px;
-    height: 23px;
+
 }
+.tw-builder__settings-action--reverse{
+        background-color: #fff;
+        color: var(--text-color);
+        border: 1px solid var(--border-light-color);
+        border-radius: 7px;
+        height: 23px;
+    }
 .tw-builder__settings-action--start{
     align-items: flex-start;
 }
@@ -343,3 +363,25 @@
 
   }
   
+
+
+
+
+/* Slider */
+.tw-builder__settings-slider {
+    display: none;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    height: calc(100% - 6px);
+    background-color: var(--tab-slider-background);
+    border-radius: 6px;
+    border: 1px solid var(--border-light-color);
+    box-shadow: 0 2px 4px 0 var(--shadow-light-color);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tw-builder__settings-actions:has(.tw-builder__settings-action--active) .tw-builder__settings-slider {
+    display: block;
+}
+
+

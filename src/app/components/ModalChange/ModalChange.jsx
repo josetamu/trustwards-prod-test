@@ -262,15 +262,15 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
             }else {
                 // Check if domain already exists in the database
                 try {
-                    const { data: existingSites, error } = await supabase
+                    const { data: site, error } = await supabase
                         .from('Site')
                         .select('Domain')
                         .eq('Domain', createSiteDomain.trim());
-                    
+
                     if (error) {
                         console.error('Error checking domain:', error);
                         validationErrors.createSiteDomain = 'Error checking domain availability';
-                    } else if (existingSites && existingSites.length > 0) {
+                    } else if (site && site.length > 0) {
                         validationErrors.createSiteDomain = 'This domain is already in use';
                     }
                 } catch (error) {
@@ -278,7 +278,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                     validationErrors.createSiteDomain = 'Error checking domain availability';
                 }
             }
-        } 
+        }
         if (changeType === 'settings') {
             if (!newSiteName || newSiteName.trim() === '') {
                 validationErrors.newSiteName = 'Site name is required';

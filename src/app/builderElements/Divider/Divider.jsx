@@ -17,32 +17,32 @@ export const Divider = (node, nodeProps = {}) => {
 
     const groupControls =  {
         header: [
-            { name: 'Height', type: 'text', value: '2px' },
-            { name: 'Width', type: 'text', value: '100%' },
-            { name: 'Style', type: 'select', value: 'solid', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
-            { name: 'Direction', type: 'choose', category: 'direction'},
-            { name: 'Align', type: 'choose', category: 'align'},
+            { name: 'Height', type: 'text', value: '2px', cssProperty: 'height', autoUnit: 'px' },
+            { name: 'Width', type: 'text', value: '100%', cssProperty: 'width', autoUnit: 'px' },
+            { name: 'Style', type: 'select', value: 'solid', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'], cssProperty: 'border-style' },
+            { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction'},
+            { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items'},
             { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' },
         ],
         body: [
             {
                 label: 'Style',
                 controls: [
-                    { name: 'Border Width', type: 'panel'},
-                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
+                    { name: 'Border Width', type: 'panel', cssProperty: 'border-width', autoUnit: 'px'},
+                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'], cssProperty: 'border-style' },
                     { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'border-color' },
-                    { name: 'Border Radius', type: 'panel'},
-                    { name: 'Box Shadow X', type: 'text' },
-                    { name: 'Box Shadow Y', type: 'text' },
-                    { name: 'Blur', type: 'text' },
-                    { name: 'Spread', type: 'text' },
+                    { name: 'Border Radius', type: 'panel', cssProperty: 'border-radius', autoUnit: 'px'},
+                    { name: 'Box Shadow X', type: 'text', cssProperty: 'box-shadow-x', autoUnit: 'px'},
+                    { name: 'Box Shadow Y', type: 'text', cssProperty: 'box-shadow-y', autoUnit: 'px'},
+                    { name: 'Blur', type: 'text', cssProperty: 'box-shadow-blur', autoUnit: 'px'},
+                    { name: 'Spread', type: 'text', cssProperty: 'box-shadow-spread', autoUnit: 'px'},
                     { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'box-shadow' },
-                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
-                    { name: 'Z-Index', type: 'text' },
-                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
-                    { name: 'Opacity', type: 'text', value: '1' },
-                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
-                    { name: 'Transform', type: 'text'},
+                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'], cssProperty: 'position' },
+                    { name: 'Z-Index', type: 'text', cssProperty: 'z-index' },
+                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                    { name: 'Opacity', type: 'text', value: '1', cssProperty: 'opacity' },
+                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                    { name: 'Transform', type: 'text', cssProperty: 'transform'},
                 ]
             }
         ]

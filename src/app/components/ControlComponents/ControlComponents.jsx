@@ -1,18 +1,20 @@
 'use client'
 import { Tooltip } from '@components/tooltip/Tooltip';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
 import React from 'react';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useCanvas } from '@contexts/CanvasContext';
 import BuilderClasses from '../BuilderClasses/BuilderClasses';
-import { jsx } from 'react/jsx-runtime';
+import { supabase } from '../../../supabase/supabaseClient';
+import './ControlComponents.css';
+import { StylesDeleter } from '../StylesDeleter/StylesDeleter';
 
 
 
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
     
     const [textValue, setTextValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -25,8 +27,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
                 if (JSONProperty && applyGlobalJSONChange) {
                     applyGlobalJSONChange(JSONProperty, value);
                 } else if (cssProperty && applyGlobalCSSChange) {
-                    const cssValue = autoUnit && value ? processValueForCSS(value) : value;
-                    applyGlobalCSSChange(cssProperty, cssValue);
+                    applyGlobalCSSChange(cssProperty, value);
                 }
             }, 0);
         }
@@ -37,71 +38,33 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
         const savedValue = savedJSONValue || savedCSSValue;
-        setTextValue(savedValue || value || '');
+      
+            setTextValue(savedValue || value || '');
+        
     }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
 
-    const processValueForCSS = (inputValue) => {
-        if (!autoUnit || !inputValue) return inputValue;
-
-        const trimmedValue = inputValue.trim();
-        
-        // Lista de unidades CSS válidas
-        const validUnits = [
-            'px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', '%', 
-            'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'fr',
-            's', 'ms', 'deg', 'rad', 'grad', 'turn', 'hz', 'khz'
-        ];
-        
-        // Regex para detectar número seguido de texto
-        const numberWithTextRegex = /^(-?\d*\.?\d+)(.*)$/;
-        const match = trimmedValue.match(numberWithTextRegex);
-        
-        if (match) {
-            const numberPart = match[1];
-            const unitPart = match[2];
-            
-            // Si no hay unidad o la unidad no es válida, añadir unidad automática
-            if (!unitPart || !validUnits.includes(unitPart)) {
-                return `${numberPart}${autoUnit}`;
-            }
-            
-            // Si tiene una unidad válida, devolver tal como está
-            return trimmedValue;
-        }
-        
-        // Si no es un número con texto, devolver tal como está
-        return inputValue;
-    }
 
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextValue(newValue);
-        
-        // Priorizar JSON sobre CSS
-        if (JSONProperty && applyGlobalJSONChange) {
-            applyGlobalJSONChange(JSONProperty, newValue);
-        } else if (cssProperty && applyGlobalCSSChange) {
-            const cssValue = processValueForCSS(newValue);
-            applyGlobalCSSChange(cssProperty, cssValue);
-        }
+    
     };
+
     const handleBlur = (e) => {
         const inputValue = e.target.value;
-        
-        if (autoUnit && inputValue) {
-            const cssValue = processValueForCSS(inputValue);
-            
-            if(cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(cssProperty, cssValue);
-            }
+        if(JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, inputValue);
+        } else if (cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, inputValue);
         }
-    }
+    };
     
 
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
+            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange}/>
             <input 
             type="text" 
             className="tw-builder__settings-input" 
@@ -114,12 +77,13 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     )
 }
 
-
-
-const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
+/* const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange}) => {
 
     // Initialize with saved value from global CSS system
     const [selectValue, setSelectValue] = useState(() => {
+        if(JSONProperty && getGlobalJSONValue) {
+            return getGlobalJSONValue(JSONProperty) || value || '';
+        } 
         return getGlobalCSSValue?.(cssProperty) || value || '';
     });
     
@@ -128,18 +92,21 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
 
     // Update when selected element changes
     useEffect(() => {
-        if (getGlobalCSSValue && cssProperty) {
+        if (JSONProperty && getGlobalJSONValue) {
+            const savedValue = getGlobalJSONValue(JSONProperty);
+            setSelectValue(savedValue || value || '');
+        } else if (getGlobalCSSValue && cssProperty) {
             const savedValue = getGlobalCSSValue(cssProperty);
             setSelectValue(savedValue || value || '');
         }
-    }, [getGlobalCSSValue, cssProperty, value]);
+    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!measureRef.current) return;    
         setSelectWidth(measureRef.current.offsetWidth + 4);
     }, [selectValue, options]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const onResize = () => {
             if (!measureRef.current) return;
             setSelectWidth(measureRef.current.offsetWidth + 4);
@@ -149,13 +116,17 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    // Handle select change with global CSS application
+    // Handle select change with global CSS or JSON application
     const handleSelectChange = (e) => {
         const newValue = e.target.value;
         setSelectValue(newValue);
         
-        // Apply to global CSS system
-        if (cssProperty && applyGlobalCSSChange) {
+        // Apply to global JSON system if JSONProperty is provided
+        if (JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, newValue);
+        }
+        // Apply to global CSS system if cssProperty is provided
+        else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
         }
     };
@@ -198,7 +169,7 @@ const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSCha
             </div>
         </div>
     );
-};
+}; */
 
 const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
     const [superSelectValue, setSuperSelectValue] = useState(() => {
@@ -358,22 +329,22 @@ useEffect(() => {
         }
     };
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!measureRef.current) return;
         setSelectWidth(measureRef.current.offsetWidth + 3);
     }, [superSelectValue]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!wrapMeasureRef.current) return;
         setWrapSelectWidth(wrapMeasureRef.current.offsetWidth + 7);
     }, [selectedWrap]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!flowMeasureRef.current) return;
         setFlowSelectWidth(flowMeasureRef.current.offsetWidth + 3);
     }, [selectedFlow, superSelectValue]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const onResize = () => {
             if (!measureRef.current) return;
             setSelectWidth(measureRef.current.offsetWidth + 3);
@@ -386,6 +357,18 @@ useEffect(() => {
         onResize();
         return () => window.removeEventListener('resize', onResize);
     }, []);
+
+    const getSliderPosition = (selectedValue, options) => {
+        const index = options.indexOf(selectedValue);
+        return index >= 0 ? `${index * 100}%` : '0%';
+    };
+    const getSliderWidth = (options) => {
+        return `calc(${100 / options.length}% - ${100 / options.length / 100 * 6}px)`;
+    };
+
+    const directionOptions = ['column','row','']
+    const superJustifyOptions = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'];
+    const superAlignOptions = ['flex-start', 'center', 'flex-end', 'stretch'];
 
     return (
         <React.Fragment key={index}>
@@ -407,7 +390,7 @@ useEffect(() => {
                     {superSelectValue || value}
                 </span>
                 <select className="tw-builder__settings-select" value={superSelectValue} onChange={(e) => handleSuperSelectChange(e.target.value)} style={{ width: selectWidth }}>
-                    {category === 'text' && (
+                    {category === 'block' && (
                         <>
                             <option className="tw-builder__settings-option" value="div">div</option>
                             <option className="tw-builder__settings-option" value="a">a</option>
@@ -426,6 +409,19 @@ useEffect(() => {
                             <option className="tw-builder__settings-option" value="inline-block">Inline Block</option>
                             <option className="tw-builder__settings-option" value="inline">Inline</option>
                             <option className="tw-builder__settings-option" value="none">None</option>
+                        </>
+                    )}
+                    {category === 'text' && (
+                        <>
+                            <option className="tw-builder__settings-option" value="h1">h1</option>
+                            <option className="tw-builder__settings-option" value="h2">h2</option>
+                            <option className="tw-builder__settings-option" value="h3">h3</option>
+                            <option className="tw-builder__settings-option" value="h4">h4</option>
+                            <option className="tw-builder__settings-option" value="h5">h5</option>
+                            <option className="tw-builder__settings-option" value="h6">h6</option>
+                            <option className="tw-builder__settings-option" value="p">p</option>
+                            <option className="tw-builder__settings-option" value="span">span</option>
+                            <option className="tw-builder__settings-option" value="a">a</option>
                         </>
                     )}
                 </select>
@@ -490,6 +486,10 @@ useEffect(() => {
                     <div className="tw-builder__settings-setting">
                         <span className="tw-builder__settings-subtitle">Direction</span>
                         <div className="tw-builder__settings-actions">
+                        <div className="tw-builder__settings-slider"
+                            style={{ transform: `translateX(${getSliderPosition(selectedDirection, directionOptions)})`, width: `${getSliderWidth(directionOptions)}` } }
+                        >
+                        </div>
                             <button className={`tw-builder__settings-action ${selectedDirection === 'column' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleDirectionChange('column')} onMouseEnter={() => handleMouseEnter('column')} onMouseLeave={handleMouseLeave}>
                                 <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M0.00134172 2C-0.00151758 1.78086 -0.00630757 1.37951 0.0645315 1.1168C0.156314 0.776369 0.384806 0.417969 0.917786 0.185477C1.16804 0.0763693 1.43357 0.0356924 1.70173 0.0173539C1.95531 9.16995e-08 2.26431 0 2.62258 0H8.37743C8.7357 0 9.04469 9.16995e-08 9.29828 0.0173539C9.56645 0.0356924 9.83193 0.0763693 10.0822 0.185477C10.6152 0.417969 10.8437 0.776369 10.9355 1.1168C11.0063 1.37951 11.0016 1.78086 10.9986 2C11.0016 2.21914 11.0063 2.62049 10.9355 2.8832C10.8437 3.22363 10.6152 3.58203 10.0822 3.81452C9.83193 3.92363 9.56645 3.96431 9.29828 3.98265C9.04469 4 8.7357 4 8.37743 4H2.62258C2.26431 4 1.95531 4 1.70173 3.98265C1.43357 3.96431 1.16804 3.92363 0.917786 3.81452C0.384806 3.58203 0.156314 3.22363 0.0645315 2.8832C-0.00630757 2.62049 -0.00151758 2.21914 0.00134172 2Z" fill="currentColor"/>
@@ -514,7 +514,7 @@ useEffect(() => {
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleReverseChange(!isReverse)} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--reverse' : ''}`} onClick={() => handleReverseChange(!isReverse)} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
                                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1 3.5C0.723858 3.5 0.5 3.72386 0.5 4C0.5 4.27614 0.723858 4.5 1 4.5V4V3.5ZM13.1936 4.35355C13.3889 4.15829 13.3889 3.84171 13.1936 3.64645L10.0117 0.464466C9.81641 0.269204 9.49982 0.269204 9.30456 0.464466C9.1093 0.659728 9.1093 0.976311 9.30456 1.17157L12.133 4L9.30456 6.82843C9.1093 7.02369 9.1093 7.34027 9.30456 7.53553C9.49982 7.7308 9.81641 7.7308 10.0117 7.53553L13.1936 4.35355ZM1 4V4.5H12.8401V4V3.5H1V4Z" fill="currentColor"/>
                                     <path d="M12.8398 11.5C13.116 11.5 13.3398 11.2761 13.3398 11C13.3398 10.7239 13.116 10.5 12.8398 10.5V11V11.5ZM0.646195 10.6464C0.450933 10.8417 0.450933 11.1583 0.646195 11.3536L3.82818 14.5355C4.02344 14.7308 4.34002 14.7308 4.53528 14.5355C4.73054 14.3403 4.73054 14.0237 4.53528 13.8284L1.70686 11L4.53528 8.17157C4.73054 7.97631 4.73054 7.65973 4.53528 7.46447C4.34002 7.2692 4.02344 7.2692 3.82818 7.46447L0.646195 10.6464ZM12.8398 11V10.5L0.999749 10.5V11V11.5L12.8398 11.5V11Z" fill="currentColor"/>
@@ -531,6 +531,10 @@ useEffect(() => {
                     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
                         <span className="tw-builder__settings-subtitle">Justify</span>
                         <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
+                            <div className="tw-builder__settings-slider"
+                                style={{ transform: `translateX(${getSliderPosition(selectedJustify, superJustifyOptions)})`, width: `${getSliderWidth(superJustifyOptions)}` } }
+                            >
+                            </div>
                             <button className={`tw-builder__settings-action ${selectedJustify === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('flex-start')} onMouseEnter={() => handleMouseEnter('start')} onMouseLeave={handleMouseLeave}>
                                 <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
@@ -615,38 +619,42 @@ useEffect(() => {
                     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
                         <span className="tw-builder__settings-subtitle">Align</span>
                         <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
-                            <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')} onMouseEnter={() => handleMouseEnter('start')} onMouseLeave={handleMouseLeave}>
+                            <div className="tw-builder__settings-slider"
+                                style={{ transform: `translateX(${getSliderPosition(selectedAlign, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
+                            >
+                            </div>
+                            <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')} onMouseEnter={() => handleMouseEnter('Astart')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 0.5C12 0.22386 11.7558 0 11.4545 0H0.545454C0.2442 0 0 0.22386 0 0.5C0 0.77614 0.2442 1 0.545454 1H11.4545C11.7558 1 12 0.77614 12 0.5Z" fill="currentColor"/>
                                 </svg>
                                 <Tooltip
                                 message={'Start'}
-                                open={activeTooltip === 'start'}
+                                open={activeTooltip === 'Astart'}
                                 responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action ${selectedAlign === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action ${selectedAlign === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('center')} onMouseEnter={() => handleMouseEnter('Acenter')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 2.5C1.9989 2.22608 1.99541 1.72438 2.04693 1.396C2.11368 0.970462 2.27986 0.522462 2.66748 0.231846C2.84949 0.0954617 3.0426 0.0446155 3.23762 0.0216924C3.42205 1.14624e-07 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 1.14624e-07 8.76238 0.0216924C8.95742 0.0446155 9.1505 0.0954617 9.3325 0.231846C9.72014 0.522462 9.88632 0.970462 9.95309 1.396C10.0046 1.72438 10.0011 2.22608 9.999 2.5C10.0011 2.77392 10.0046 3.27562 9.95309 3.604C9.88632 4.02954 9.72014 4.47754 9.3325 4.76815C9.1505 4.90454 8.95742 4.95538 8.76238 4.97831C8.57795 5 8.35324 5 8.09268 5H3.90733C3.64677 5 3.42204 5 3.23762 4.97831C3.0426 4.95538 2.84949 4.90454 2.66748 4.76815C2.27986 4.47754 2.11368 4.02954 2.04693 3.604C1.99541 3.27562 1.9989 2.77392 2.00098 2.5Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 2.5C12 2.22386 11.7558 2 11.4545 2H0.545454C0.2442 2 0 2.22386 0 2.5C0 2.77614 0.2442 3 0.545454 3H11.4545C11.7558 3 12 2.77614 12 2.5Z" fill="currentColor"/>
                                 </svg>
                                 <Tooltip
                                 message={'Center'}
-                                open={activeTooltip === 'center'}
+                                open={activeTooltip === 'Acenter'}
                                 responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedAlign === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-end')} onMouseEnter={() => handleMouseEnter('end')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedAlign === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-end')} onMouseEnter={() => handleMouseEnter('Aend')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 2C1.9989 1.78086 1.99541 1.37951 2.04693 1.1168C2.11368 0.776369 2.27986 0.417969 2.66748 0.185477C2.84949 0.0763693 3.0426 0.0356924 3.23762 0.0173539C3.42205 9.16995e-08 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 9.16995e-08 8.76238 0.0173539C8.95742 0.0356924 9.1505 0.0763693 9.3325 0.185477C9.72014 0.417969 9.88632 0.776369 9.95309 1.1168C10.0046 1.37951 10.0011 1.78086 9.999 2C10.0011 2.21914 10.0046 2.62049 9.95309 2.8832C9.88632 3.22363 9.72014 3.58203 9.3325 3.81452C9.1505 3.92363 8.95742 3.96431 8.76238 3.98265C8.57795 4 8.35324 4 8.09268 4H3.90733C3.64677 4 3.42204 4 3.23762 3.98265C3.0426 3.96431 2.84949 3.92363 2.66748 3.81452C2.27986 3.58203 2.11368 3.22363 2.04693 2.8832C1.99541 2.62049 1.9989 2.21914 2.00098 2Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 5.5C12 5.22386 11.7558 5 11.4545 5H0.545454C0.2442 5 0 5.22386 0 5.5C0 5.77614 0.2442 6 0.545454 6H11.4545C11.7558 6 12 5.77614 12 5.5Z" fill="currentColor"/>
                                 </svg>
                                 <Tooltip
                                 message={'End'}
-                                open={activeTooltip === 'end'}
+                                open={activeTooltip === 'Aend'}
                                 responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                 width="auto"
                                 />
@@ -671,8 +679,7 @@ useEffect(() => {
                     name="Column Gap"
                     value=""
                     placeholder="normal"
-                    cssProperty="column-gap"
-                    autoUnit="px"
+                    cssProperty="column-gap"      
                     applyGlobalCSSChange={applyGlobalCSSChange}
                     getGlobalCSSValue={getGlobalCSSValue}
                     selectedId={selectedId}
@@ -683,7 +690,6 @@ useEffect(() => {
                         value=""
                         placeholder="normal"
                         cssProperty="row-gap"
-                        autoUnit="px"
                         applyGlobalCSSChange={applyGlobalCSSChange}
                         getGlobalCSSValue={getGlobalCSSValue}
                         selectedId={selectedId}
@@ -714,7 +720,6 @@ useEffect(() => {
                         value=""
                         placeholder="auto"
                         cssProperty="flex-basis"
-                        autoUnit="px"
                         applyGlobalCSSChange={applyGlobalCSSChange}
                         getGlobalCSSValue={getGlobalCSSValue}
                         selectedId={selectedId}
@@ -739,7 +744,6 @@ useEffect(() => {
             value=""
             placeholder="0"
             cssProperty="gap"
-            autoUnit="px"
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
             selectedId={selectedId}
@@ -996,7 +1000,7 @@ useEffect(() => {
     )
 }
 
-const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, autoUnit, selectedElementData}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [topValue, setTopValue] = useState(() => {
         const saved = getGlobalCSSValue?.(`${cssProperty}-top`);
         return saved || '';
@@ -1017,8 +1021,16 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         return saved || '';
     });
 
+    useEffect(() => {
+        if(!getGlobalCSSValue || !cssProperty) return;
+        setTopValue(getGlobalCSSValue?.(`${cssProperty}-top`) || '');
+        setRightValue(getGlobalCSSValue?.(`${cssProperty}-right`) || '');
+        setBottomValue(getGlobalCSSValue?.(`${cssProperty}-bottom`) || '');
+        setLeftValue(getGlobalCSSValue?.(`${cssProperty}-left`) || '');
+    }, [selectedElementData, getGlobalCSSValue, cssProperty]);
+
         // Función para procesar valores con unidades (igual que en TextType)
-        const processValueForCSS = (inputValue) => {
+/*         const processValueForCSS = (inputValue) => {
             if (!autoUnit || !inputValue) return inputValue;
             const trimmedValue = inputValue.trim();
             const validUnits = ['px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', '%', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'fr'];
@@ -1033,60 +1045,73 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
                 return trimmedValue;
             }
             return inputValue;
-        };
+        }; */
     
         // Handlers para cada input
         const handleTopChange = (e) => {
             const newValue = e.target.value;
             setTopValue(newValue);
+
+        };
+        const handleTopBlur = (e) => {
+            const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                const cssValue = processValueForCSS(newValue);
-                applyGlobalCSSChange(`${cssProperty}-top`, cssValue);
+                applyGlobalCSSChange(`${cssProperty}-top`, inputValue);
             }
         };
     
         const handleRightChange = (e) => {
             const newValue = e.target.value;
             setRightValue(newValue);
+
+        };
+        const handleRightBlur = (e) => {
+            const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                const cssValue = processValueForCSS(newValue);
-                applyGlobalCSSChange(`${cssProperty}-right`, cssValue);
+                applyGlobalCSSChange(`${cssProperty}-right`, inputValue);
             }
         };
     
         const handleBottomChange = (e) => {
             const newValue = e.target.value;
             setBottomValue(newValue);
+
+        };
+        const handleBottomBlur = (e) => {
+            const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                const cssValue = processValueForCSS(newValue);
-                applyGlobalCSSChange(`${cssProperty}-bottom`, cssValue);
+                applyGlobalCSSChange(`${cssProperty}-bottom`, inputValue);
             }
         };
     
         const handleLeftChange = (e) => {
             const newValue = e.target.value;
             setLeftValue(newValue);
+
+        };
+        const handleLeftBlur = (e) => {
+            const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                const cssValue = processValueForCSS(newValue);
-                applyGlobalCSSChange(`${cssProperty}-left`, cssValue);
+                applyGlobalCSSChange(`${cssProperty}-left`, inputValue);
             }
         };
+        
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
         <span className="tw-builder__settings-subtitle">{name}</span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur}/>
         </div>
     </div>
     )
 }
-const ColorType = ({name, value, opacity, index, elementId, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
+const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
 
     const colorInputRef = useRef(null);
 
@@ -1164,9 +1189,8 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty, selecte
             applyGlobalCSSChange(cssProperty, finalValue);
         }
     };
-
-    // Add RAF throttling
-    const rafRef = useRef(null);
+    // Agregar timeout ref para el color
+    const colorTimeoutRef = useRef(null);
 
     //Function to change the color
     const handleColorChange = useCallback((e) => {
@@ -1176,21 +1200,22 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty, selecte
         setColor(newColor);
         setHex(newColor.replace('#', '').toUpperCase());
         
-        // Use requestAnimationFrame to throttle CSS updates to display refresh rate
-        if (rafRef.current) {
-            cancelAnimationFrame(rafRef.current);
+        // Limpiar timeout anterior si existe
+        if (colorTimeoutRef.current) {
+            clearTimeout(colorTimeoutRef.current);
         }
         
-        rafRef.current = requestAnimationFrame(() => {
+        // Aplicar CSS después de 300ms de inactividad
+        colorTimeoutRef.current = setTimeout(() => {
             applyCSSChange(newColor, percentage);
-        });
+        }, 100);
     }, [percentage, applyCSSChange]);
 
-    // Cleanup RAF on unmount
+    // Limpiar timeout al desmontar
     useEffect(() => {
         return () => {
-            if (rafRef.current) {
-                cancelAnimationFrame(rafRef.current);
+            if (colorTimeoutRef.current) {
+                clearTimeout(colorTimeoutRef.current);
             }
         };
     }, []);
@@ -1260,11 +1285,12 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty, selecte
         }
     };
     //Function to get the final color. This is used to mix the color with the transparency
-    const finalColor = color && color !== '' ? hexToRgba(color, parseInt(percentage.replace('%', ''))) : 'transparent';
+    const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage || '100%').replace('%', ''))) : 'transparent';
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
+            <button onClick={() => applyCSSChange('', '')}>Prueba</button>
         <div className="tw-builder__settings-background">
             <div className="tw-builder__settings-colors">
                 <input  ref={colorInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
@@ -1281,12 +1307,133 @@ const ColorType = ({name, value, opacity, index, elementId, cssProperty, selecte
     </div>
     )
 }
-const ImageType = ({name, index}) => {
+const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange}) => {
+    const [image, setImage] = useState(null);
+    const [imageUrl, setImageUrl] = useState('');
+    const imageRef = useRef(null);
+    const imageUrlRef = useRef(null);
+    const [errors, setErrors] = useState({});
+    const [isUploading, setIsUploading] = useState(false);
+
+    useEffect(() => {
+        const savedValue = getGlobalJSONValue?.(JSONProperty);
+        console.log(savedValue);
+        if (savedValue) {
+            if (savedValue.startsWith('http')) {
+                setImageUrl(savedValue);
+                setImage(savedValue);
+            } else {
+                setImage(savedValue);
+            }
+        }
+    }, [getGlobalJSONValue, JSONProperty]);
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+    
+        
+        if (!file.type.startsWith('image/')) {
+            setErrors({ file: 'The file must be an image' });
+            return;
+        }
+    
+        if (file.size > 5 * 1024 * 1024) {
+            setErrors({ file: 'The file must be less than 5MB' });
+            return;
+        }
+    
+        setErrors({});
+        setIsUploading(true);
+    
+        try {
+            const fileExtension = file.name.split('.').pop();
+            const fileName = `${user?.id || 'anonymous'}/${site?.id || 'default'}/${Date.now()}.${fileExtension}`;
+    
+           
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('Builder')
+                .upload(fileName, file);
+    
+            if (uploadError) {
+                throw uploadError;
+            }
+    
+            
+            const { data: { publicUrl } } = supabase.storage
+                .from('Builder')
+                .getPublicUrl(fileName);
+    
+            setImage(publicUrl);
+            setImageUrl(publicUrl);
+            applyGlobalJSONChange?.(JSONProperty, publicUrl);
+    
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            setErrors({ file: 'Error uploading image. Please try again.' });
+        } finally {
+            setIsUploading(false);
+        }
+    };
+    const handleUrlChange = (e) => {
+        const url = e.target.value;
+        setImageUrl(url);
+    };
+    const handleUrlSubmit = (e) => {
+        if (e.key === 'Enter' || e.type === 'blur') {
+            const url = imageUrl.trim();
+            if (!url) return;
+    
+            try {
+                new URL(url); 
+            } catch {
+                setErrors({ url: 'Please enter a valid URL' });
+                return;
+            }
+    
+            setErrors({});
+            
+            setImage(url);
+            setImageUrl(url);
+            applyGlobalJSONChange?.(JSONProperty, url); 
+        }
+    };
     return (
+        <>
+        <div className="tw-builder__settings-setting">
+            <span className="tw-builder__settings-subtitle">Source</span>
+            <input 
+            type="text" 
+            className="tw-builder__settings-input tw-builder__settings-input--link" 
+            placeholder="URL..." 
+            ref={imageUrlRef}
+            value={imageUrl}
+            onChange={handleUrlChange}
+            onBlur={handleUrlSubmit}
+            onKeyDown={handleUrlSubmit}
+            />
+        </div>
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-        <span className="tw-builder__settings-subtitle">{name}</span>
-        <img src="/assets/builder-default-image.svg" alt="Image" className="tw-builder__settings-image" />
-    </div>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <div
+                className="tw-builder__settings-image"
+                style={imageUrl ? { backgroundImage: `url(${imageUrl})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center center' } : undefined}
+            >
+                <div className={`tw-builder__settings-image-upload ${imageUrl ? 'tw-builder__settings-image-upload-preview' : ''}`} onClick={() => imageRef.current.click()}>
+                    <span className="tw-builder__settings-image-span">Upload Image</span>
+                    <input 
+                    ref={imageRef} 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleImageUpload} 
+                    className="tw-builder__settings-image-input" 
+                    disabled={isUploading}
+                    />
+                </div>
+
+            </div>
+        </div>
+        </>
     )
 }
 const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
@@ -1303,12 +1450,20 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         }
     }, [getGlobalCSSValue, cssProperty, category]);
 
+    // Mostrar el tooltip solo si el usuario está 1s en hover
+    const hoverTimeoutRef = useRef(null);
+
     const handleMouseEnter = (tooltipId) => {
-        setActiveTooltip(tooltipId);
+        hoverTimeoutRef.current = setTimeout(() => {
+            setActiveTooltip(tooltipId);
+        }, 500); 
     };
+
     const handleMouseLeave = () => {
+        clearTimeout(hoverTimeoutRef.current);
         setActiveTooltip(null);
     };
+
     const handleChooseChange = useCallback((choose) => {
         setSelectedChoose(choose);
         if (cssProperty && applyGlobalCSSChange) {
@@ -1333,12 +1488,32 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         }
     }, [isReverse, cssProperty, applyGlobalCSSChange, selectedChoose]);
 
+    const getSliderPosition = (selectedValue, options) => {
+        const index = options.indexOf(selectedValue);
+        return index >= 0 ? `${index * 100}%` : '0%';
+    };
+    const getSliderWidth = (options) => {
+        return `calc(${100 / options.length}% - ${100 / options.length / 100 * 6}px)`;
+    };
+
+    // Define options for each category
+    const directionOptions = ['column', 'row'];
+    const flexDirectionOptions = ['column', 'row'];
+    const justifyOptions = ['flex-start', 'center', 'flex-end'];
+    const alignOptions = ['flex-start', 'center', 'flex-end'];
+    const textAlignOptions = ['left', 'center', 'right'];
+
+
     switch (category) {
         case 'direction':
             return (
                 <div className="tw-builder__settings-setting" key={index}>
                     <span className="tw-builder__settings-subtitle">{name}</span>
                     <div className="tw-builder__settings-actions">
+                        <div className="tw-builder__settings-slider"
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, directionOptions)})`, width: `${getSliderWidth(directionOptions)}` } }
+                        >
+                        </div>
                         <button className={`tw-builder__settings-action ${selectedChoose === 'column' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('column')} onMouseEnter={() => handleMouseEnter('column')} onMouseLeave={handleMouseLeave}>
                             <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.00134172 2C-0.00151758 1.78086 -0.00630757 1.37951 0.0645315 1.1168C0.156314 0.776369 0.384806 0.417969 0.917786 0.185477C1.16804 0.0763693 1.43357 0.0356924 1.70173 0.0173539C1.95531 9.16995e-08 2.26431 0 2.62258 0H8.37743C8.7357 0 9.04469 9.16995e-08 9.29828 0.0173539C9.56645 0.0356924 9.83193 0.0763693 10.0822 0.185477C10.6152 0.417969 10.8437 0.776369 10.9355 1.1168C11.0063 1.37951 11.0016 1.78086 10.9986 2C11.0016 2.21914 11.0063 2.62049 10.9355 2.8832C10.8437 3.22363 10.6152 3.58203 10.0822 3.81452C9.83193 3.92363 9.56645 3.96431 9.29828 3.98265C9.04469 4 8.7357 4 8.37743 4H2.62258C2.26431 4 1.95531 4 1.70173 3.98265C1.43357 3.96431 1.16804 3.92363 0.917786 3.81452C0.384806 3.58203 0.156314 3.22363 0.0645315 2.8832C-0.00630757 2.62049 -0.00151758 2.21914 0.00134172 2Z" fill="currentColor"/>
@@ -1371,6 +1546,10 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                 <div className="tw-builder__settings-setting" key={index}>
                     <span className="tw-builder__settings-subtitle">{name}</span>
                     <div className="tw-builder__settings-actions">
+                        <div className="tw-builder__settings-slider"
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, flexDirectionOptions)})`, width: `${getSliderWidth(flexDirectionOptions)}` } }
+                        >
+                        </div>
                         <button className={`tw-builder__settings-action ${selectedChoose === 'column' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('column')} onMouseEnter={() => handleMouseEnter('column')} onMouseLeave={handleMouseLeave}>
                             <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.00134172 2C-0.00151758 1.78086 -0.00630757 1.37951 0.0645315 1.1168C0.156314 0.776369 0.384806 0.417969 0.917786 0.185477C1.16804 0.0763693 1.43357 0.0356924 1.70173 0.0173539C1.95531 9.16995e-08 2.26431 0 2.62258 0H8.37743C8.7357 0 9.04469 9.16995e-08 9.29828 0.0173539C9.56645 0.0356924 9.83193 0.0763693 10.0822 0.185477C10.6152 0.417969 10.8437 0.776369 10.9355 1.1168C11.0063 1.37951 11.0016 1.78086 10.9986 2C11.0016 2.21914 11.0063 2.62049 10.9355 2.8832C10.8437 3.22363 10.6152 3.58203 10.0822 3.81452C9.83193 3.92363 9.56645 3.96431 9.29828 3.98265C9.04469 4 8.7357 4 8.37743 4H2.62258C2.26431 4 1.95531 4 1.70173 3.98265C1.43357 3.96431 1.16804 3.92363 0.917786 3.81452C0.384806 3.58203 0.156314 3.22363 0.0645315 2.8832C-0.00630757 2.62049 -0.00151758 2.21914 0.00134172 2Z" fill="currentColor"/>
@@ -1395,7 +1574,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--active' : ''}`} onClick={handleReverseToggle} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--reverse' : ''}`} onClick={handleReverseToggle} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
                                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1 3.5C0.723858 3.5 0.5 3.72386 0.5 4C0.5 4.27614 0.723858 4.5 1 4.5V4V3.5ZM13.1936 4.35355C13.3889 4.15829 13.3889 3.84171 13.1936 3.64645L10.0117 0.464466C9.81641 0.269204 9.49982 0.269204 9.30456 0.464466C9.1093 0.659728 9.1093 0.976311 9.30456 1.17157L12.133 4L9.30456 6.82843C9.1093 7.02369 9.1093 7.34027 9.30456 7.53553C9.49982 7.7308 9.81641 7.7308 10.0117 7.53553L13.1936 4.35355ZM1 4V4.5H12.8401V4V3.5H1V4Z" fill="currentColor"/>
                                     <path d="M12.8398 11.5C13.116 11.5 13.3398 11.2761 13.3398 11C13.3398 10.7239 13.116 10.5 12.8398 10.5V11V11.5ZM0.646195 10.6464C0.450933 10.8417 0.450933 11.1583 0.646195 11.3536L3.82818 14.5355C4.02344 14.7308 4.34002 14.7308 4.53528 14.5355C4.73054 14.3403 4.73054 14.0237 4.53528 13.8284L1.70686 11L4.53528 8.17157C4.73054 7.97631 4.73054 7.65973 4.53528 7.46447C4.34002 7.2692 4.02344 7.2692 3.82818 7.46447L0.646195 10.6464ZM12.8398 11V10.5L0.999749 10.5V11V11.5L12.8398 11.5V11Z" fill="currentColor"/>
@@ -1415,6 +1594,10 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                 <div className="tw-builder__settings-setting" key={index}>
                     <span className="tw-builder__settings-subtitle">{name}</span>
                     <div className="tw-builder__settings-actions">
+                        <div className="tw-builder__settings-slider"
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, justifyOptions)})`, width: `${getSliderWidth(justifyOptions)}` } }
+                        >
+                        </div>
                         <button className={`tw-builder__settings-action ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
                             <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
@@ -1459,6 +1642,10 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                 <div className="tw-builder__settings-setting" key={index}>
                     <span className="tw-builder__settings-subtitle">{name}</span>
                     <div className="tw-builder__settings-actions">
+                        <div className="tw-builder__settings-slider"
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, alignOptions)})`, width: `${getSliderWidth(alignOptions)}` } }
+                        >
+                        </div>
                         <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
                             <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
@@ -1503,6 +1690,10 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
                 <span className="tw-builder__settings-subtitle">{name}</span>
                 <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
+                    <div className="tw-builder__settings-slider"
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, alignOptions)})`, width: `${getSliderWidth(alignOptions)}` } }
+                        >
+                        </div>
                     <button className={`tw-builder__settings-action ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
                         <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
@@ -1591,6 +1782,10 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                 <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
                         <span className="tw-builder__settings-subtitle">{name}</span>
                         <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
+                        <div className="tw-builder__settings-slider"
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
+                        >
+                        </div>
                             <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
@@ -1650,12 +1845,42 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                 <div className="tw-builder__settings-setting" key={index}>
                     <span className="tw-builder__settings-subtitle">{name}</span>
                     <div className="tw-builder__settings-actions">
+                    <div className="tw-builder__settings-slider"
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, textAlignOptions)})`, width: `${getSliderWidth(textAlignOptions)}` } }
+                        >
+                        </div>
                         <button className={`tw-builder__settings-action ${selectedChoose === 'left' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('left')} onMouseEnter={() => handleMouseEnter('left')} onMouseLeave={handleMouseLeave}>
-                            <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.00146369 1.5C-0.00165555 1.33565 -0.00688098 1.03463 0.070398 0.8376C0.170525 0.582277 0.419789 0.313477 1.00122 0.139108C1.27423 0.057277 1.56389 0.0267693 1.85643 0.0130155C2.13307 6.87746e-08 2.47015 0 2.86099 0L9.13902 0C9.52986 0 9.86693 6.87746e-08 10.1436 0.0130155C10.4361 0.0267693 10.7257 0.057277 10.9987 0.139108C11.5802 0.313477 11.8295 0.582277 11.9296 0.8376C12.0069 1.03463 12.0017 1.33565 11.9985 1.5C12.0017 1.66435 12.0069 1.96537 11.9296 2.1624C11.8295 2.41772 11.5802 2.68652 10.9987 2.86089C10.7257 2.94272 10.4361 2.97323 10.1436 2.98698C9.86693 3 9.52986 3 9.13902 3H2.86099C2.47015 3 2.13306 3 1.85643 2.98698C1.56389 2.97323 1.27423 2.94272 1.00122 2.86089C0.419789 2.68652 0.170525 2.41772 0.070398 2.1624C-0.00688098 1.96537 -0.00165555 1.66435 0.00146369 1.5Z" fill="currentColor"/>
-                                <path d="M0.000731847 6.5C-0.000827773 6.33565 -0.00344049 6.03463 0.035199 5.8376C0.0852624 5.58228 0.209894 5.31348 0.50061 5.13911C0.637115 5.05728 0.781946 5.02677 0.928217 5.01302C1.06653 5 1.23508 5 1.4305 5H4.56951C4.76493 5 4.93347 5 5.07179 5.01302C5.21806 5.02677 5.36287 5.05728 5.49937 5.13911C5.7901 5.31348 5.91474 5.58228 5.96482 5.8376C6.00343 6.03463 6.00085 6.33565 5.99925 6.5C6.00085 6.66435 6.00343 6.96537 5.96482 7.1624C5.91474 7.41772 5.7901 7.68652 5.49937 7.86089C5.36287 7.94272 5.21806 7.97323 5.07179 7.98698C4.93347 8 4.76493 8 4.56951 8H1.4305C1.23508 8 1.06653 8 0.928217 7.98698C0.781946 7.97323 0.637115 7.94272 0.50061 7.86089C0.209894 7.68652 0.0852624 7.41772 0.035199 7.1624C-0.00344049 6.96537 -0.000827773 6.66435 0.000731847 6.5Z" fill="currentColor"/>
-                                <path d="M0.00109777 11.5C-0.00124166 11.3356 -0.00516074 11.0346 0.0527985 10.8376C0.127894 10.5823 0.314842 10.3135 0.750916 10.1391C0.955672 10.0573 1.17292 10.0268 1.39233 10.013C1.5998 10 1.85261 10 2.14574 10H6.85426C7.14739 10 7.4002 10 7.60768 10.013C7.8271 10.0268 8.04431 10.0573 8.24906 10.1391C8.68515 10.3135 8.87211 10.5823 8.94722 10.8376C9.00514 11.0346 9.00128 11.3356 8.99888 11.5C9.00128 11.6644 9.00514 11.9654 8.94722 12.1624C8.87211 12.4177 8.68515 12.6865 8.24906 12.8609C8.04431 12.9427 7.8271 12.9732 7.60768 12.987C7.4002 13 7.14739 13 6.85426 13H2.14574C1.85261 13 1.5998 13 1.39233 12.987C1.17292 12.9732 0.955672 12.9427 0.750916 12.8609C0.314842 12.6865 0.127894 12.4177 0.0527985 12.1624C-0.00516074 11.9654 -0.00124166 11.6644 0.00109777 11.5Z" fill="currentColor"/>
+                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_d_0_1)">
+                                <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <g filter="url(#filter1_d_0_1)">
+                                <rect x="4" y="6" width="6" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <defs>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                <filter id="filter1_d_0_1" x="0" y="4" width="14" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                </defs>
                             </svg>
+
                             <Tooltip
                             message={'Left'}
                             open={activeTooltip === 'left'}
@@ -1664,11 +1889,37 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             />
                         </button>
                         <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
-                            <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.00146369 1.5C-0.00165555 1.33565 -0.00688098 1.03463 0.070398 0.8376C0.170525 0.582277 0.419789 0.313477 1.00122 0.139108C1.27423 0.057277 1.56389 0.0267693 1.85643 0.0130155C2.13307 6.87746e-08 2.47015 0 2.86099 0L9.13902 0C9.52986 0 9.86693 6.87746e-08 10.1436 0.0130155C10.4361 0.0267693 10.7257 0.057277 10.9987 0.139108C11.5802 0.313477 11.8295 0.582277 11.9296 0.8376C12.0069 1.03463 12.0017 1.33565 11.9985 1.5C12.0017 1.66435 12.0069 1.96537 11.9296 2.1624C11.8295 2.41772 11.5802 2.68652 10.9987 2.86089C10.7257 2.94272 10.4361 2.97323 10.1436 2.98698C9.86693 3 9.52986 3 9.13902 3H2.86099C2.47015 3 2.13306 3 1.85643 2.98698C1.56389 2.97323 1.27423 2.94272 1.00122 2.86089C0.419789 2.68652 0.170525 2.41772 0.070398 2.1624C-0.00688098 1.96537 -0.00165555 1.66435 0.00146369 1.5Z" fill="currentColor"/>
-                                <path d="M3.00073 6.5C2.99917 6.33565 2.99656 6.03463 3.0352 5.8376C3.08526 5.58228 3.20989 5.31348 3.50061 5.13911C3.63711 5.05728 3.78195 5.02677 3.92822 5.01302C4.06653 5 4.23508 5 4.4305 5H7.56951C7.76493 5 7.93347 5 8.07179 5.01302C8.21806 5.02677 8.36287 5.05728 8.49937 5.13911C8.7901 5.31348 8.91474 5.58228 8.96482 5.8376C9.00343 6.03463 9.00085 6.33565 8.99925 6.5C9.00085 6.66435 9.00343 6.96537 8.96482 7.1624C8.91474 7.41772 8.7901 7.68652 8.49937 7.86089C8.36287 7.94272 8.21806 7.97323 8.07179 7.98698C7.93347 8 7.76493 8 7.56951 8H4.4305C4.23508 8 4.06653 8 3.92822 7.98698C3.78195 7.97323 3.63711 7.94272 3.50061 7.86089C3.20989 7.68652 3.08526 7.41772 3.0352 7.1624C2.99656 6.96537 2.99917 6.66435 3.00073 6.5Z" fill="currentColor"/>
-                                <path d="M1.5011 11.5C1.49876 11.3356 1.49484 11.0346 1.5528 10.8376C1.62789 10.5823 1.81484 10.3135 2.25092 10.1391C2.45567 10.0573 2.67292 10.0268 2.89233 10.013C3.0998 10 3.35261 10 3.64574 10H8.35426C8.64739 10 8.9002 10 9.10768 10.013C9.3271 10.0268 9.54431 10.0573 9.74906 10.1391C10.1852 10.3135 10.3721 10.5823 10.4472 10.8376C10.5051 11.0346 10.5013 11.3356 10.4989 11.5C10.5013 11.6644 10.5051 11.9654 10.4472 12.1624C10.3721 12.4177 10.1852 12.6865 9.74906 12.8609C9.54431 12.9427 9.3271 12.9732 9.10768 12.987C8.9002 13 8.64739 13 8.35426 13H3.64574C3.35261 13 3.0998 13 2.89233 12.987C2.67292 12.9732 2.45567 12.9427 2.25092 12.8609C1.81484 12.6865 1.62789 12.4177 1.5528 12.1624C1.49484 11.9654 1.49876 11.6644 1.5011 11.5Z" fill="currentColor"/>
+                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_d_0_1)">
+                                <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <g filter="url(#filter1_d_0_1)">
+                                <rect x="7" y="6" width="6" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <defs>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                <filter id="filter1_d_0_1" x="3" y="4" width="14" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                </defs>
                             </svg>
+
                             <Tooltip
                             message={'Center'}
                             open={activeTooltip === 'center'}
@@ -1677,11 +1928,37 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             />
                         </button>
                         <button className={`tw-builder__settings-action ${selectedChoose === 'right' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('right')} onMouseEnter={() => handleMouseEnter('right')} onMouseLeave={handleMouseLeave}>
-                            <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.00146369 1.5C-0.00165555 1.33565 -0.00688098 1.03463 0.070398 0.8376C0.170525 0.582277 0.419789 0.313477 1.00122 0.139108C1.27423 0.057277 1.56389 0.0267693 1.85643 0.0130155C2.13307 6.87746e-08 2.47015 0 2.86099 0L9.13902 0C9.52986 0 9.86693 6.87746e-08 10.1436 0.0130155C10.4361 0.0267693 10.7257 0.057277 10.9987 0.139108C11.5802 0.313477 11.8295 0.582277 11.9296 0.8376C12.0069 1.03463 12.0017 1.33565 11.9985 1.5C12.0017 1.66435 12.0069 1.96537 11.9296 2.1624C11.8295 2.41772 11.5802 2.68652 10.9987 2.86089C10.7257 2.94272 10.4361 2.97323 10.1436 2.98698C9.86693 3 9.52986 3 9.13902 3H2.86099C2.47015 3 2.13306 3 1.85643 2.98698C1.56389 2.97323 1.27423 2.94272 1.00122 2.86089C0.419789 2.68652 0.170525 2.41772 0.070398 2.1624C-0.00688098 1.96537 -0.00165555 1.66435 0.00146369 1.5Z" fill="currentColor"/>
-                                <path d="M6.00073 6.5C5.99917 6.33565 5.99656 6.03463 6.0352 5.8376C6.08526 5.58228 6.20989 5.31348 6.50061 5.13911C6.63711 5.05728 6.78195 5.02677 6.92822 5.01302C7.06653 5 7.23508 5 7.4305 5H10.5695C10.7649 5 10.9335 5 11.0718 5.01302C11.2181 5.02677 11.3629 5.05728 11.4994 5.13911C11.7901 5.31348 11.9147 5.58228 11.9648 5.8376C12.0034 6.03463 12.0009 6.33565 11.9993 6.5C12.0009 6.66435 12.0034 6.96537 11.9648 7.1624C11.9147 7.41772 11.7901 7.68652 11.4994 7.86089C11.3629 7.94272 11.2181 7.97323 11.0718 7.98698C10.9335 8 10.7649 8 10.5695 8H7.4305C7.23508 8 7.06653 8 6.92822 7.98698C6.78195 7.97323 6.63711 7.94272 6.50061 7.86089C6.20989 7.68652 6.08526 7.41772 6.0352 7.1624C5.99656 6.96537 5.99917 6.66435 6.00073 6.5Z" fill="currentColor"/>
-                                <path d="M3.0011 11.5C2.99876 11.3356 2.99484 11.0346 3.0528 10.8376C3.12789 10.5823 3.31484 10.3135 3.75092 10.1391C3.95567 10.0573 4.17292 10.0268 4.39233 10.013C4.5998 10 4.85261 10 5.14574 10H9.85426C10.1474 10 10.4002 10 10.6077 10.013C10.8271 10.0268 11.0443 10.0573 11.2491 10.1391C11.6852 10.3135 11.8721 10.5823 11.9472 10.8376C12.0051 11.0346 12.0013 11.3356 11.9989 11.5C12.0013 11.6644 12.0051 11.9654 11.9472 12.1624C11.8721 12.4177 11.6852 12.6865 11.2491 12.8609C11.0443 12.9427 10.8271 12.9732 10.6077 12.987C10.4002 13 10.1474 13 9.85426 13H5.14574C4.85261 13 4.5998 13 4.39233 12.987C4.17292 12.9732 3.95567 12.9427 3.75092 12.8609C3.31484 12.6865 3.12789 12.4177 3.0528 12.1624C2.99484 11.9654 2.99876 11.6644 3.0011 11.5Z" fill="currentColor"/>
+                            <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#filter0_d_0_1)">
+                                <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <g filter="url(#filter1_d_0_1)">
+                                <rect x="10" y="6" width="6" height="3" rx="1" fill="currentColor"/>
+                                </g>
+                                <defs>
+                                <filter id="filter0_d_0_1" x="0" y="0" width="20" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                <filter id="filter1_d_0_1" x="6" y="4" width="14" height="11" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="2"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+                                </filter>
+                                </defs>
                             </svg>
+
                             <Tooltip
                             message={'Right'}
                             open={activeTooltip === 'right'}
@@ -1694,21 +1971,894 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
     }
 }
+const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value}) => {
+    const [textareaValue, setTextareaValue] = useState(() => {
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        
+        if (savedJSONValue === "New Text 2") {
+            return '';
+        }
+        
+        if (!savedJSONValue && value) {
+            setTimeout(() => {
+                if (JSONProperty && applyGlobalJSONChange) {
+                    applyGlobalJSONChange(JSONProperty, value);
+                } 
+            }, 0);
+        }
+        return savedJSONValue || value || '';
+    });
+    const [hasDefaultText, setHasDefaultText] = useState(false);
 
-function ControlComponent({control, selectedId, showNotification, selectedLabel}) {
+    useEffect(() => {
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;    
+            if (savedJSONValue === "New Text 2") {
+                setTextareaValue('');
+            }else{
+                setTextareaValue(savedJSONValue || value || '');
+            }
+        
+    }, [getGlobalJSONValue, JSONProperty, value]);
+    
+    const handleChange = (e) => {
+        const newValue = e.target.value;
+        setTextareaValue(newValue);
+        if (newValue.trim() !== '') {
+            setHasDefaultText(false);
+        }
+        
+        // Si el texto está vacío, usar el valor predeterminado
+        const finalValue = newValue.trim() === '' ? '' : newValue;
+        
+        if(JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, finalValue);
+        } 
+    };
+    const handleBlur = (e) => {
+        const inputValue = e.target.value;
+        
+        if (inputValue.trim() === '') {
+            const defaultText = "New Text 2";
+            setHasDefaultText(true);
+            if(JSONProperty && applyGlobalJSONChange) {
+                applyGlobalJSONChange(JSONProperty, defaultText);
+            } 
+        }
+    };
+const displayValue = hasDefaultText ? "" : textareaValue;
+    return (
+        <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <textarea 
+                name={name} 
+                id={index} 
+                placeholder={placeholder}
+                value={displayValue}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="tw-builder__settings-textarea"
+            />
+        </div>
+    )
+}
+const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId}) =>{
+    const fontWeightMap = {
+        'Thin': '100',
+        'Extra Light': '200', 
+        'Light': '300',
+        'Normal': '400',
+        'Medium': '500',
+        'Semi Bold': '600',
+        'Bold': '700',
+        'Extra Bold': '800',
+        'Black': '900'
+    };
+    const fontWeightMapReverse = () => 
+        Object.fromEntries(
+            Object.entries(fontWeightMap).map(([key, value]) => [value, key])
+        )
+    const [selected, setSelected] = useState(() => {
+        if(JSONProperty && getGlobalJSONValue) {
+            return getGlobalJSONValue(JSONProperty) || value || '';
+        } 
+        if (name === 'Weight' && getGlobalCSSValue && cssProperty) {
+            const cssValue = getGlobalCSSValue(cssProperty);
+            const fontStyle = getGlobalCSSValue('font-style');
+            console.log('fontStyle', fontStyle);
+            console.log('cssValue', cssValue);
+            if (fontStyle === 'italic') {
+                const weightName = fontWeightMapReverse()[cssValue];
+                const italicOption = `${weightName} Italic`;
+                // Verificar si existe en options2
+                if (options2 && options2.includes(italicOption)) {
+                    return italicOption;
+                }
+            }
+
+            return fontWeightMapReverse()[cssValue] || cssValue || value || '';
+        }
+        return getGlobalCSSValue?.(cssProperty) || value || '';
+    });
+
+    const [open, setOpen] = useState(false);
+    const containerRef = useRef(null);
+    
+
+    useEffect(() => {
+        if (!open) return;
+        const handleClickOutside = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [open]);
+
+    // Update when selected element changes
+    useEffect(() => {
+        if (!selectedId) return;
+        if (JSONProperty && getGlobalJSONValue) {
+            const savedValue = getGlobalJSONValue(JSONProperty);
+            if (savedValue !== selected) setSelected(savedValue || value || '');
+        } else if (getGlobalCSSValue && cssProperty) {
+            const savedValue = getGlobalCSSValue(cssProperty);
+            if (savedValue && savedValue !== selected) {
+                if (name === 'Weight') {
+                    setSelected(fontWeightMapReverse()[savedValue] || savedValue || value || '');
+                } else {
+                    setSelected(savedValue || value || '');
+                }
+            }
+        }
+    }, [selectedId, JSONProperty, cssProperty, value]);
+
+    // Handle select change with global CSS or JSON application
+    const handleSelectChange = (e) => {
+        const newValue = e;
+        setSelected(newValue);
+        if(name === 'Weight') {
+            let fontWeight;
+            if (newValue.includes('Italic')) {
+                fontWeight = fontWeightMap[newValue.replace(' Italic', '')];
+            } else {
+                fontWeight = fontWeightMap[newValue];
+            }
+            if(applyGlobalCSSChange) {         
+               if (newValue.includes('Italic')) {
+                applyGlobalCSSChange({
+                    [cssProperty]: fontWeight,
+                    "font-style": "italic"
+                  });
+                    
+                } else {
+                    applyGlobalCSSChange({
+                        [cssProperty]: fontWeight,
+                        "font-style": "normal"
+                      });
+                }
+            }
+            return;
+        }
+        
+        // Apply to global JSON system if JSONProperty is provided
+        if (JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, newValue);
+        }
+        // Apply to global CSS system if cssProperty is provided
+        else if (cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, newValue);
+        }
+    };
+
+    // Combine options for Weight
+    const allOptions = name === 'Weight' && options2 ? 
+        [...options, '---', ...options2] : 
+        options;
+
+    return (
+        <div className="tw-builder__settings-setting" key={index}>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <div className="tw-builder__settings-select-container" ref={containerRef}>
+            {/* Botón principal */}
+            <button
+                onClick={() => setOpen(!open)}
+                className="tw-builder__settings-select"
+            >
+                {selected || value}
+            </button>
+            <span className="tw-builder__settings-arrow">
+                    <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                        <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+                    </svg>
+                </span>
+        
+            {/* Lista desplegable */}
+            {open && (
+                <ul className="tw-builder__settings-options">
+                {allOptions.map((opt) => (
+                    <li
+                    key={opt}
+                    onClick={() => {
+                        if (opt === '---') return;
+                        handleSelectChange(opt);
+                        setOpen(false);
+                    }}
+                    className={`tw-builder__settings-option ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
+                    >
+                    {opt === selected ? 
+                        <span className="tw-builder__settings-check"> 
+                            <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
+                            </svg>
+                        </span>
+                    : null}
+                    {opt === '---' ? '' : opt}
+
+                    </li>
+                ))}
+                </ul>
+            )}
+            </div>
+        </div>
+
+      );
+
+}
+const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+    const [open, setOpen] = useState(false);
+    const [inset, setInset] = useState(false);
+    const instanceId = useRef(Symbol('pen'));
+    const [activeTooltip, setActiveTooltip] = useState(null);
+    const containerRef = useRef(null);
+
+    //Border states
+    
+    const [isWidthLinked, setIsWidthLinked] = useState(false);
+    const [isRadiusLinked, setIsRadiusLinked] = useState(false);
+    const [bw, setBw] = useState({t: '', r: '', b: '', l: ''});
+    const [br, setBr] = useState({tl: '', tr: '', br: '', bl: ''});
+    const [bwLinked, setBwLinked] = useState('');
+    const [brLinked, setBrLinked] = useState('');   
+    
+      //Function to parse the box-shadow string in parts
+      const parseBoxShadow = useCallback((shadowStr) => {
+        //If the shadowStr is not a string, return the default values
+        if (!shadowStr || typeof shadowStr !== 'string') {
+            return { inset: false, x: '0', y: '0', blur: '0', spread: '0', color: '' };
+        }
+        //Check if the shadowStr has inset
+        const hasInset = /\binset\b/i.test(shadowStr);
+
+        //Check if the shadowStr has color
+        const colorMatch = shadowStr.match(/rgba\([^)]+\)|#[0-9a-fA-F]{3,6}/i);
+        const color = colorMatch ? colorMatch[0] : '';
+        //Remove the inset and color from the shadowStr
+        let rest = shadowStr.replace(/\binset\b/gi, '').replace(color, '').trim();
+        //convert the shadowStr to an array, taking out the empty spaces.   
+        const parts = rest.split(/\s+/).filter(Boolean);
+        //Function to get the number from the shadowStr
+
+        //Return the parsed shadowStr
+        return {
+            inset: hasInset,
+            x: parts[0],
+            y: parts[1],
+            blur: parts[2],
+            spread: parts[3],
+            color
+        };
+    }, []);
+
+    //Function to compose the box-shadow string from the parts
+    const composeBoxShadow = useCallback((parts) => {
+
+        //Create an array to store the parts
+        const tokens = [];
+        //Add the inset part if it is true
+        if (parts.inset) tokens.push('inset');
+        //Add the x part
+        tokens.push(parts.x);
+        //Add the y part
+        tokens.push(parts.y);
+        //Add the blur part if it is not 0 and not null
+        if (parts.blur && parts.blur !== '0') tokens.push(parts.blur);
+        else tokens.push(parts.blur); 
+        //Add the spread part if it is not 0 and not null
+        if (parts.spread && parts.spread !== '0') tokens.push(parts.spread);
+        else tokens.push(parts.spread);
+        //Add the color part if it is not null and not empty
+        if (parts.color && parts.color !== '') tokens.push(parts.color);
+        //Join the parts and return the string
+        return tokens.join(' ').trim();
+    }, []);
+
+    //Get the current box-shadow string from the global CSS value
+    const currentShadow = getGlobalCSSValue?.('box-shadow') || '';
+    //Parse the box-shadow string in parts. Create an object with the parts. Example: { inset: false, x: '1', y: '1', blur: '10', spread: '1', color: '#ff0000' }
+    const parsed = parseBoxShadow(currentShadow);
+
+    useEffect(() => {
+        //Set the inset part if it is true
+        setInset(!!parsed.inset);
+    }, [selectedElementData, currentShadow]);
+
+    //Function get the box-shadow string from JSONtree and parse it in parts. Get each part to use it in the controls.
+    const wrappedGetCSS = useCallback((prop) => {
+        if (prop === 'box-shadow-x') return parsed.x || '0';
+        if (prop === 'box-shadow-y') return parsed.y || '0';
+        if (prop === 'box-shadow-blur') return parsed.blur || '0';
+        if (prop === 'box-shadow-spread') return parsed.spread || '0';
+        if (prop === 'box-shadow-color') return parsed.color || '';
+      
+        return getGlobalCSSValue?.(prop);
+    }, [getGlobalCSSValue, parsed.x, parsed.y, parsed.blur, parsed.spread, parsed.color]);
+
+    //Function apply the box-shadow string to the CSS and JSON.
+    const wrappedApplyCSS = useCallback((prop, val) => {
+        let next = { ...parsed, inset };
+        //Switch the property to apply the value to the correct part.
+        switch (prop) {
+            case 'box-shadow-x':
+                next.x = (val ?? '').toString().trim();
+                break;
+            case 'box-shadow-y':
+                next.y = (val ?? '').toString().trim();
+                break;
+            case 'box-shadow-blur':
+                next.blur = (val ?? '').toString().trim();
+                break;
+            case 'box-shadow-spread':
+                next.spread = (val ?? '').toString().trim();
+                break;
+            case 'box-shadow-color':
+                next.color = (val ?? '').toString().trim();
+                break;
+           
+            case 'box-shadow':
+              
+                if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
+                return;
+            default:
+                if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
+                return;
+        }
+        //Compose the box-shadow string from the parts and then apply it to the CSS.
+        const finalStr = composeBoxShadow(next);
+        if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', finalStr);
+    }, [applyGlobalCSSChange, composeBoxShadow, parsed, inset]);
+
+    const handleInsetChange = useCallback((e) => {
+        const nextInset = e.target.checked;
+        setInset(nextInset);
+        const next = { ...parsed, inset: nextInset };
+        const finalStr = composeBoxShadow(next);
+        applyGlobalCSSChange?.('box-shadow', finalStr);
+    }, [parsed, composeBoxShadow, applyGlobalCSSChange]);
+
+    //Function to open and close the border/shadow controls.
+    const toggleOpen = () => {
+        const next = !open;
+        setOpen(next);
+        if (next) {
+            window.dispatchEvent(new CustomEvent('tw-pen-open', { detail: instanceId.current }));
+        }
+        if (containerRef.current) {
+            if (next) {
+                containerRef.current.setAttribute('data-pen', name?.toLowerCase());
+          } else {
+                containerRef.current.removeAttribute('data-pen');
+            }
+        }
+    };
+
+    useEffect(() => {
+        const onPenOpen = (e) => {
+            if (e.detail !== instanceId.current) setOpen(false);
+        };
+        window.addEventListener('tw-pen-open', onPenOpen);
+        return () => window.removeEventListener('tw-pen-open', onPenOpen);
+    }, []);
+
+    const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
+    const handleMouseLeave = () => setActiveTooltip(null);
+    const handleWidthLinkToggle = (value) => {
+        setIsWidthLinked(value);
+        if(!value){
+            if(getGlobalCSSValue?.('border-width')){
+                const a = getGlobalCSSValue?.('border-width');
+                setBw({ t: a, r: a, b: a, l: a });
+                applyGlobalCSSChange({
+                    'border-width': '',
+                    "border-top-width": a,
+                    "border-right-width": a,
+                    "border-bottom-width": a,
+                    "border-left-width": a
+                  });
+            }
+        }else{
+            if(getGlobalCSSValue?.('border-top-width') || getGlobalCSSValue?.('border-right-width') || getGlobalCSSValue?.('border-bottom-width') || getGlobalCSSValue?.('border-left-width')){
+                const a = getGlobalCSSValue?.('border-top-width') || getGlobalCSSValue?.('border-right-width') || getGlobalCSSValue?.('border-bottom-width') || getGlobalCSSValue?.('border-left-width');
+                applyGlobalCSSChange({
+                    'border-width': a,
+                    "border-top-width": '',
+                    "border-right-width": '',
+                    "border-bottom-width": '',
+                    "border-left-width": ''
+                  });
+            }
+        }
+    };
+    const handleRadiusLinkToggle = (value) => {
+        setIsRadiusLinked(value);
+        if(!value){
+            if(getGlobalCSSValue?.('border-radius')){
+                const a = getGlobalCSSValue?.('border-radius');
+                setBr({ tl: a, tr: a, br: a, bl: a });
+                applyGlobalCSSChange({
+                    'border-radius': '',
+                    "border-top-left-radius": a,
+                    "border-top-right-radius": a,
+                    "border-bottom-right-radius": a,
+                    "border-bottom-left-radius": a
+                  });
+            }
+        }else{
+            if(getGlobalCSSValue?.('border-top-left-radius') || getGlobalCSSValue?.('border-top-right-radius') || getGlobalCSSValue?.('border-bottom-right-radius') || getGlobalCSSValue?.('border-bottom-left-radius')){
+                const a = getGlobalCSSValue?.('border-top-left-radius') || getGlobalCSSValue?.('border-top-right-radius') || getGlobalCSSValue?.('border-bottom-right-radius') || getGlobalCSSValue?.('border-bottom-left-radius');
+                applyGlobalCSSChange({
+                    'border-radius': a,
+                    "border-top-left-radius": '',
+                    "border-top-right-radius": '',
+                    "border-bottom-right-radius": '',
+                    "border-bottom-left-radius": ''
+                });
+            }
+        }
+    };
+    const parseBorderWidth = useCallback((borderWidthStr) => {
+        
+        const parts = borderWidthStr.trim().split(/\s+/).filter(Boolean);
+        
+        if (parts.length === 1) {
+            
+            return {
+                isLinked: true,
+                values: { t: parts[0], r: parts[0], b: parts[0], l: parts[0] },
+                linkedValue: parts[0]
+            };
+        } else if (parts.length === 2) {
+            
+            return {
+                isLinked: false,
+                values: { t: parts[0], r: parts[1], b: parts[0], l: parts[1] },
+                linkedValue: ''
+            };
+        } else if (parts.length === 3) {
+           
+            return {
+                isLinked: false,
+                values: { t: parts[0], r: parts[1], b: parts[2], l: parts[1] },
+                linkedValue: ''
+            };
+        } else if (parts.length === 4) {
+            
+            return {
+                isLinked: false,
+                values: { t: parts[0], r: parts[1], b: parts[2], l: parts[3] },
+                linkedValue: ''
+            };
+        }
+        
+        return { isLinked: false, values: { t: '', r: '', b: '', l: '' }, linkedValue: '' };
+    }, []);
+    
+    const currentBorderWidth = getGlobalCSSValue?.('border-width') || '';
+    const currentBorderTopWidth = getGlobalCSSValue?.('border-top-width') || '';
+    const currentBorderRightWidth = getGlobalCSSValue?.('border-right-width') || '';
+    const currentBorderBottomWidth = getGlobalCSSValue?.('border-bottom-width') || '';
+    const currentBorderLeftWidth = getGlobalCSSValue?.('border-left-width') || '';
+
+    const parsedBorderWidth = useMemo(() => {
+        return parseBorderWidth(currentBorderWidth);
+    }, [currentBorderWidth, currentBorderTopWidth, currentBorderRightWidth, currentBorderBottomWidth, currentBorderLeftWidth, parseBorderWidth]);
+
+    useEffect(() => {
+        if (currentBorderWidth && !(currentBorderTopWidth && currentBorderRightWidth && currentBorderBottomWidth && currentBorderLeftWidth)) {
+            setBw(parsedBorderWidth.values);
+            setBwLinked(parsedBorderWidth.linkedValue);
+            setIsWidthLinked(parsedBorderWidth.isLinked);
+        }else{
+            setBw({ t: currentBorderTopWidth, r: currentBorderRightWidth, b: currentBorderBottomWidth, l: currentBorderLeftWidth });
+            setBwLinked('');
+            setIsWidthLinked(false);
+        }
+    }, [selectedElementData, currentBorderWidth, currentBorderTopWidth, currentBorderRightWidth, currentBorderBottomWidth, currentBorderLeftWidth, parsedBorderWidth]);
+
+
+    const handleBorderWidthChange = (sideOrValue, valueIfAny) => {
+
+        if (valueIfAny !== undefined) {
+            const side = sideOrValue;
+            const value = valueIfAny || '';
+            const newBw = { ...bw, [side]: value };
+            setBw(newBw);
+            if(isWidthLinked){
+                setBwLinked(value);
+                const syncedBw = { t: value, r: value, b: value, l: value };
+                setBw(syncedBw);
+            }
+        } else {
+            const value = sideOrValue || '';
+            setBwLinked(value);
+            const newBw = { t: value, r: value, b: value, l: value };
+            setBw(newBw);
+        }
+    };
+    
+    const handleBorderWidthBlur = (side) => {
+        if (isWidthLinked) {
+            if (applyGlobalCSSChange) {
+                applyGlobalCSSChange('border-width', bwLinked);
+            }
+        } else {
+            const sideMap = { t: 'top', r: 'right', b: 'bottom', l: 'left' };
+
+                const property = `border-${sideMap[side]}-width`;
+                if (applyGlobalCSSChange) {
+                    applyGlobalCSSChange(property, bw[side] || '0');
+                    console.log('Applied individual property:', property, bw[side] || '0');
+                }
+    
+        }
+    };
+    
+    
+const parseRadius = useCallback((radiusStr) => {
+
+    const parts = radiusStr.trim().split(/\s+/).filter(Boolean);
+    
+    if (parts.length === 1) {
+        
+        return {
+            isLinked: true,
+            values: { tl: parts[0], tr: parts[0], br: parts[0], bl: parts[0] },
+            linkedValue: parts[0]
+        };
+    } else if (parts.length === 2) {
+        
+        return {
+            isLinked: false,
+            values: { tl: parts[0], tr: parts[1], br: parts[0], bl: parts[1] },
+            linkedValue: ''
+        };
+    } else if (parts.length === 3) {
+        
+        return {
+            isLinked: false,
+            values: { tl: parts[0], tr: parts[1], br: parts[2], bl: parts[1] },
+            linkedValue: ''
+        };
+    } else if (parts.length === 4) {
+     
+        return {
+            isLinked: false,
+            values: { tl: parts[0], tr: parts[1], br: parts[2], bl: parts[3] },
+            linkedValue: ''
+        };
+    }
+    
+    return { isLinked: false, values: { tl: '', tr: '', br: '', bl: '' }, linkedValue: '' };
+}, []);
+
+    const currentRadius = getGlobalCSSValue?.('border-radius') || '';
+    const currentBorderTopLeftRadius = getGlobalCSSValue?.('border-top-left-radius') || '';
+    const currentBorderTopRightRadius = getGlobalCSSValue?.('border-top-right-radius') || '';
+    const currentBorderBottomRightRadius = getGlobalCSSValue?.('border-bottom-right-radius') || '';
+    const currentBorderBottomLeftRadius = getGlobalCSSValue?.('border-bottom-left-radius') || '';
+    const parsedRadius = useMemo(() => {
+        return parseRadius(currentRadius);
+    }, [currentRadius, currentBorderTopLeftRadius, currentBorderTopRightRadius, currentBorderBottomRightRadius, currentBorderBottomLeftRadius, parseRadius]);
+    useEffect(() => {
+        if (currentRadius && !(currentBorderTopLeftRadius && currentBorderTopRightRadius && currentBorderBottomRightRadius && currentBorderBottomLeftRadius)) {
+            setBr(parsedRadius.values);
+            setBrLinked(parsedRadius.linkedValue);
+            setIsRadiusLinked(parsedRadius.isLinked);
+        }else{
+            setBr({ tl: currentBorderTopLeftRadius, tr: currentBorderTopRightRadius, br: currentBorderBottomRightRadius, bl: currentBorderBottomLeftRadius });
+            setBrLinked('');
+            setIsRadiusLinked(false);
+        }
+    }, [selectedElementData, currentRadius, currentBorderTopLeftRadius, currentBorderTopRightRadius, currentBorderBottomRightRadius, currentBorderBottomLeftRadius, parsedRadius]);
+    const handleRadiusChange = (sideOrValue, valueIfAny) => {
+
+        if(valueIfAny !== undefined){
+            const side = sideOrValue;
+            const value = valueIfAny || '';
+            const newBr = { ...br, [side]: value };
+            setBr(newBr);
+            if(isRadiusLinked){
+                setBrLinked(value);
+                const syncedBr = { tl: value, tr: value, br: value, bl: value };
+                setBr(syncedBr);
+            }
+        }else{
+            const value = sideOrValue || '';
+            setBrLinked(value);
+            const newBr = { tl: value, tr: value, br: value, bl: value };
+            setBr(newBr);
+        }
+    
+/*         if (isRadiusLinked) {
+            setBrLinked(value);
+            const newRadius = { tl: value, tr: value, br: value, bl: value };
+            setBr(newRadius);
+            if(isRadiusLinked){
+                setBrLinked(value);
+                const syncedBr = { tl: value, tr: value, br: value, bl: value };
+                setBr(syncedBr);
+            }
+        } else {
+            // Cambio individual de lado
+            const side = sideOrValue;
+            const newRadius = { ...br, [side]: value };
+            setBr(newRadius);
+            if(isRadiusLinked){
+                setBrLinked(value);
+                const syncedBr = { tl: value, tr: value, br: value, bl: value };
+                setBr(syncedBr);
+            }
+        } */
+    };
+    const handleRadiusBlur = (side) => {
+        if (isRadiusLinked) {
+            if (applyGlobalCSSChange) {
+                applyGlobalCSSChange('border-radius', brLinked);
+            }
+        } else {
+            const sideMap = { tl: 'top-left', tr: 'top-right', br: 'bottom-right', bl: 'bottom-left' };
+            const property = `border-${sideMap[side]}-radius`;
+            if (applyGlobalCSSChange) {
+                applyGlobalCSSChange(property, br[side] || '0');
+                console.log('Applied individual property:', property, br[side] || '0');
+            }
+        }
+    };
+
+
+
+
+
+
+
+
+
+    return (
+        <div className="tw-builder__settings-setting" key={index}>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
+                <span className="tw-builder__settings-pen" onClick={toggleOpen}>
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.3815 0.493193C8.30876 0.486644 8.23552 0.486644 8.16278 0.493193C7.90608 0.516317 7.69916 0.63382 7.51218 0.780856C7.33673 0.918791 7.14298 1.1126 6.91819 1.33743L6.31055 1.94503L9.05176 4.6862L9.65935 4.07864C9.88419 3.85382 10.078 3.66003 10.2159 3.48462C10.363 3.29763 10.4805 3.09068 10.5036 2.83398C10.5101 2.76124 10.5101 2.68805 10.5036 2.61531C10.4805 2.35861 10.363 2.15166 10.2159 1.96468C10.078 1.78927 9.88419 1.59547 9.65935 1.37066C9.43456 1.14583 9.20754 0.918797 9.0321 0.780856C8.84511 0.63382 8.6382 0.516317 8.3815 0.493193Z" fill="#999999"/>
+                        <path d="M8.47787 5.26072L5.73671 2.51953L1.50458 6.75161C1.08775 7.16804 0.798073 7.45745 0.642951 7.83196C0.487828 8.20647 0.488023 8.61591 0.488305 9.20514L0.488332 10.1028C0.488332 10.3272 0.670213 10.5091 0.894582 10.5091H1.7923C2.38151 10.5094 2.79098 10.5096 3.16548 10.3544C3.53997 10.1994 3.82937 9.90969 4.2458 9.49282L8.47787 5.26072Z" fill="#999999"/>
+                        <path d="M8.3834 0.493193C8.31065 0.486644 8.23748 0.486644 8.16473 0.493193C7.90803 0.516317 7.70106 0.63382 7.51408 0.780856C7.33869 0.918791 7.14488 1.1126 6.92009 1.33743L6.3125 1.94503L9.05366 4.6862L9.66125 4.07864C9.88609 3.85382 10.0799 3.66003 10.2179 3.48462C10.3649 3.29763 10.4824 3.09068 10.5055 2.83398C10.512 2.76124 10.512 2.68805 10.5055 2.61531C10.4824 2.35861 10.3649 2.15166 10.2179 1.96468C10.0799 1.78927 9.88609 1.59547 9.66125 1.37066C9.43645 1.14583 9.20944 0.918797 9.034 0.780856C8.84701 0.63382 8.6401 0.516317 8.3834 0.493193Z" fill="white"/>
+                    </svg>
+                </span>
+                {open && (
+                    <div className="tw-builder__settings-pen-controls">
+                        <div className="tw-builder__settings-pen-header">
+                            <span className="tw-builder__settings-pen-name">{name}</span>
+                            <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
+                                <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 1L1.00034 5.99967M5.99967 6L1 1.00035" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </span>
+                        </div>
+                        <div className="tw-builder__settings-pen-divider"></div>
+                        <div className="tw-builder__settings-pen-body">
+                            {name === 'Border' && (
+                                <> 
+                                <ColorType
+                                    index={'border-color'}
+                                    cssProperty={'border-color'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                               <div className="tw-builder__settings-setting">
+                                    <span className="tw-builder__settings-subtitle">Width</span>
+                                    <div className="tw-builder__settings-width">
+                                        <input type="text" className="tw-builder__settings-input" 
+                                            value={isWidthLinked ? bwLinked : ''}
+                                            onChange={(e) => handleBorderWidthChange(e.target.value)}
+                                            onBlur={handleBorderWidthBlur}
+                   
+                                        />
+                                        <div className="tw-builder__settings-actions">
+                                            <button className={`tw-builder__settings-action ${isWidthLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleWidthLinkToggle(true)} onMouseEnter={() => handleMouseEnter('link')} onMouseLeave={handleMouseLeave}>
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect x="0.5" y="0.5" width="7" height="7" rx="1.5" stroke="currentColor"/>
+                                                </svg>
+                                                <Tooltip
+                                                message={'Link'}
+                                                open={activeTooltip === 'link'}
+                                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                                width="auto"
+                                                />
+                                            </button> 
+                                            <button className={`tw-builder__settings-action ${isWidthLinked === false ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleWidthLinkToggle(false)} onMouseEnter={() => handleMouseEnter('unlink')} onMouseLeave={handleMouseLeave}>    
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <line x1="0.5" y1="2" x2="0.5" y2="6" stroke="currentColor"/>
+                                                    <line x1="7.5" y1="2" x2="7.5" y2="6" stroke="currentColor"/>
+                                                    <line x1="6" y1="0.5" x2="2" y2="0.5" stroke="currentColor"/>
+                                                    <line x1="6" y1="7.5" x2="2" y2="7.5" stroke="currentColor"/>
+                                                </svg>
+                                                <Tooltip
+                                                message={'Unlink'}
+                                                open={activeTooltip === 'unlink'}
+                                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                                width="auto"
+                                                />
+                                            </button> 
+                                        </div>
+                                    </div>
+                                    <div className="tw-builder__settings-units">
+                                        <div className="tw-builder__settings-units-label">
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit"value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')}/>
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')}/>
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')}/>
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')}/>
+                                        </div>
+                                        <div className="tw-builder__settings-units-directions">
+                                            <span className="tw-builder__settings-units-direction">T</span>
+                                            <span className="tw-builder__settings-units-direction">R</span>
+                                            <span className="tw-builder__settings-units-direction">B</span>
+                                            <span className="tw-builder__settings-units-direction">L</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <SelectType
+                                    name={'Style'}
+                                    value={'None'}
+                                    options={['None', 'Solid', 'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset','Hidden']}
+                                    index={'border-style'}
+                                    cssProperty={'border-style'}
+                                    applyGlobalCSSChange={applyGlobalCSSChange}
+                                    getGlobalCSSValue={getGlobalCSSValue}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <div className="tw-builder__settings-setting">
+                                    <span className="tw-builder__settings-subtitle">Radius</span>
+                                    <div className="tw-builder__settings-width">
+                                        <input type="text" className="tw-builder__settings-input" 
+                                            value={isRadiusLinked ? brLinked : ''}
+                                            onChange={(e) => handleRadiusChange(e.target.value)}
+                                            onBlur={handleRadiusBlur}
+                                        />
+                                        <div className="tw-builder__settings-actions">
+                                            <button className={`tw-builder__settings-action ${isRadiusLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleRadiusLinkToggle(true)} onMouseEnter={() => handleMouseEnter('rlink')} onMouseLeave={handleMouseLeave}>
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect x="0.5" y="0.5" width="7" height="7" rx="1.5" stroke="currentColor"/>
+                                                </svg>
+                                                <Tooltip
+                                                message={'Link'}
+                                                open={activeTooltip === 'rlink'}
+                                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                                width="auto"
+                                                />
+                                            </button> 
+                                            <button className={`tw-builder__settings-action ${isRadiusLinked === false ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleRadiusLinkToggle(false)} onMouseEnter={() => handleMouseEnter('runlink')} onMouseLeave={handleMouseLeave}>
+                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <line x1="0.5" y1="2" x2="0.5" y2="6" stroke="currentColor"/>
+                                                    <line x1="7.5" y1="2" x2="7.5" y2="6" stroke="currentColor"/>
+                                                    <line x1="6" y1="0.5" x2="2" y2="0.5" stroke="currentColor"/>
+                                                    <line x1="6" y1="7.5" x2="2" y2="7.5" stroke="currentColor"/>
+                                                </svg>
+                                                <Tooltip
+                                                message={'Unlink'}
+                                                open={activeTooltip === 'runlink'}
+                                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                                                width="auto"
+                                                />
+                                            </button> 
+                                        </div>
+                                    </div>
+                                    <div className="tw-builder__settings-units">
+                                        <div className="tw-builder__settings-units-label">
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')}/>
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} onBlur={() => handleRadiusBlur('tr')}/>
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} onBlur={() => handleRadiusBlur('br')}/>
+                                            <div className="tw-builder__settings-units-divider"></div>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} onBlur={() => handleRadiusBlur('bl')}/>
+                                        </div>
+                                        <div className="tw-builder__settings-units-directions">
+                                            <span className="tw-builder__settings-units-direction">TL</span>
+                                            <span className="tw-builder__settings-units-direction">TR</span>
+                                            <span className="tw-builder__settings-units-direction">BR</span>
+                                            <span className="tw-builder__settings-units-direction">BL</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                </>
+                            )}
+                            {name === 'Shadow' && (
+                                <>
+                                <ColorType
+                                    index={'box-shadow'}
+                                    cssProperty={'box-shadow-color'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <TextType
+                                    name={'X'}
+                                    value={parsed.x}
+                                    index={'box-shadow-x'}
+                                    cssProperty={'box-shadow-x'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <TextType
+                                    name={'Y'}
+                                    value={parsed.y}
+                                    index={'box-shadow-y'}
+                                    cssProperty={'box-shadow-y'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <TextType
+                                    name={'Blur'}
+                                    value={parsed.blur}
+                                    index={'box-shadow-blur'}
+                                    cssProperty={'box-shadow-blur'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <TextType
+                                    name={'Spread'}
+                                    value={parsed.spread}
+                                    index={'box-shadow-spread'}
+                                    cssProperty={'box-shadow-spread'}
+                                    applyGlobalCSSChange={wrappedApplyCSS}
+                                    getGlobalCSSValue={wrappedGetCSS}
+                                    selectedElementData={selectedElementData}
+                                />
+                                <div className="tw-builder__settings-setting">
+                                    <span className="tw-builder__settings-subtitle">Inset</span>
+                                    <label className="tw-builder__settings-inset-container">
+                                        <input
+                                            type="checkbox"
+                                            className="tw-builder__settings-checkbox"
+                                            checked={!!inset}
+                                            onChange={handleInsetChange}
+                                        />
+                                        <span className="tw-builder__settings-inset"></span>
+                                    </label>
+                                </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
+function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
     const {JSONtree, activeRoot, addCSSProperty, addJSONProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
-
-
-    
-
-    console.log('JSONtree idsCSSData',JSONtree.idsCSSData);
-    console.log('JSONtree',JSONtree);
-    console.log('selectedElementData',selectedElementData);
-    
-
 
     //spreads the properties of the selected element
     useEffect(() => {
@@ -1764,12 +2914,22 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
 
      }, [selectedId, JSONtree, activeRoot]);
 
-     const applyGlobalCSSChange = useCallback((cssProperty, value) => {
-        if(!selectedId || !cssProperty) return;
 
-        addCSSProperty('id', selectedId, cssProperty, value);
+     const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
+        if (!selectedId || !cssPropertyOrObject) return;
+    
+        if (typeof cssPropertyOrObject === "string") {
 
-     }, [selectedId, addCSSProperty, JSONtree]);
+            addCSSProperty("id", selectedId, cssPropertyOrObject, value);
+        } else if (
+            typeof cssPropertyOrObject === "object" &&
+            cssPropertyOrObject !== null
+        ) {
+
+            addCSSProperty("id", selectedId, cssPropertyOrObject);
+        }
+    }, [selectedId, addCSSProperty, JSONtree]);
+    
 
      const getGlobalCSSValue = useCallback((cssProperty) => {
         if(!selectedId || !cssProperty) return null;
@@ -1786,11 +2946,28 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
      },[selectedId, addJSONProperty]);
 
      const getGlobalJSONValue = useCallback((JSONProperty)=>{
-        if(!selectedId || !JSONProperty) return null;
-
-        return selectedElementData?.[JSONProperty] || null;
+        if(!selectedId || !JSONProperty || !JSONtree?.roots) return null;
     
-     },[selectedElementData, selectedId]);
+        // Buscar el elemento en el árbol JSON
+        const findElement = (node, targetId) => {
+            if(!node) return null;
+            if(node.id === targetId) return node;
+            if(node.children) {
+                for(const child of node.children) {
+                    const result = findElement(child, targetId);
+                    if(result) return result;
+                }
+            }
+            return null;
+        };
+    
+        const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
+        if(!activeRootNode) return null;
+    
+        const selectedElement = findElement(activeRootNode, selectedId);
+        return selectedElement?.[JSONProperty] || null;
+    
+    },[JSONtree, selectedId, activeRoot]);
 
      const globalControlProps = {
         selectedElementData,
@@ -1801,7 +2978,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
         selectedId,
      };
 
-     
+     console.log(JSONtree);
     
 
     const whatType = (item, index) => {
@@ -1811,25 +2988,31 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
             elementId: selectedId,
             ...globalControlProps,
         };
-                
            
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} autoUnit={item.autoUnit} />;
-            case 'select':
-                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>;
+                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
+            /* case 'select':
+                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>; */
             case 'super-select':
                 return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
             case 'panel':
-                return <PanelType key={`${index}-${selectedId}`} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
+                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
-                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} elementId={item.elementId}/>;
+                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
             case 'image':
-                return <ImageType key={index} {...enhancedItem} name={item.name} index={index} />;
+                return <ImageType key={index} {...enhancedItem} name={item.name} index={index} user={user} site={site}/>;
             case 'choose':
                 return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
+            case 'textarea':
+                return <TextAreaType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
+            case 'select':
+                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
+            case 'border-shadow':
+                return <BorderShadowType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} />;
         }
     }
+
     return (
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>
