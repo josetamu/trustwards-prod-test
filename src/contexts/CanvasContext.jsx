@@ -181,67 +181,85 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * property - the CSS property: color, background-color, padding, margin, etc...
     * value - the value of the property (if empty string "", the property will be removed)
     */
-    const addCSSProperty = (type, selector, property, value) => {
+    const addCSSProperty = (type, selector, propertyOrObject, value) => {
         let updatedIdsCSSData = JSONtree.idsCSSData;
         let updatedClassesCSSData = JSONtree.classesCSSData;
-        switch(type) {
-            case 'id': {
-                // Check if the selector already exists in idsCSSData
-                const existingIdIndex = JSONtree.idsCSSData.findIndex(item => item.id === selector);
-                
-                if (existingIdIndex !== -1) {
-                    // If value is empty string, remove the property
-                    if (value === "") {
-                        const updatedProperties = { ...JSONtree.idsCSSData[existingIdIndex].properties };
-                        delete updatedProperties[property];
-                        updatedIdsCSSData = [...JSONtree.idsCSSData];
-                        updatedIdsCSSData[existingIdIndex] = { ...JSONtree.idsCSSData[existingIdIndex], properties: updatedProperties };
-                    } else {
-                        // If it exists, update the existing properties modifying the new property value
-                        const updatedProperties = { ...JSONtree.idsCSSData[existingIdIndex].properties, [property]: value };
-                        updatedIdsCSSData = [...JSONtree.idsCSSData];
-                        updatedIdsCSSData[existingIdIndex] = { ...JSONtree.idsCSSData[existingIdIndex], properties: updatedProperties };
-                    }
+    
+        // Normalize to object
+        const propertiesToAdd =
+            typeof propertyOrObject === "object" && propertyOrObject !== null
+                ? propertyOrObject
+                : { [propertyOrObject]: value };
+    
+        // If a property has value === "", we remove it
+        const cleanProperties = (oldProps, newProps) => {
+            const updated = { ...oldProps };
+            Object.entries(newProps).forEach(([prop, val]) => {
+                if (val === "") {
+                    delete updated[prop];
                 } else {
-                    // If it doesn't exist and value is not empty, add a new entry with the selector and property
-                    if (value !== "") {
-                        updatedIdsCSSData = [...JSONtree.idsCSSData, { id: selector, properties: { [property]: value } }];
-                    }
+                    updated[prop] = val;
+                }
+            });
+            return updated;
+        };
+    
+        switch (type) {
+            case "id": {
+                const existingIdIndex = JSONtree.idsCSSData.findIndex(
+                    (item) => item.id === selector
+                );
+    
+                if (existingIdIndex !== -1) {
+                    const updatedProperties = cleanProperties(
+                        JSONtree.idsCSSData[existingIdIndex].properties,
+                        propertiesToAdd
+                    );
+                    updatedIdsCSSData = [...JSONtree.idsCSSData];
+                    updatedIdsCSSData[existingIdIndex] = {
+                        ...JSONtree.idsCSSData[existingIdIndex],
+                        properties: updatedProperties,
+                    };
+                } else {
+                    updatedIdsCSSData = [
+                        ...JSONtree.idsCSSData,
+                        { id: selector, properties: propertiesToAdd },
+                    ];
                 }
                 break;
             }
-            case 'class': {
-                // Check if the selector already exists in classesCSSData
-                const existingClassIndex = JSONtree.classesCSSData.findIndex(item => item.className === selector);
+    
+            case "class": {
+                const existingClassIndex = JSONtree.classesCSSData.findIndex(
+                    (item) => item.className === selector
+                );
+    
                 if (existingClassIndex !== -1) {
-                    // If value is empty string, remove the property
-                    if (value === "") {
-                        const updatedProperties = { ...JSONtree.classesCSSData[existingClassIndex].properties };
-                        delete updatedProperties[property];
-                        updatedClassesCSSData = [...JSONtree.classesCSSData];
-                        updatedClassesCSSData[existingClassIndex] = { ...JSONtree.classesCSSData[existingClassIndex], properties: updatedProperties };
-                    } else {
-                        // If it exists, update the existing properties modifying the new property value
-                        const updatedProperties = { ...JSONtree.classesCSSData[existingClassIndex].properties, [property]: value };
-                        updatedClassesCSSData = [...JSONtree.classesCSSData];
-                        updatedClassesCSSData[existingClassIndex] = { ...JSONtree.classesCSSData[existingClassIndex], properties: updatedProperties };
-                    }
+                    const updatedProperties = cleanProperties(
+                        JSONtree.classesCSSData[existingClassIndex].properties,
+                        propertiesToAdd
+                    );
+                    updatedClassesCSSData = [...JSONtree.classesCSSData];
+                    updatedClassesCSSData[existingClassIndex] = {
+                        ...JSONtree.classesCSSData[existingClassIndex],
+                        properties: updatedProperties,
+                    };
                 } else {
-                    // If it doesn't exist and value is not empty, add a new entry with the selector and property
-                    if (value !== "") {
-                        updatedClassesCSSData = [...JSONtree.classesCSSData, { className: selector, properties: { [property]: value } }];
-                    }
+                    updatedClassesCSSData = [
+                        ...JSONtree.classesCSSData,
+                        { className: selector, properties: propertiesToAdd },
+                    ];
                 }
                 break;
             }
         }
-        
-        // Use the updated data (not the potentially stale state)
-        const updated = deepCopy(JSONtree); 
+    
+        const updated = deepCopy(JSONtree);
         updated.idsCSSData = updatedIdsCSSData;
         updated.classesCSSData = updatedClassesCSSData;
         setJSONtree(updated);
     };
+    
 
     /*
     * Add a JSON property (for HTML and Javascript (attr) controls)

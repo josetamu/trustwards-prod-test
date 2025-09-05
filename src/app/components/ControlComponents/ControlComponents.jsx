@@ -1,6 +1,6 @@
 'use client'
 import { Tooltip } from '@components/tooltip/Tooltip';
-import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
 import React from 'react';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useCanvas } from '@contexts/CanvasContext';
@@ -1305,7 +1305,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
         const file = e.target.files[0];
         if(!file) return;
     
-        // Validaciones...
+        
         if (!file.type.startsWith('image/')) {
             setErrors({ file: 'The file must be an image' });
             return;
@@ -1323,7 +1323,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             const fileExtension = file.name.split('.').pop();
             const fileName = `${user?.id || 'anonymous'}/${site?.id || 'default'}/${Date.now()}.${fileExtension}`;
     
-            // Subir archivo
+           
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('Builder')
                 .upload(fileName, file);
@@ -1332,7 +1332,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
                 throw uploadError;
             }
     
-            // Obtener URL pública (más simple)
+            
             const { data: { publicUrl } } = supabase.storage
                 .from('Builder')
                 .getPublicUrl(fileName);
@@ -1358,7 +1358,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             if (!url) return;
     
             try {
-                new URL(url); // valida formato
+                new URL(url); 
             } catch {
                 setErrors({ url: 'Please enter a valid URL' });
                 return;
@@ -1962,7 +1962,7 @@ const displayValue = hasDefaultText ? "" : textareaValue;
         </div>
     )
 }
-const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2}) =>{
+const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId}) =>{
     const fontWeightMap = {
         'Thin': '100',
         'Extra Light': '200', 
@@ -1985,6 +1985,8 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         if (name === 'Weight' && getGlobalCSSValue && cssProperty) {
             const cssValue = getGlobalCSSValue(cssProperty);
             const fontStyle = getGlobalCSSValue('font-style');
+            console.log('fontStyle', fontStyle);
+            console.log('cssValue', cssValue);
             if (fontStyle === 'italic') {
                 const weightName = fontWeightMapReverse()[cssValue];
                 const italicOption = `${weightName} Italic`;
@@ -2001,6 +2003,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
 
     const [open, setOpen] = useState(false);
     const containerRef = useRef(null);
+    
 
     useEffect(() => {
         if (!open) return;
@@ -2015,38 +2018,50 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
 
     // Update when selected element changes
     useEffect(() => {
+        if (!selectedId) return;
         if (JSONProperty && getGlobalJSONValue) {
             const savedValue = getGlobalJSONValue(JSONProperty);
-            setSelected(savedValue || value || '');
+            if (savedValue !== selected) setSelected(savedValue || value || '');
         } else if (getGlobalCSSValue && cssProperty) {
             const savedValue = getGlobalCSSValue(cssProperty);
-
-            if (name === 'Weight') {
-                // Convertir valor CSS a valor legible para Weight
-                setSelected(fontWeightMapReverse()[savedValue] || savedValue || value || '');
-            } else {
-                setSelected(savedValue || value || '');
+            if (savedValue && savedValue !== selected) {
+                if (name === 'Weight') {
+                    setSelected(fontWeightMapReverse()[savedValue] || savedValue || value || '');
+                } else {
+                    setSelected(savedValue || value || '');
+                }
             }
         }
-    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value, options2]);
+    }, [selectedId, JSONProperty, cssProperty, value]);
 
     // Handle select change with global CSS or JSON application
     const handleSelectChange = (e) => {
         const newValue = e;
         setSelected(newValue);
         if(name === 'Weight') {
-            const fontWeight = fontWeightMap[newValue];
-            if(applyGlobalCSSChange) {
-                applyGlobalCSSChange(cssProperty, fontWeight);
-
-                if (newValue.includes('Italic')) {
-                    applyGlobalCSSChange('font-style', 'italic');
-                } else {
-                    applyGlobalCSSChange('font-style', 'normal');
-                }
-                return;
+            let fontWeight;
+            if (newValue.includes('Italic')) {
+                fontWeight = fontWeightMap[newValue.replace(' Italic', '')];
+            } else {
+                fontWeight = fontWeightMap[newValue];
             }
+            if(applyGlobalCSSChange) {         
+               if (newValue.includes('Italic')) {
+                applyGlobalCSSChange({
+                    [cssProperty]: fontWeight,
+                    "font-style": "italic"
+                  });
+                    
+                } else {
+                    applyGlobalCSSChange({
+                        [cssProperty]: fontWeight,
+                        "font-style": "normal"
+                      });
+                }
+            }
+            return;
         }
+        
         // Apply to global JSON system if JSONProperty is provided
         if (JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
@@ -2087,7 +2102,6 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     <li
                     key={opt}
                     onClick={() => {
-                        // No permitir click en el divider
                         if (opt === '---') return;
                         handleSelectChange(opt);
                         setOpen(false);
@@ -2128,6 +2142,7 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
     const [br, setBr] = useState({tl: '', tr: '', br: '', bl: ''});
     const [bwLinked, setBwLinked] = useState('');
     const [brLinked, setBrLinked] = useState('');   
+    
 
   
 
@@ -2270,7 +2285,93 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
     const handleRadiusLinkToggle = (value) => {
         setIsRadiusLinked(value);
     };
+    const parseBorderWidth = useCallback((borderWidthStr) => {
+        if (!borderWidthStr || typeof borderWidthStr !== 'string') {
+            return { isLinked: false, values: { t: '', r: '', b: '', l: '' }, linkedValue: '' };
+        }
+        
+        // Dividir por espacios y limpiar
+        const parts = borderWidthStr.trim().split(/\s+/).filter(Boolean);
+        
+        if (parts.length === 1) {
+            // Un solo valor = todos los lados iguales (linked)
+            return {
+                isLinked: true,
+                values: { t: parts[0], r: parts[0], b: parts[0], l: parts[0] },
+                linkedValue: parts[0]
+            };
+        } else if (parts.length === 2) {
+            // Dos valores = vertical horizontal
+            return {
+                isLinked: false,
+                values: { t: parts[0], r: parts[1], b: parts[0], l: parts[1] },
+                linkedValue: ''
+            };
+        } else if (parts.length === 3) {
+            // Tres valores = top horizontal bottom
+            return {
+                isLinked: false,
+                values: { t: parts[0], r: parts[1], b: parts[2], l: parts[1] },
+                linkedValue: ''
+            };
+        } else if (parts.length === 4) {
+            // Cuatro valores = top right bottom left
+            return {
+                isLinked: false,
+                values: { t: parts[0], r: parts[1], b: parts[2], l: parts[3] },
+                linkedValue: ''
+            };
+        }
+        
+        return { isLinked: false, values: { t: '', r: '', b: '', l: '' }, linkedValue: '' };
+    }, []);
+    // Obtener el valor actual de border-width
+    const currentBorderWidth = getGlobalCSSValue?.('border-width') || '';
 
+    // Parsear el border-width actual
+    const parsedBorderWidth = useMemo(() => {
+        return parseBorderWidth(currentBorderWidth);
+    }, [currentBorderWidth, parseBorderWidth]);
+    useEffect(() => {
+        // Cargar valores existentes de border-width
+        if (currentBorderWidth) {
+            setBw(parsedBorderWidth.values);
+            setBwLinked(parsedBorderWidth.linkedValue);
+            setIsWidthLinked(parsedBorderWidth.isLinked);
+        }
+    }, [selectedElementData, currentBorderWidth, parsedBorderWidth]);
+
+
+const handleBorderWidthChange = (sideOrValue, valueIfAny) => {
+    const isLinkedChange = valueIfAny === undefined;
+    const value = isLinkedChange ? sideOrValue : valueIfAny;
+
+    if (isWidthLinked) {
+        setBwLinked(value);
+        const newBw = { t: value, r: value, b: value, l: value };
+        setBw(newBw);
+   
+    } else {
+        // Cambio individual de lado
+        const side = sideOrValue;
+        const newBw = { ...bw, [side]: value };
+        setBw(newBw);
+   
+    }
+};
+
+const handleBorderWidthBlur = () => {
+    if (isWidthLinked) {
+        if (applyGlobalCSSChange) {
+            applyGlobalCSSChange('border-width', bwLinked);
+        }
+    } else {
+        const borderWidthValue = `${bw.t || '0'} ${bw.r || '0'} ${bw.b || '0'} ${bw.l || '0'}`;
+        if (applyGlobalCSSChange) {
+            applyGlobalCSSChange('border-width', borderWidthValue);
+        }
+    }
+};
     
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -2308,7 +2409,9 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                     <span className="tw-builder__settings-subtitle">Width</span>
                                     <div className="tw-builder__settings-width">
                                         <input type="text" className="tw-builder__settings-input" 
-                                        
+                                            value={isWidthLinked ? bwLinked : ''}
+                                            onChange={(e) => handleBorderWidthChange(e.target.value)}
+                                            onBlur={handleBorderWidthBlur}
                    
                                         />
                                         <div className="tw-builder__settings-actions">
@@ -2341,13 +2444,13 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                     </div>
                                     <div className="tw-builder__settings-units">
                                         <div className="tw-builder__settings-units-label">
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit"value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={handleBorderWidthBlur}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={handleBorderWidthBlur}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={handleBorderWidthBlur}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" />
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={handleBorderWidthBlur}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">T</span>
@@ -2553,12 +2656,24 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 
      }, [selectedId, JSONtree, activeRoot]);
 
-     const applyGlobalCSSChange = useCallback((cssProperty, value) => {
-        if(!selectedId || !cssProperty) return;
-
-        addCSSProperty('id', selectedId, cssProperty, value);
-
-     }, [selectedId, addCSSProperty, JSONtree]);
+     // Permite añadir una o varias propiedades CSS a la vez.
+     // Si cssProperty es un string, añade una sola propiedad.
+     // Si cssProperty es un objeto, añade todas las propiedades del objeto.
+     const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
+        if (!selectedId || !cssPropertyOrObject) return;
+    
+        if (typeof cssPropertyOrObject === "string") {
+            // Caso simple: una sola propiedad
+            addCSSProperty("id", selectedId, cssPropertyOrObject, value);
+        } else if (
+            typeof cssPropertyOrObject === "object" &&
+            cssPropertyOrObject !== null
+        ) {
+            // Caso múltiple: objeto con varias propiedades
+            addCSSProperty("id", selectedId, cssPropertyOrObject);
+        }
+    }, [selectedId, addCSSProperty, JSONtree]);
+    
 
      const getGlobalCSSValue = useCallback((cssProperty) => {
         if(!selectedId || !cssProperty) return null;
@@ -2636,7 +2751,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
             case 'textarea':
                 return <TextAreaType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
             case 'select':
-                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} />;
+                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
             case 'border-shadow':
                 return <BorderShadowType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} />;
         }
