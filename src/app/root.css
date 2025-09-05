@@ -19,6 +19,67 @@ System selected: will fallback to root or html[data-theme="dark"]
 */
 
 :root {
+  /* 
+   =======================
+          WEBSITE
+   =======================
+   */
+  
+  /* Website - General*/
+  --website-background: #F5F5F5;
+  --website-strong-background: #000000;
+  --website-accent-color: #11A8FF;
+  --website-accent-hover: #0d8ce6;
+  --website-border-strong-color: #E0E0E0;
+  --website-text-light-color: #333333;
+  --website-text-fresco-color: #5E5E5E;
+  --website-text-semi-strong-color: #222222;
+  --website-text-strong-color: #000000;
+  --website-brand-gradient: linear-gradient(93deg, #FFF -6.78%, #0099FE 106.78%);
+  --website-span-gradient: linear-gradient(90deg, #11A8FF 0%, #FFF 45.19%);
+  --website-banner-gradient: linear-gradient(90deg, #232323 8.71%, #333 52.64%, #232323 96.57%);
+  --website-banner-text-gradient: linear-gradient(92deg, #F0F0F0 66.96%, #B8E3FF 82.41%, #D28A9A 92.98%);
+  --website-span-border-color: #0099FE;
+
+  /* Website - Header*/
+  --website-header-item-color: #F5F5F5;
+  --website-header-cta-color: #B7B7B7;
+  --website-cta-background: #292929;
+
+  /* Website - Cards */
+  --website-card-background: #202020;
+  --website-card-hover: #292929;
+
+  /* Website - Form */
+  --website-form-background: #EEEEEE;
+  --website-form-text-color: #979797;
+  
+  /*Website - Font Sizes*/
+  --website-font-size-mini: 12px;
+  --website-font-size-medium: 14px;
+  --website-font-size-big: 16px;
+  --website-font-size-large: 18px;
+  --website-span-font-size: 23px;
+  --website-heading-font-size-small: 42px;
+  --website-heading-font-size-medium: 56px;
+  --website-heading-font-size-big: 64px;
+  
+  /*Website - Font Weights*/
+  --website-font-weight-normal: 400;
+  --website-font-weight-medium: 500;
+  --website-font-weight-semibold: 600;
+  --website-font-weight-bold: 700;
+  
+  /*Website - Letter Spacing*/
+  --website-letter-spacing-wide: -0.03em;
+  --website-letter-spacing-normal: -0.04em;
+  --website-letter-spacing-tight: -0.05em;
+
+  /* 
+   =======================
+          DASHBOARD
+   =======================
+   */
   --input-padding: 12px;
   --backdrop-blur: 7px;
 
@@ -134,6 +195,12 @@ System selected: will fallback to root or html[data-theme="dark"]
   --home-chart-color: #666666;
   --home-chart-icon-color: #F3F3F3;
 
+
+    /* 
+   =======================
+          BUILDER
+   =======================
+   */
   /*Builder - General*/
   --panels-width: 200px;
   --canvas-min-width: 350px;
@@ -227,6 +294,48 @@ System selected: will fallback to root or html[data-theme="dark"]
 }
 
 html[data-theme="dark"] {
+  /* 
+   =======================
+          WEBSITE
+   =======================
+   */
+  
+  /*Website - General*/
+  --website-background: #191919;
+  --website-strong-background: #FFFFFF;
+  --website-accent-color: #11A8FF;
+  --website-accent-hover: #0d8ce6;
+  --website-border-strong-color: #292929;
+  --website-text-light-color: #CCCCCC;
+  --website-text-fresco-color: #999999;
+  --website-text-semi-strong-color: #F5F5F5;
+  --website-text-strong-color: #FFFFFF;
+  --website-brand-gradient: linear-gradient(93deg, #FFF -6.78%, #0099FE 106.78%);
+  --website-span-gradient: linear-gradient(90deg, #11A8FF 0%, #FFF 45.19%);
+  --website-banner-gradient: linear-gradient(90deg, #232323 8.71%, #333 52.64%, #232323 96.57%);
+  --website-banner-text-gradient: linear-gradient(92deg, #F0F0F0 66.96%, #B8E3FF 82.41%, #D28A9A 92.98%);
+  --website-span-border-color: #0099FE;
+
+  /* Website - Header*/
+  --website-header-item-color: #F5F5F5;
+  --website-header-cta-color: #B7B7B7;
+  --website-cta-background: #292929;
+  --website-banner-cta-background: #555555;
+
+  /* Website - Cards */
+  --website-card-background: #202020;
+  --website-card-hover: #292929;
+
+  /* Website - Form */
+  --website-form-background: #EEEEEE;
+  --website-form-text-color: #979797;
+
+
+  /* 
+   =======================
+          DASHBOARD
+   =======================
+   */
   --sidebar-menu-backdrop-color: rgba(0, 0, 0, 0.5);
 
   /*App*/
@@ -312,6 +421,12 @@ html[data-theme="dark"] {
   --home-chart-color: #FFFFFF;
   --home-chart-icon-color: #272727;
 
+
+    /* 
+   =======================
+          BUILDER
+   =======================
+   */
   /*Builder - General*/
   --handlebars-color: #444444;
   --handlebars-color-active: #666666;
