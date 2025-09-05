@@ -17,7 +17,7 @@ import { Icon } from '@builderElements/Icon/Icon';
 
 
 
-function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
+function BuilderRightPanel({user, site, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
     const { selectedId, JSONtree, activeRoot } = useCanvas();
 
     // Function to find the element in the JSON tree
@@ -104,7 +104,7 @@ function BuilderRightPanel({user, checkProfilePicture, profileStyle, setModalTyp
                 {/* If no element is selected, show the NoSelectedItem react element */}
                 {(!selectedId || selectedId === 'tw-root--banner' || selectedId === 'tw-root--model') && <NoSelectedItem/>}
                     {/* Check the type element and show the correct controls */}
-                    {currentControls && <ControlComponent control={currentControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel}/>}               
+                    {currentControls && <ControlComponent control={currentControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel} user={user} site={site}/>}               
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ import React from 'react';
 import BuilderControl from '../BuilderControl/BuilderControl';
 import { useCanvas } from '@contexts/CanvasContext';
 import BuilderClasses from '../BuilderClasses/BuilderClasses';
+import { supabase } from '../../../supabase/supabaseClient';
 import './ControlComponents.css';
 
 
@@ -1279,12 +1280,133 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
     </div>
     )
 }
-const ImageType = ({name, index}) => {
+const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange}) => {
+    const [image, setImage] = useState(null);
+    const [imageUrl, setImageUrl] = useState('');
+    const imageRef = useRef(null);
+    const imageUrlRef = useRef(null);
+    const [errors, setErrors] = useState({});
+    const [isUploading, setIsUploading] = useState(false);
+
+    useEffect(() => {
+        const savedValue = getGlobalJSONValue?.(JSONProperty);
+        console.log(savedValue);
+        if (savedValue) {
+            if (savedValue.startsWith('http')) {
+                setImageUrl(savedValue);
+                setImage(savedValue);
+            } else {
+                setImage(savedValue);
+            }
+        }
+    }, [getGlobalJSONValue, JSONProperty]);
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+    
+        // Validaciones...
+        if (!file.type.startsWith('image/')) {
+            setErrors({ file: 'The file must be an image' });
+            return;
+        }
+    
+        if (file.size > 5 * 1024 * 1024) {
+            setErrors({ file: 'The file must be less than 5MB' });
+            return;
+        }
+    
+        setErrors({});
+        setIsUploading(true);
+    
+        try {
+            const fileExtension = file.name.split('.').pop();
+            const fileName = `${user?.id || 'anonymous'}/${site?.id || 'default'}/${Date.now()}.${fileExtension}`;
+    
+            // Subir archivo
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('Builder')
+                .upload(fileName, file);
+    
+            if (uploadError) {
+                throw uploadError;
+            }
+    
+            // Obtener URL pública (más simple)
+            const { data: { publicUrl } } = supabase.storage
+                .from('Builder')
+                .getPublicUrl(fileName);
+    
+            setImage(publicUrl);
+            setImageUrl(publicUrl);
+            applyGlobalJSONChange?.(JSONProperty, publicUrl);
+    
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            setErrors({ file: 'Error uploading image. Please try again.' });
+        } finally {
+            setIsUploading(false);
+        }
+    };
+    const handleUrlChange = (e) => {
+        const url = e.target.value;
+        setImageUrl(url);
+    };
+    const handleUrlSubmit = (e) => {
+        if (e.key === 'Enter' || e.type === 'blur') {
+            const url = imageUrl.trim();
+            if (!url) return;
+    
+            try {
+                new URL(url); // valida formato
+            } catch {
+                setErrors({ url: 'Please enter a valid URL' });
+                return;
+            }
+    
+            setErrors({});
+            
+            setImage(url);
+            setImageUrl(url);
+            applyGlobalJSONChange?.(JSONProperty, url); 
+        }
+    };
     return (
+        <>
+        <div className="tw-builder__settings-setting">
+            <span className="tw-builder__settings-subtitle">Source</span>
+            <input 
+            type="text" 
+            className="tw-builder__settings-input tw-builder__settings-input--link" 
+            placeholder="URL..." 
+            ref={imageUrlRef}
+            value={imageUrl}
+            onChange={handleUrlChange}
+            onBlur={handleUrlSubmit}
+            onKeyDown={handleUrlSubmit}
+            />
+        </div>
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-        <span className="tw-builder__settings-subtitle">{name}</span>
-        <img src="/assets/builder-default-image.svg" alt="Image" className="tw-builder__settings-image" />
-    </div>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <div
+                className="tw-builder__settings-image"
+                style={imageUrl ? { backgroundImage: `url(${imageUrl})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center center' } : undefined}
+            >
+                <div className={`tw-builder__settings-image-upload ${imageUrl ? 'tw-builder__settings-image-upload-preview' : ''}`} onClick={() => imageRef.current.click()}>
+                    <span className="tw-builder__settings-image-span">Upload Image</span>
+                    <input 
+                    ref={imageRef} 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleImageUpload} 
+                    className="tw-builder__settings-image-input" 
+                    disabled={isUploading}
+                    />
+                </div>
+
+            </div>
+        </div>
+        </>
     )
 }
 const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
@@ -1993,18 +2115,24 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
 }
 const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState(null);
     const [inset, setInset] = useState(false);
     const instanceId = useRef(Symbol('pen'));
     const [activeTooltip, setActiveTooltip] = useState(null);
     const containerRef = useRef(null);
 
     //Border states
-    const [widthLinked, setWidthLinked] = useState(false);
-    const [radiusLinked, setRadiusLinked] = useState(false);
+    
+    const [isWidthLinked, setIsWidthLinked] = useState(false);
+    const [isRadiusLinked, setIsRadiusLinked] = useState(false);
+    const [bw, setBw] = useState({t: '', r: '', b: '', l: ''});
+    const [br, setBr] = useState({tl: '', tr: '', br: '', bl: ''});
+    const [bwLinked, setBwLinked] = useState('');
+    const [brLinked, setBrLinked] = useState('');   
 
-  //Function to parse the box-shadow string in parts
-    const parseBoxShadow = useCallback((shadowStr) => {
+  
+
+      //Function to parse the box-shadow string in parts
+      const parseBoxShadow = useCallback((shadowStr) => {
         //If the shadowStr is not a string, return the default values
         if (!shadowStr || typeof shadowStr !== 'string') {
             return { inset: false, x: '0', y: '0', blur: '0', spread: '0', color: '' };
@@ -2136,8 +2264,14 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
 
     const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
     const handleMouseLeave = () => setActiveTooltip(null);
-    const handleChooseChange = (choose) => setSelected(choose);
+    const handleWidthLinkToggle = (value) => {
+        setIsWidthLinked(value);
+    };
+    const handleRadiusLinkToggle = (value) => {
+        setIsRadiusLinked(value);
+    };
 
+    
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
@@ -2173,9 +2307,12 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Width</span>
                                     <div className="tw-builder__settings-width">
-                                        <input type="text" className="tw-builder__settings-input" />
+                                        <input type="text" className="tw-builder__settings-input" 
+                                        
+                   
+                                        />
                                         <div className="tw-builder__settings-actions">
-                                            <button className={`tw-builder__settings-action ${selected === 'link' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('link')} onMouseEnter={() => handleMouseEnter('link')} onMouseLeave={handleMouseLeave}>
+                                            <button className={`tw-builder__settings-action ${isWidthLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleWidthLinkToggle(true)} onMouseEnter={() => handleMouseEnter('link')} onMouseLeave={handleMouseLeave}>
                                                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <rect x="0.5" y="0.5" width="7" height="7" rx="1.5" stroke="currentColor"/>
                                                 </svg>
@@ -2186,7 +2323,7 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                                 width="auto"
                                                 />
                                             </button> 
-                                            <button className={`tw-builder__settings-action ${selected === 'unlink' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('unlink')} onMouseEnter={() => handleMouseEnter('unlink')} onMouseLeave={handleMouseLeave}>
+                                            <button className={`tw-builder__settings-action ${isWidthLinked === false ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleWidthLinkToggle(false)} onMouseEnter={() => handleMouseEnter('unlink')} onMouseLeave={handleMouseLeave}>    
                                                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <line x1="0.5" y1="2" x2="0.5" y2="6" stroke="currentColor"/>
                                                     <line x1="7.5" y1="2" x2="7.5" y2="6" stroke="currentColor"/>
@@ -2223,7 +2360,7 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                 <SelectType
                                     name={'Style'}
                                     value={'None'}
-                                    options={['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset']}
+                                    options={['None', 'Solid', 'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset','Hidden']}
                                     index={'border-style'}
                                     cssProperty={'border-style'}
                                     applyGlobalCSSChange={applyGlobalCSSChange}
@@ -2233,9 +2370,10 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                 <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Radius</span>
                                     <div className="tw-builder__settings-width">
-                                        <input type="text" className="tw-builder__settings-input" />
+                                        <input type="text" className="tw-builder__settings-input" 
+/>
                                         <div className="tw-builder__settings-actions">
-                                            <button className={`tw-builder__settings-action ${selected === 'rlink' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('rlink')} onMouseEnter={() => handleMouseEnter('rlink')} onMouseLeave={handleMouseLeave}>
+                                            <button className={`tw-builder__settings-action ${isRadiusLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleRadiusLinkToggle(true)} onMouseEnter={() => handleMouseEnter('rlink')} onMouseLeave={handleMouseLeave}>
                                                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <rect x="0.5" y="0.5" width="7" height="7" rx="1.5" stroke="currentColor"/>
                                                 </svg>
@@ -2246,7 +2384,7 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
                                                 width="auto"
                                                 />
                                             </button> 
-                                            <button className={`tw-builder__settings-action ${selected === 'runlink' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('runlink')} onMouseEnter={() => handleMouseEnter('runlink')} onMouseLeave={handleMouseLeave}>
+                                            <button className={`tw-builder__settings-action ${isRadiusLinked === false ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleRadiusLinkToggle(false)} onMouseEnter={() => handleMouseEnter('runlink')} onMouseLeave={handleMouseLeave}>
                                                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <line x1="0.5" y1="2" x2="0.5" y2="6" stroke="currentColor"/>
                                                     <line x1="7.5" y1="2" x2="7.5" y2="6" stroke="currentColor"/>
@@ -2355,7 +2493,7 @@ const BorderShadowType = ({name, value, index, cssProperty, applyGlobalCSSChange
         </div>
     )
 }
-function ControlComponent({control, selectedId, showNotification, selectedLabel}) {
+function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
     const {JSONtree, activeRoot, addCSSProperty, addJSONProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
@@ -2492,7 +2630,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel}
             case 'color':
                 return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
             case 'image':
-                return <ImageType key={index} {...enhancedItem} name={item.name} index={index} />;
+                return <ImageType key={index} {...enhancedItem} name={item.name} index={index} user={user} site={site}/>;
             case 'choose':
                 return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
             case 'textarea':

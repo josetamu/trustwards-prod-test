@@ -51,7 +51,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
                         { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'color' },
                         { name: 'Font', type: 'text', cssProperty: 'font-family' },
                         { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
-                        { name: 'Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
+                        { name: 'Weight', type: 'select', value: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
                         { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
                         { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
                         { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},

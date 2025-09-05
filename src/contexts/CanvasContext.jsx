@@ -521,9 +521,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Image",
                 src: '/assets/builder-default-image.svg',
                 defaultCSS: {
-                    'width': 'auto',
-                    'height': 'auto',
-                    'display': 'block'
+                    'width': '200px',
+                    'height': '200px',
+                    'display': 'block',
+                    'object-fit': 'cover'
                 },
                 classList: ["tw-image"]
             },

@@ -298,3 +298,40 @@
     letter-spacing: var(--letter-spacing-negative) !important;
     
 }
+.tw-builder__settings-image{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 112px;
+    background-color: var(--builder-background);
+    
+    background-size: contain;
+    border-radius: 5px;
+    padding: 10px;
+}
+.tw-builder__settings-image-upload{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--header-plan-background);
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.tw-builder__settings-image-upload-preview{
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+.tw-builder__settings-image-span{
+    color: var(--label-color);
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__settings-image-input{
+    display: none;
+}
