@@ -7,7 +7,7 @@ import { useCanvas } from '@contexts/CanvasContext';
 import BuilderClasses from '../BuilderClasses/BuilderClasses';
 import { supabase } from '../../../supabase/supabaseClient';
 import './ControlComponents.css';
-
+import { StylesDeleter } from '../StylesDeleter/StylesDeleter';
 
 
 
@@ -64,6 +64,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
+            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange}/>
             <input 
             type="text" 
             className="tw-builder__settings-input" 
@@ -1289,6 +1290,7 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
             <span className="tw-builder__settings-subtitle">{name}</span>
+            <button onClick={() => applyCSSChange('', '')}>Prueba</button>
         <div className="tw-builder__settings-background">
             <div className="tw-builder__settings-colors">
                 <input  ref={colorInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />

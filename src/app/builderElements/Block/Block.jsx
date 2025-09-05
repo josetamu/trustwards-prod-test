@@ -41,7 +41,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
             {
                 label: 'Background',
                 controls: [
-                    { name: '', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' },
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' },
                 ]
             },
             {

@@ -1,0 +1,29 @@
+.tw-builder__settings-deleter{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+}
+.tw-builder__settings-deleter-point{
+    width: 5px;
+    height: 5px;
+    background-color: #000;
+    border-radius: 100%;
+    display: block;
+}
+.tw-builder__settings-deleter-cross{
+    display: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: #000;
+}
+/* .tw-builder__settings-deleter:hover .tw-builder__settings-deleter-cross{
+    display: block;
+}
+.tw-builder__settings-deleter:hover .tw-builder__settings-deleter-point{
+    display: none;
+} */
