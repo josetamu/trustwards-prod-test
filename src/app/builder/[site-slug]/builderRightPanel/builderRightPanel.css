@@ -82,6 +82,8 @@
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--subtitle-color);
+    display: flex;
+    gap: 5px;
 }
 
 .tw-builder__settings-select-container {

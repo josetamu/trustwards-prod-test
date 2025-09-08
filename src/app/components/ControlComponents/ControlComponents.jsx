@@ -63,8 +63,10 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
 
     return (
         <div className="tw-builder__settings-setting" key={index}>
-            <span className="tw-builder__settings-subtitle">{name}</span>
-            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange}/>
+            <span className="tw-builder__settings-subtitle">{name}
+            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={JSONProperty}/>
+            </span>
+           
             <input 
             type="text" 
             className="tw-builder__settings-input" 
@@ -1099,7 +1101,9 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-        <span className="tw-builder__settings-subtitle">{name}</span>
+        <span className="tw-builder__settings-subtitle">{name}
+            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
+        </span>
         <div className="tw-builder__settings-spacing">
             <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur}/>
             <div className="tw-builder__settings-spacing-mid">
@@ -1289,8 +1293,10 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-            <span className="tw-builder__settings-subtitle">{name}</span>
-            <button onClick={() => applyCSSChange('', '')}>Prueba</button>
+            <span className="tw-builder__settings-subtitle">{name}
+                <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={color} cssProperty={cssProperty}/>
+            </span>
+            
         <div className="tw-builder__settings-background">
             <div className="tw-builder__settings-colors">
                 <input  ref={colorInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
@@ -1317,14 +1323,23 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
 
     useEffect(() => {
         const savedValue = getGlobalJSONValue?.(JSONProperty);
-        console.log(savedValue);
+        const defaultImage = "/assets/builder-default-image.svg";
+
         if (savedValue) {
+            if (savedValue === defaultImage) {
+                setImage(null);
+                setImageUrl('');
+                return;
+            }
             if (savedValue.startsWith('http')) {
                 setImageUrl(savedValue);
                 setImage(savedValue);
             } else {
                 setImage(savedValue);
             }
+        } else {
+            setImage(null);
+            setImageUrl('');
         }
     }, [getGlobalJSONValue, JSONProperty]);
 
@@ -1401,7 +1416,9 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     return (
         <>
         <div className="tw-builder__settings-setting">
-            <span className="tw-builder__settings-subtitle">Source</span>
+            <span className="tw-builder__settings-subtitle">Source
+                <StylesDeleter value={imageUrl} jsonEmptyValue="/assets/builder-default-image.svg" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
+            </span>
             <input 
             type="text" 
             className="tw-builder__settings-input tw-builder__settings-input--link" 
@@ -1414,7 +1431,9 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             />
         </div>
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-            <span className="tw-builder__settings-subtitle">{name}</span>
+            <span className="tw-builder__settings-subtitle">{name}
+                <StylesDeleter value={imageUrl} JSONProperty={JSONProperty} jsonEmptyValue="/assets/builder-default-image.svg" applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
+            </span>
             <div
                 className="tw-builder__settings-image"
                 style={imageUrl ? { backgroundImage: `url(${imageUrl})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center center' } : undefined}
@@ -1438,7 +1457,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
 }
 const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
 
-    const [selectedChoose, setSelectedChoose] = useState(getGlobalCSSValue?.(cssProperty) || category || '');
+    const [selectedChoose, setSelectedChoose] = useState(getGlobalCSSValue?.(cssProperty) || '');
     const [isReverse, setIsReverse] = useState(false);
     const [activeTooltip, setActiveTooltip] = useState(null);
 
@@ -1446,7 +1465,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     useEffect(() => {
         if (getGlobalCSSValue && cssProperty) {
             const savedValue = getGlobalCSSValue(cssProperty);
-            setSelectedChoose(savedValue || category || '');
+            setSelectedChoose(savedValue || '');
         }
     }, [getGlobalCSSValue, cssProperty, category]);
 
@@ -1508,7 +1527,9 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         case 'direction':
             return (
                 <div className="tw-builder__settings-setting" key={index}>
-                    <span className="tw-builder__settings-subtitle">{name}</span>
+                    <span className="tw-builder__settings-subtitle">{name}
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                    </span>
                     <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
                             style={{ transform: `translateX(${getSliderPosition(selectedChoose, directionOptions)})`, width: `${getSliderWidth(directionOptions)}` } }
@@ -1544,7 +1565,9 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         case 'flex-direction':
             return (
                 <div className="tw-builder__settings-setting" key={index}>
-                    <span className="tw-builder__settings-subtitle">{name}</span>
+                    <span className="tw-builder__settings-subtitle">{name}
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                    </span>
                     <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
                             style={{ transform: `translateX(${getSliderPosition(selectedChoose, flexDirectionOptions)})`, width: `${getSliderWidth(flexDirectionOptions)}` } }
@@ -1592,7 +1615,9 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         case 'justify':
             return (
                 <div className="tw-builder__settings-setting" key={index}>
-                    <span className="tw-builder__settings-subtitle">{name}</span>
+                    <span className="tw-builder__settings-subtitle">{name}
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                    </span>
                     <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
                             style={{ transform: `translateX(${getSliderPosition(selectedChoose, justifyOptions)})`, width: `${getSliderWidth(justifyOptions)}` } }
@@ -1640,7 +1665,9 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         case 'align':
             return (
                 <div className="tw-builder__settings-setting" key={index}>
-                    <span className="tw-builder__settings-subtitle">{name}</span>
+                    <span className="tw-builder__settings-subtitle">{name}
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                    </span>
                     <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
                             style={{ transform: `translateX(${getSliderPosition(selectedChoose, alignOptions)})`, width: `${getSliderWidth(alignOptions)}` } }
@@ -1688,7 +1715,9 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         case 'super-justify':
             return(
             <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-                <span className="tw-builder__settings-subtitle">{name}</span>
+                <span className="tw-builder__settings-subtitle">{name}
+                    <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                </span>
                 <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
                     <div className="tw-builder__settings-slider"
                             style={{ transform: `translateX(${getSliderPosition(selectedChoose, alignOptions)})`, width: `${getSliderWidth(alignOptions)}` } }
@@ -1780,7 +1809,9 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         case 'super-align':
             return(
                 <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-                        <span className="tw-builder__settings-subtitle">{name}</span>
+                        <span className="tw-builder__settings-subtitle">{name}
+                            <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        </span>
                         <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
                         <div className="tw-builder__settings-slider"
                             style={{ transform: `translateX(${getSliderPosition(selectedChoose, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
@@ -1843,7 +1874,9 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         case 'text-align':
             return (
                 <div className="tw-builder__settings-setting" key={index}>
-                    <span className="tw-builder__settings-subtitle">{name}</span>
+                    <span className="tw-builder__settings-subtitle">{name}
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                    </span>
                     <div className="tw-builder__settings-actions">
                     <div className="tw-builder__settings-slider"
                             style={{ transform: `translateX(${getSliderPosition(selectedChoose, textAlignOptions)})`, width: `${getSliderWidth(textAlignOptions)}` } }
@@ -2028,7 +2061,9 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
 const displayValue = hasDefaultText ? "" : textareaValue;
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
-            <span className="tw-builder__settings-subtitle">{name}</span>
+            <span className="tw-builder__settings-subtitle">{name}
+                <StylesDeleter value={textareaValue} jsonEmptyValue="New Text 2" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
+            </span>
             <textarea 
                 name={name} 
                 id={index} 
@@ -2626,17 +2661,11 @@ const parseRadius = useCallback((radiusStr) => {
         }
     };
 
-
-
-
-
-
-
-
-
     return (
         <div className="tw-builder__settings-setting" key={index}>
-            <span className="tw-builder__settings-subtitle">{name}</span>
+            <span className="tw-builder__settings-subtitle">{name}
+                <StylesDeleter value={selected} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+            </span>
             <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
                 <span className="tw-builder__settings-pen" onClick={toggleOpen}>
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2977,9 +3006,6 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         getGlobalJSONValue,
         selectedId,
      };
-
-     console.log(JSONtree);
-    
 
     const whatType = (item, index) => {
 

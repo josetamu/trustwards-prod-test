@@ -788,7 +788,19 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         const handleKeyDown = (e) => {
             // Only handle keyboard shortcuts when the left panel is open and focused
             if (!isPanelOpen) return;
-            
+
+            // Ignore shortcuts while typing in inputs, textareas, selects or contenteditable
+            const el = e.target;
+            const tag = el && el.tagName ? el.tagName.toLowerCase() : '';
+            const isEditable =
+                el &&
+                (el.isContentEditable ||
+                    tag === 'input' ||
+                    tag === 'textarea' ||
+                    tag === 'select' ||
+                    (el.getAttribute && el.getAttribute('role') === 'textbox'));
+            if (isEditable) return;
+
             const isCtrlOrCmd = e.ctrlKey || e.metaKey; // Handles both Windows (Ctrl) and macOS (Cmd)
 
             if (isCtrlOrCmd && e.key === 'c') {
