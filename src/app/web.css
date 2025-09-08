@@ -60,7 +60,11 @@ body {
   padding: 8px 14px;
 }
 
-/* Header Styles */
+/* 
+   =======================
+          HEADER
+   =======================
+*/
 .tw-header {
   background-color: var(--website-background);
   width: 100%;
@@ -70,7 +74,11 @@ body {
   gap: 14px
 }
 
-/* Banner Styles */
+/* 
+   =======================
+          BANNER
+   =======================
+*/
 .tw-banner {
   background: var(--website-banner-gradient);
   width: 100%;
@@ -131,7 +139,11 @@ body {
   box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
 }
 
-/* Header Wrapper */
+/* 
+   =======================
+        HEADER INNER
+   =======================
+*/
 .tw-header__wrapper {
   display: flex;
   align-items: center;
@@ -139,6 +151,7 @@ body {
   padding: 0 14px;
   max-width: 1200px;
   width: 100%;
+  position: relative;
 }
 
 .tw-header__left-wrapper {
@@ -205,7 +218,126 @@ body {
   background-color: #3a3a3a;
 }
 
-/* Hero Section */
+/* 
+   =======================
+          DROPDOWN
+   =======================
+*/
+.tw-header__nav-item--dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.tw-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--website-menu-background);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--website-menu-border-strong-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 10px;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+/* Invisible bridge between the text and the dropdown */
+.tw-header__nav-item--dropdown::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background: transparent;
+  z-index: 999;
+}
+
+.tw-dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  padding: 7px;
+}
+
+.tw-dropdown__item:hover {
+  background-color: var(--website-accent-background);
+  border-radius: 5px;
+}
+
+.tw-dropdown__item-icon {
+  color: var(--website-menu-icon-strong-color);
+  background: var(--website-menu-icon-background);
+  padding: 4px;
+  border-radius: 5px;
+  width: 20px;
+  height: 20px;
+}
+.tw-dropdown__item:hover .tw-dropdown__item-icon {
+  background: var(--website-menu-icon-background-hover);
+}
+
+.tw-dropdown__item-text {
+  color: var(--website-menu-text-strong-color);
+  text-decoration: none;
+  font-size: var(--website-font-size-medium);
+  font-weight: var(--website-font-weight-medium);
+  letter-spacing: var(--website-letter-spacing-wide);
+}
+
+/* 
+   =======================
+          SUBMENU
+   =======================
+*/
+.tw-dropdown__item--submenu {
+  position: relative;
+}
+
+.tw-submenu {
+  position: absolute;
+  top: -15px;
+  left: 100%;
+  background: var(--website-menu-background);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--website-menu-border-strong-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-left: 30px;
+  min-width: 180px;
+  z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-10px);
+  transition: all 0.2s ease;
+}
+
+/* Invisible bridge between the main menu and the submenu */
+.tw-submenu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -30px;
+  width: 30px;
+  height: 100%;
+  background: transparent;
+  z-index: 1000;
+}
+.tw-dropdown__item--submenu:hover .tw-submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* 
+   =======================
+            HERO
+   =======================
+*/
 .tw-hero {
   background-color: var(--website-background);
   width: 100%;
@@ -228,8 +360,9 @@ body {
   width: auto;
 }
 
+/* Shimmer */
 .tw-hero__shimmer {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 20px;
   font-size: var(--website-font-size-mini);
   font-weight: var(--website-font-weight-semibold);
@@ -259,13 +392,14 @@ body {
   color: #FFFFFFF7;
   position: relative;
   z-index: 2;
+  opacity: 0.6;
 }
 
 .tw-hero__shimmer-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
+  color: var(--website-text-light-color);
   position: relative;
   z-index: 2;
 }
@@ -285,32 +419,32 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 120px;
-  height: 60px;
+  width: 100%;
+  height: 100%;
 }
 
 .tw-hero__shimmer-background svg:first-child {
-  left: 20%;
-  transform: translateY(-50%) scale(1.5) rotate(-15deg);
+  left: 10%;
+  transform: translateY(-50%) scale(1.2);
 }
 
 .tw-hero__shimmer-background svg:last-child {
-  right: 0%;
-  transform: translateY(-50%) scale(1.6) rotate(15deg);
+  right: -30%;
+  transform: translateY(-50%) scale(1.2);
 }
 
 .tw-hero__title {
   font-size: var(--website-heading-font-size-big);
   font-weight: var(--website-font-weight-semibold);
   color: var(--website-text-semi-strong-color);
-  line-height: 1;
+  line-height: 1.1;
   letter-spacing: var(--website-letter-spacing-normal);
   max-width: 730px;
   text-align: center;
 }
 
 
-/* Features Section */
+/* Features */
 .tw-features {
   background-color: var(--website-background);
   display: flex;
@@ -373,7 +507,6 @@ body {
   max-width: 300px;
 }
 
-/* Video Section */
 .tw-video {
   background-color: var(--website-card-background);
   display: flex;
@@ -396,7 +529,11 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-/* CTA Section*/
+/* 
+   =======================
+        SPAN SECTION
+   =======================
+*/
 .tw-span-section {
   background-color: var(--website-background);
   width: 100%;
@@ -414,7 +551,7 @@ body {
   font-size: var(--website-heading-font-size-medium);
   font-weight: var(--website-font-weight-semibold);
   color: #ffffff;
-  line-height: 1;
+  line-height: 1.3;
   letter-spacing: var(--website-letter-spacing-normal);
 }
 
@@ -447,10 +584,14 @@ body {
   left: 0;
   width: 3px;
   bottom: 0;
-  background: var(--website-span-border-color);
+  background: var(--website-accent-background);
 }
 
-/* Platform Section - All-in-one consent platform */
+/* 
+   =======================
+          PLATFORM
+   =======================
+*/
 .tw-platform-section {
   background-color: var(--website-background);
   width: 100%;
@@ -489,7 +630,7 @@ body {
   font-weight: var(--website-font-weight-semibold);
   color: var(--website-text-semi-strong-color);
   letter-spacing: var(--website-letter-spacing-normal);
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .tw-platform-section__paragraph {
@@ -563,7 +704,11 @@ body {
   letter-spacing: var(--website-letter-spacing-wide);
 }
 
-/* Themes Section */
+/* 
+   =======================
+          THEMES
+   =======================
+*/
 .tw-themes-section {
   background-color: var(--website-background);
   max-width: 1200px;
@@ -611,7 +756,7 @@ body {
   max-width: 530px;
 }
 
-.tw-themes-section__paragraph{
+.tw-themes-section__paragraph {
   font-size: var(--website-font-size-large);
   font-weight: var(--website-font-weight-medium);
   color: var(--website-text-light-color);
@@ -685,7 +830,11 @@ body {
   transform-origin: left center;
 }
 
-/* Footer Styles */
+/*
+   =======================
+          FOOTER
+   =======================
+*/
 .tw-footer {
   width: 100%;
   max-width: 1200px;
@@ -702,7 +851,11 @@ body {
   position: relative;
 }
 
-/* FAQ Section */
+/*
+   =======================
+          FAQ
+   =======================
+*/
 .tw-faq {
   width: 100%;
   max-width: 1200px;
@@ -769,6 +922,7 @@ body {
   border: 1px solid var(--website-border-strong-color);
   border-radius: 20px;
   overflow: hidden;
+  padding: 40px;
 }
 
 .tw-faq__item {
@@ -782,7 +936,7 @@ body {
   width: 100%;
   background: none;
   border: none;
-  padding: 15px 40px;
+  padding: 15px 0;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -792,6 +946,12 @@ body {
 }
 .tw-faq__question:hover {
   background-color: var(--website-card-hover);
+}
+.tw-faq__item:first-child .tw-faq__question {
+  padding-top: 0;
+}
+.tw-faq__item:last-child .tw-faq__question {
+  padding-bottom: 0;
 }
 
 .tw-faq__icon {
@@ -835,6 +995,11 @@ body {
   line-height: 1.5;
 }
 
+/* 
+   =======================
+        FOOTER INNER
+   =======================
+*/
 .tw-footer__bottom-wrapper {
   display: flex;
   flex-direction: column;
@@ -851,7 +1016,7 @@ body {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 50px;
+  gap: 60px;
   width: 100%;
 }
 
@@ -966,7 +1131,11 @@ body {
   color: var(--website-text-semi-strong-color);
 }
 
-/* Newsletter Section */
+/*
+   =======================
+          NEWSLETTER
+   =======================
+*/
 .tw-newsletter {
   position: fixed;
   bottom: 0px;
@@ -1007,6 +1176,7 @@ body {
   position: relative;
   padding: 50px;
   margin: 0 auto;
+  flex-wrap: wrap;
 }
 
 .tw-newsletter__logo {
@@ -1077,156 +1247,235 @@ body {
 }
 
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .tw-header {
-    padding: 12px 16px;
-  }
-  
-  .tw-header__nav {
-    gap: 20px;
-  }
-  
-  .tw-header__nav-link {
-    font-size: 13px;
-  }
-  
-  .tw-header__actions {
-    gap: 8px;
-  }
-  
-
-  .tw-hero {
-    padding: 40px 20px;
+/*
+   =======================
+          RESPONSIVE
+   =======================
+*/
+@media (max-width: 767px) {
+  .tw-wrapper {
+    gap: 80px;
   }
 
+  /* CTAs */
+  .tw-cta {
+    padding: 10px 16px;
+    font-size: var(--website-font-size-mini);
+  }
+  .tw-cta--mini {
+    padding: 8px 12px;
+    font-size: var(--website-font-size-mini);
+  }
+
+  /* Hero */
   .tw-hero__title {
-    font-size: 32px;
+    font-size: var(--website-heading-font-size-medium);
+    max-width: 640px;
   }
 
   .tw-features__grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+  }
+
+  .tw-video {
+    height: 400px;
+  }
+
+  /* Span Section */
+  .tw-span-section__wrapper {
+    gap: 25px;
+  }
+
+  .tw-span-section__h1 {
+    font-size: var(--website-heading-font-size-small);
+  }
+
+  /* Platform Section */
+  .tw-platform-section__title {
+    font-size: var(--website-heading-font-size-small);
+  }
+
+  .tw-platform-section__paragraph {
+    max-width: 700px;
+  }
+
+  /* Platform Features */
+  .tw-platform-features {
+    gap: 14px;
+  }
+
+  /* Top Features Grid */
+  .tw-platform-features__grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Left Features Grid (inside top grid) */
+  .tw-platform-features__left-grid {
+    grid-template-columns: 1fr;
+    grid-column: span 1;
+    gap: 14px;
+  }
+
+  /* Bottom Features Grid */
+  .tw-platform-feature__bottom-section {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Cards */
+  .tw-platform-feature-card {
+    min-height: 250px;
+  }
+
+  /* Specific Cards */
+  .tw-platform-feature-card--dashboard {
+    grid-column: span 1;
+    justify-content: flex-start;
+  }
+
+  .tw-platform-feature-card--builder {
+    grid-column: span 1;
+  }
+
+  /* Themes Section */
+  .tw-themes-section__title {
+    font-size: var(--website-heading-font-size-small);
+    max-width: 470px;
+  }
+
+  .tw-themes-section__grid {
+    gap: 14px;
+  }
+
+  .tw-theme-preview {
+    height: 80px;
+  }
+
+  /* Footer */
+  .tw-footer__wrapper {
+    gap: 60px;
+    padding: 14px 14px 100px 14px;
+  }
+
+  /* FAQ */
+  .tw-faq__answer p {
+    padding: 0 25px 22px 25px;
+  }
+
+  /* Newsletter */
+  .tw-newsletter__title {
+    font-size: var(--website-heading-font-size-medium);
+  }
+}
+
+@media (max-width: 467px) {
+  .tw-wrapper {
+    gap: 60px;
+  }
+
+  /* CTAs */
+  .tw-cta {
+    padding: 8px 14px;
+    font-size: var(--website-font-size-mini);
+  }
+  .tw-cta--mini {
+    padding: 6px 10px;
+    font-size: var(--website-font-size-mini);
+  }
+
+  /* Hero */
+  .tw-hero__title {
+    font-size: 36px;
+    max-width: 100%;
+  }
+
+  .tw-hero__shimmer {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .tw-features__grid {
+    grid-template-columns: 1fr;
   }
 
   .tw-feature-card {
-    padding: 24px 20px;
+    padding: 20px 16px;
   }
 
-  .tw-video__placeholder {
+  .tw-feature-card__title {
+    font-size: 16px;
+  }
+
+  .tw-feature-card__description {
+    font-size: 14px;
+  }
+
+  .tw-video {
     height: 300px;
   }
 
-  .tw-footer__inner {
-    flex-direction: column;
-    gap: 40px;
-  }
-  
-  .tw-footer__right-wrapper {
-    flex-direction: column;
-    gap: 30px;
-  }
-  
-  .tw-footer__banner {
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
-  }
-
-  .tw-newsletter {
-    padding: 40px 20px;
-  }
-
-  .tw-newsletter__content {
-    flex-direction: column;
-    gap: 30px;
-    text-align: center;
-  }
-
-  .tw-newsletter__title {
-    font-size: 24px;
-  }
-
-  .tw-newsletter__form {
-    min-width: 100%;
-    max-width: 400px;
-  }
-
-  .tw-span-section {
-    padding: 60px 20px;
+  /* Span Section */
+  .tw-span-section__wrapper {
+    gap: 20px;
   }
 
   .tw-span-section__h1 {
     font-size: 32px;
   }
 
-  .tw-platform-section {
-    padding: 60px 20px;
-  }
-
+  /* Platform Section */
   .tw-platform-section__title {
     font-size: 32px;
   }
 
-  .tw-platform-section__description {
-    font-size: 16px;
+  .tw-platform-section__paragraph {
+    max-width: 100%;
   }
 
+  /* Platform Features */
+  .tw-platform-features {
+    gap: 12px;
+  }
+
+  /* Top Features Grid */
   .tw-platform-features__grid {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 12px;
   }
 
-  .tw-platform-feature-card--scanner-large {
-    grid-row: span 1;
-    min-height: 120px;
+  /* Left Features Grid (inside top grid) */
+  .tw-platform-features__left-grid {
+    grid-template-columns: 1fr;
+    grid-column: span 1;
+    gap: 12px;
   }
 
-  .tw-themes-section {
-    padding: 60px 20px;
+  /* Bottom Features Grid */
+  .tw-platform-feature__bottom-section {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
+  /* Cards */
+  .tw-platform-feature-card {
+    min-height: 200px;
+  }
+
+  /* Specific Cards */
+  .tw-platform-feature-card--dashboard {
+    grid-column: span 1;
+    justify-content: flex-start;
+  }
+
+  .tw-platform-feature-card--builder {
+    grid-column: span 1;
+  }
+
+  /* Themes Section */
   .tw-themes-section__title {
     font-size: 32px;
-  }
-
-  .tw-themes-section__description {
-    font-size: 16px;
-  }
-
-  .tw-themes-section__grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-  }
-
-  .tw-theme-preview {
-    height: 100px;
-  }
-
-  .tw-faq {
-    padding: 70px 30px 0 30px;
-  }
-
-  .tw-faq__title {
-    font-size: 40px;
-  }
-
-  .tw-faq__question {
-    padding: 22px 25px;
-  }
-
-  .tw-faq__answer p {
-    padding: 0 25px 22px 25px;
-  }
-}
-
-@media (max-width: 480px) {
-  .tw-header__nav {
-    display: none;
-  }
-  
-  .tw-header__actions {
-    gap: 6px;
+    max-width: 100%;
   }
 
   .tw-themes-section__grid {
@@ -1238,20 +1487,15 @@ body {
     height: 80px;
   }
 
-  .tw-faq {
-    padding: 60px 20px 0 20px;
+  /* Footer */
+  .tw-footer__wrapper {
+    gap: 40px;
+    padding: 14px 14px 80px 14px;
   }
 
+  /* FAQ */
   .tw-faq__title {
     font-size: 32px;
-  }
-
-  .tw-faq__subtitle {
-    font-size: 14px;
-  }
-
-  .tw-faq__question {
-    padding: 20px;
   }
 
   .tw-faq__question-text {
@@ -1262,4 +1506,141 @@ body {
     padding: 0 20px 20px 20px;
     font-size: 13px;
   }
+
+  /* Newsletter */
+  .tw-newsletter__title {
+    font-size: 28px;
+  }
+
+  .tw-newsletter__content {
+    padding: 30px 16px;
+  }
+
+  .tw-newsletter__form {
+    padding: 20px;
+  }
+}
+
+/* Additional mobile improvements */
+@media (max-width: 360px) {
+  .tw-hero__title {
+    font-size: 32px;
+  }
+
+  .tw-themes-section__grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .tw-theme-preview {
+    height: 70px;
+  }
+
+  .tw-newsletter__title {
+    font-size: 24px;
+  }
+
+  .tw-span-section__h1 {
+    font-size: 28px;
+  }
+
+  .tw-platform-section__title {
+    font-size: 28px;
+  }
+
+  .tw-themes-section__title {
+    font-size: 28px;
+  }
+
+  .tw-faq__title {
+    font-size: 28px;
+  }
+}
+
+/* Accessibility Styles */
+/* Focus indicators for keyboard navigation */
+*:focus {
+  outline: 2px solid var(--website-accent-color);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline and add custom one */
+button:focus,
+input:focus,
+a:focus,
+[tabindex]:focus {
+  outline: 2px solid var(--website-accent-color);
+  outline-offset: 2px;
+}
+
+/* Focus styles for interactive elements */
+.tw-cta:focus,
+.tw-header__nav-item:focus,
+.tw-feature-card:focus,
+.tw-theme-preview:focus,
+.tw-faq__question:focus {
+  outline: 2px solid var(--website-accent-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 136, 255, 0.2);
+}
+
+/* Focus styles for dropdown items */
+.tw-dropdown__item:focus {
+  background-color: rgba(0, 136, 255, 0.1);
+  outline: 2px solid var(--website-accent-color);
+  outline-offset: -2px;
+}
+
+/* Focus styles for cards */
+.tw-feature-card:focus,
+.tw-theme-preview:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  *:focus {
+    outline: 3px solid;
+    outline-offset: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip to content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--website-accent-color);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
 }

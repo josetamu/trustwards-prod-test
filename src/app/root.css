@@ -30,6 +30,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --website-strong-background: #000000;
   --website-accent-color: #11A8FF;
   --website-accent-hover: #0d8ce6;
+  --website-accent-background: #0099FE;
   --website-border-strong-color: #E0E0E0;
   --website-text-light-color: #333333;
   --website-text-fresco-color: #5E5E5E;
@@ -39,7 +40,6 @@ System selected: will fallback to root or html[data-theme="dark"]
   --website-span-gradient: linear-gradient(90deg, #11A8FF 0%, #FFF 45.19%);
   --website-banner-gradient: linear-gradient(90deg, #232323 8.71%, #333 52.64%, #232323 96.57%);
   --website-banner-text-gradient: linear-gradient(92deg, #F0F0F0 66.96%, #B8E3FF 82.41%, #D28A9A 92.98%);
-  --website-span-border-color: #0099FE;
 
   /* Website - Header*/
   --website-header-item-color: #F5F5F5;
@@ -53,8 +53,16 @@ System selected: will fallback to root or html[data-theme="dark"]
   /* Website - Form */
   --website-form-background: #EEEEEE;
   --website-form-text-color: #979797;
+
+  /* Website - Menu */
+  --website-menu-border-strong-color: #303030;
+  --website-menu-text-strong-color: #020202;
+  --website-menu-icon-strong-color: #000000;
+  --website-menu-icon-background: #555555;
+  --website-menu-icon-background-hover: #FFFFFF59;
+
   
-  /*Website - Font Sizes*/
+  /* Website - Font Sizes */
   --website-font-size-mini: 12px;
   --website-font-size-medium: 14px;
   --website-font-size-big: 16px;
@@ -64,13 +72,13 @@ System selected: will fallback to root or html[data-theme="dark"]
   --website-heading-font-size-medium: 56px;
   --website-heading-font-size-big: 64px;
   
-  /*Website - Font Weights*/
+  /* Website - Font Weights */
   --website-font-weight-normal: 400;
   --website-font-weight-medium: 500;
   --website-font-weight-semibold: 600;
   --website-font-weight-bold: 700;
   
-  /*Website - Letter Spacing*/
+  /* Website - Letter Spacing */
   --website-letter-spacing-wide: -0.03em;
   --website-letter-spacing-normal: -0.04em;
   --website-letter-spacing-tight: -0.05em;
@@ -305,6 +313,7 @@ html[data-theme="dark"] {
   --website-strong-background: #FFFFFF;
   --website-accent-color: #11A8FF;
   --website-accent-hover: #0d8ce6;
+  --website-accent-background: #0099FE;
   --website-border-strong-color: #292929;
   --website-text-light-color: #CCCCCC;
   --website-text-fresco-color: #999999;
@@ -314,13 +323,15 @@ html[data-theme="dark"] {
   --website-span-gradient: linear-gradient(90deg, #11A8FF 0%, #FFF 45.19%);
   --website-banner-gradient: linear-gradient(90deg, #232323 8.71%, #333 52.64%, #232323 96.57%);
   --website-banner-text-gradient: linear-gradient(92deg, #F0F0F0 66.96%, #B8E3FF 82.41%, #D28A9A 92.98%);
-  --website-span-border-color: #0099FE;
 
   /* Website - Header*/
   --website-header-item-color: #F5F5F5;
   --website-header-cta-color: #B7B7B7;
   --website-cta-background: #292929;
   --website-banner-cta-background: #555555;
+
+  /* Website - Shimmer */
+  /**/
 
   /* Website - Cards */
   --website-card-background: #202020;
@@ -329,6 +340,14 @@ html[data-theme="dark"] {
   /* Website - Form */
   --website-form-background: #EEEEEE;
   --website-form-text-color: #979797;
+
+    /* Website - Menu */
+    --website-menu-border-strong-color: #303030;
+    --website-menu-text-strong-color: #F0F0F0;
+    --website-menu-icon-strong-color: #FFFFFF;
+    --website-menu-icon-background: #555555;
+    --website-menu-icon-background-hover: #FFFFFF59;
+    --website-menu-background: rgba(41, 41, 41, 0.80);
 
 
   /* 
