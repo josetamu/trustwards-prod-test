@@ -2,7 +2,7 @@ import './StylesDeleter.css';
 
 import React, { useCallback } from 'react';
 
-export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, getGlobalCSSValue, getGlobalJSONValue, value, cssProperty, JSONProperty, cssPropertyGroup, jsonEmptyValue, checkProps = [], cssDeleteBatch }) => {
+export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, getGlobalCSSValue, getGlobalJSONValue, value, cssProperty, JSONProperty, cssPropertyGroup, jsonEmptyValue, checkProps = [], cssDeleteBatch, onDelete, defaultValue}) => {
     const hasAnyGroupSide = cssPropertyGroup
         ? (Boolean(getGlobalCSSValue?.(cssPropertyGroup)) ||
            ['top','right','bottom','left'].some(side => {
@@ -34,11 +34,12 @@ export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, get
 
         if (cssDeleteBatch && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssDeleteBatch);
+            onDelete?.();
             return;
         }
 
         const batch = {};
-        if (cssProperty) batch[cssProperty] = '';
+        if (cssProperty) batch[cssProperty] = defaultValue || '';
         if (cssPropertyGroup) {
             batch[cssPropertyGroup] = '';
             ['top','right','bottom','left'].forEach(side => {
@@ -48,7 +49,8 @@ export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, get
         if (Object.keys(batch).length && applyGlobalCSSChange) {
             applyGlobalCSSChange(batch);
         }
-    }, [JSONProperty, cssProperty, cssPropertyGroup, applyGlobalCSSChange, applyGlobalJSONChange, effectiveEmptyMarker, cssDeleteBatch]);
+        onDelete?.();
+    }, [JSONProperty, cssProperty, cssPropertyGroup, applyGlobalCSSChange, applyGlobalJSONChange, effectiveEmptyMarker, cssDeleteBatch, onDelete]);
 
     return (
         <div className={`tw-builder__settings-deleter ${hasValue ? 'tw-builder__settings-deleter--active' : ''}`}>

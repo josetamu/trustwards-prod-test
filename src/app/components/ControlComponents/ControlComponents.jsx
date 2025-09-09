@@ -173,13 +173,34 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     );
 }; */
 
-const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
-    const [superSelectValue, setSuperSelectValue] = useState(() => {
-        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
-        const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-        const savedValue = savedJSONValue || savedCSSValue;
-        return savedValue || value || '';
+const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder}) => {
+    const [blockSelectValue, setBlockSelectValue] = useState(() => {
+        if (category === 'block') {
+            const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+            return savedJSONValue || '';
+        }
+        return '';
     });
+    
+    const [displaySelectValue, setDisplaySelectValue] = useState(() => {
+        if (category === 'display') {
+            const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+            return savedCSSValue || '';
+        }
+        return '';
+    });
+    
+    // Función helper para obtener el valor correcto según la categoría
+    const getCurrentSelectValue = () => {
+        if (category === 'block') return blockSelectValue;
+        if (category === 'display') return displaySelectValue;
+        return '';
+    };
+    
+    const setCurrentSelectValue = (value) => {
+        if (category === 'block') setBlockSelectValue(value);
+        if (category === 'display') setDisplaySelectValue(value);
+    };
     const measureRef = useRef(null);
     const wrapMeasureRef = useRef(null);
     const flowMeasureRef = useRef(null);
@@ -209,7 +230,7 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     });
     const flowSelectRef = useRef(null);
     const [activeTooltip, setActiveTooltip] = useState(null);
-
+    const hoverTimeoutRef = useRef(null);
 // Update when selected element changes
 useEffect(() => {
     if(!selectedElementData) return;
@@ -220,9 +241,9 @@ useEffect(() => {
     } else if (cssProperty && getGlobalCSSValue) {
         savedValue = getGlobalCSSValue(cssProperty);
     }
-    setSuperSelectValue(savedValue || value || '');
+    setCurrentSelectValue(savedValue || '');
 
-    const flexDirection = getGlobalCSSValue?.('flex-direction') || 'column';
+    const flexDirection = getGlobalCSSValue?.('flex-direction') || '';
     const isCurrentlyReverse = flexDirection.includes('-reverse');
     const baseDirection = isCurrentlyReverse 
         ? flexDirection.replace('-reverse', '') 
@@ -231,12 +252,31 @@ useEffect(() => {
     setIsReverse(isCurrentlyReverse);
     setSelectedDirection(baseDirection);
 
-    setSelectedWrap(getGlobalCSSValue?.('flex-wrap') || 'wrap');
-    setSelectedAlign(getGlobalCSSValue?.('align-items') || 'flex-start');
-    setSelectedJustify(getGlobalCSSValue?.('justify-content') || 'flex-start');
-    setSelectedFlow(getGlobalCSSValue?.('grid-auto-flow') || 'row');
+    setSelectedWrap(getGlobalCSSValue?.('flex-wrap') || '');
+    setSelectedAlign(getGlobalCSSValue?.('align-items') || '');
+    setSelectedJustify(getGlobalCSSValue?.('justify-content') || '');
+    setSelectedFlow(getGlobalCSSValue?.('grid-auto-flow') || '');
 }, [selectedId,selectedElementData, getGlobalCSSValue, cssProperty, value, getGlobalJSONValue, JSONProperty]);
 
+useEffect(() => {
+	if (category !== 'display' || placeholder !== 'flex' || !selectedId) return;
+	const hasDisplay = !!getGlobalCSSValue?.(cssProperty);
+	const styleId = `tw-preview-display-${selectedId}`;
+	let styleEl = document.getElementById(styleId);
+
+	if (!hasDisplay) {
+		if (!styleEl) {
+			styleEl = document.createElement('style');
+			styleEl.id = styleId;
+			styleEl.textContent = `#${selectedId}{display:flex;}`;
+			document.head.appendChild(styleEl);
+		}
+	} else if (styleEl) {
+		styleEl.remove();
+	}
+
+	return () => { document.getElementById(styleId)?.remove(); };
+}, [category, placeholder, cssProperty, selectedId, getGlobalCSSValue]);
     
     // Auto-apply default value when no saved value exists
     const hasAppliedDefaultSuper = useRef(false);
@@ -269,10 +309,16 @@ useEffect(() => {
     }, [selectedElementData, JSONProperty, cssProperty, value]);
 
 
+
+
     const handleMouseEnter = (tooltipId) => {
-        setActiveTooltip(tooltipId);
+        hoverTimeoutRef.current = setTimeout(() => {
+            setActiveTooltip(tooltipId);
+        }, 500); 
     };
+
     const handleMouseLeave = () => {
+        clearTimeout(hoverTimeoutRef.current);
         setActiveTooltip(null);
     };
 
@@ -323,7 +369,7 @@ useEffect(() => {
         }
     };
     const handleSuperSelectChange = (newValue) => {
-        setSuperSelectValue(newValue);
+        setCurrentSelectValue(newValue);
         if(JSONProperty && applyGlobalJSONChange){
             applyGlobalJSONChange(JSONProperty,newValue);
         }else if (cssProperty && applyGlobalCSSChange) {
@@ -334,7 +380,7 @@ useEffect(() => {
     useLayoutEffect(() => {
         if (!measureRef.current) return;
         setSelectWidth(measureRef.current.offsetWidth + 3);
-    }, [superSelectValue]);
+    }, [getCurrentSelectValue(), placeholder]);
 
     useLayoutEffect(() => {
         if (!wrapMeasureRef.current) return;
@@ -344,7 +390,7 @@ useEffect(() => {
     useLayoutEffect(() => {
         if (!flowMeasureRef.current) return;
         setFlowSelectWidth(flowMeasureRef.current.offsetWidth + 3);
-    }, [selectedFlow, superSelectValue]);
+    }, [selectedFlow, getCurrentSelectValue()]);
 
     useLayoutEffect(() => {
         const onResize = () => {
@@ -372,70 +418,43 @@ useEffect(() => {
     const superJustifyOptions = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'];
     const superAlignOptions = ['flex-start', 'center', 'flex-end', 'stretch'];
 
+    console.log('superSelectValue', getCurrentSelectValue());
     return (
         <React.Fragment key={index}>
-        <div className="tw-builder__settings-setting" key={index}>
-            <span className="tw-builder__settings-subtitle">{name}</span>
-            <div className="tw-builder__settings-select-container">
-                <span
-                    ref={measureRef}
-                    className="tw-builder__settings-select"
-                    aria-hidden
-                    style={{
-                        position: 'absolute',
-                        visibility: 'hidden',
-                        whiteSpace: 'pre',
-                        height: 0,
-                        overflow: 'hidden'
-                    }}
-                >
-                    {superSelectValue || value}
-                </span>
-                <select className="tw-builder__settings-select" value={superSelectValue} onChange={(e) => handleSuperSelectChange(e.target.value)} style={{ width: selectWidth }}>
-                    {category === 'block' && (
-                        <>
-                            <option className="tw-builder__settings-option" value="div">div</option>
-                            <option className="tw-builder__settings-option" value="a">a</option>
-                            <option className="tw-builder__settings-option" value="section">section</option>
-                            <option className="tw-builder__settings-option" value="article">article</option>
-                            <option className="tw-builder__settings-option" value="aside">aside</option>
-                            <option className="tw-builder__settings-option" value="nav">nav</option>
-                            </>
-                            )
-                    }
-                    {category === 'display' && (
-                        <>
-                            <option className="tw-builder__settings-option" value="flex">Flex</option>
-                            <option className="tw-builder__settings-option" value="grid">Grid</option>
-                            <option className="tw-builder__settings-option" value="block">Block</option>
-                            <option className="tw-builder__settings-option" value="inline-block">Inline Block</option>
-                            <option className="tw-builder__settings-option" value="inline">Inline</option>
-                            <option className="tw-builder__settings-option" value="none">None</option>
-                        </>
-                    )}
-                    {category === 'text' && (
-                        <>
-                            <option className="tw-builder__settings-option" value="h1">h1</option>
-                            <option className="tw-builder__settings-option" value="h2">h2</option>
-                            <option className="tw-builder__settings-option" value="h3">h3</option>
-                            <option className="tw-builder__settings-option" value="h4">h4</option>
-                            <option className="tw-builder__settings-option" value="h5">h5</option>
-                            <option className="tw-builder__settings-option" value="h6">h6</option>
-                            <option className="tw-builder__settings-option" value="p">p</option>
-                            <option className="tw-builder__settings-option" value="span">span</option>
-                            <option className="tw-builder__settings-option" value="a">a</option>
-                        </>
-                    )}
-                </select>
-                <span className="tw-builder__settings-arrow">
-                    <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
-                        <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
-                    </svg>
-                </span>
-            </div>
-        </div>
-        {superSelectValue === 'a' && (
+       {category === 'block' && (
+        <SelectType
+        name={name}
+        value={getCurrentSelectValue()}
+        placeholder={placeholder}
+
+        JSONProperty={JSONProperty}
+        applyGlobalJSONChange={applyGlobalJSONChange}
+        getGlobalJSONValue={getGlobalJSONValue}
+        selectedId={selectedId}
+        index={index}
+        options={['div','a','section','article','aside','nav']}
+        />
+       )}
+       {category === 'display' && (
+        <SelectType
+        name={name}
+        value={getCurrentSelectValue()}
+        placeholder={placeholder}
+        cssProperty={cssProperty}  // Añadir esta línea
+        applyGlobalCSSChange={applyGlobalCSSChange}  // Añadir esta línea
+        getGlobalCSSValue={getGlobalCSSValue}  // Añadir esta línea
+        JSONProperty={JSONProperty}
+        applyGlobalJSONChange={applyGlobalJSONChange}
+        getGlobalJSONValue={getGlobalJSONValue}
+        selectedId={selectedId}
+        index={index}
+        options={['flex','grid', 'block', 'inline-block', 'inline', 'none']}
+        onChange={handleSuperSelectChange}
+        defaultValue={placeholder}
+        />
+       )}
+
+        {getCurrentSelectValue() === 'a' && (
            <TextType
            name="Link to"
            value=""
@@ -447,46 +466,23 @@ useEffect(() => {
            index="href"
         />
         )}
-        {superSelectValue === 'flex' && (
+        {(getCurrentSelectValue() === 'flex' || (getCurrentSelectValue() === '' && placeholder === 'flex')) && (
                     <>
+                    <SelectType
+                    name='Wrap'
+                    value={selectedWrap}
+                    placeholder='nowrap'
+                    cssProperty='flex-wrap'
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={index}
+                    options={['nowrap', 'wrap', 'wrap-reverse']}
+                    />
                     <div className="tw-builder__settings-setting">
-                    <span className="tw-builder__settings-subtitle">Wrap</span>
-                    <div className="tw-builder__settings-select-container">
-                    <span
-                    ref={wrapMeasureRef}
-                    className="tw-builder__settings-select"
-                    aria-hidden
-                    style={{
-                        position: 'absolute',
-                        visibility: 'hidden',
-                        whiteSpace: 'pre',
-                        height: 0,
-                        overflow: 'hidden'
-                    }}
-                >
-                    {selectedWrap}
-                </span>
-                    <select 
-                        ref={wrapSelectRef}
-                        className="tw-builder__settings-select"
-                        value={selectedWrap}
-                        onChange={(e) => handleWrapChange(e.target.value)}
-                        style={{ width: wrapSelectWidth }}
-                    >   
-                        <option className="tw-builder__settings-option" value="nowrap">No Wrap</option>
-                        <option className="tw-builder__settings-option" value="wrap">Wrap</option>
-                        <option className="tw-builder__settings-option" value="wrap-reverse">Wrap reverse</option>
-                    </select>
-                    <span className="tw-builder__settings-arrow">
-                            <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
-                                <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
-                            </svg>
-                    </span>
-                    </div>
-                    </div>
-                    <div className="tw-builder__settings-setting">
-                        <span className="tw-builder__settings-subtitle">Direction</span>
+                        <span className="tw-builder__settings-subtitle">Direction
+                            <StylesDeleter value={selectedDirection} cssProperty="flex-direction" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        </span>
                         <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
                             style={{ transform: `translateX(${getSliderPosition(selectedDirection, directionOptions)})`, width: `${getSliderWidth(directionOptions)}` } }
@@ -531,7 +527,9 @@ useEffect(() => {
                         </div>
                     </div>
                     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
-                        <span className="tw-builder__settings-subtitle">Justify</span>
+                        <span className="tw-builder__settings-subtitle">Justify
+                            <StylesDeleter value={selectedJustify} cssProperty="justify-content" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        </span>
                         <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
                             <div className="tw-builder__settings-slider"
                                 style={{ transform: `translateX(${getSliderPosition(selectedJustify, superJustifyOptions)})`, width: `${getSliderWidth(superJustifyOptions)}` } }
@@ -619,7 +617,9 @@ useEffect(() => {
                         </div>
                     </div>
                     <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
-                        <span className="tw-builder__settings-subtitle">Align</span>
+                        <span className="tw-builder__settings-subtitle">Align
+                            <StylesDeleter value={selectedAlign} cssProperty="align-items" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        </span>
                         <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
                             <div className="tw-builder__settings-slider"
                                 style={{ transform: `translateX(${getSliderPosition(selectedAlign, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
@@ -739,7 +739,7 @@ useEffect(() => {
                     />
                     </>
                 )}
-        {superSelectValue === 'grid' && (
+        {getCurrentSelectValue() === 'grid' && (
             <>
         <TextType 
             name="Gap"
@@ -791,59 +791,26 @@ useEffect(() => {
             selectedId={selectedId}
             index="grid-auto-rows"
         />
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Auto flow</span>
-                <div className="tw-builder__settings-select-container">
-                <span
-                    ref={flowSelectRef}
-                    className="tw-builder__settings-select"
-                    aria-hidden
-                    style={{
-                        position: 'absolute',
-                        visibility: 'hidden',
-                        whiteSpace: 'pre',
-                        height: 0,
-                        overflow: 'hidden'
-                    }}
-                >
-                    {selectedFlow}
-                </span>
-                <span
-                    ref={flowMeasureRef}
-                    className="tw-builder__settings-select"
-                    aria-hidden
-                    style={{
-                        position: 'absolute',
-                        visibility: 'hidden',
-                        whiteSpace: 'pre',
-                        height: 0,
-                        overflow: 'hidden'
-                    }}
-                >
-                    {selectedFlow}
-                </span>
-                <select 
-                    ref={flowSelectRef}
-                    className="tw-builder__settings-select"
-                    value={selectedFlow}
-                    onChange={(e) => handleFlowSelectChange(e.target.value)}
-                    style={{ width: flowSelectWidth }}
-                >
-                    <option className="tw-builder__settings-option" value="row">Row</option>
-                    <option className="tw-builder__settings-option" value="column">Column</option>
-                    <option className="tw-builder__settings-option" value="dense">Dense</option>
-                </select>
-                <span className="tw-builder__settings-arrow">
-                    <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
-                            <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
-                        </svg>
-                    </span>
-                </div>
-            </div>
+            <SelectType
+            name='Auto flow'
+            value={selectedFlow}
+            placeholder='row'
+            cssProperty='grid-auto-flow'
+            selectedId={selectedId}
+            index='grid-auto-flow'
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            options={['row', 'column', 'dense',]}
+            />
             <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
-                <span className="tw-builder__settings-subtitle">Justify</span>
+                <span className="tw-builder__settings-subtitle">Justify
+                    <StylesDeleter value={selectedJustify} cssProperty="justify-content" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                </span>
                 <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
+                            <div className="tw-builder__settings-slider"
+                                style={{ transform: `translateX(${getSliderPosition(selectedJustify, superJustifyOptions)})`, width: `${getSliderWidth(superJustifyOptions)}` } }
+                            >
+                            </div>
                     <button className={`tw-builder__settings-action ${selectedJustify === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('flex-start')} onMouseEnter={() => handleMouseEnter('jstart')} onMouseLeave={handleMouseLeave}>
                         <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
@@ -926,8 +893,14 @@ useEffect(() => {
                 </div>
             </div>
             <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
-                <span className="tw-builder__settings-subtitle">Align</span>
+                <span className="tw-builder__settings-subtitle">Align
+                    <StylesDeleter value={selectedAlign} cssProperty="align-items" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                </span>
                 <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
+                        <div className="tw-builder__settings-slider"
+                                style={{ transform: `translateX(${getSliderPosition(selectedAlign, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
+                            >
+                            </div>
                     <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')} onMouseEnter={() => handleMouseEnter('astart')} onMouseLeave={handleMouseLeave}>
                         <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
@@ -992,7 +965,7 @@ useEffect(() => {
             />
             </>
         )}
-        {(superSelectValue === 'block' || superSelectValue === 'inline-block' || superSelectValue === 'inline') && (
+        {(getCurrentSelectValue() === 'block' || getCurrentSelectValue() === 'inline-block' || getCurrentSelectValue() === 'inline') && (
             <div className="tw-builder__settings-setting">
                 <span className="tw-builder__settings-subtitle">Order</span>
                 <input type="text" className="tw-builder__settings-input" placeholder="0" />
@@ -2076,7 +2049,7 @@ const displayValue = hasDefaultText ? "" : textareaValue;
         </div>
     )
 }
-const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId}) =>{
+const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, defaultValue}) =>{
     const fontWeightMap = {
         'Thin': '100',
         'Extra Light': '200', 
@@ -2184,6 +2157,9 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
         }
+        if(onChange) {
+            onChange(newValue);
+        }
     };
 
     // Combine options for Weight
@@ -2194,8 +2170,21 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-                <StylesDeleter value={selected} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} 
-                    onDelete={() => setSelected(value || '')}
+                <StylesDeleter
+                    value={selected}
+                    cssProperty={cssProperty}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    JSONProperty={JSONProperty}
+                    getGlobalJSONValue={getGlobalJSONValue}
+                    applyGlobalJSONChange={applyGlobalJSONChange}
+                    cssDeleteBatch={name === 'Weight' ? { [cssProperty]: '', 'font-style': '' } : undefined}
+                    onDelete={() => {
+                        setSelected(''); // Dejar vacío para mostrar placeholder
+                        if (onChange) {
+                            onChange(''); // Notificar al SuperSelectType
+                        }
+                    }}
                 />
             
             </span>
@@ -2205,7 +2194,15 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 onClick={() => setOpen(!open)}
                 className="tw-builder__settings-select"
             >
-                {selected || value}
+                {selected ? 
+                <span className="tw-builder__settings-select-value">
+                {selected}
+                </span>
+                :
+                <span className="tw-builder__settings-select-placeholder">
+                {placeholder}
+                </span>
+                }
             </button>
             <span className="tw-builder__settings-arrow">
                     <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2555,9 +2552,27 @@ const parseRadius = useCallback((radiusStr) => {
 
     return (
         <div className="tw-builder__settings-setting" key={index}>
-            <span className="tw-builder__settings-subtitle">{name}
-                
-            </span>
+        <span className="tw-builder__settings-subtitle">{name}
+            <StylesDeleter 
+                value={currentBorderWidth || currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth || getGlobalCSSValue?.('border-style') || getGlobalCSSValue?.('border-color') || currentRadius || currentBorderTopLeftRadius || currentBorderTopRightRadius || currentBorderBottomRightRadius || currentBorderBottomLeftRadius}
+                cssDeleteBatch={{
+                    'border-width': '',
+                    'border-top-width': '',
+                    'border-right-width': '',
+                    'border-bottom-width': '',
+                    'border-left-width': '',
+                    'border-style': '',
+                    'border-color': '',
+                    'border-radius': '',
+                    'border-top-left-radius': '',
+                    'border-top-right-radius': '',
+                    'border-bottom-right-radius': '',
+                    'border-bottom-left-radius': ''
+                }}
+                getGlobalCSSValue={getGlobalCSSValue} 
+                applyGlobalCSSChange={applyGlobalCSSChange} 
+            />
+        </span>
             <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
                 <span className="tw-builder__settings-pen" onClick={toggleOpen}>
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2863,9 +2878,7 @@ const BoxShadowType = ({name, index, cssProperty, applyGlobalCSSChange, getGloba
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-                <StylesDeleter value={currentShadow} cssProperty="box-shadow" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} 
-
-                />
+                <StylesDeleter value={currentShadow} cssProperty="box-shadow" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange}/>
             </span>
             <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
                 <span className="tw-builder__settings-pen" onClick={toggleOpen}>
@@ -2954,6 +2967,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
+    const [activeClass, setActiveClass] = useState(null);
 
     //spreads the properties of the selected element
     useEffect(() => {
@@ -3012,26 +3026,35 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 
      const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
         if (!selectedId || !cssPropertyOrObject) return;
-    
+
+        const type = activeClass ? 'class' : 'id';
+        const selector = activeClass ? activeClass : selectedId;
+
         if (typeof cssPropertyOrObject === "string") {
 
-            addCSSProperty("id", selectedId, cssPropertyOrObject, value);
+            addCSSProperty(type, selector, cssPropertyOrObject, value);
         } else if (
             typeof cssPropertyOrObject === "object" &&
             cssPropertyOrObject !== null
         ) {
 
-            addCSSProperty("id", selectedId, cssPropertyOrObject);
+            addCSSProperty(type, selector, cssPropertyOrObject);
         }
-    }, [selectedId, addCSSProperty, JSONtree]);
+    }, [selectedId, addCSSProperty, JSONtree, activeClass]);
     
 
      const getGlobalCSSValue = useCallback((cssProperty) => {
+        if(!cssProperty) return null;
         if(!selectedId || !cssProperty) return null;
+
+        if(activeClass) {
+            const classData = JSONtree.classesCSSData.find(item => item.className === activeClass);
+            return classData?.properties?.[cssProperty] || null;
+        }
     
         const elementData = JSONtree.idsCSSData.find(item => item.id === selectedId);
         return elementData?.properties?.[cssProperty] || null;
-     }, [JSONtree, selectedId]);
+     }, [JSONtree, selectedId, activeClass]);
 
      const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
 
@@ -3111,7 +3134,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>
             <div className="tw-builder__settings-header">
-                <BuilderClasses selectedId={selectedId} showNotification={showNotification}/>
+                <BuilderClasses selectedId={selectedId} showNotification={showNotification} externalActiveClass={activeClass} onActiveClassChange={setActiveClass}/>
                 {control.header && control.header.map((item, index) => whatType(item, index))}
             </div>
             <div className="tw-builder__settings-body">

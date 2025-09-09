@@ -335,3 +335,9 @@
 .tw-builder__settings-image-input{
     display: none;
 }
+.tw-builder__settings-select-placeholder{
+    color: var(--shadow-color);
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}

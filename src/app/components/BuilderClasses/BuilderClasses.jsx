@@ -4,7 +4,7 @@ import { useCanvas } from "@contexts/CanvasContext";
 
 
 
-export default function BuilderClasses({selectedId,showNotification}) {
+export default function BuilderClasses({selectedId,showNotification,externalActiveClass,onActiveClassChange}) {
     const [isOpen, setIsOpen] = useState(false);
     
     const [newClass, setNewClass] = useState("");
@@ -12,6 +12,18 @@ export default function BuilderClasses({selectedId,showNotification}) {
     const [activeClass, setActiveClass] = useState(null);
     const {addClass,JSONtree,activeRoot,removeClass} = useCanvas();
     const poolRef = useRef(null);
+
+    useEffect(() => {
+        if(typeof externalActiveClass !== 'undefined' && externalActiveClass !== activeClass) {
+            setActiveClass(externalActiveClass);
+        }
+    }, [externalActiveClass]);
+
+    useEffect(() => {
+        if(typeof onActiveClassChange === 'function' && externalActiveClass !== activeClass) {
+            onActiveClassChange(activeClass);
+        }
+    }, [activeClass]);
 
     //Function to find the element in the JSON tree
     const findElement = (node, targetId) => {
