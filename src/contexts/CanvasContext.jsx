@@ -561,7 +561,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Text",
                 text: "New Text 2",
                 classList: ["tw-text"],
-                defaultCSS: { 'color': '#000000', 'width': 'fit-content', 'min-width': 'fit-content' },
+                defaultCSS: {'width': 'fit-content', 'min-width': 'fit-content' },
             },
             'accept-all': {
                 elementType: "button",

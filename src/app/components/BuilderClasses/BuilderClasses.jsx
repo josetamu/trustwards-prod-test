@@ -159,7 +159,8 @@ useEffect(() => {
                         setActiveClass(className);
                     }}>
                         <span className="tw-builder__settings-class-name">.{className}</span>
-                        <span className="tw-builder__settings-class-remove" onClick={() => {
+                        <span className="tw-builder__settings-class-remove" onClick={(e) => {
+                            e.stopPropagation();
                             eliminateClass(className);
                         }}>x</span>
                     </div>

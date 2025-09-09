@@ -1136,7 +1136,7 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
             setColor(newValues.color);
             setHex(newValues.hex);
             setPercentage(newValues.percentage);
-        }, [selectedElementData]); 
+        }, [selectedElementData,getSavedValue]); 
 
     //Function to convert hex to rgba with opacity
     const hexToRgba = (hex, opacity) => {
@@ -2104,23 +2104,38 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     }, [open]);
 
     // Update when selected element changes
+    // Update when selected element or layer values change
     useEffect(() => {
         if (!selectedId) return;
+
         if (JSONProperty && getGlobalJSONValue) {
             const savedValue = getGlobalJSONValue(JSONProperty);
-            if (savedValue !== selected) setSelected(savedValue || value || '');
-        } else if (getGlobalCSSValue && cssProperty) {
-            const savedValue = getGlobalCSSValue(cssProperty);
-            if (savedValue && savedValue !== selected) {
-                if (name === 'Weight') {
-                    setSelected(fontWeightMapReverse()[savedValue] || savedValue || value || '');
-                } else {
-                    setSelected(savedValue || value || '');
+            const next = savedValue ?? '';
+            if (next !== selected) setSelected(next);
+            return;
+        }
+
+        if (getGlobalCSSValue && cssProperty) {
+            if (name === 'Weight') {
+                const cssValue = getGlobalCSSValue(cssProperty);
+                const fontStyle = getGlobalCSSValue('font-style');
+                let nextLabel = fontWeightMapReverse()[cssValue] || cssValue || '';
+
+                if (fontStyle === 'italic' && nextLabel) {
+                    const italicOption = `${nextLabel} Italic`;
+                    if (options2 && options2.includes(italicOption)) {
+                        nextLabel = italicOption;
+                    }
                 }
+
+                if ((nextLabel || '') !== selected) setSelected(nextLabel || '');
+            } else {
+                const savedValue = getGlobalCSSValue(cssProperty);
+                const next = savedValue ?? '';
+                if (next !== selected) setSelected(next);
             }
         }
-    }, [selectedId, JSONProperty, cssProperty, value]);
-
+    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue, options2]);
     // Handle select change with global CSS or JSON application
     const handleSelectChange = (e) => {
         const newValue = e;
@@ -3043,18 +3058,17 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     }, [selectedId, addCSSProperty, JSONtree, activeClass]);
     
 
-     const getGlobalCSSValue = useCallback((cssProperty) => {
-        if(!cssProperty) return null;
+    const getGlobalCSSValue = useCallback((cssProperty) => {
         if(!selectedId || !cssProperty) return null;
-
+    
         if(activeClass) {
             const classData = JSONtree.classesCSSData.find(item => item.className === activeClass);
-            return classData?.properties?.[cssProperty] || null;
+            return classData?.properties?.[cssProperty] ?? null;
         }
     
-        const elementData = JSONtree.idsCSSData.find(item => item.id === selectedId);
-        return elementData?.properties?.[cssProperty] || null;
-     }, [JSONtree, selectedId, activeClass]);
+        const idData = JSONtree.idsCSSData.find(item => item.id === selectedId);
+        return idData?.properties?.[cssProperty] ?? null;
+    }, [JSONtree, selectedId, activeClass]);
 
      const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
 
