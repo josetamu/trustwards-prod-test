@@ -30,3 +30,7 @@
 .tw-builder__settings-deleter:hover .tw-builder__settings-deleter-point{
     display: none;
 } 
+
+.tw-builder__settings-pen-body .tw-builder__settings-deleter{
+    display: none;
+}
