@@ -83,6 +83,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   --website-letter-spacing-normal: -0.04em;
   --website-letter-spacing-tight: -0.05em;
 
+  /* Website - Focus */
+  --focus-outline-dashed: 1px dashed #0099FE;
+  --focus-outline-solid: 2px solid #ff2676;
+
   /* 
    =======================
           DASHBOARD
@@ -341,13 +345,13 @@ html[data-theme="dark"] {
   --website-form-background: #EEEEEE;
   --website-form-text-color: #979797;
 
-    /* Website - Menu */
-    --website-menu-border-strong-color: #303030;
-    --website-menu-text-strong-color: #F0F0F0;
-    --website-menu-icon-strong-color: #FFFFFF;
-    --website-menu-icon-background: #555555;
-    --website-menu-icon-background-hover: #FFFFFF59;
-    --website-menu-background: rgba(41, 41, 41, 0.80);
+  /* Website - Menu */
+  --website-menu-border-strong-color: #303030;
+  --website-menu-text-strong-color: #F0F0F0;
+  --website-menu-icon-strong-color: #FFFFFF;
+  --website-menu-icon-background: #555555;
+  --website-menu-icon-background-hover: #FFFFFF59;
+  --website-menu-background: rgba(41, 41, 41, 0.80);
 
 
   /* 

@@ -1,0 +1,30 @@
+/* Banner component styles */
+.tw-banner {
+  background: var(--website-banner-gradient);
+  display: flex;
+  justify-content: center;
+  padding: 5px 20px;
+  width: 100%;
+  height: auto;
+  position: relative;
+}
+
+.tw-banner__inner {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tw-banner {
+    padding: 3px 15px;
+  }
+  
+  .tw-banner__inner {
+    gap: 3px;
+  }
+}
