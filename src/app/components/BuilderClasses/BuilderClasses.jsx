@@ -13,12 +13,14 @@ export default function BuilderClasses({selectedId,showNotification,externalActi
     const {addClass,JSONtree,activeRoot,removeClass} = useCanvas();
     const poolRef = useRef(null);
 
+    //If the externalActiveClass(given by the control component) is set, set the active class to it
     useEffect(() => {
         if(typeof externalActiveClass !== 'undefined' && externalActiveClass !== activeClass) {
             setActiveClass(externalActiveClass);
         }
     }, [externalActiveClass]);
 
+    //sync when activeClass changes caused by externalActiveClass. Avoid infinite loop.
     useEffect(() => {
         if(typeof onActiveClassChange === 'function' && externalActiveClass !== activeClass) {
             onActiveClassChange(activeClass);

@@ -12,17 +12,20 @@ import { StylesDeleter } from '../StylesDeleter/StylesDeleter';
 
 
 
-//This component is the master component for all the controls. It is used to render the controls for the selected element.
+
+//Define each type of control.
 
 const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
-    
+    //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
         const savedValue = savedJSONValue || savedCSSValue;
 
 
+        //If nothing is saved, use the value.
         if (!savedValue && value) {
+            //Set the value after 0ms to avoid infinite loop.
             setTimeout(() => {
                 if (JSONProperty && applyGlobalJSONChange) {
                     applyGlobalJSONChange(JSONProperty, value);
@@ -34,6 +37,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         return savedValue || value || '';
     });
 
+    //Update the value when the selected element changes
     useEffect(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
@@ -44,13 +48,14 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
 
-
+    //Permit change input value
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextValue(newValue);
     
     };
 
+    //OnBlur the value is applied and saved in jsonTree
     const handleBlur = (e) => {
         const inputValue = e.target.value;
         if(JSONProperty && applyGlobalJSONChange) {
@@ -78,102 +83,8 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         </div>
     )
 }
-
-/* const SelectType = ({name, value, options, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange}) => {
-
-    // Initialize with saved value from global CSS system
-    const [selectValue, setSelectValue] = useState(() => {
-        if(JSONProperty && getGlobalJSONValue) {
-            return getGlobalJSONValue(JSONProperty) || value || '';
-        } 
-        return getGlobalCSSValue?.(cssProperty) || value || '';
-    });
-    
-    const measureRef = useRef(null);
-    const [selectWidth, setSelectWidth] = useState(undefined);
-
-    // Update when selected element changes
-    useEffect(() => {
-        if (JSONProperty && getGlobalJSONValue) {
-            const savedValue = getGlobalJSONValue(JSONProperty);
-            setSelectValue(savedValue || value || '');
-        } else if (getGlobalCSSValue && cssProperty) {
-            const savedValue = getGlobalCSSValue(cssProperty);
-            setSelectValue(savedValue || value || '');
-        }
-    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
-
-    useLayoutEffect(() => {
-        if (!measureRef.current) return;    
-        setSelectWidth(measureRef.current.offsetWidth + 4);
-    }, [selectValue, options]);
-
-    useLayoutEffect(() => {
-        const onResize = () => {
-            if (!measureRef.current) return;
-            setSelectWidth(measureRef.current.offsetWidth + 4);
-        };
-        window.addEventListener('resize', onResize);
-        onResize();
-        return () => window.removeEventListener('resize', onResize);
-    }, []);
-
-    // Handle select change with global CSS or JSON application
-    const handleSelectChange = (e) => {
-        const newValue = e.target.value;
-        setSelectValue(newValue);
-        
-        // Apply to global JSON system if JSONProperty is provided
-        if (JSONProperty && applyGlobalJSONChange) {
-            applyGlobalJSONChange(JSONProperty, newValue);
-        }
-        // Apply to global CSS system if cssProperty is provided
-        else if (cssProperty && applyGlobalCSSChange) {
-            applyGlobalCSSChange(cssProperty, newValue);
-        }
-    };
-    return (
-        <div className="tw-builder__settings-setting" key={index}>
-            <span className="tw-builder__settings-subtitle">{name}</span>
-            <div className="tw-builder__settings-select-container">
-                <span
-                    ref={measureRef}
-                    className="tw-builder__settings-select"
-                    aria-hidden
-                    style={{
-                        position: 'absolute',
-                        visibility: 'hidden',
-                        whiteSpace: 'pre',
-                        height: 0,
-                        overflow: 'hidden'
-                    }}
-                >
-                    {selectValue || value}
-                </span>
-
-                <select
-                    className="tw-builder__settings-select"
-                    style={{ width: selectWidth }}
-                    value={selectValue}
-                    onChange={handleSelectChange}
-                >
-                    {options.map((option, i) => (
-                        <option key={i} value={option}>{option}</option>
-                    ))}
-                </select>
-
-                <span className="tw-builder__settings-arrow">
-                    <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
-                        <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
-                    </svg>
-                </span>
-            </div>
-        </div>
-    );
-}; */
-
 const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder}) => {
+    //At this point we have two superselects. One is for the block with the tags, and the other is for the display with the display properties.
     const [blockSelectValue, setBlockSelectValue] = useState(() => {
         if (category === 'block') {
             const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -190,13 +101,14 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
         return '';
     });
     
-    // Función helper para obtener el valor correcto según la categoría
+    //function to get the correct value depending on the category
     const getCurrentSelectValue = () => {
         if (category === 'block') return blockSelectValue;
         if (category === 'display') return displaySelectValue;
         return '';
     };
     
+    //function to set the correct value depending on the category
     const setCurrentSelectValue = (value) => {
         if (category === 'block') setBlockSelectValue(value);
         if (category === 'display') setDisplaySelectValue(value);
@@ -204,11 +116,9 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     const measureRef = useRef(null);
     const wrapMeasureRef = useRef(null);
     const flowMeasureRef = useRef(null);
-    const [selectWidth, setSelectWidth] = useState(undefined);
-    const [wrapSelectWidth, setWrapSelectWidth] = useState(undefined);
-    const [flowSelectWidth, setFlowSelectWidth] = useState(undefined);
 
-    const wrapSelectRef = useRef(null);
+
+
     const [selectedWrap, setSelectedWrap] = useState(() =>{
         return getGlobalCSSValue?.('flex-wrap') || 'wrap';
     });
@@ -228,10 +138,11 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     const [selectedFlow, setSelectedFlow] = useState(() => {
         return getGlobalCSSValue?.('grid-auto-flow') || 'row';
     });
-    const flowSelectRef = useRef(null);
+
     const [activeTooltip, setActiveTooltip] = useState(null);
     const hoverTimeoutRef = useRef(null);
-// Update when selected element changes
+
+// Update every state when selected element changes
 useEffect(() => {
     if(!selectedElementData) return;
 
@@ -258,59 +169,8 @@ useEffect(() => {
     setSelectedFlow(getGlobalCSSValue?.('grid-auto-flow') || '');
 }, [selectedId,selectedElementData, getGlobalCSSValue, cssProperty, value, getGlobalJSONValue, JSONProperty]);
 
-useEffect(() => {
-	if (category !== 'display' || placeholder !== 'flex' || !selectedId) return;
-	const hasDisplay = !!getGlobalCSSValue?.(cssProperty);
-	const styleId = `tw-preview-display-${selectedId}`;
-	let styleEl = document.getElementById(styleId);
 
-	if (!hasDisplay) {
-		if (!styleEl) {
-			styleEl = document.createElement('style');
-			styleEl.id = styleId;
-			styleEl.textContent = `#${selectedId}{display:flex;}`;
-			document.head.appendChild(styleEl);
-		}
-	} else if (styleEl) {
-		styleEl.remove();
-	}
-
-	return () => { document.getElementById(styleId)?.remove(); };
-}, [category, placeholder, cssProperty, selectedId, getGlobalCSSValue]);
-    
-    // Auto-apply default value when no saved value exists
-    const hasAppliedDefaultSuper = useRef(false);
-    
-    useEffect(() => {
-        // Reset flag when selectedId changes
-        hasAppliedDefaultSuper.current = false;
-    }, [selectedId]);
-    
-    useEffect(() => {
-        // Solo ejecutar si selectedElementData está disponible y no hemos aplicado el default
-        if (!selectedElementData || hasAppliedDefaultSuper.current) return;
-        
-        let savedValue = null;
-
-        if(JSONProperty && getGlobalJSONValue) {
-            savedValue = getGlobalJSONValue(JSONProperty);
-        } else if (cssProperty && getGlobalCSSValue) {
-            savedValue = getGlobalCSSValue(cssProperty);
-        }
-
-        if (!savedValue && value) {
-            hasAppliedDefaultSuper.current = true;
-            if (JSONProperty && applyGlobalJSONChange) {
-                applyGlobalJSONChange(JSONProperty, value);
-            } else if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(cssProperty, value);
-            }
-        }
-    }, [selectedElementData, JSONProperty, cssProperty, value]);
-
-
-
-
+    //Active and desactive tooltip with hover. Also have a .5'' delay
     const handleMouseEnter = (tooltipId) => {
         hoverTimeoutRef.current = setTimeout(() => {
             setActiveTooltip(tooltipId);
@@ -324,6 +184,7 @@ useEffect(() => {
 
 
 
+    //Handle the chooseType controls
 
     const handleDirectionChange = (direction) => {
         setSelectedDirection(direction);
@@ -338,12 +199,7 @@ useEffect(() => {
             applyGlobalCSSChange('justify-content', justify);
         }
     };
-    const handleFlowSelectChange = (flow) => {
-        setSelectedFlow(flow);
-        if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('grid-auto-flow', flow);
-        }
-    };
+
     const handleReverseChange = () => {
         const newReverse = !isReverse;
         setIsReverse(newReverse);
@@ -362,12 +218,7 @@ useEffect(() => {
             applyGlobalCSSChange('align-items', align);
         }
     };
-    const handleWrapChange = (wrap) => {
-        setSelectedWrap(wrap);
-        if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('flex-wrap', wrap);
-        }
-    };
+
     const handleSuperSelectChange = (newValue) => {
         setCurrentSelectValue(newValue);
         if(JSONProperty && applyGlobalJSONChange){
@@ -377,43 +228,18 @@ useEffect(() => {
         }
     };
 
-    useLayoutEffect(() => {
-        if (!measureRef.current) return;
-        setSelectWidth(measureRef.current.offsetWidth + 3);
-    }, [getCurrentSelectValue(), placeholder]);
 
-    useLayoutEffect(() => {
-        if (!wrapMeasureRef.current) return;
-        setWrapSelectWidth(wrapMeasureRef.current.offsetWidth + 7);
-    }, [selectedWrap]);
-
-    useLayoutEffect(() => {
-        if (!flowMeasureRef.current) return;
-        setFlowSelectWidth(flowMeasureRef.current.offsetWidth + 3);
-    }, [selectedFlow, getCurrentSelectValue()]);
-
-    useLayoutEffect(() => {
-        const onResize = () => {
-            if (!measureRef.current) return;
-            setSelectWidth(measureRef.current.offsetWidth + 3);
-            if (!wrapMeasureRef.current) return;
-            setWrapSelectWidth(wrapMeasureRef.current.offsetWidth + 7);
-            if (!flowMeasureRef.current) return;
-            setFlowSelectWidth(flowMeasureRef.current.offsetWidth + 3);
-        };
-        window.addEventListener('resize', onResize);
-        onResize();
-        return () => window.removeEventListener('resize', onResize);
-    }, []);
-
+//This is the % that the transform will take to move the slider in the choose
     const getSliderPosition = (selectedValue, options) => {
         const index = options.indexOf(selectedValue);
         return index >= 0 ? `${index * 100}%` : '0%';
     };
+    //As chooseType have different number of selections, the slider width changes
     const getSliderWidth = (options) => {
         return `calc(${100 / options.length}% - ${100 / options.length / 100 * 6}px)`;
     };
 
+    //Declare the options
     const directionOptions = ['column','row','']
     const superJustifyOptions = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'];
     const superAlignOptions = ['flex-start', 'center', 'flex-end', 'stretch'];
@@ -974,8 +800,8 @@ useEffect(() => {
         </React.Fragment>
     )
 }
-
 const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+    //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
         const saved = getGlobalCSSValue?.(`${cssProperty}-top`);
         return saved || '';
@@ -996,6 +822,7 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         return saved || '';
     });
 
+    //Update values when dependencies changes, like the element selected
     useEffect(() => {
         if(!getGlobalCSSValue || !cssProperty) return;
         setTopValue(getGlobalCSSValue?.(`${cssProperty}-top`) || '');
@@ -1004,25 +831,8 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         setLeftValue(getGlobalCSSValue?.(`${cssProperty}-left`) || '');
     }, [selectedElementData, getGlobalCSSValue, cssProperty]);
 
-        // Función para procesar valores con unidades (igual que en TextType)
-/*         const processValueForCSS = (inputValue) => {
-            if (!autoUnit || !inputValue) return inputValue;
-            const trimmedValue = inputValue.trim();
-            const validUnits = ['px', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', '%', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'fr'];
-            const numberWithTextRegex = /^(-?\d*\.?\d+)(.*)$/;
-            const match = trimmedValue.match(numberWithTextRegex);
-            
-            if (match) {
-                const [, numberPart, unitPart] = match;
-                if (!unitPart || !validUnits.includes(unitPart)) {
-                    return `${numberPart}${autoUnit}`;
-                }
-                return trimmedValue;
-            }
-            return inputValue;
-        }; */
-    
-        // Handlers para cada input
+  
+        //handlers for each side. HandleChange alows to modify the value and Blurs set the style in the jsonTree and aplied it to the element
         const handleTopChange = (e) => {
             const newValue = e.target.value;
             setTopValue(newValue);
@@ -1092,10 +902,14 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
 
     const colorInputRef = useRef(null);
 
+    //Function to get the color from jsonTree
     const getSavedValue = useCallback(() => {
+        //Store the color
         const savedValue = getGlobalCSSValue?.(cssProperty);
+        //If there is no color return blank
         if(!savedValue) return { color: ``, hex: ``, percentage: `` };
 
+        //If the color start with rgba, parse it and transform to hexadecimal
         if(savedValue.startsWith('rgba(')) {
             const rgbaMatch = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
             if(rgbaMatch) {
@@ -1109,6 +923,7 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
                     percentage: `${opacityPercent}%`
                 };
             }
+            //If it is in hex format, just uppercase the color and remove #
         } else if(savedValue.startsWith('#')) {
             return {
                 color: savedValue,
@@ -1119,6 +934,7 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         return { color: ``, hex: ``, percentage: `` };
     }, [getGlobalCSSValue, cssProperty]);
     
+    //Function to convert rgb to hex
     const rgbToHex = (r, g, b) => {
         return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     };
@@ -1166,7 +982,7 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
             applyGlobalCSSChange(cssProperty, finalValue);
         }
     };
-    // Agregar timeout ref para el color
+    // Timeout ref for the color
     const colorTimeoutRef = useRef(null);
 
     //Function to change the color
@@ -1177,18 +993,18 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         setColor(newColor);
         setHex(newColor.replace('#', '').toUpperCase());
         
-        // Limpiar timeout anterior si existe
+        // Clear previous timeout if exists
         if (colorTimeoutRef.current) {
             clearTimeout(colorTimeoutRef.current);
         }
         
-        // Aplicar CSS después de 300ms de inactividad
+        // Apply CSS after 100ms of inactivity
         colorTimeoutRef.current = setTimeout(() => {
             applyCSSChange(newColor, percentage);
         }, 100);
     }, [percentage, applyCSSChange]);
 
-    // Limpiar timeout al desmontar
+    // Clear timeout when unmounting
     useEffect(() => {
         return () => {
             if (colorTimeoutRef.current) {
@@ -1294,16 +1110,20 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     const [errors, setErrors] = useState({});
     const [isUploading, setIsUploading] = useState(false);
 
+    //Update the image when the selected element changes
     useEffect(() => {
         const savedValue = getGlobalJSONValue?.(JSONProperty);
+        //Store the default image source
         const defaultImage = "/assets/builder-default-image.svg";
 
         if (savedValue) {
+            //If the image is default, set it to null
             if (savedValue === defaultImage) {
                 setImage(null);
                 setImageUrl('');
                 return;
             }
+            //If the image is an url, set it to the url
             if (savedValue.startsWith('http')) {
                 setImageUrl(savedValue);
                 setImage(savedValue);
@@ -1316,6 +1136,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
         }
     }, [getGlobalJSONValue, JSONProperty]);
 
+    //Function to upload the image in the supabase bucket and update the image url in the jsonTree
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if(!file) return;
@@ -1352,6 +1173,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
                 .from('Builder')
                 .getPublicUrl(fileName);
     
+            //Set the image and the image url
             setImage(publicUrl);
             setImageUrl(publicUrl);
             applyGlobalJSONChange?.(JSONProperty, publicUrl);
@@ -1363,10 +1185,12 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             setIsUploading(false);
         }
     };
+    //Function to change the image url
     const handleUrlChange = (e) => {
         const url = e.target.value;
         setImageUrl(url);
     };
+    //Function to save and apply the image url by enter or blur
     const handleUrlSubmit = (e) => {
         if (e.key === 'Enter' || e.type === 'blur') {
             const url = imageUrl.trim();
@@ -1442,7 +1266,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         }
     }, [getGlobalCSSValue, cssProperty, category]);
 
-    // Mostrar el tooltip solo si el usuario está 1s en hover
+    // Tooltip hover trigger with delay
     const hoverTimeoutRef = useRef(null);
 
     const handleMouseEnter = (tooltipId) => {
@@ -1456,17 +1280,21 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         setActiveTooltip(null);
     };
 
+    //Function to apply the correct css
     const handleChooseChange = useCallback((choose) => {
         setSelectedChoose(choose);
         if (cssProperty && applyGlobalCSSChange) {
             let finalValue = choose;
+            //If reverse is active row === row-reverse, and column === column-reverse
             if(category === 'flex-direction' && isReverse) {
                 finalValue = choose === 'row'? 'row-reverse' : 'column-reverse';
             }
+            //Global function to apply and saved css
             applyGlobalCSSChange(cssProperty, finalValue);
         }
     }, [cssProperty, applyGlobalCSSChange, category, isReverse]);
 
+    //Handle the reverse choose
     const handleReverseToggle = useCallback(() => {
         const newReverse = !isReverse;
         setIsReverse(newReverse);
@@ -1480,6 +1308,8 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         }
     }, [isReverse, cssProperty, applyGlobalCSSChange, selectedChoose]);
 
+
+    //Calc the transform and the width of the slider
     const getSliderPosition = (selectedValue, options) => {
         const index = options.indexOf(selectedValue);
         return index >= 0 ? `${index * 100}%` : '0%';
@@ -1978,9 +1808,11 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     }
 }
 const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value}) => {
+    //Initial state with jsonTree
     const [textareaValue, setTextareaValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         
+        //Treat New Text 2(Default text) like empty string
         if (savedJSONValue === "New Text 2") {
             return '';
         }
@@ -1993,11 +1825,16 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
             }, 0);
         }
         return savedJSONValue || value || '';
+
     });
+
+    //State to check if the text is default
     const [hasDefaultText, setHasDefaultText] = useState(false);
 
+    //Update the value when the selected element changes
     useEffect(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;    
+        //If value is default, textarea is empty
             if (savedJSONValue === "New Text 2") {
                 setTextareaValue('');
             }else{
@@ -2013,7 +1850,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
             setHasDefaultText(false);
         }
         
-        // Si el texto está vacío, usar el valor predeterminado
+        
         const finalValue = newValue.trim() === '' ? '' : newValue;
         
         if(JSONProperty && applyGlobalJSONChange) {
@@ -2023,6 +1860,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     const handleBlur = (e) => {
         const inputValue = e.target.value;
         
+        //If the text is empty, use the default text
         if (inputValue.trim() === '') {
             const defaultText = "New Text 2";
             setHasDefaultText(true);
@@ -2031,7 +1869,9 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
             } 
         }
     };
+    //If the text is default, display empty
 const displayValue = hasDefaultText ? "" : textareaValue;
+   
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
             <span className="tw-builder__settings-subtitle">{name}
@@ -2049,7 +1889,9 @@ const displayValue = hasDefaultText ? "" : textareaValue;
         </div>
     )
 }
-const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, defaultValue}) =>{
+const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange}) =>{
+    
+    //Object to map the font weight to the css value
     const fontWeightMap = {
         'Thin': '100',
         'Extra Light': '200', 
@@ -2061,23 +1903,26 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         'Extra Bold': '800',
         'Black': '900'
     };
+    //Object to map the css value to the font weight
     const fontWeightMapReverse = () => 
         Object.fromEntries(
             Object.entries(fontWeightMap).map(([key, value]) => [value, key])
         )
+    //State to store the selected value
     const [selected, setSelected] = useState(() => {
         if(JSONProperty && getGlobalJSONValue) {
             return getGlobalJSONValue(JSONProperty) || value || '';
         } 
+        //If the name is Weight, get the css value and the font style
         if (name === 'Weight' && getGlobalCSSValue && cssProperty) {
             const cssValue = getGlobalCSSValue(cssProperty);
             const fontStyle = getGlobalCSSValue('font-style');
-            console.log('fontStyle', fontStyle);
-            console.log('cssValue', cssValue);
+
+            //If the font style is italic, get the weight name and the italic option
             if (fontStyle === 'italic') {
                 const weightName = fontWeightMapReverse()[cssValue];
                 const italicOption = `${weightName} Italic`;
-                // Verificar si existe en options2
+                //If the italic option exists in options2, return it
                 if (options2 && options2.includes(italicOption)) {
                     return italicOption;
                 }
@@ -2091,7 +1936,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     const [open, setOpen] = useState(false);
     const containerRef = useRef(null);
     
-
+    //Close the select when clicking outside
     useEffect(() => {
         if (!open) return;
         const handleClickOutside = (e) => {
@@ -2140,6 +1985,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     const handleSelectChange = (e) => {
         const newValue = e;
         setSelected(newValue);
+        //If the name is Weight, apply the font weight and the font style
         if(name === 'Weight') {
             let fontWeight;
             if (newValue.includes('Italic')) {
@@ -2164,6 +2010,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             return;
         }
         
+        //This is for normal selects
         // Apply to global JSON system if JSONProperty is provided
         if (JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
@@ -2172,6 +2019,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
         }
+        //If onChange is provided, call it
         if(onChange) {
             onChange(newValue);
         }
@@ -2258,7 +2106,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
       );
 
 }
-const BorderType = ({name, value, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [open, setOpen] = useState(false);
     const [inset, setInset] = useState(false);
     const instanceId = useRef(Symbol('pen'));
@@ -2266,7 +2114,6 @@ const BorderType = ({name, value, index, cssProperty, applyGlobalCSSChange, getG
     const containerRef = useRef(null);
 
     //Border states
-    
     const [isWidthLinked, setIsWidthLinked] = useState(false);
     const [isRadiusLinked, setIsRadiusLinked] = useState(false);
     const [bw, setBw] = useState({t: '', r: '', b: '', l: ''});
@@ -2292,6 +2139,7 @@ const BorderType = ({name, value, index, cssProperty, applyGlobalCSSChange, getG
         }
     };
 
+    //We can only open one pen at a time
     useEffect(() => {
         const onPenOpen = (e) => {
             if (e.detail !== instanceId.current) setOpen(false);
@@ -2300,8 +2148,11 @@ const BorderType = ({name, value, index, cssProperty, applyGlobalCSSChange, getG
         return () => window.removeEventListener('tw-pen-open', onPenOpen);
     }, []);
 
+    //Handle the mouse enter and leave of the tooltip
     const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
     const handleMouseLeave = () => setActiveTooltip(null);
+
+    //Function to link the border width. If value is false, unlink the border width and work with individual sides. If value is true, link the border width and give each side the same value by using border-width.
     const handleWidthLinkToggle = (value) => {
         setIsWidthLinked(value);
         if(!value){
@@ -2356,6 +2207,7 @@ const BorderType = ({name, value, index, cssProperty, applyGlobalCSSChange, getG
             }
         }
     };
+    //Take the border width string and parse it in parts. Create an object with the parts. Example: { isLinked: true, values: { t: '1', r: '1', b: '1', l: '1' }, linkedValue: '1' }
     const parseBorderWidth = useCallback((borderWidthStr) => {
         
         const parts = borderWidthStr.trim().split(/\s+/).filter(Boolean);
@@ -2393,16 +2245,19 @@ const BorderType = ({name, value, index, cssProperty, applyGlobalCSSChange, getG
         return { isLinked: false, values: { t: '', r: '', b: '', l: '' }, linkedValue: '' };
     }, []);
     
+    //Get the current border width from the global CSS value
     const currentBorderWidth = getGlobalCSSValue?.('border-width') || '';
     const currentBorderTopWidth = getGlobalCSSValue?.('border-top-width') || '';
     const currentBorderRightWidth = getGlobalCSSValue?.('border-right-width') || '';
     const currentBorderBottomWidth = getGlobalCSSValue?.('border-bottom-width') || '';
     const currentBorderLeftWidth = getGlobalCSSValue?.('border-left-width') || '';
 
+    //call the parseBorderWidth function with the current border
     const parsedBorderWidth = useMemo(() => {
         return parseBorderWidth(currentBorderWidth);
     }, [currentBorderWidth, currentBorderTopWidth, currentBorderRightWidth, currentBorderBottomWidth, currentBorderLeftWidth, parseBorderWidth]);
 
+    //Update the border width when the selected element changes
     useEffect(() => {
         if (currentBorderWidth && !(currentBorderTopWidth && currentBorderRightWidth && currentBorderBottomWidth && currentBorderLeftWidth)) {
             setBw(parsedBorderWidth.values);
@@ -2417,18 +2272,20 @@ const BorderType = ({name, value, index, cssProperty, applyGlobalCSSChange, getG
 
 
     const handleBorderWidthChange = (sideOrValue, valueIfAny) => {
-
+        // Individual side modification: sideOrValue = side ('t','r','b','l'), valueIfAny = width value
         if (valueIfAny !== undefined) {
             const side = sideOrValue;
             const value = valueIfAny || '';
             const newBw = { ...bw, [side]: value };
             setBw(newBw);
+            // When width linking is active, automatically sync all border sides
             if(isWidthLinked){
                 setBwLinked(value);
                 const syncedBw = { t: value, r: value, b: value, l: value };
                 setBw(syncedBw);
             }
         } else {
+            // Global modification: sideOrValue = width value, applies to all sides
             const value = sideOrValue || '';
             setBwLinked(value);
             const newBw = { t: value, r: value, b: value, l: value };
@@ -2437,11 +2294,13 @@ const BorderType = ({name, value, index, cssProperty, applyGlobalCSSChange, getG
     };
     
     const handleBorderWidthBlur = (side) => {
+        // If width linking is active, apply the linked value to all border sides
         if (isWidthLinked) {
             if (applyGlobalCSSChange) {
                 applyGlobalCSSChange('border-width', bwLinked);
             }
         } else {
+            // Individual modification: side = side ('t','r','b','l'), applies to a single side
             const sideMap = { t: 'top', r: 'right', b: 'bottom', l: 'left' };
 
                 const property = `border-${sideMap[side]}-width`;
@@ -2529,26 +2388,7 @@ const parseRadius = useCallback((radiusStr) => {
             setBr(newBr);
         }
     
-/*         if (isRadiusLinked) {
-            setBrLinked(value);
-            const newRadius = { tl: value, tr: value, br: value, bl: value };
-            setBr(newRadius);
-            if(isRadiusLinked){
-                setBrLinked(value);
-                const syncedBr = { tl: value, tr: value, br: value, bl: value };
-                setBr(syncedBr);
-            }
-        } else {
-            // Cambio individual de lado
-            const side = sideOrValue;
-            const newRadius = { ...br, [side]: value };
-            setBr(newRadius);
-            if(isRadiusLinked){
-                setBrLinked(value);
-                const syncedBr = { tl: value, tr: value, br: value, bl: value };
-                setBr(syncedBr);
-            }
-        } */
+
     };
     const handleRadiusBlur = (side) => {
         if (isRadiusLinked) {
@@ -2743,8 +2583,7 @@ const parseRadius = useCallback((radiusStr) => {
         </div>
     )
 }
-
-const BoxShadowType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
 
     const [open, setOpen] = useState(false);
     const [inset, setInset] = useState(false);
@@ -2977,6 +2816,8 @@ const BoxShadowType = ({name, index, cssProperty, applyGlobalCSSChange, getGloba
         </div>
     )
 }
+
+//This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
     const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript} = useCanvas();
 
@@ -3039,9 +2880,11 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
      }, [selectedId, JSONtree, activeRoot]);
 
 
+     //Function to apply the css to the element and save it in jsonTree
      const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
         if (!selectedId || !cssPropertyOrObject) return;
 
+        //We differentiate between class and id
         const type = activeClass ? 'class' : 'id';
         const selector = activeClass ? activeClass : selectedId;
 
@@ -3049,6 +2892,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 
             addCSSProperty(type, selector, cssPropertyOrObject, value);
         } else if (
+            //Accepts an object with multiple css properties
             typeof cssPropertyOrObject === "object" &&
             cssPropertyOrObject !== null
         ) {
@@ -3058,6 +2902,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     }, [selectedId, addCSSProperty, JSONtree, activeClass]);
     
 
+    //Function to get the css value from the jsonTree
     const getGlobalCSSValue = useCallback((cssProperty) => {
         if(!selectedId || !cssProperty) return null;
     
@@ -3070,6 +2915,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         return idData?.properties?.[cssProperty] ?? null;
     }, [JSONtree, selectedId, activeClass]);
 
+    //Function to apply the json to the element and save it in jsonTree
     const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
 
         if(!selectedId || !JSONProperty) return null;
@@ -3077,6 +2923,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         addJSONProperty(selectedId, JSONProperty, value);
      },[selectedId, addJSONProperty]);
 
+     //Function to get the json value from the jsonTree
      const getGlobalJSONValue = useCallback((JSONProperty)=>{
         if(!selectedId || !JSONProperty || !JSONtree?.roots) return null;
 
@@ -3122,8 +2969,6 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         switch(item.type) {
             case 'text':
                 return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
-            /* case 'select':
-                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} cssProperty={item.cssProperty}/>; */
             case 'super-select':
                 return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
             case 'panel':
@@ -3144,7 +2989,6 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
                 return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
         }
     }
-    console.log(JSONtree);
     return (
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>
