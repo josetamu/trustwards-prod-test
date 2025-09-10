@@ -437,7 +437,8 @@ export const Canvas = () => {
         JSONtree.idsCSSData.forEach(({ id, properties }) => {
             const propertyEntries = Object.entries(properties);
             if (propertyEntries.length > 0) {
-                cssContent += `#${id} {\n`;
+                //use :where has specificity 0, so classes with the same name will override the id
+                cssContent += `:where(#${id}) {\n`;
                 propertyEntries.forEach(([prop, value]) => {
                     //add units to the value if needed
                     const validatedValue = addUnits(prop, value);

@@ -418,7 +418,7 @@ useEffect(() => {
     const superJustifyOptions = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'];
     const superAlignOptions = ['flex-start', 'center', 'flex-end', 'stretch'];
 
-    console.log('superSelectValue', getCurrentSelectValue());
+   
     return (
         <React.Fragment key={index}>
        {category === 'block' && (
@@ -2978,7 +2978,7 @@ const BoxShadowType = ({name, index, cssProperty, applyGlobalCSSChange, getGloba
     )
 }
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
@@ -3070,7 +3070,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         return idData?.properties?.[cssProperty] ?? null;
     }, [JSONtree, selectedId, activeClass]);
 
-     const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
+    const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
 
         if(!selectedId || !JSONProperty) return null;
 
@@ -3079,7 +3079,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 
      const getGlobalJSONValue = useCallback((JSONProperty)=>{
         if(!selectedId || !JSONProperty || !JSONtree?.roots) return null;
-    
+
         // Buscar el elemento en el árbol JSON
         const findElement = (node, targetId) => {
             if(!node) return null;
@@ -3092,14 +3092,15 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
             }
             return null;
         };
-    
+
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
         if(!activeRootNode) return null;
-    
+
         const selectedElement = findElement(activeRootNode, selectedId);
         return selectedElement?.[JSONProperty] || null;
-    
+
     },[JSONtree, selectedId, activeRoot]);
+
 
      const globalControlProps = {
         selectedElementData,
@@ -3143,7 +3144,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
                 return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
         }
     }
-
+    console.log(JSONtree);
     return (
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>
