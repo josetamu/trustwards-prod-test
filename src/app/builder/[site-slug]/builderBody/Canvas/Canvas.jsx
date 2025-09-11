@@ -438,7 +438,7 @@ export const Canvas = () => {
             const propertyEntries = Object.entries(properties);
             if (propertyEntries.length > 0) {
                 //use :where has specificity 0, so classes with the same name will override the id
-                cssContent += `:where(#${id}) {\n`;
+                cssContent += `#${id} {\n`;
                 propertyEntries.forEach(([prop, value]) => {
                     //add units to the value if needed
                     const validatedValue = addUnits(prop, value);

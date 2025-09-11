@@ -107,6 +107,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         future: [] //redo stack
     });
 
+    //Track initial tree to detect unsaved changes
+    const initialTree = React.useRef(defaultTree);
+    const [isUnsaved, setIsUnsaved] = React.useState(false);
+
     useEffect(() => {
         if (siteData) {
             const userJSON = siteData.JSON;
@@ -119,6 +123,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             setActiveRoot(initialState.present.activeRoot); //Set the active root as the initial root
             setActiveTab(initialState.present.activeRoot); //Set the active root as the initial tab
             setIsFirstTime(initialState.present.isFirstTime); //Set the isFirstTime as the initial isFirstTime to open the builder themes
+        
+            //Establish the initial tree
+            initialTree.current = initialState.present;
+            setIsUnsaved(false);
         }
     }, [siteData]);    
 
@@ -153,6 +161,36 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             dispatch({ type: 'SET', payload: newTree, skipHistory: true });
         }
     }, []);
+
+    // Unsaved tracking: compare current tree to baseline
+	useEffect(() => {
+		try {
+			const currentStr = JSON.stringify(state.present);
+			const baseStr = JSON.stringify(initialTree.current);
+			setIsUnsaved(currentStr !== baseStr);
+		} catch {
+			// if stringify fails, assume unsaved
+			setIsUnsaved(true);
+		}
+	}, [state.present]);
+
+	// Mark current state as saved (after successful save)
+	const markClean = useCallback(() => {
+		initialTree.current = state.present;
+		setIsUnsaved(false);
+	}, [state.present]);
+
+	// Warn on browser/tab close or hard navigation if unsaved
+	useEffect(() => {
+		const handler = (e) => {
+			if (!isUnsaved) return;
+			e.preventDefault();
+			e.returnValue = '';
+			return '';
+		};
+		window.addEventListener('beforeunload', handler);
+		return () => window.removeEventListener('beforeunload', handler);
+	}, [isUnsaved]);
 
     //Undo and Redo JSONtree (Ctrl+Z / Ctrl+Y) or (Cmd+Z / Cmd+Y)
     const undo = useCallback(() => {
@@ -955,7 +993,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive }}>
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean}}>
             {children}
         </CanvasContext.Provider>
     );
