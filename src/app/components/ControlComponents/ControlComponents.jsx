@@ -1813,10 +1813,10 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         
         //Treat New Text 2(Default text) like empty string
-        if (savedJSONValue === "New Text 2") {
+/*         if (savedJSONValue === "New Text 2") {
             return '';
         }
-        
+         */
         if (!savedJSONValue && value) {
             setTimeout(() => {
                 if (JSONProperty && applyGlobalJSONChange) {
@@ -1834,10 +1834,8 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     //Update the value when the selected element changes
     useEffect(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;    
-        //If value is default, textarea is empty
-            if (savedJSONValue === "New Text 2") {
-                setTextareaValue('');
-            }else{
+        
+            if (savedJSONValue) {
                 setTextareaValue(savedJSONValue || value || '');
             }
         
@@ -1869,8 +1867,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
             } 
         }
     };
-    //If the text is default, display empty
-const displayValue = hasDefaultText ? "" : textareaValue;
+
    
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -1881,7 +1878,7 @@ const displayValue = hasDefaultText ? "" : textareaValue;
                 name={name} 
                 id={index} 
                 placeholder={placeholder}
-                value={displayValue}
+                value={textareaValue}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="tw-builder__settings-textarea"
