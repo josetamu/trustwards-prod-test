@@ -17,7 +17,7 @@ import { Icon } from '@builderElements/Icon/Icon';
 
 export const Canvas = () => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
-        runElementScript, notifyElementCreatedFromToolbar } = useCanvas();
+        runElementScript, notifyElementCreatedFromToolbar, setJSONtree, deepCopy} = useCanvas();
 
     /*
     * Custom hook to track elements after they are created and run their scripts
@@ -189,6 +189,13 @@ export const Canvas = () => {
             document.documentElement.classList.remove('trustwards-builder--is-dragging');
             leftHandlebar.classList.remove('tw-builder__handlebar--active');
             rightHandlebar.classList.remove('tw-builder__handlebar--active');
+
+            //Read the max width of the canvas and update the JSONtree
+            const currentMax = canvas.style.maxWidth || `${canvas.getBoundingClientRect().width}px`;
+            const updated = deepCopy(JSONtree);
+            //Use activeRoot to keep the modal or banner width separate
+            updated.canvasMaxWidth[activeRoot] = currentMax;
+            setJSONtree(updated);
         };
 
         leftHandlebar.addEventListener('mousedown', () => handleMouseDown(leftHandlebar));
@@ -202,7 +209,21 @@ export const Canvas = () => {
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, []);
+    }, [activeRoot, JSONtree, deepCopy, setJSONtree]);
+// Apply the canvas width on mount and whenever the active root changes.
+    useEffect(() => {
+        const canvas = document.querySelector('.tw-builder__canvas');
+        if (!canvas) return;
+        //Store the width of the canvas separately for each root
+        const saved = JSONtree?.canvasMaxWidth?.[activeRoot];
+        if (saved) {
+        //Apply the width to the canvas if it exists
+            canvas.style.maxWidth = saved;
+        } else {
+        //If no value exists for the current root, remove the inline max-width to fallback to default styling.
+            canvas.style.removeProperty('max-width');
+        }
+    }, [activeRoot, JSONtree?.canvasMaxWidth]);
 
     /*
     * Create element on drop (resposability transfered from toolbar)
