@@ -20,7 +20,7 @@ import { CanvasProvider } from '@contexts/CanvasContext';
 import Loader from '../../components/Loader/Loader';
 import MobileWarning from '../../components/MobileWarning/MobileWarning';
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes';
-
+import { ModalBuilderSettings } from '../../components/ModalBuilderSetting/ModalBuilderSettings';
 
 function Builder() {
   const params = useParams();

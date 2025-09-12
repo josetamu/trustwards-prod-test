@@ -175,6 +175,14 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 		}
 	}, [state.present]);
 
+    //Update the active root and tab when changing the active root(undo,redo...)
+    useEffect(() => {
+        if (JSONtree.activeRoot && JSONtree.activeRoot !== activeRoot) {
+            setActiveRoot(JSONtree.activeRoot);
+            setActiveTab(JSONtree.activeRoot);
+        }
+    }, [JSONtree.activeRoot, activeRoot]);
+
 	// Mark current state as saved (after successful save)
 	const markClean = useCallback(() => {
 		initialTree.current = state.present;
