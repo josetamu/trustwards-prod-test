@@ -20,6 +20,7 @@ export const ModalBuilderSettings = () => {
                     <span className='modal-builder-settings__content-tab'></span>
                     <span className='modal-builder-settings__content-tab'></span>
                 </div>
+                <div className='modal-builder-settings__content-divider modal-builder-settings__content-divider--vertical'></div>
                 <div className='modal-builder-settings__content-body'>
                 </div>
             </div>
