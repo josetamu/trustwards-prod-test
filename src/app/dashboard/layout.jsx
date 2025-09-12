@@ -2,7 +2,7 @@
 
 import '@app/root.css'
 import './dashboard.css'
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../supabase/supabaseClient';
 import { useRouter, useParams, usePathname } from 'next/navigation';
 
@@ -226,15 +226,56 @@ const SiteStyle = (site) => {
     backgroundColor
   }
 }  
-  //Force login (only dev mode)
-  const _loginDevUser = async () => {
-    await supabase.auth.signInWithPassword({
-      /* emails: 'darezo.2809@gmail.com', 'oscar.abad.brickscore@gmail.com', 'jose11tamu@gmail.com'*/
-      email: 'darezo.2809@gmail.com',  
-      password: 'TW.141109'
-    });
-  };
 
+
+
+  //set the user data from the database
+  useEffect(() =>{
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+          if (session) {
+            if(allUserDataResourceRef.current.userId !== session.user.id){
+              const allDataResource = createAllUserDataResource(session.user.id);
+              allUserDataResourceRef.current = { userId: session.user.id, resource: allDataResource };
+              setAllUserDataResource(allDataResource);
+            } else {
+              setAllUserDataResource(allUserDataResourceRef.current.resource);
+            }
+          } else {
+            allUserDataResourceRef.current = { userId: null, resource: null };
+            setAllUserDataResource(null);
+          }
+        }
+      );
+      return () => {
+        authListener?.subscription.unsubscribe();
+      };
+  }, []);
+
+  //Guard de autenticación (cliente): redirige a /login si no hay sesión
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const isPublic = pathname.startsWith('/login') || pathname.startsWith('/public');
+      if (!user && !isPublic) {
+        router.replace('/login');
+        if (!cancelled) setCheckingAuth(false);
+        return;
+      }
+      if (user && allUserDataResourceRef.current.userId !== user.id) {
+        const allDataResource = createAllUserDataResource(user.id);
+        allUserDataResourceRef.current = { userId: user.id, resource: allDataResource };
+        setAllUserDataResource(allDataResource);
+      }
+      if (!cancelled) setCheckingAuth(false);
+    })();
+    return () => { cancelled = true; };
+  }, [pathname, router, supabase]);
+
+
+  
     // Function to update the appearance settings in the database
     const updateAppearanceSettings = async (settings) => {
       if (!user?.id) return;
@@ -295,12 +336,6 @@ const SiteStyle = (site) => {
         authListener?.subscription.unsubscribe();
       };
     }, []);                                                                                                               
-
-
-  // Force login (only dev mode)
-  useEffect(() => {
-    _loginDevUser();
-  }, []);
 
   // Update global siteData when navigating to a specific site
   useEffect(() => {
@@ -640,6 +675,7 @@ useEffect(() => {
     };
    
     return (
+      !checkingAuth && (
         <DashboardContext.Provider value={contextProps}>
             <div className="app-container">
                 <Sidebar  
@@ -721,6 +757,7 @@ useEffect(() => {
                     </Notification>
             </div>
         </DashboardContext.Provider>
+      )
     );
 }
 

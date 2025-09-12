@@ -5176,11 +5176,6 @@
   },
   {
     "name": "Quantcast",
-    "cookieName": "d",
-    "category": "Marketing"
-  },
-  {
-    "name": "Quantcast",
     "cookieName": "__qca",
     "category": "Marketing"
   },

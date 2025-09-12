@@ -1,9 +1,9 @@
 .tw-builder__canvas *{
     cursor: default;
 }
-.tw-builder__active:not(#tw-root--banner, #tw-root--modal){
-    outline: 1px solid #0099FE;
-    outline-offset: -1px;
+.tw-builder__active{
+    outline: 1px solid #0099FE !important;
+    outline-offset: -1px !important;
 }
 #tw-root--banner,
 #tw-root--modal{

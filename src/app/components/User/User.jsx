@@ -10,9 +10,22 @@ import { UserNameSkeleton } from '../Skeletons/UserNameSkeleton';
 import { UserAvatar } from './UserAvatar';
 import { UserAvatarSkeleton } from '../Skeletons/UserAvatarSkeleton';
 
+import { supabase } from '@supabase/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, isSidebarMenu }) => {
-//Here the dropdown's menu is defined by mapping the profilePages array
+    
+    const router = useRouter();
+    const handleLogout = async () => {
+        try {
+        await supabase.auth.signOut();
+        } finally {
+            router.replace('/login');
+            router.refresh();
+        }
+    };
+
+    //Here the dropdown's menu is defined by mapping the profilePages array
     const UserMenu = () => {
         return(
             <>
@@ -38,6 +51,7 @@ export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,i
                             <div className="dropdown__divider"></div>
                             <button
                                 className="dropdown__item dropdown__item--delete"
+                                onClick={handleLogout}
                                 >
                                     <span className="dropdown__icon dropdown__icon--delete">
                                         <svg  width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

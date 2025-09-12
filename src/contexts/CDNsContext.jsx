@@ -18,7 +18,6 @@ import { Icon } from '@builderElements/Icon/Icon';
 * siteId - The id of the site used to define the CDN path
 */
 export const createCDN = async (siteId) => {
-    //REPLACE THIS WITH BUILDSCRIPT WHEN FINISHED
     const content = await buildScript(siteId);
 
     const bytes = new TextEncoder().encode(content);
@@ -41,34 +40,69 @@ const buildScript = async (siteId) => {
     //get the site's builderJSON from the database and divide into idsCSSData, classesCSSData, jsonBanner and jsonModal
     const siteJSONResponse = await supabase.from('Site').select('JSON').eq('id', siteId);
     const builderJSON = siteJSONResponse?.data?.[0]?.JSON || {};
-    const idsCSSData = convertJSONtoCSS(builderJSON.idsCSSData);
-    const classesCSSData = convertJSONtoCSS(builderJSON.classesCSSData);
+
+    //Define builderJSON constants
     const jsonBanner = await convertJSONtoHTML(builderJSON.roots?.[0]);
     const jsonModal = await convertJSONtoHTML(builderJSON.roots?.[1]);
+    const idsCSSData = convertJSONtoCSS(builderJSON.idsCSSData);
+    const classesCSSData = convertJSONtoCSS(builderJSON.classesCSSData);
 
-    //Define trustwardsTextsVersion and siteID
+    //Define general constants
+    var blockEvents = builderJSON.blockEvents;
+    var blockScroll = builderJSON.blockScroll;
+    const defaultCSS = "[data-tw-close-banner], [data-tw-open-settings], [data-tw-close-settings], [data-tw-enable-all], [data-tw-disable-all], [data-tw-save-choices], [data-tw-accept-category], [data-tw-reject-category] { cursor: pointer; }"
     const trustwardsTextsVersion = "0.0.0";
     const siteID = siteId;
     const TW_COOKIE_RETENTION_MONTHS = 12;
+    const categoriesDescriptions = [
+        {
+            "name": "Functional",
+            "description": "These cookies are essential in order to use the website and its features.",
+        },
+        {
+            "name": "Analytics",
+            "description": "Analytics cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. This data is used to improve the user experience and optimize our services.",
+        },
+        {
+            "name": "Marketing",
+            "description": "Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third-party advertisers.",
+        },
+    ]
 
-    //get the site's scriptsScanned and builderJSON from the database
+    //Define scriptsScanned and iframesScanned constants
     const scriptsScannedResponse = await supabase.from('Site').select('scriptsScanned').eq('id', siteId);
+    const iframesScannedResponse = await supabase.from('Site').select('iframesScanned').eq('id', siteId);
     const scriptsScanned = scriptsScannedResponse?.data?.[0]?.scriptsScanned || [];
+    const iframesScanned = iframesScannedResponse?.data?.[0]?.iframesScanned || [];
 
-    //get the defaultCDNscript content as raw from the defaultCDNscript.txt file in the public directory
+    //Define the defaultCDNscript content (as raw from the defaultCDNscript.txt file in the public directory)
     const response = await fetch('/defaultCDNscript.txt');
     const content = await response.text();
 
-    //Merge idsCSSData, classesCSSData, jsonBanner, jsonModal, scriptsScanned, trustwardsTextsVersion and siteID with defaultCDNscript content
+    // Utility to flatten multi-line strings into a single spaced line
+    const flattenSingleLine = (value) => String(value)
+        .replace(/(\r\n|\n|\r)/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+    const flatIdsCSSData = flattenSingleLine(idsCSSData);
+    const flatClassesCSSData = flattenSingleLine(classesCSSData);
+    const flatDefaultCSS = flattenSingleLine(defaultCSS);
+
+    //Merge jsonBanner, jsonModal, idsCSSData, classesCSSData, defaultCSS, trustwardsTextsVersion, siteID, TW_COOKIE_RETENTION_MONTHS, categoriesDescriptions, scriptsScanned, iframesScanned, defaultCDNscript content
     const prelude = [
-        `const idsCSSData = ${JSON.stringify(idsCSSData)};`,
-        `const classesCSSData = ${JSON.stringify(classesCSSData)};`,
         `const jsonBanner = ${JSON.stringify(jsonBanner)};`,
         `const jsonModal = ${JSON.stringify(jsonModal)};`,
-        `const scriptsScanned = ${JSON.stringify(scriptsScanned)};`,
+        `const idsCSSData = ${JSON.stringify(flatIdsCSSData)};`,
+        `const classesCSSData = ${JSON.stringify(flatClassesCSSData)};`,
+        `var blockEvents = ${JSON.stringify(blockEvents)};`,
+        `var blockScroll = ${JSON.stringify(blockScroll)};`,
+        `const defaultCSS = ${JSON.stringify(flatDefaultCSS)};`,
         `const trustwardsTextsVersion = ${JSON.stringify(trustwardsTextsVersion)};`,
         `const siteID = ${JSON.stringify(siteID)};`,
         `const TW_COOKIE_RETENTION_MONTHS = ${JSON.stringify(TW_COOKIE_RETENTION_MONTHS)};`,
+        `const categoriesDescriptions = ${JSON.stringify(categoriesDescriptions)};`,
+        `const scriptsScanned = ${JSON.stringify(scriptsScanned)};`,
+        `const iframesScanned = ${JSON.stringify(iframesScanned)};`,
     ].join('\n');
 
     const script = `${prelude}\n\n${content}`;
@@ -78,6 +112,8 @@ const buildScript = async (siteId) => {
         compress: true,
         mangle: true,
     });
+
+    //console.log(minifiedScript.code)
 
     return minifiedScript.code;
 }
