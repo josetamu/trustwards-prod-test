@@ -131,75 +131,80 @@ useEffect(() => {
 
     
 
-    return (
-        <div className="tw-builder__settings-classes">
-            <span className={`tw-builder__settings-id ${activeClass ? 'tw-builder__settings-id--active' : ''}`} onClick={() => {
-                setIsOpen(!isOpen);
-            }}>
-                {/* If the active class is set, show it */}
-                {activeClass ? (
-                    <>
-                        .{activeClass}
-                        <span
-                            className="tw-builder__settings-class-unactive"
-                            onClick={(e) => {
-                                e.stopPropagation();
+        return (
+            <div className="tw-builder__settings-classes">
+                <span className={`tw-builder__settings-id`} onClick={() => {
+                    if (activeClass) {
+                        setActiveClass(null);
+                    } else {
+                        setIsOpen(!isOpen);
+                    }
+                }}>
+                    {activeClass ? (
+                        `.${activeClass}`
+                    ) : (
+                        `#${selectedId}`
+                    )}
+                </span>
+                <div className="tw-builder__settings-classes-selected">
+                    {activeClass && (
+                        <div
+                            className={`tw-builder__settings-class`}
+                            onClick={() => {
                                 setActiveClass(null);
                             }}
                         >
-                            x
-                        </span>
-                    </>
-                ) : (
-                    /*If the active class is not set, show the id */
-                    `#${selectedId}`
+                            <span className="tw-builder__settings-class-name">#{selectedId}</span>
+                        </div>
+                    )}
+    
+                    {filteredClasses
+                        .filter((className) => className !== activeClass)
+                        .map((className, index) => (
+                            <div
+                                className={`tw-builder__settings-class`}
+                                key={index}
+                                onClick={() => {
+                                    setActiveClass(className);
+                                }}>
+                                <span className="tw-builder__settings-class-name">.{className}</span>
+                                <span className="tw-builder__settings-class-remove" onClick={(e) => {
+                                    e.stopPropagation();
+                                    eliminateClass(className);
+                                }}>x</span>
+                            </div>
+                        ))}
+                </div>
+                {isOpen && (
+                    <div className="tw-builder__settings-classes-pool" ref={poolRef}>
+                        <div className="tw-builder__settings-classes-adder">
+                            <input className="tw-builder__settings-classes-add-input" type="text" placeholder="Class name..." value={newClass} onChange={(e) => setNewClass(e.target.value)} onKeyDown={handleAddClass}/>
+                            <div className="tw-builder__settings-classes-add">
+                                <span className="tw-builder__settings-classes-add-span">Add</span>
+                            </div>
+                        </div>
+                        <div className="tw-builder__settings-classes-divider"></div>
+                        <div className="tw-builder__settings-classes-searcher">
+                            <input className="tw-builder__settings-classes-search" type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}/>
+                        </div>
+                        <div className="tw-builder__settings-classes-list">
+                            {AllClasses.map((className, index) => (
+                                <div className="tw-builder__settings-classes-item" key={index} onClick={(e) => {
+                                    if(selectedId) {
+                                        addClass(selectedId, className);
+                                        setActiveClass(className);
+                                        setIsOpen(false);
+                                    }
+                                }}>
+                                    <span className="tw-builder__settings-classes-item-name">.{className}</span>
+                                </div>
+                            ))}
+                            <div className="tw-builder__settings-classes-item--empty">
+                                <span className="tw-builder__settings-classes-item-name">Create a new CSS class</span>
+                            </div>
+                        </div>
+                    </div>
                 )}
-            </span>
-            <div className="tw-builder__settings-classes-selected">
-                {filteredClasses.map((className, index) => (
-                    <div className={`tw-builder__settings-class ${activeClass === className ? 'tw-builder__settings-class--active' : ''}`} key={index} onClick={() => {
-                        setActiveClass(className);
-                    }}>
-                        <span className="tw-builder__settings-class-name">.{className}</span>
-                        <span className="tw-builder__settings-class-remove" onClick={(e) => {
-                            e.stopPropagation();
-                            eliminateClass(className);
-                        }}>x</span>
-                    </div>
-                ))}
             </div>
-            {isOpen && (
-                <div className="tw-builder__settings-classes-pool" ref={poolRef}>
-                    <div className="tw-builder__settings-classes-adder">
-                        <input className="tw-builder__settings-classes-add-input" type="text" placeholder="Class name..." value={newClass} onChange={(e) => setNewClass(e.target.value)} onKeyDown={handleAddClass}/>
-                        <div className="tw-builder__settings-classes-add">
-                            <span className="tw-builder__settings-classes-add-span">Add</span>
-                        </div>
-                    </div>
-                    <div className="tw-builder__settings-classes-divider"></div>
-                   
-                    <div className="tw-builder__settings-classes-searcher">
-                        <input className="tw-builder__settings-classes-search" type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}/>
-                    </div>
-                    <div className="tw-builder__settings-classes-list">
-                    {AllClasses.map((className, index) => (
-                        <div className="tw-builder__settings-classes-item" key={index} onClick={(e) => {
-                            if(selectedId) {
-                                addClass(selectedId, className);
-                                setActiveClass(className);
-                                setIsOpen(false);
-                            }
-                        }}>
-                            <span className="tw-builder__settings-classes-item-name">.{className}</span>
-                        </div>
-                    ))}
-                    <div className="tw-builder__settings-classes-item--empty">
-                            <span className="tw-builder__settings-classes-item-name">Create a new CSS class</span>
-                        </div>
-                    </div>
-                    </div>
-             
-            )}
-        </div>
-    )
+        )
 }

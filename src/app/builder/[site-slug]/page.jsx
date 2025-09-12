@@ -21,6 +21,7 @@ import Loader from '../../components/Loader/Loader';
 import MobileWarning from '../../components/MobileWarning/MobileWarning';
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes';
 
+
 function Builder() {
   const params = useParams();
   const siteSlug = params['site-slug'];
@@ -402,6 +403,12 @@ const renderModal = () => {
           openChangeModal={openChangeModal}
           checkProfilePicture={checkProfilePicture}
           profileStyle={ProfileStyle}
+        />
+      )
+    case 'Builder':
+      return (
+        <ModalBuilderSettings
+
         />
       )
     

@@ -77,10 +77,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         classesCSSData: [], /*for each class, stores its right panel properties*/
         activeRoot: "tw-root--banner", //stored active root
         isFirstTime: true, //stored if it is the first time on the builder to open the builder themes
-        canvasMaxWidth: {
-            'tw-root--banner': null,
-            'tw-root--modal': null,
-        }, //stored the max width of the canvas by root
+        canvasMaxWidth: null, //stored the max width of the canvas by root
         roots: [
             {
                 id: "tw-root--banner", //banner root
@@ -203,6 +200,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const redo = useCallback(() => {
         dispatch({ type: 'REDO' });
     }, []);
+    const canUndo = state.past.length > 0;
+    const canRedo = state.future.length > 0;
+    
     useEffect(() => {
         const handleKeyDown = (e) => {
             const isCtrlOrCmd = e.ctrlKey || e.metaKey; // Handles both Windows (Ctrl) and macOS (Cmd)
@@ -997,7 +997,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean}}>
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo}}>
             {children}
         </CanvasContext.Provider>
     );

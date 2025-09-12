@@ -145,7 +145,8 @@ export const Canvas = () => {
             !e.target.closest('.tw-builder__settings-class-unactive') &&
             !e.target.closest('.tw-builder__settings-classes-item') &&
             !e.target.closest('.tw-builder__settings-option') &&
-            !e.target.closest('.tw-builder__settings-pen-controls')) {
+            !e.target.closest('.tw-builder__settings-pen-controls')&&
+            !e.target.closest('.tw-builder__settings-class')) {
                 setSelectedId(null);
                 setSelectedItem(null);
             }
@@ -193,8 +194,11 @@ export const Canvas = () => {
             //Read the max width of the canvas and update the JSONtree
             const currentMax = canvas.style.maxWidth || `${canvas.getBoundingClientRect().width}px`;
             const updated = deepCopy(JSONtree);
+
+            // Ensure the map exists on new sites
+            if (!updated.canvasMaxWidth) updated.canvasMaxWidth = {};
             //Use activeRoot to keep the modal or banner width separate
-            updated.canvasMaxWidth[activeRoot] = currentMax;
+            updated.canvasMaxWidth = currentMax;
             setJSONtree(updated);
         };
 
@@ -215,7 +219,7 @@ export const Canvas = () => {
         const canvas = document.querySelector('.tw-builder__canvas');
         if (!canvas) return;
         //Store the width of the canvas separately for each root
-        const saved = JSONtree?.canvasMaxWidth?.[activeRoot];
+        const saved = JSONtree?.canvasMaxWidth;
         if (saved) {
         //Apply the width to the canvas if it exists
             canvas.style.maxWidth = saved;
@@ -223,7 +227,7 @@ export const Canvas = () => {
         //If no value exists for the current root, remove the inline max-width to fallback to default styling.
             canvas.style.removeProperty('max-width');
         }
-    }, [activeRoot, JSONtree?.canvasMaxWidth]);
+    }, [JSONtree?.canvasMaxWidth]);
 
     /*
     * Create element on drop (resposability transfered from toolbar)
