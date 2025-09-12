@@ -5,3 +5,6 @@
     min-height: 50px;
     width: 100%;
 }
+.tw-block{
+    display: flex;
+}

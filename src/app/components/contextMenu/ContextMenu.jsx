@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
@@ -233,6 +235,7 @@ export function ContextMenu({
 
     // Tree context menu content - completely self-contained
     const TreeContextMenu = () => {
+        console.log('TreeContextMenu');
         return (
             <>
                 {/* Copy */}

@@ -14,6 +14,8 @@ import { Button } from '@builderElements/Button/Button';
 import { Categories } from '@builderElements/Categories/Categories';
 import { Checkbox } from '@builderElements/Checkbox/Checkbox';
 import { Icon } from '@builderElements/Icon/Icon';
+import { Banner } from '@builderElements/Banner/Banner';
+import { Modal } from '@builderElements/Modal/Modal';
 
 
 
@@ -53,7 +55,7 @@ function BuilderRightPanel({user, site, checkProfilePicture, profileStyle, setMo
     const selectedType = selectedElement?.elementType;
 
     const getControls = (selectedType) => {
-//Create a temporary node to get the controls
+        //Create a temporary node to get the controls
         const tempNode = {
             id: selectedId,
             tagName: 'div', 
@@ -65,6 +67,10 @@ function BuilderRightPanel({user, site, checkProfilePicture, profileStyle, setMo
 
         //Switch the type of the selected element and return the correct controls
         switch(selectedType) {
+            case 'banner':
+                return Banner(tempNode, {}, []).groupControls;
+            case 'modal':
+                return Modal(tempNode, {}, []).groupControls;
             case 'block':
                 return Block(tempNode, {}, []).groupControls;
             case 'image':
@@ -81,16 +87,16 @@ function BuilderRightPanel({user, site, checkProfilePicture, profileStyle, setMo
                 return Checkbox(tempNode, {}, []).groupControls;
             case 'icon':
                 return Icon(tempNode, {}, []).groupControls;
-
             default:
                 return null;
         }
     };
 
+
+
     //Store the controls for the selected element to use in ControlComponent react element
+    // First try to get controls by elementType, then by label for modal/banner
     const currentControls = getControls(selectedType);
-
-
 
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>
@@ -102,7 +108,7 @@ function BuilderRightPanel({user, site, checkProfilePicture, profileStyle, setMo
             <div className="tw-builder__right-body">
                 <div className="tw-builder__right-body-content">
                 {/* If no element is selected, show the NoSelectedItem react element */}
-                {(!selectedId || selectedId === 'tw-root--banner' || selectedId === 'tw-root--model') && <NoSelectedItem/>}
+                {(!selectedId) && <NoSelectedItem/>}
                     {/* Check the type element and show the correct controls */}
                     {currentControls && <ControlComponent control={currentControls} selectedId={selectedId} showNotification={showNotification} selectedLabel={selectedLabel} user={user} site={site}/>}               
                 </div>

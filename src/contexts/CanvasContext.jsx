@@ -79,6 +79,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         isFirstTime: true, //stored if it is the first time on the builder to open the builder themes
         blockEvents: false, //to block user events until a decision is made
         blockScroll: false, //to block scroll until a decision is made
+        canvasMaxWidth: null, //stored the max width of the canvas by root
         roots: [
             {
                 id: "tw-root--banner", //banner root
@@ -109,6 +110,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         future: [] //redo stack
     });
 
+    //Track initial tree to detect unsaved changes
+    const initialTree = React.useRef(defaultTree);
+    const [isUnsaved, setIsUnsaved] = React.useState(false);
+
     useEffect(() => {
         if (siteData) {
             const userJSON = siteData.JSON;
@@ -121,6 +126,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             setActiveRoot(initialState.present.activeRoot); //Set the active root as the initial root
             setActiveTab(initialState.present.activeRoot); //Set the active root as the initial tab
             setIsFirstTime(initialState.present.isFirstTime); //Set the isFirstTime as the initial isFirstTime to open the builder themes
+        
+            //Establish the initial tree
+            initialTree.current = initialState.present;
+            setIsUnsaved(false);
         }
     }, [siteData]);    
 
@@ -156,6 +165,44 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         }
     }, []);
 
+    // Unsaved tracking: compare current tree to baseline
+	useEffect(() => {
+		try {
+			const currentStr = JSON.stringify(state.present);
+			const baseStr = JSON.stringify(initialTree.current);
+			setIsUnsaved(currentStr !== baseStr);
+		} catch {
+			// if stringify fails, assume unsaved
+			setIsUnsaved(true);
+		}
+	}, [state.present]);
+
+    //Update the active root and tab when changing the active root(undo,redo...)
+    useEffect(() => {
+        if (JSONtree.activeRoot && JSONtree.activeRoot !== activeRoot) {
+            setActiveRoot(JSONtree.activeRoot);
+            setActiveTab(JSONtree.activeRoot);
+        }
+    }, [JSONtree.activeRoot, activeRoot]);
+
+	// Mark current state as saved (after successful save)
+	const markClean = useCallback(() => {
+		initialTree.current = state.present;
+		setIsUnsaved(false);
+	}, [state.present]);
+
+	// Warn on browser/tab close or hard navigation if unsaved
+	useEffect(() => {
+		const handler = (e) => {
+			if (!isUnsaved) return;
+			e.preventDefault();
+			e.returnValue = '';
+			return '';
+		};
+		window.addEventListener('beforeunload', handler);
+		return () => window.removeEventListener('beforeunload', handler);
+	}, [isUnsaved]);
+
     //Undo and Redo JSONtree (Ctrl+Z / Ctrl+Y) or (Cmd+Z / Cmd+Y)
     const undo = useCallback(() => {
         dispatch({ type: 'UNDO' });
@@ -163,6 +210,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const redo = useCallback(() => {
         dispatch({ type: 'REDO' });
     }, []);
+    const canUndo = state.past.length > 0;
+    const canRedo = state.future.length > 0;
+    console.log('past.length', state.past.length);
+    console.log('future.length', state.future.length);
+   
+    
     useEffect(() => {
         const handleKeyDown = (e) => {
             const isCtrlOrCmd = e.ctrlKey || e.metaKey; // Handles both Windows (Ctrl) and macOS (Cmd)
@@ -563,7 +616,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Text",
                 text: "New Text 2",
                 classList: ["tw-text"],
-                defaultCSS: { 'color': '#000000', 'width': 'fit-content', 'min-width': 'fit-content' },
+                defaultCSS: {'width': 'fit-content', 'min-width': 'fit-content' },
             },
             'accept-all': {
                 elementType: "button",
@@ -957,7 +1010,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive }}>
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo}}>
             {children}
         </CanvasContext.Provider>
     );

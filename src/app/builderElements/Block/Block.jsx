@@ -6,7 +6,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
     // nodeProps adds HTML id and classList
 
     const id = node.id;
-    const Tag = node.tagName;
+    const Tag = node.tagName || 'div';
     const RealTag = (anchorAncestor && Tag === 'a') ? 'div' : Tag;
 
     const dataAttributes = node.attributes;
@@ -18,8 +18,8 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
 
     const groupControls =  {
         header: [
-            { name: 'Tag', type: 'super-select', value: 'div', category: 'block', JSONProperty: 'tagName'},
-            { name: 'Display', type: 'super-select', value: 'flex', category: 'display', cssProperty: 'display'},
+            { name: 'Tag', type: 'super-select', category: 'block', JSONProperty: 'tagName', placeholder: 'div'},
+            { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'flex'},
         ],
         body: [
             {
@@ -51,7 +51,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
                         { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'color' },
                         { name: 'Font', type: 'text', cssProperty: 'font-family' },
                         { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
-                        { name: 'Weight', type: 'select', value: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
+                        { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
                         { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
                         { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
                         { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},

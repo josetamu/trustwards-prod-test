@@ -7,9 +7,7 @@ import { Canvas } from './Canvas/Canvas';
 function BuilderBody({site, setSite, setModalType, setIsModalOpen, checkSitePicture, SiteStyle, openChangeModalSettings}) {
     return (
         <div className="tw-builder__body">
-            <div className="tw-builder__header">
                 <BuilderHeader site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
-            </div>
                 <Canvas/>
                 <Toolbar/>
         </div>

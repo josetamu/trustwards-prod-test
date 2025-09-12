@@ -6,7 +6,7 @@ import { createCDN } from '@contexts/CDNsContext';
 
 export default function BuilderSave({showNotification, siteSlug}) {
     const [isLoading, setIsLoading] = useState(false);
-    const {JSONtree} = useCanvas();
+    const {JSONtree, markClean} = useCanvas();
 
     // Function to save the changes. This function is used by the button and the keyboard shortcut(Ctrl+S or Cmd+S)
     const save = useCallback(async () => {
@@ -19,6 +19,11 @@ export default function BuilderSave({showNotification, siteSlug}) {
                 .from('Site')
                 .update({JSON: JSONtree})
                 .eq('id', siteSlug);
+
+            //If the changes are saved successfully, mark the current state as saved
+            if(!error){
+                markClean();
+            }
             //Show a notification if the changes are saved successfully
             showNotification('Changes saved successfully');
 
@@ -28,7 +33,7 @@ export default function BuilderSave({showNotification, siteSlug}) {
         } finally {
             setIsLoading(false);
         }
-    }, [JSONtree, siteSlug, showNotification]);
+    }, [JSONtree, siteSlug, showNotification, markClean]);
 
     // Add keyboard shortcut for Ctrl+S or Cmd+S to save the changes
     useEffect(() => {
@@ -50,7 +55,7 @@ export default function BuilderSave({showNotification, siteSlug}) {
 
     return (
         <div 
-            className={`builder-save${isLoading ? ' builder-save--loading' : ''}`} 
+            className={`builder-save ${isLoading ? ' builder-save--loading' : ''}`} 
             onClick={!isLoading ? save : undefined}
         >
             {/* If the changes are being saved, show the spinner */}

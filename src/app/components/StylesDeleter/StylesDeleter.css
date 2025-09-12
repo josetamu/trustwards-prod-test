@@ -1,29 +1,40 @@
 .tw-builder__settings-deleter{
-    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 5px;
     cursor: pointer;
+    display: none;
+    position: absolute;
+    right: calc(100% + 1px);
+    top: -22.5%;
+    height: 22px;
 }
 .tw-builder__settings-deleter-point{
     width: 5px;
     height: 5px;
-    background-color: #000;
+    background-color: var(--accent-bg-color);
     border-radius: 100%;
-    display: block;
+    display: flex;
+}
+.tw-builder__settings-deleter--active{
+    display: flex;
 }
 .tw-builder__settings-deleter-cross{
+
     display: none;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 8px;
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: #000;
 }
-/* .tw-builder__settings-deleter:hover .tw-builder__settings-deleter-cross{
+ .tw-builder__settings-deleter:hover .tw-builder__settings-deleter-cross{
     display: block;
 }
 .tw-builder__settings-deleter:hover .tw-builder__settings-deleter-point{
     display: none;
-} */
+} 
+
+.tw-builder__settings-pen-body .tw-builder__settings-deleter{
+    display: none;
+}

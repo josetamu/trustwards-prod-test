@@ -30,7 +30,8 @@ export default function Scanner({ domain, siteId, urlPath = '/' }) {
       await updateIframeScannedAttribute(json.iframesScanned); //Update the iframesScanned attribute
       updateScriptCDN(siteId); //Update the script CDN
     } catch (e) {
-      setStatus('error'); //Display error
+      console.error('Error scanning', e);
+      setStatus(e); //Display error
     }
   }
 

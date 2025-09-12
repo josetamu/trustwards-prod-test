@@ -1,0 +1,58 @@
+/* Banner component styles */
+.tw-banner {
+  background: var(--website-banner-gradient);
+  display: flex;
+  justify-content: center;
+  padding: 5px 20px;
+  width: 100%;
+  height: auto;
+  position: relative;
+  }
+
+.tw-banner__inner {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.tw-banner__background {
+  position: absolute;
+  top: 0;
+  left: calc(50% - -30px / 2);
+  height: 100%;
+  z-index: 1;
+}
+
+.tw-banner__text {
+  background: var(--website-banner-text-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: var(--website-font-size-mini);
+  font-weight: var(--website-font-weight-semibold);
+  letter-spacing: var(--website-letter-spacing-wide);
+  position: relative;
+  z-index: 3;
+}
+
+.tw-banner__pricing-btn {
+  background: var(--website-banner-cta-background);
+  color: var(--website-text-light-color);
+  text-decoration: none;
+  padding: 3px 5px;
+  border-radius: 5px;
+  font-size: var(--website-font-size-mini);
+  font-weight: var(--website-font-weight-semibold);
+  letter-spacing: var(--website-letter-spacing-wide);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-block;
+  position: relative;
+  z-index: 3;
+}
+.tw-banner__pricing-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+}
