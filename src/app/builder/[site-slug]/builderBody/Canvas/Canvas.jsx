@@ -186,20 +186,23 @@ export const Canvas = () => {
         };
 
         const handleMouseUp = () => {
+            if(isDragging) {
+                //Read the max width of the canvas and update the JSONtree
+                const currentMax = canvas.style.maxWidth || `${canvas.getBoundingClientRect().width}px`;
+                const updated = deepCopy(JSONtree);
+
+                // Ensure the map exists on new sites
+                if (!updated.canvasMaxWidth) updated.canvasMaxWidth = {};
+                //Use activeRoot to keep the modal or banner width separate
+                updated.canvasMaxWidth = currentMax;
+                setJSONtree(updated); 
+            }
             isDragging = false;
             document.documentElement.classList.remove('trustwards-builder--is-dragging');
             leftHandlebar.classList.remove('tw-builder__handlebar--active');
             rightHandlebar.classList.remove('tw-builder__handlebar--active');
 
-            //Read the max width of the canvas and update the JSONtree
-            const currentMax = canvas.style.maxWidth || `${canvas.getBoundingClientRect().width}px`;
-            const updated = deepCopy(JSONtree);
 
-            // Ensure the map exists on new sites
-            if (!updated.canvasMaxWidth) updated.canvasMaxWidth = {};
-            //Use activeRoot to keep the modal or banner width separate
-            updated.canvasMaxWidth = currentMax;
-            setJSONtree(updated);
         };
 
         leftHandlebar.addEventListener('mousedown', () => handleMouseDown(leftHandlebar));

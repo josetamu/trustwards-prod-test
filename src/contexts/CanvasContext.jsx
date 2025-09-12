@@ -202,6 +202,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     }, []);
     const canUndo = state.past.length > 0;
     const canRedo = state.future.length > 0;
+    console.log('past.length', state.past.length);
+    console.log('future.length', state.future.length);
+   
     
     useEffect(() => {
         const handleKeyDown = (e) => {

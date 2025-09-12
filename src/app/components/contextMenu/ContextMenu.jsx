@@ -241,7 +241,7 @@ export function ContextMenu({
                 {/* Copy */}
                 <button 
                     className="tw-context-menu__item"
-                    onMouseDown={() => executeAction(handleCopy)}
+                    onClick={() => executeAction(handleCopy)}
                 >
                     <div className="tw-context-menu__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
@@ -256,7 +256,7 @@ export function ContextMenu({
                 {clipboard && (
                     <button 
                         className="tw-context-menu__item"
-                        onMouseDown={() => executeAction(handlePaste)}
+                        onClick={() => executeAction(handlePaste)}
                     >
                         <div className="tw-context-menu__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
@@ -274,7 +274,7 @@ export function ContextMenu({
                 {/* Duplicate */}
                 <button 
                     className="tw-context-menu__item"
-                    onMouseDown={() => executeAction(handleDuplicate)}
+                    onClick={() => executeAction(handleDuplicate)}
                 >
                     <div className="tw-context-menu__icon">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -287,7 +287,7 @@ export function ContextMenu({
                 {/* Wrap */}
                 <button 
                     className="tw-context-menu__item"
-                    onMouseDown={() => executeAction(handleWrap)}
+                    onClick={() => executeAction(handleWrap)}
                 >
                     <div className="tw-context-menu__icon">
                         <svg width="8" height="8" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -302,7 +302,7 @@ export function ContextMenu({
                 {/* Remove */}
                 <button 
                     className="tw-context-menu__item tw-context-menu__item--delete"
-                    onMouseDown={() => executeAction(handleRemove)}
+                    onClick={() => executeAction(handleRemove)}
                 >
                     <div className="tw-context-menu__icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
