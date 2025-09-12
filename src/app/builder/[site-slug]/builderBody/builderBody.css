@@ -9,14 +9,7 @@
     min-height: 100%;
 }
 
-.tw-builder__header{
-    height: 40px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
+
 .tw-builder__handlebars-canvas-wrapper{
     display: flex;
     align-items: center;

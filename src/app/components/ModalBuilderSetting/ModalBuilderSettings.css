@@ -1,0 +1,32 @@
+.modal-builder-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+}
+.modal-builder-settings__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+}
+.modal-builder-settings__header-title {
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--label-color);
+}
+.modal-builder-settings__header-close {
+    cursor: pointer;
+}
+.modal-builder-settings__divider {
+    height: 1px;
+    background-color: var(--tree-item-hover-background);
+}
+.modal-builder-settings__content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

@@ -2,7 +2,7 @@ import './StylesDeleter.css';
 
 import React, { useCallback } from 'react';
 //This component is used to delete the styles of the selected element.(Point with ancent color)
-export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, getGlobalCSSValue, getGlobalJSONValue, value, cssProperty, JSONProperty, cssPropertyGroup, jsonEmptyValue, checkProps = [], cssDeleteBatch, onDelete, defaultValue}) => {
+export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, getGlobalCSSValue, getGlobalJSONValue, value, cssProperty, JSONProperty, cssPropertyGroup, jsonEmptyValue, cssDeleteBatch, onDelete, defaultValue}) => {
     //Check if the control has any group side(padding, margin, etc.)
     const hasAnyGroupSide = cssPropertyGroup
         ? (Boolean(getGlobalCSSValue?.(cssPropertyGroup)) ||
@@ -19,6 +19,7 @@ export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, get
     //If the json value is the same as the empty marker, set it to empty string. This is used for the json defaults like 'New Text 2' or the source of an empty image.
     const jsonAsEmpty = (jsonRaw === effectiveEmptyMarker) ? '' : jsonRaw;
 
+    
 
     //Check if the control has any value. This is used to show the delete button.
     //The values can be: a direct value, the cssProperty, the jsonProperty, or the group we checked in hasAnyGroupSide.
@@ -57,7 +58,7 @@ export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, get
     }, [JSONProperty, cssProperty, cssPropertyGroup, applyGlobalCSSChange, applyGlobalJSONChange, effectiveEmptyMarker, cssDeleteBatch, onDelete]);
 
     return (
-        <div className={`tw-builder__settings-deleter ${hasValue ? 'tw-builder__settings-deleter--active' : ''}`}>
+        <div className={`tw-builder__settings-deleter ${hasValue && jsonRaw !== effectiveEmptyMarker ? 'tw-builder__settings-deleter--active' : ''}`}>
                 <div className='tw-builder__settings-deleter-point' onClick={handleDelete}></div>
                 <span className="tw-builder__settings-deleter-cross" onClick={handleDelete}>X</span>
         </div>

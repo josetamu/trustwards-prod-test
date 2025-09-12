@@ -2,9 +2,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 5px;
     cursor: pointer;
     display: none;
+    position: absolute;
+    right: calc(100% + 1px);
+    top: -22.5%;
+    height: 22px;
 }
 .tw-builder__settings-deleter-point{
     width: 5px;
@@ -17,9 +20,10 @@
     display: flex;
 }
 .tw-builder__settings-deleter-cross{
+
     display: none;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 8px;
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     color: #000;

@@ -16,11 +16,7 @@
     padding: 5px;
     cursor: pointer;
 }
-.tw-builder__settings-id--active{
-    background-color: #2B2B2B;
-    color: #FFFFFF;
-    
-}
+
 .tw-builder__settings-class-unactive{
     cursor: pointer;
     font-size: 10px;
@@ -50,10 +46,7 @@
     position: relative;
     color: var(--shadow-color);
 }
-.tw-builder__settings-class--active{
-    background-color: #2B2B2B;
-    color: #FFFFFF;
-}
+
 .tw-builder__settings-class-name{
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);

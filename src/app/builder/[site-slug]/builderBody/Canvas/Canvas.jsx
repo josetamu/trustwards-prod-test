@@ -17,7 +17,7 @@ import { Icon } from '@builderElements/Icon/Icon';
 
 export const Canvas = () => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
-        runElementScript, notifyElementCreatedFromToolbar } = useCanvas();
+        runElementScript, notifyElementCreatedFromToolbar, setJSONtree, deepCopy} = useCanvas();
 
     /*
     * Custom hook to track elements after they are created and run their scripts
@@ -145,7 +145,8 @@ export const Canvas = () => {
             !e.target.closest('.tw-builder__settings-class-unactive') &&
             !e.target.closest('.tw-builder__settings-classes-item') &&
             !e.target.closest('.tw-builder__settings-option') &&
-            !e.target.closest('.tw-builder__settings-pen-controls')) {
+            !e.target.closest('.tw-builder__settings-pen-controls')&&
+            !e.target.closest('.tw-builder__settings-class')) {
                 setSelectedId(null);
                 setSelectedItem(null);
             }
@@ -185,10 +186,23 @@ export const Canvas = () => {
         };
 
         const handleMouseUp = () => {
+            if(isDragging) {
+                //Read the max width of the canvas and update the JSONtree
+                const currentMax = canvas.style.maxWidth || `${canvas.getBoundingClientRect().width}px`;
+                const updated = deepCopy(JSONtree);
+
+                // Ensure the map exists on new sites
+                if (!updated.canvasMaxWidth) updated.canvasMaxWidth = {};
+                //Use activeRoot to keep the modal or banner width separate
+                updated.canvasMaxWidth = currentMax;
+                setJSONtree(updated); 
+            }
             isDragging = false;
             document.documentElement.classList.remove('trustwards-builder--is-dragging');
             leftHandlebar.classList.remove('tw-builder__handlebar--active');
             rightHandlebar.classList.remove('tw-builder__handlebar--active');
+
+
         };
 
         leftHandlebar.addEventListener('mousedown', () => handleMouseDown(leftHandlebar));
@@ -202,7 +216,21 @@ export const Canvas = () => {
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, []);
+    }, [activeRoot, JSONtree, deepCopy, setJSONtree]);
+// Apply the canvas width on mount and whenever the active root changes.
+    useEffect(() => {
+        const canvas = document.querySelector('.tw-builder__canvas');
+        if (!canvas) return;
+        //Store the width of the canvas separately for each root
+        const saved = JSONtree?.canvasMaxWidth;
+        if (saved) {
+        //Apply the width to the canvas if it exists
+            canvas.style.maxWidth = saved;
+        } else {
+        //If no value exists for the current root, remove the inline max-width to fallback to default styling.
+            canvas.style.removeProperty('max-width');
+        }
+    }, [JSONtree?.canvasMaxWidth]);
 
     /*
     * Create element on drop (resposability transfered from toolbar)
@@ -438,7 +466,7 @@ export const Canvas = () => {
             const propertyEntries = Object.entries(properties);
             if (propertyEntries.length > 0) {
                 //use :where has specificity 0, so classes with the same name will override the id
-                cssContent += `:where(#${id}) {\n`;
+                cssContent += `#${id} {\n`;
                 propertyEntries.forEach(([prop, value]) => {
                     //add units to the value if needed
                     const validatedValue = addUnits(prop, value);

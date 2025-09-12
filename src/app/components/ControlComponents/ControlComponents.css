@@ -1,3 +1,315 @@
+.tw-builder__settings{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 10px;
+}
+
+.tw-builder__settings-header{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-light-color);
+    padding-bottom: 10px;
+}
+
+
+.tw-builder__settings-label{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--label-color);
+}
+/* Controls css */
+
+.tw-builder__settings-setting{
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
+}
+.tw-builder__settings-setting--column{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.tw-builder__settings-subtitle{
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--subtitle-color);
+    display: flex;
+    padding-left: 2px;
+    flex-direction: row-reverse;
+    position: relative;
+}
+
+.tw-builder__settings-select-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tw-builder__settings-select{
+    background-color: var(--builder-background);
+    border-radius: 5px;
+    padding: 5px;
+    padding-right: 20px;
+    min-width: 40px;
+    border: none;
+    color: var(--builder-text-color);
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    appearance: none;
+    cursor: pointer;
+}
+.tw-builder__settings-select:focus{
+    outline: none;
+}
+.tw-builder__settings-select option{
+    background-color: #2B2B2B;
+    color: #fff;
+}
+.tw-builder__settings-select option:hover{
+    background-color: #0099FE;
+    color: #fff;
+}
+
+/* Flecha personalizada */
+.tw-builder__settings-arrow {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    pointer-events: none; /* Permite clics a través del SVG */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tw-builder__settings-input{
+    width: 60px;
+    height: 22px;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--builder-background);
+    color: var(--builder-text-color);
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    cursor: text;
+    &::placeholder{
+        color: var(--shadow-color);
+    }
+}
+.tw-builder__settings-input--link{
+    width: 90px;
+}
+.tw-builder__settings-input:focus{
+    outline: none;
+}
+.tw-builder__settings-body{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.tw-builder__settings-actions{
+    display: flex;
+    background-color: var(--builder-background);
+    width: 90px;
+    height: 25px;
+    border-radius: 8px;
+    padding: 1px;
+    align-items: stretch;
+    justify-content: center;
+    position: relative;
+}
+.tw-builder__settings-actions--column{
+    width: 100%;
+
+}
+.tw-builder__settings-action{
+    width: 50%;
+    background-color: var(--builder-background);
+    border-radius: 5px;
+    padding: 5px;
+    border: none;
+    background-color: transparent;
+    color: var(--shadow-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.tw-builder__settings-action--active{
+    color: var(--text-color);
+
+}
+.tw-builder__settings-action--reverse{
+        background-color: #fff;
+        color: var(--text-color);
+        border: 1px solid var(--border-light-color);
+        border-radius: 7px;
+        height: 23px;
+    }
+.tw-builder__settings-action--start{
+    align-items: flex-start;
+}
+.tw-builder__settings-action--end{
+    align-items: flex-end;
+}
+
+.tw-builder__settings-spacing{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 80px;
+}
+.tw-builder__settings-spacing-mid{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+}
+.tw-builder__spacing-input{
+    width: 25%;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--builder-background);
+    color: var(--builder-text-color);
+    font-size: var(--font-size-mini);
+    height: 100%;
+    text-align: center;
+}
+.tw-builder__spacing-input:focus{
+    outline: none;
+}
+.tw-builder__spacing-input--mid{
+    width: 100%;
+    height: 100%;
+}
+.tw-builder__settings-background{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    background-color: var(--builder-background);
+    border-radius: 5px;
+    padding: 5px;
+}
+.tw-builder__settings-colors{
+    display: flex;
+    align-items: center;
+    width: 70%;
+    height: 100%;
+    gap: 5px;
+    position: relative;
+}
+.tw-builder__settings-color{
+    padding: 0;
+    border: 1px solid var(--border-light-color);
+    background: none;
+    width: 23px;
+    height: 23px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.tw-builder__settings-color-input{
+    position: absolute;
+    opacity: 0;
+    width: 20px;
+    height: 30px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.tw-builder__settings-hex{
+    width: 75%;
+    height: 100%;
+    border:none;
+    background: none;
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__settings-hex:focus{
+    outline: none;
+}
+.tw-builder__settings-percentages{
+    display: flex;
+    align-items: center;
+    width: 30%;
+    height: 100%;
+    justify-content: center;
+    border-left: 1px solid var(--border-light-color);
+    padding-left: 5px;
+ 
+   
+}
+.tw-builder__settings-percentage{
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: none;
+    text-align: center;
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__settings-percentage:focus{
+    outline: none;
+}
+.tw-builder__settings-percentage::-webkit-outer-spin-button,
+.tw-builder__settings-percentage::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+ .tw-builder__settings-action .tooltip__mask{
+    width: max-content;
+    display: inline-block;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #E6E6E6;
+    padding: 6px 6px;
+    box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.05);
+    position: relative;
+    color: #222222;
+    font-size: var(--font-size-extreme-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+ .tw-builder__settings-action .tooltip__mask::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 80%;
+    transform: translate(-50%, 0) rotate(270deg);
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 6px solid #fff;
+    filter: drop-shadow(-1px 0 1px rgba(0,0,0,0.1));
+  }
+
+.tw-builder__settings-action .tooltip__mask::after{
+    display: none !important;
+  }
+  .tw-builder__settings-action .tooltip__mask .tooltip__message{
+    font-size: var(--font-size-extreme-mini);
+  }
+  .tw-builder__settings-setting--shadow{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+  
 .tw-builder__settings-textarea {
     width: 100%;
     min-height: 80px;
@@ -340,4 +652,21 @@
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
+}
+
+/* Slider */
+.tw-builder__settings-slider {
+    display: none;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    height: calc(100% - 6px);
+    background-color: var(--tab-slider-background);
+    border-radius: 6px;
+    border: 1px solid var(--border-light-color);
+    box-shadow: 0 2px 4px 0 var(--shadow-light-color);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tw-builder__settings-actions:has(.tw-builder__settings-action--active) .tw-builder__settings-slider {
+    display: block;
 }
