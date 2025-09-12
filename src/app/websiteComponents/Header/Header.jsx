@@ -66,7 +66,7 @@ const Header = ({ className = '' }) => {
       <div className="tw-header__wrapper">
             <div className="tw-header__inner">
               <div className="tw-header__left-wrapper">
-                <div className="tw-header__logo">
+                <Link href="/" className="tw-header__logo">
                   <svg width="31" height="17" viewBox="0 0 31 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g filter="url(#filter0_d_1242_10)">
                     <path d="M4 0H27V4.63636H4V0Z" fill="url(#paint0_linear_1242_10)"/>
@@ -98,7 +98,7 @@ const Header = ({ className = '' }) => {
                     </linearGradient>
                     </defs>
                   </svg>
-                </div>
+                </Link>
                 <nav className="tw-header__nav">
                   <div 
                     className="tw-header__nav-item tw-header__nav-item--dropdown"
@@ -190,7 +190,7 @@ const Header = ({ className = '' }) => {
                       className={`tw-dropdown ${isUsefulDropdownOpen ? 'tw-dropdown--open' : ''}`}
                     >
                               <Link 
-                                href="#" 
+                                href="/changelog" 
                                 className="tw-dropdown__item"
                                 role="menuitem"
                                 tabIndex={0}
@@ -207,7 +207,7 @@ const Header = ({ className = '' }) => {
                               <span className="tw-dropdown__item-text">Changelog</span>
                               </Link>
                               <Link 
-                                href="#" 
+                                href="/roadmap" 
                                 className="tw-dropdown__item"
                               >
                                 <svg className="tw-dropdown__item-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -278,7 +278,7 @@ const Header = ({ className = '' }) => {
             >
               {/* Mobile Menu Header */}
               <div className="tw-header__mobile-header">
-                <div className="tw-header__mobile-logo">
+                <Link href="/" className="tw-header__mobile-logo" onClick={closeMobileMenu}>
                   <svg width="31" height="17" viewBox="0 0 31 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g filter="url(#filter0_d_1242_10_mobile)">
                     <path d="M4 0H27V4.63636H4V0Z" fill="url(#paint0_linear_1242_10_mobile)"/>
@@ -310,7 +310,7 @@ const Header = ({ className = '' }) => {
                     </linearGradient>
                     </defs>
                   </svg>
-                </div>
+                </Link>
                 <button
                   className="tw-header__mobile-close"
                   onClick={closeMobileMenu}
@@ -442,13 +442,13 @@ const Header = ({ className = '' }) => {
                     id="mobile-useful-dropdown"
                     className={`tw-header__mobile-dropdown ${isUsefulDropdownOpen ? 'tw-header__mobile-dropdown--open' : ''}`}
                   >
-                    <Link href="#" className="tw-header__mobile-dropdown-item" onClick={closeMobileMenu}>
+                    <Link href="/changelog" className="tw-header__mobile-dropdown-item" onClick={closeMobileMenu}>
                       <svg className="tw-header__mobile-dropdown-icon" width="11" height="8" viewBox="0 0 11 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.755 7V1.357L1.872 0.7H2.934V7H1.755ZM0.423 2.689V1.573C0.573 1.585 0.735 1.549 0.909 1.465C1.083 1.375 1.254 1.261 1.422 1.123C1.596 0.979 1.746 0.835 1.872 0.691L2.655 1.456C2.439 1.696 2.211 1.915 1.971 2.113C1.731 2.305 1.482 2.455 1.224 2.563C0.972 2.671 0.705 2.713 0.423 2.689ZM4.64288 7.135C4.44488 7.135 4.27388 7.063 4.12988 6.919C3.99188 6.775 3.92288 6.604 3.92288 6.406C3.92288 6.214 3.99188 6.046 4.12988 5.902C4.27388 5.758 4.44488 5.686 4.64288 5.686C4.84088 5.686 5.00888 5.758 5.14688 5.902C5.29088 6.046 5.36288 6.214 5.36288 6.406C5.36288 6.604 5.29088 6.775 5.14688 6.919C5.00888 7.063 4.84088 7.135 4.64288 7.135ZM8.4053 7.108C7.8953 7.108 7.4453 6.97 7.0553 6.694C6.6653 6.412 6.3593 6.028 6.1373 5.542C5.9153 5.05 5.8043 4.486 5.8043 3.85C5.8043 3.214 5.9153 2.653 6.1373 2.167C6.3593 1.675 6.6623 1.291 7.0463 1.015C7.4363 0.733 7.8863 0.592 8.3963 0.592C8.9063 0.592 9.3563 0.733 9.7463 1.015C10.1423 1.291 10.4513 1.675 10.6733 2.167C10.8953 2.653 11.0063 3.214 11.0063 3.85C11.0063 4.486 10.8953 5.05 10.6733 5.542C10.4513 6.028 10.1453 6.412 9.7553 6.694C9.3653 6.97 8.9153 7.108 8.4053 7.108ZM8.4053 5.992C8.6753 5.992 8.9153 5.902 9.1253 5.722C9.3413 5.536 9.5093 5.284 9.6293 4.966C9.7493 4.642 9.8093 4.27 9.8093 3.85C9.8093 3.43 9.7493 3.058 9.6293 2.734C9.5093 2.41 9.3413 2.158 9.1253 1.978C8.9153 1.792 8.6723 1.699 8.3963 1.699C8.1263 1.699 7.8863 1.792 7.6763 1.978C7.4663 2.158 7.3013 2.41 7.1813 2.734C7.0673 3.058 7.0103 3.43 7.0103 3.85C7.0103 4.27 7.0673 4.642 7.1813 4.966C7.3013 5.284 7.4663 5.536 7.6763 5.722C7.8923 5.902 8.1353 5.992 8.4053 5.992Z" fill="currentColor"/>
                       </svg>
                       <span>Changelog</span>
                     </Link>
-                    <Link href="#" className="tw-header__mobile-dropdown-item" onClick={closeMobileMenu}>
+                    <Link href="/roadmap" className="tw-header__mobile-dropdown-item" onClick={closeMobileMenu}>
                       <svg className="tw-header__mobile-dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clipPath="url(#clip0_1214_166)">
                         <path opacity="0.4" fillRule="evenodd" clipRule="evenodd" d="M3.05928 4.01744C3.00801 3.7548 2.75166 3.58309 2.48671 3.63391C2.05234 3.71724 1.67623 3.86604 1.36146 4.14343C0.959841 4.49735 0.783516 4.94944 0.702056 5.4834C0.624966 5.9887 0.624981 6.6281 0.625001 7.4072V7.48435C0.624981 8.26345 0.624966 8.9029 0.702056 9.4082C0.783516 9.94215 0.959841 10.3943 1.36146 10.7482C1.75482 11.0948 2.24331 11.2402 2.82007 11.3085C3.38136 11.375 4.09647 11.375 4.99045 11.375H7.00955C7.90355 11.375 8.61865 11.375 9.17995 11.3085C9.7567 11.2402 10.2452 11.0948 10.6386 10.7482C11.0402 10.3943 11.2165 9.94215 11.298 9.4082C11.3751 8.90285 11.375 8.26345 11.375 7.4843V7.4072C11.375 6.6281 11.3751 5.9887 11.298 5.4834C11.2165 4.94944 11.0402 4.49735 10.6386 4.14343C10.3238 3.86604 9.94765 3.71724 9.5133 3.63391C9.24835 3.58309 8.992 3.7548 8.9407 4.01744C8.88945 4.28007 9.06265 4.53419 9.3276 4.58501C9.65015 4.64688 9.84505 4.74039 9.98925 4.86743C10.1601 5.018 10.27 5.2241 10.3317 5.62825C10.3964 6.0527 10.3978 6.6185 10.3978 7.4458C10.3978 8.2731 10.3964 8.83885 10.3317 9.2633C10.27 9.66745 10.1601 9.8736 9.98925 10.0242C9.8101 10.182 9.5517 10.2889 9.06395 10.3466C8.5675 10.4055 7.91095 10.4063 6.97725 10.4063H5.02275C4.08903 10.4063 3.43252 10.4055 2.93605 10.3466C2.44832 10.2889 2.18988 10.182 2.01077 10.0242C1.83991 9.8736 1.73 9.66745 1.66834 9.2633C1.60358 8.83885 1.60228 8.2731 1.60228 7.4458C1.60228 6.6185 1.60358 6.0527 1.66834 5.62825C1.73 5.2241 1.83991 5.018 2.01077 4.86743C2.15493 4.74039 2.34986 4.64688 2.67238 4.58501C2.93733 4.53419 3.11056 4.28007 3.05928 4.01744ZM3 7C2.72386 7 2.5 7.22385 2.5 7.5C2.5 7.77615 2.72386 8 3 8H3.5C3.77614 8 4 7.77615 4 7.5C4 7.22385 3.77614 7 3.5 7H3ZM5.75 7C5.47385 7 5.25 7.22385 5.25 7.5C5.25 7.77615 5.47385 8 5.75 8H6.25C6.52615 8 6.75 7.77615 6.75 7.5C6.75 7.22385 6.52615 7 6.25 7H5.75ZM8.5 7C8.22385 7 8 7.22385 8 7.5C8 7.77615 8.22385 8 8.5 8H9C9.27615 8 9.5 7.77615 9.5 7.5C9.5 7.22385 9.27615 7 9 7H8.5Z" fill="currentColor"/>

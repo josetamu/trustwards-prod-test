@@ -9,9 +9,12 @@ class TrustwardsFrontend {
 
         this.createShadowDOM(); //Create the shadow DOM wrapper and the shadow DOM itself
         this.insertBannerAndModalHTML(); //Insert the banner and modal html into the shadow DOM
-        this.insertIdsAndClassesCSS(); //Insert the ids and classes css into the shadow DOM
+        this.insertIdsAndClassesCSSAndDefaultCSS(); //Insert the ids and classes css into the shadow DOM
         this.appendBannerContainer(); //Append the banner container to the body
-        this.toggleModalAndBanner(); //Open Modal (+ close logic) and close banner
+
+        this.blockEventsFlag = false;
+        this.blockScrollFlag = false;
+        this.toggleBlockEventsAndScroll(); //Block events and scroll
     }
 
     createShadowDOM() {
@@ -25,12 +28,13 @@ class TrustwardsFrontend {
         this.twShadowRoot.innerHTML += this.jsonModal.html;
     }
 
-    insertIdsAndClassesCSS() {
+    insertIdsAndClassesCSSAndDefaultCSS() {
         var styleEl = document.createElement('style');
         var cssRules = '';
 
         cssRules += idsCSSData;
         cssRules += classesCSSData;
+        cssRules += defaultCSS;
 
         styleEl.textContent = cssRules;
         this.twShadowRoot.appendChild(styleEl);
@@ -40,19 +44,8 @@ class TrustwardsFrontend {
         document.body.appendChild(this.twShadowContainer);
         this.openBanner();
     }
-    toggleModalAndBanner() {
-        this.twShadowRoot.querySelector('.tw-open-modal').addEventListener('click', () => {
-            this.openModal();
-            this.closeBanner();
-        });
-        this.twShadowRoot.querySelector('.tw-open-modal').addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                this.openModal();
-                this.closeBanner();
-            }
-        });      
-    }
-    openBanner(focusTarget) {
+    
+    openBanner() {
         const banner = this.twShadowRoot.querySelector('.tw-banner');
 
         // Make it interactive and visible before giving focus
@@ -64,13 +57,8 @@ class TrustwardsFrontend {
         }
 
         // Prefer focusing the first actionable control inside the banner
-        if(focusTarget == 'modal'){
-            var focusElement = this.twShadowRoot.querySelector('.tw-open-modal')
-        }else{
-            var focusElement = banner;
-        }
         requestAnimationFrame(() => {
-            focusElement.focus();
+            banner.focus();
             banner.classList.add('tw-banner--open');
         });
     }
@@ -95,7 +83,7 @@ class TrustwardsFrontend {
     
         if (modalOverlay.classList.contains('tw-modal-overlay--open') && event.key === 'Escape') {
             this.closeModal();
-            this.openBanner('modal');
+            this.openBanner();
         }
     }
     closeModalOnClickOutside(event, twShadowRoot) {
@@ -104,8 +92,14 @@ class TrustwardsFrontend {
     
         if (modalOverlay.classList.contains('tw-modal-overlay--open') && !modal.contains(event.target)) {
             this.closeModal();
-            this.openBanner('modal');
+            this.openBanner();
         }
+    }
+    closeBanner() {
+        const banner = this.twShadowRoot.querySelector('.tw-banner');
+    
+        banner.classList.remove('tw-banner--open');
+        banner.setAttribute('inert', '');
     }
     closeModal() {
         const modalOverlay = this.twShadowRoot.querySelector('.tw-modal-overlay');
@@ -119,15 +113,32 @@ class TrustwardsFrontend {
         // Add inert
         modalOverlay.setAttribute('inert', '');
     }
-    closeBanner() {
-        const banner = this.twShadowRoot.querySelector('.tw-banner');
-    
-        banner.classList.remove('tw-banner--open');
-        banner.setAttribute('inert', '');
-    }  
-}
-var trustwardsFrontendInstance = new TrustwardsFrontend(jsonBanner, jsonModal);
 
+    toggleBlockEventsAndScroll() {
+        if (blockEvents.toString() == "true") {
+            // Also block events on the body but allow shadowDOM to receive events
+            document.body.style.pointerEvents = 'none';
+            if (this.twShadowRoot) {
+                this.twShadowRoot.host.style.pointerEvents = 'auto';
+            }
+            this.blockEventsFlag = true;
+        }else if (this.blockEventsFlag) {
+            document.body.style.pointerEvents = 'auto';
+            this.blockEventsFlag = false;
+        }
+        if (blockScroll.toString() == "true") {
+            document.body.style.overflow = 'hidden';
+            this.blockScrollFlag = true;
+        }else if (this.blockScrollFlag) {
+            document.body.style.overflow = 'auto';
+            this.blockScrollFlag = false;
+        }
+    }
+}
+var trustwardsFrontendInstance = null;
+document.addEventListener('DOMContentLoaded', () => {
+    trustwardsFrontendInstance = new TrustwardsFrontend(jsonBanner, jsonModal);
+});
 /*CREATES THE CATEGORIES EXPANDERS*/
 class categoriesExpanders {
     constructor(scriptsScanned, iframesScanned) {
@@ -201,7 +212,10 @@ class categoriesExpanders {
         });
     }
 }
-var categoriesExpandersInstance = new categoriesExpanders(scriptsScanned, iframesScanned);
+var categoriesExpandersInstance = null;
+document.addEventListener('DOMContentLoaded', () => {
+    categoriesExpandersInstance = new categoriesExpanders(scriptsScanned, iframesScanned);
+});
 
 /*MANAGES THE CONSENT*/
 class TrustwardsConsentManager {
@@ -217,8 +231,9 @@ class TrustwardsConsentManager {
         this.initializeCategoriesData();
         this.deleteDisabledCookiesAndIframesBeforeTW();
         this.initializeMutationObserver();
-        this.consentEvents();
-        this.initializeCustomDataAttributes();
+        document.addEventListener('DOMContentLoaded', () => {
+            this.initializeDataEvents();
+        });
     }
 
     /*
@@ -274,7 +289,7 @@ class TrustwardsConsentManager {
     blockAndPushScript(scriptElement){
         const hasGTM  = Array.isArray(window.dataLayer);
         const hasGtag = typeof window.gtag === 'function';
-        const u = new URL(scriptElement.src, location.origin);
+        const u = new URL(scriptElement.getAttribute('src'), location.origin);
         const isGTM = u.hostname === 'www.googletagmanager.com' && u.pathname === '/gtm.js';
         const isGtag = u.hostname === 'www.googletagmanager.com' && u.pathname.startsWith('/gtag/js');
         if ((hasGTM || hasGtag) && (isGTM || isGtag)){
@@ -288,10 +303,11 @@ class TrustwardsConsentManager {
                 newScript.setAttribute(attr.name, attr.value);
             }
         });
-        newScript.setAttribute('data-src', scriptElement.src); //Set data-src instead of src on the new script to avoid any kind of execution
+
+        newScript.setAttribute('data-src', scriptElement.getAttribute('src')); //Set data-src instead of src on the new script to avoid any kind of execution
 
         this.blockedScripts.push({ //Store the original script attributes to recreate it later
-            src: scriptElement.src,
+            src: scriptElement.getAttribute('src'),
             attributes: Array.from(scriptElement.attributes),
         });
         if (scriptElement.parentNode) {
@@ -300,10 +316,9 @@ class TrustwardsConsentManager {
     }
     blockAndPushIframe(iframeElement){
         var synteticIframe = buildIframePlaceholder({
-            src: iframeElement.src,
-            ariaLabel: `iframe embed`,
-            maxWidth: iframeElement.style.width,
-            maxHeight: iframeElement.style.height
+            src: iframeElement.getAttribute('src'),
+            maxWidth: iframeElement.offsetWidth,
+            maxHeight: iframeElement.offsetHeight,
         });
         const originalAttributes = Array.from(iframeElement.attributes).map(a => [a.name, a.value]); // Store the original attributes to restore them later
         if (iframeElement.parentNode) iframeElement.parentNode.replaceChild(synteticIframe, iframeElement); // Replace the iframe in the DOM
@@ -316,29 +331,27 @@ class TrustwardsConsentManager {
         });
 
         //Creates a synteticIframe to replace the blocked one
-        function buildIframePlaceholder({ src, ariaLabel, maxWidth, maxHeight }) {
+        function buildIframePlaceholder({ src, maxWidth, maxHeight }) {
             const synteticIframe = document.createElement('div');
             synteticIframe.className = 'tw-iframe-placeholder';
             synteticIframe.setAttribute('data-src', src);
             synteticIframe.setAttribute('role', 'group');
-            synteticIframe.setAttribute('aria-label', `${ariaLabel} (blocked until consent)`);
+            synteticIframe.setAttribute('aria-label', `Blocked until consent`);
           
             // Fill parent with original iframe dimensions as max
-            synteticIframe.style.width = '100%';
-            synteticIframe.style.height = '100%';
-            synteticIframe.style.maxWidth = maxWidth;
-            synteticIframe.style.maxHeight = maxHeight;
+            synteticIframe.style.maxWidth = maxWidth + 'px';
+            synteticIframe.style.height = maxHeight + 'px';
           
             // Center the text
             synteticIframe.style.display = 'flex';
             synteticIframe.style.alignItems = 'center';
             synteticIframe.style.justifyContent = 'center';
             synteticIframe.style.textAlign = 'center';
-            synteticIframe.style.padding = '12px';
+            synteticIframe.style.backgroundColor = '#eee';
           
             // Text
             const label = document.createElement('span');
-            label.textContent = 'Consent not given';
+            label.textContent = 'Blocked until consent';
             synteticIframe.appendChild(label);
           
             return synteticIframe;
@@ -422,9 +435,11 @@ class TrustwardsConsentManager {
         });
 
         //Set the enabled checkboxes in the expanders categories stored as enabled in the trustwardsCookie
-        const checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-modal__expander-checkbox:not([name="functional"])');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = this.categoriesData[checkbox.name.charAt(0).toUpperCase() + checkbox.name.slice(1)].enabled;
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-modal__expander-checkbox:not([name="functional"])');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.categoriesData[checkbox.name.charAt(0).toUpperCase() + checkbox.name.slice(1)].enabled;
+            });
         });
 
         //Send init consent to Google Analytics and Google Tag Manager
@@ -477,17 +492,17 @@ class TrustwardsConsentManager {
                     mutation.addedNodes.forEach(addedNode => {
                         const nodes = addedNode.nodeType === 1 ? [addedNode, ...addedNode.querySelectorAll('script, iframe')] : []; //Also check for scripts and iframes inside the added node
                         nodes.forEach(node => {
-                            if (node.tagName === 'SCRIPT' && node.src) {
+                            if (node.tagName === 'SCRIPT' && node.getAttribute('src')) {
                                 const category = Object.values(this.categoriesData).find(entry => //Check if the script's src is found in a category and get that category
-                                    entry.scriptsSrc.includes(node.src)
+                                    entry.scriptsSrc.includes(node.getAttribute('src'))
                                 );
                                 if (category && category.enabled === false) { //Block the script if it's category was found as disabled
                                     this.blockAndPushScript(node);
                                 }
                             }
-                            if (node.tagName === 'IFRAME' && node.src) {
+                            if (node.tagName === 'IFRAME' && node.getAttribute('src')) {
                                 const category = Object.values(this.categoriesData).find(entry => //Check if the iframe's src is found in a category and get that category
-                                    entry.iframesSrc.includes(node.src)
+                                    entry.iframesSrc.includes(node.getAttribute('src'))
                                 );
                                 if (category && category.enabled === false) { //Block the iframe if it's category was found as disabled
                                     this.blockAndPushIframe(node);
@@ -503,102 +518,15 @@ class TrustwardsConsentManager {
     }
 
     /*
-    4. Initialize Consent in real time
-    - Banner accept all - toggle all checkboxes and update consent
-    - Modal accept all/reject all - toggle all checkboxes
-    - Modal save choices - update consent and close modal
+    4. Initialize Consent updates
+    - toggleCheckboxes - enable/disable all checkboxes or only one checkbox (depending on the mode)
     - Update consent - Accept a category - unblock scripts and iframes (recreate the script or iframe, replace it on text/plain script or iframe and drop it from blockedScripts or blockedIframes)
     - Update consent - Reject a category - delete the category's cookies already installed, block scripts and iframes
     - Update consent - Clean up - Update trustwardsCookie to the new choices
-    - Update consent - Clean up - Update categoriesData used all the time by MutationObserver to track the new scripts added dinamically
+    - Update consent - Clean up - Update categoriesData used all the time by MutationObserver to track the new scripts and iframes added dinamically
+    - Update consent - Clean up - Send consent update to Google Analytics and Google Tag Manager
     - Update consent - Clean up - Update site's proof of consent file
     */
-    consentEvents() {
-        //Banner - accept all - enable all checkboxes, update consent and close banner
-        const acceptAllAndConsent = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-accept-all');
-        if (acceptAllAndConsent) {
-            acceptAllAndConsent.forEach(acceptAllAndConsent => {
-                acceptAllAndConsent.addEventListener('click', () => {
-                    this.toggleCheckboxes('acceptAll');
-                    this.updateConsent();
-                    trustwardsFrontendInstance.closeBanner();
-                });
-                acceptAllAndConsent.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        this.toggleCheckboxes('acceptAll');
-                        this.updateConsent();
-                        trustwardsFrontendInstance.closeBanner();
-                    }
-                });
-            });
-        }
-
-        //Banner - reject all - disable all checkboxes, update consent and close banner
-        const rejectAllAndConsent = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-reject-all');
-        if (rejectAllAndConsent) {
-            rejectAllAndConsent.forEach(rejectAllAndConsent => {
-                rejectAllAndConsent.addEventListener('click', () => {
-                    this.toggleCheckboxes('rejectAll');
-                    this.updateConsent();
-                    trustwardsFrontendInstance.closeBanner();
-                });
-                rejectAllAndConsent.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        this.toggleCheckboxes('rejectAll');
-                        this.updateConsent();
-                        trustwardsFrontendInstance.closeBanner();
-                    }
-                });
-            });
-        }
-
-        //Modal - accept all - enable all checkboxes
-        const acceptAllModal = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-enable-all');
-        if (acceptAllModal) {
-            acceptAllModal.forEach(acceptAllModal => {
-                acceptAllModal.addEventListener('click', () => {
-                    this.toggleCheckboxes('acceptAll');
-                });
-                acceptAllModal.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        this.toggleCheckboxes('acceptAll');
-                    }
-                });
-            });
-        }
-
-        //Modal - reject all - enable all checkboxes
-        const rejectAllModal = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-disable-all');
-        if (rejectAllModal) {
-            rejectAllModal.forEach(rejectAllModal => {
-                rejectAllModal.addEventListener('click', () => {
-                    this.toggleCheckboxes('rejectAll');
-                });
-                rejectAllModal.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        this.toggleCheckboxes('rejectAll');
-                    }
-                });
-            });
-        }
-
-        //Modal - save choices - update consent and close modal
-        const saveChoicesModal = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-save-categories');
-        if (saveChoicesModal) {
-            saveChoicesModal.forEach(saveChoicesModal => {
-                saveChoicesModal.addEventListener('click', () => {
-                    this.updateConsent();
-                    trustwardsFrontendInstance.closeModal();
-                });
-                saveChoicesModal.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        this.updateConsent();
-                        trustwardsFrontendInstance.closeModal();
-                    }
-                });
-            });
-        }
-    }
 
     toggleCheckboxes(mode, customCategory = null) {
         var checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-modal__expander-checkbox:not([name="functional"])');
@@ -631,6 +559,11 @@ class TrustwardsConsentManager {
     }
 
     updateConsent() {
+        //A decision was made, so we have to unblock events and scroll
+        blockEvents = false;
+        blockScroll = false;
+        trustwardsFrontendInstance.toggleBlockEventsAndScroll();
+
         //Update categoriesData array with each category enabled flag updated with the new choices
         const checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-modal__expander-checkbox:not([name="functional"])');
         checkboxes.forEach(checkbox => {
@@ -812,69 +745,128 @@ class TrustwardsConsentManager {
     }
 
     /*
-    5. 
-    - Custom data attributes to trigger actions that manage cookies
-    - data-tw-open-modal - Open the modal
+    5. Custom data attributes used by shadowDOM elements and custom DOM elements to trigger actions that manage cookies, banner toggle and modal toggle
+    - data-tw-open-banner - Open banner
+    - data-tw-close-banner - Close banner
+    - data-tw-open-modal - Open settings (modal)
+    - data-tw-close-modal - Close settings (modal)
+
+    - data-tw-enable-all - Enable all categories (just checkboxes)
+    - data-tw-disable-all - Disable all categories (just checkboxes)
+    - data-tw-save-choices - Save choices (current categories choices)
+
+    - data-tw-accept-category="categoryName" - Accept only this category
+    - data-tw-reject-category="categoryName" - Reject only this category
+
     - data-tw-accept-all - Accept all categories
     - data-tw-reject-all - Reject all categories
-    - data-tw-accept-category="categoryName" - Accept a category
-    - data-tw-reject-category="categoryName" - Reject a category
     */
-    initializeCustomDataAttributes() {
-        //Open the modal - data-tw-open-modal
-        document.querySelectorAll('[data-tw-open-modal]').forEach(element => {
+    initializeDataEvents() {
+        //Helper function to query all elements inside the shadowDOM and the DOM, also set tabindex to 0 to allow focus if doesn't have it
+        const queryAll = (selector) => {
+            const elements = Array.from(document.querySelectorAll(selector));
+            const shadowRoot = trustwardsFrontendInstance && trustwardsFrontendInstance.twShadowRoot;
+            if (shadowRoot) {
+                elements.push(...Array.from(shadowRoot.querySelectorAll(selector)));
+            }
+            elements.forEach(el => {
+                if (!el.hasAttribute('tabindex')) {
+                    el.setAttribute('tabindex', '0');
+                }
+            });
+            return elements;
+        };
+
+        //Open banner - data-tw-open-banner
+        queryAll('[data-tw-open-banner]').forEach(element => {
+            element.addEventListener('click', () => {
+                trustwardsFrontendInstance.openBanner();
+            });
+            element.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    trustwardsFrontendInstance.openBanner();
+                }
+            });
+        });
+        
+        //Close banner - data-tw-close-banner
+        queryAll('[data-tw-close-banner]').forEach(element => {
+            element.addEventListener('click', () => {
+                trustwardsFrontendInstance.closeBanner();
+            });
+            element.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    trustwardsFrontendInstance.closeBanner();
+                }
+            });
+        });
+
+        //Open settings (modal) - data-tw-open-modal
+        queryAll('[data-tw-open-modal]').forEach(element => {
             element.addEventListener('click', () => {
                 trustwardsFrontendInstance.openModal();
             });
-
-            element.setAttribute('tabindex', '0'); //tabindex 0 to allow focus
             element.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
                     trustwardsFrontendInstance.openModal();
                 }
             });
         });
-    
-        //Accept all categories - data-tw-accept-all
-        document.querySelectorAll('[data-tw-accept-all]').forEach(element => {
+
+        //Close settings (modal) - data-tw-close-modal
+        queryAll('[data-tw-close-modal]').forEach(element => {
+            element.addEventListener('click', () => {
+                trustwardsFrontendInstance.closeModal();
+            });
+            element.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    trustwardsFrontendInstance.closeModal();
+                }
+            });
+        });
+
+        //Enable all categories (just checkboxes) - data-tw-enable-all
+        queryAll('[data-tw-enable-all]').forEach(element => {
             element.addEventListener('click', () => {
                 this.toggleCheckboxes('acceptAll');
-                this.updateConsent();
             });
-
-            element.setAttribute('tabindex', '0'); //tabindex 0 to allow focus
             element.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
                     this.toggleCheckboxes('acceptAll');
-                    this.updateConsent();
                 }
             });
         });
 
-        //Reject all categories - data-tw-reject-all
-        document.querySelectorAll('[data-tw-reject-all]').forEach(element => {
+        //Disable all categories (just checkboxes) - data-tw-disable-all
+        queryAll('[data-tw-disable-all]').forEach(element => {
             element.addEventListener('click', () => {
                 this.toggleCheckboxes('rejectAll');
-                this.updateConsent();
             });
-
-            element.setAttribute('tabindex', '0'); //tabindex 0 to allow focus
             element.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
                     this.toggleCheckboxes('rejectAll');
+                }
+            });
+        });
+
+        //Save choices (current categories choices) - data-tw-save-choices
+        queryAll('[data-tw-save-choices]').forEach(element => {
+            element.addEventListener('click', () => {
+                this.updateConsent();
+            });
+            element.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
                     this.updateConsent();
                 }
             });
         });
 
-        //Accept a category - data-tw-accept-category
-        document.querySelectorAll('[data-tw-accept-category]').forEach(element => {
+        //Accept only this category - data-tw-accept-category="categoryName"
+        queryAll('[data-tw-accept-category]').forEach(element => {
             element.addEventListener('click', () => {
                 this.toggleCheckboxes('acceptCategory', element.getAttribute('data-tw-accept-category'));
                 this.updateConsent();
             });
-
-            element.setAttribute('tabindex', '0'); //tabindex 0 to allow focus
             element.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
                     this.toggleCheckboxes('acceptCategory', element.getAttribute('data-tw-accept-category'));
@@ -883,19 +875,33 @@ class TrustwardsConsentManager {
             });
         });
 
-        //Reject a category - data-tw-reject-category
-        document.querySelectorAll('[data-tw-reject-category]').forEach(element => {
+        //Reject only this category - data-tw-reject-category="categoryName"
+        queryAll('[data-tw-reject-category]').forEach(element => {
             element.addEventListener('click', () => {
                 this.toggleCheckboxes('rejectCategory', element.getAttribute('data-tw-reject-category'));
                 this.updateConsent();
             });
-
-            element.setAttribute('tabindex', '0'); //tabindex 0 to allow focus
             element.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
                     this.toggleCheckboxes('rejectCategory', element.getAttribute('data-tw-reject-category'));
                     this.updateConsent();
                 }
+            });
+        });
+
+        //Accept all categories - data-tw-accept-all
+        queryAll('[data-tw-accept-all]').forEach(element => {
+            element.addEventListener('click', () => {
+                this.toggleCheckboxes('acceptAll');
+                this.updateConsent();
+            });
+        });
+        
+        //Reject all categories - data-tw-reject-all
+        queryAll('[data-tw-reject-all]').forEach(element => {
+            element.addEventListener('click', () => {
+                this.toggleCheckboxes('rejectAll');
+                this.updateConsent();
             });
         });
     }

@@ -1,38 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import UnderlineHover from '../../websiteMiniComponents/UnderlineHover/UnderlineHover';
+import Expander from '../../websiteMiniComponents/Expanders/Expander';
+import '../../websiteMiniComponents/UnderlineHover/UnderlineHover.css';
 import './Footer.css';
 
 const Footer = ({ className = '' }) => {
-  const [openFaqItem, setOpenFaqItem] = useState(null);
-
-  const toggleFaqItem = (index) => {
-    setOpenFaqItem(openFaqItem === index ? null : index);
-  };
-
   const faqData = [
     {
-      question: "Lorem ipsum dolor sit amet?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+      label: "What is TrustWards?",
+      content: "TrustWards is a comprehensive privacy compliance platform that helps websites meet GDPR, CCPA, and other privacy regulations. Our advanced scanner analyzes your website for compliance issues and provides actionable recommendations."
     },
     {
-      question: "Lorem ipsum dolor sit amet?",
-      answer: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt."
+      label: "How does the scanner work?",
+      content: "Our scanner uses advanced algorithms to analyze your website's privacy practices, cookie usage, data collection methods, and compliance with various privacy laws. It provides detailed reports and recommendations for improvement."
     },
     {
-      question: "Lorem ipsum dolor sit amet?",
-      answer: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident."
+      label: "Is there a free trial?",
+      content: "Yes! We offer a 14-day free trial with full access to all features. No credit card required. You can explore all our tools and see how they can help improve your website's privacy compliance."
     },
     {
-      question: "Lorem ipsum dolor sit amet?",
-      answer: "Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio nam libero tempore cum soluta nobis est eligendi."
+      label: "What privacy laws does TrustWards help with?",
+      content: "TrustWards helps with GDPR (EU), CCPA (California), LGPD (Brazil), PIPEDA (Canada), and many other privacy regulations worldwide. Our platform stays updated with the latest changes in privacy law."
     },
     {
-      question: "Lorem ipsum dolor sit amet?",
-      answer: "Optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus."
+      label: "How often should I scan my website?",
+      content: "We recommend scanning your website at least monthly, or whenever you make significant changes to your privacy policy, add new tracking tools, or update your website's functionality. Our platform can also send you automated reminders."
     },
     {
-      question: "Lorem ipsum dolor sit amet?",
-      answer: "Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Sed ut perspiciatis unde omnis iste natus error sit voluptatem."
+      label: "Do I need technical knowledge to use TrustWards?",
+      content: "Not at all! TrustWards is designed to be user-friendly for everyone. Our builder allows you to create beautiful consent banners without any coding knowledge, and our dashboard provides clear, actionable insights."
     }
   ];
 
@@ -49,32 +46,20 @@ const Footer = ({ className = '' }) => {
                 Didn't find your question? 
                 <br></br>
                 Feel free to reach as to{' '}
-                <a href="mailto:team@trustwards.io" className="tw-faq__email">team@trustwards.io</a>
+                <a href="mailto:team@trustwards.io" className="tw-faq__email">
+                  <UnderlineHover>team@trustwards.io</UnderlineHover>
+                </a>
               </p>
             </div>
             <div className="tw-faq__accordion">
-              {faqData.map((item, index) => (
-                <div key={index} className="tw-faq__item">
-                  <button 
-                    className="tw-faq__question"
-                    tabIndex={0}
-                    onClick={() => toggleFaqItem(index)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        e.currentTarget.click();
-                      }
-                    }}
-                    aria-expanded={openFaqItem === index}
-                  >
-                    <span className="tw-faq__icon">+</span>
-                    <span className="tw-faq__question-text">{item.question}</span>
-                  </button>
-                  <div className={`tw-faq__answer ${openFaqItem === index ? 'tw-faq__answer--open' : ''}`}>
-                    <p>{item.answer}</p>
-                  </div>
-                </div>
-              ))}
+              <Expander
+                items={faqData}
+                mode="click"
+                singleOpen={true}
+                includeSchema={true}
+                contentTransitionDuration={0.3}
+                context="footer"
+              />
             </div>
           </div>
         </div>
@@ -122,41 +107,41 @@ const Footer = ({ className = '' }) => {
             <div className="tw-footer__right-wrapper">
               <div className="tw-footer__nav-column">
                 <span className="tw-footer__nav-title">Features</span>
-                <span className="tw-footer__nav-item">Builder</span>
-                <span className="tw-footer__nav-item">Themes</span>
-                <span className="tw-footer__nav-item">Scanner</span>
-                <span className="tw-footer__nav-item">Comply Map</span>
-                <span className="tw-footer__nav-item">Integrations</span>
-                <span className="tw-footer__nav-item">Localization</span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Builder</UnderlineHover></span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Themes</UnderlineHover></span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Scanner</UnderlineHover></span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Comply Map</UnderlineHover></span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Integrations</UnderlineHover></span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Localization</UnderlineHover></span>
               </div>
 
               <div className="tw-footer__nav-column">
                 <span className="tw-footer__nav-title">Useful</span>
-                <span className="tw-footer__nav-item">Pricing</span>
-                <span className="tw-footer__nav-item">Changelog</span>
-                <span className="tw-footer__nav-item">Roadmap</span>
-                <span className="tw-footer__nav-item">Academy</span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Pricing</UnderlineHover></span>
+                <Link href="/changelog" className="tw-footer__nav-item"><UnderlineHover>Changelog</UnderlineHover></Link>
+                <Link href="/roadmap" className="tw-footer__nav-item"><UnderlineHover>Roadmap</UnderlineHover></Link>
+                <span className="tw-footer__nav-item"><UnderlineHover>Academy</UnderlineHover></span>
               </div>
 
               <div className="tw-footer__nav-column">
                 <span className="tw-footer__nav-title">Community</span>
-                <span className="tw-footer__nav-item">Blog</span>
-                <span className="tw-footer__nav-item">Affiliates</span>
-                <span className="tw-footer__nav-item">Facebook</span>
-                <span className="tw-footer__nav-item">YouTube</span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Blog</UnderlineHover></span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Affiliates</UnderlineHover></span>
+                <span className="tw-footer__nav-item"><UnderlineHover>Facebook</UnderlineHover></span>
+                <span className="tw-footer__nav-item"><UnderlineHover>YouTube</UnderlineHover></span>
               </div>
 
               <div className="tw-footer__nav-column tw-footer__nav-column--double">
                 <div className="tw-footer__nav-column">
                   <span className="tw-footer__nav-title">Connect</span>
-                  <span className="tw-footer__nav-item">Sales team</span>
-                  <span className="tw-footer__nav-item">Contact</span>
+                  <span className="tw-footer__nav-item"><UnderlineHover>Sales team</UnderlineHover></span>
+                  <span className="tw-footer__nav-item"><UnderlineHover>Contact</UnderlineHover></span>
                 </div>
 
                 <div className="tw-footer__nav-column">
                   <span className="tw-footer__nav-title">Legal</span>
-                  <span className="tw-footer__nav-item">Terms & conditions</span>
-                  <span className="tw-footer__nav-item">Privacy policy</span>
+                  <span className="tw-footer__nav-item"><UnderlineHover>Terms & conditions</UnderlineHover></span>
+                  <span className="tw-footer__nav-item"><UnderlineHover>Privacy policy</UnderlineHover></span>
                 </div>
               </div>
             </div>

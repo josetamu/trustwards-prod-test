@@ -77,6 +77,8 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         classesCSSData: [], /*for each class, stores its right panel properties*/
         activeRoot: "tw-root--banner", //stored active root
         isFirstTime: true, //stored if it is the first time on the builder to open the builder themes
+        blockEvents: false, //to block user events until a decision is made
+        blockScroll: false, //to block scroll until a decision is made
         canvasMaxWidth: null, //stored the max width of the canvas by root
         roots: [
             {

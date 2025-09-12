@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    line-height: normal;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.03em;
+}
+html{
+    padding: 0;
+}
+.tw-login{
+    background: #191919;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100dvh;
+
+    position: relative;
+    padding: 50px 20px;
+}
+.tw-login__content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: relative;
+    z-index: 1;
+}
+
+/* Top Content */
+.tw-login__top-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.tw-login__logo{
+    background: url('/assets/logo-dark-mode.svg');
+    background-size: cover;
+    width: 30px;
+    height: 22px;
+
+    margin-bottom: 10px;
+}
+.tw-login__title{
+    background: linear-gradient(90deg, #FFF 75%, #0099FE 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    font-size: 23px;
+    font-weight: 700;
+
+    text-align: center;
+}
+.tw-login__text{
+    font-size: 14px;
+    font-weight: 500;
+    color: #CCC;
+
+    text-align: center;
+}
+
+/* Form */
+.tw-login__form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    width: 100%;
+    margin-top: 25px;
+}
+.tw-login__email,
+.tw-login__password{
+    outline: unset;
+    border: unset;
+
+    background: #292929 !important;
+    padding: 10px 12px;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+
+    transition-delay: calc(infinity * 1s);
+}
+.tw-login__email::placeholder,
+.tw-login__password::placeholder{
+    color: #FFFFFF;
+}
+.tw-login__continue{
+    outline: unset;
+    border: unset;
+
+    box-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
+    background: #11A8FF;
+
+    padding: 10px;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+/* or separator */
+.tw-login__or-separator-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+
+    width: 100%;
+}
+.tw-login__or-separator-container::before,
+.tw-login__or-separator-container::after{
+    content: '';
+    display: block;
+
+    width: 100%;
+    max-width: 60px;
+    height: 1px;
+
+    background: #444;
+}
+.tw-login__or-separator{
+    font-size: 14px;
+    font-weight: 500;
+    color: #CCC;
+
+    margin: 10px 0;
+}
+
+/* Continue with Google */
+.tw-login__continue-with-google{
+    outline: unset;
+    border: unset;
+
+    padding: 10px;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+    background: #666666;
+    cursor: pointer;
+
+    width: 100%;
+}
+
+/* Blurs */
+.tw-login__blur{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    background: url('/assets/login-blur.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+    height: 100%;
+    width: 100%;
+}
