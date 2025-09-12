@@ -1,11 +1,17 @@
 'use client'
 
+import './root.css'
 import './web.css'
 import '@components/tooltip/Tooltip.css'
 import Link from 'next/link'
+import Script from 'next/script'
 import { useEffect, useState, useRef } from 'react'
 import Header from './websiteComponents/Header/Header'
 import Footer from './websiteComponents/Footer/Footer'
+import Marquee from './websiteMiniComponents/Marquee/Marquee'
+import UnderlineHover from './websiteMiniComponents/UnderlineHover/UnderlineHover'
+import './websiteMiniComponents/Marquee/Marquee.css'
+import './websiteMiniComponents/UnderlineHover/UnderlineHover.css'
 
 function Web() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -23,59 +29,135 @@ function Web() {
     }
   };
 
-  // Load MailerLite script exactly as provided
-  useEffect(() => {
-    // Check if script is already loaded
-    if (window.ml) return;
-
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://assets.mailerlite.com/js/universal.js';
-    script.onload = () => {
-      // Initialize MailerLite exactly as in the provided script
-      if (window.ml) {
-        window.ml('account', '1445271');
-      }
-    };
-    
-    document.head.appendChild(script);
-
-    // Cleanup
-    return () => {
-      const existingScript = document.querySelector('script[src="https://assets.mailerlite.com/js/universal.js"]');
-      if (existingScript) {
-        existingScript.remove();
-      }
-    };
-  }, []);
 
   useEffect(() => {
-    let lastWidth = window.innerWidth;
-    
     const adjustMargin = () => {
       const wrapper = document.querySelector('.tw-wrapper');
-      if (wrapper) {
-        // Calculate the margin-bottom based on the viewport width
+      const newsletter = document.querySelector('.tw-newsletter');
+      
+      if (wrapper && newsletter) {
+        // Get the actual height of the newsletter
+        const newsletterHeight = newsletter.offsetHeight;
+        
+        // Calculate viewport dimensions
+        const viewportHeight = window.innerHeight;
         const viewportWidth = window.innerWidth;
-        const maxMargin = 444; // Maximum margin
-        const responsiveMargin = Math.min(maxMargin, viewportWidth * 0.3); // Maximum 444px or 30% of the viewport width
-        wrapper.style.marginBottom = `${responsiveMargin}px`;
+        
+        // The margin should ALWAYS be at least the full newsletter height
+        // to ensure the newsletter is never cut off
+        let finalMargin = newsletterHeight;
+        
+        // Only reduce margin for extremely large viewports, but never below newsletter height
+        if (viewportHeight > newsletterHeight * 4) {
+          // For extremely large viewports, use a slightly smaller margin
+          // but NEVER less than the full newsletter height
+          finalMargin = Math.max(newsletterHeight, viewportHeight * 0.2);
+        }
+        
+        // Apply the calculated margin
+        wrapper.style.marginBottom = `${finalMargin}px`;
       }
     };
 
-    // Adjust when the page loads
-    adjustMargin();
+    const adjustNewsletterContent = () => {
+      const newsletter = document.querySelector('.tw-newsletter');
+      const span = document.querySelector('.tw-newsletter__span');
+      const logo = document.querySelector('.tw-newsletter__logo');
+      const viewportWidth = window.innerWidth;
+      
+      if (newsletter) {
+        // Calculate a scale factor based on viewport width
+        // This creates smooth scaling from 0.7 to 1.0 based on viewport width
+        const minScale = 0.7;
+        const maxScale = 1.0;
+        const minWidth = 360;
+        const maxWidth = 1200;
+        
+        let scaleFactor;
+        if (viewportWidth <= minWidth) {
+          scaleFactor = minScale;
+        } else if (viewportWidth >= maxWidth) {
+          scaleFactor = maxScale;
+        } else {
+          // Smooth interpolation between min and max scale
+          const progress = (viewportWidth - minWidth) / (maxWidth - minWidth);
+          scaleFactor = minScale + (maxScale - minScale) * progress;
+        }
+        
+        // Apply the scale to the newsletter content
+        newsletter.style.transform = `scale(${scaleFactor})`;
+        newsletter.style.transformOrigin = 'bottom center';
+        
+        // Logo scaling is now handled by CSS clamp() for better performance
+        
+        // Adjust the span positioning to stay properly aligned
+        if (span) {
+          // Calculate responsive positioning for the span
+          const baseBottom = 15;
+          const baseRight = -10;
+          const responsiveBottom = baseBottom * scaleFactor;
+          const responsiveRight = baseRight * scaleFactor;
+          
+          span.style.bottom = `${responsiveBottom}px`;
+          span.style.right = `${responsiveRight}px`;
+        }
+      }
+    };
 
-    // Listen to resize events
-    window.addEventListener('resize', adjustMargin);
+    // Initial adjustment
+    adjustMargin();
+    adjustNewsletterContent();
+
+    // Create a ResizeObserver to watch for changes in newsletter height
+    const resizeObserver = new ResizeObserver(() => {
+      adjustMargin();
+    });
+
+    // Observe the newsletter element
+    const newsletter = document.querySelector('.tw-newsletter');
+    if (newsletter) {
+      resizeObserver.observe(newsletter);
+    }
+
+    // Additional observer for MailerLite form content changes
+    const formObserver = new MutationObserver(() => {
+      // Small delay to allow form to fully render
+      setTimeout(adjustMargin, 100);
+    });
+
+    // Observe the newsletter form for content changes
+    const newsletterForm = document.querySelector('.tw-newsletter__form');
+    if (newsletterForm) {
+      formObserver.observe(newsletterForm, {
+        childList: true,
+        subtree: true,
+        attributes: true
+      });
+    }
+
+    // Listen to window resize events with minimal debouncing for smoothness
+    let resizeTimeout;
+    const debouncedAdjust = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+    adjustMargin();
+        adjustNewsletterContent();
+      }, 16); // ~60fps for smooth animation
+    };
+
+    window.addEventListener('resize', debouncedAdjust);
     document.addEventListener('keydown', handleKeyDown);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', adjustMargin);
+      resizeObserver.disconnect();
+      formObserver.disconnect();
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', debouncedAdjust);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
+
 
   return (
     <main className="tw-main">
@@ -312,22 +394,57 @@ function Web() {
           </div>
           
           <div className="tw-themes-section__bottom-content">
-            <div className="tw-themes-section__grid">
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
-              <div className="tw-theme-preview"></div>
+            <div className="tw-themes-marquee">
+              {/* First marquee row */}
+              <Marquee 
+                speed={50} 
+                reverse={false} 
+                pauseOnHover={true}
+                className="tw-themes-marquee__row"
+                itemClassName="tw-themes-marquee__item"
+              >
+                <div className="tw-themes-marquee__item">Theme 1</div>
+                <div className="tw-themes-marquee__item">Theme 2</div>
+                <div className="tw-themes-marquee__item">Theme 3</div>
+                <div className="tw-themes-marquee__item">Theme 4</div>
+                <div className="tw-themes-marquee__item">Theme 5</div>
+                <div className="tw-themes-marquee__item">Theme 6</div>
+                <div className="tw-themes-marquee__item">Theme 7</div>
+                <div className="tw-themes-marquee__item">Theme 8</div>
+                <div className="tw-themes-marquee__item">Theme 9</div>
+                <div className="tw-themes-marquee__item">Theme 10</div>
+                <div className="tw-themes-marquee__item">Theme 11</div>
+                <div className="tw-themes-marquee__item">Theme 12</div>
+              </Marquee>
+              
+              {/* Second marquee row (reverse direction) */}
+              <Marquee 
+                speed={50} 
+                reverse={true} 
+                pauseOnHover={true}
+                className="tw-themes-marquee__row"
+                itemClassName="tw-themes-marquee__item"
+              >
+                <div className="tw-themes-marquee__item">Theme A</div>
+                <div className="tw-themes-marquee__item">Theme B</div>
+                <div className="tw-themes-marquee__item">Theme C</div>
+                <div className="tw-themes-marquee__item">Theme D</div>
+                <div className="tw-themes-marquee__item">Theme E</div>
+                <div className="tw-themes-marquee__item">Theme F</div>
+                <div className="tw-themes-marquee__item">Theme G</div>
+                <div className="tw-themes-marquee__item">Theme H</div>
+                <div className="tw-themes-marquee__item">Theme I</div>
+                <div className="tw-themes-marquee__item">Theme J</div>
+                <div className="tw-themes-marquee__item">Theme K</div>
+                <div className="tw-themes-marquee__item">Theme L</div>
+              </Marquee>
             </div>
             
-            <Link href="#" className="tw-themes-section__browse-link">Browse themes →</Link>
+            <Link href="#" className="tw-themes-section__browse-link">
+              <UnderlineHover className="tw-underline-hover--blue">
+                Browse themes →
+              </UnderlineHover>
+            </Link>
           </div>
         </div>
       </div>
@@ -339,7 +456,7 @@ function Web() {
         <div className="tw-newsletter">
           <div className="tw-newsletter__content">
             <div className="tw-newsletter__logo">
-              <svg width="300" height="220" viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="100%" height="100%" viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0H300V60H0V0Z" fill="black"/>
                 <path d="M80 220V100H200L80 220Z" fill="black"/>
                 <path d="M160 220V100H260L160 220Z" fill="black"/>
@@ -351,12 +468,24 @@ function Web() {
                 <span className="tw-newsletter__span">no spam we promise =)</span>
               </div>
               <div className="tw-newsletter__form">
-                {/* MailerLite Form - exactly as provided */}
+                {/* MailerLite Universal Script */}
+                <Script id="mailerlite-universal" strategy="afterInteractive">
+                  {`
+                    (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
+                    .push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
+                    n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
+                    (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+                    ml('account', '1445271');
+                  `}
+                </Script>
                 <div className="ml-embedded" data-form="lSWt8Q"></div>
               </div>
             </div>
           </div>
         </div>
+        
+
+        
     </main>
   );
 }

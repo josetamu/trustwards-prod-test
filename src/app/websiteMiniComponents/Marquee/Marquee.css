@@ -1,0 +1,73 @@
+/*
+   =======================
+          MARQUEE
+   =======================
+*/
+.tw-marquee{
+    direction: ltr !important;
+    --rotate: 0deg;
+    transform: rotate(var(--rotate));
+    --color: #fff;
+    --width: 25%;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.tw-marquee[data-blur-edges="1"]::before{
+    background-image: linear-gradient(to right, var(--color), rgba(0, 0, 0, 0));
+    content: "";
+    position: absolute;
+    z-index: 99;
+    top: 0;
+    left: 0;
+    width: var(--width);
+    height: 100%;
+}
+
+.tw-marquee[data-blur-edges="1"]::after{
+    background-image: linear-gradient(270deg, var(--color), rgba(0, 0, 0, 0));
+    content: "";
+    position: absolute;
+    z-index: 99;
+    top: 0;
+    right: 0;
+    width: var(--width);
+    height: 100%;
+}
+
+.tw-marquee__wrapper {
+    display: flex;
+    width: max-content;
+    height: 100%;
+}
+
+.tw-marquee__item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: max-content;
+    height: 100%;
+}
+
+@keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.tw-marquee__nestable{
+    visibility: hidden;
+    min-width: 1px;
+}
+
+.tw-marquee__example-heading{
+    background: #080808;
+    padding: 10px 20px;
+    color: white;
+}
+
+.tw-marquee__to-hide{
+    opacity: 0;
+}
+
