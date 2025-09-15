@@ -1,27 +1,238 @@
 import './ModalBuilderSettings.css';
+import { useState } from 'react';
 
-
-
-export const ModalBuilderSettings = () => {
+export const ModalBuilderSettings = ({onClose, showNotification}) => {
+    const [activeTab, setActiveTab] = useState('Builder');
+    const [liveWebsite, setLiveWebsite] = useState(false);
+    const [color, setColor] = useState('#FFFFFF');
+    const [events, setEvents] = useState(false);
+    const [scroll, setScroll] = useState(false);
+    const [copied, setCopied] = useState('');
+    const handleColorChange = (e) => {
+        setColor(e.target.value);
+    }
+    const handleLiveWebsiteChange = () => {
+        setLiveWebsite(!liveWebsite);
+    }
+    const handleEventsChange = () => {
+        setEvents(!events);
+    }
+    const handleScrollChange = () => {
+        setScroll(!scroll);
+    }
+    const copyFromSubtitle = (e) => {
+        const text = e.currentTarget.previousElementSibling.textContent.trim();
+        navigator.clipboard.writeText(text);
+        setCopied(text);
+        showNotification(`Copied: ${text}`, false)
+        
+      };
     return (
         <div className='modal-builder-settings'>
             <div className='modal-builder-settings__header'>
                 <span className='modal-builder-settings__header-title'>Builder Settings</span>
-                <span className='modal-builder-settings__header-close'>
+                <span className='modal-builder-settings__header-close' onClick={onClose}>
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fillRule="evenodd" clipRule="evenodd" d="M2.55806 2.55806C2.80213 2.31398 3.19787 2.31398 3.44194 2.55806L6 5.1161L8.55805 2.55806C8.80215 2.31398 9.19785 2.31398 9.44195 2.55806C9.686 2.80213 9.686 3.19787 9.44195 3.44194L6.8839 6L9.44195 8.55805C9.686 8.80215 9.686 9.19785 9.44195 9.44195C9.19785 9.686 8.80215 9.686 8.55805 9.44195L6 6.8839L3.44194 9.44195C3.19787 9.686 2.80213 9.686 2.55806 9.44195C2.31398 9.19785 2.31398 8.80215 2.55806 8.55805L5.1161 6L2.55806 3.44194C2.31398 3.19787 2.31398 2.80213 2.55806 2.55806Z" fill="#999999"/>
+                        <path fillRule="evenodd" clipRule="evenodd" d="M2.55806 2.55806C2.80213 2.31398 3.19787 2.31398 3.44194 2.55806L6 5.1161L8.55805 2.55806C8.80215 2.31398 9.19785 2.31398 9.44195 2.55806C9.686 2.80213 9.686 3.19787 9.44195 3.44194L6.8839 6L9.44195 8.55805C9.686 8.80215 9.686 9.19785 9.44195 9.44195C9.19785 9.686 8.80215 9.686 8.55805 9.44195L6 6.8839L3.44194 9.44195C3.19787 9.686 2.80213 9.686 2.55806 9.44195C2.31398 9.19785 2.31398 8.80215 2.55806 8.55805L5.1161 6L2.55806 3.44194C2.31398 3.19787 2.31398 2.80213 2.55806 2.55806Z" fill="currentColor"/>
                     </svg>
                 </span>
             </div>
             <div className='modal-builder-settings__divider'></div>
             <div className='modal-builder-settings__content'>
                 <div className='modal-builder-settings__content-tabs'>
-                    <span className='modal-builder-settings__content-tab'></span>
-                    <span className='modal-builder-settings__content-tab'></span>
-                    <span className='modal-builder-settings__content-tab'></span>
+                    <span className={`modal-builder-settings__content-tab ${activeTab === 'Builder' ? 'modal-builder-settings__content-tab--active' : ''}`} onClick={() => setActiveTab('Builder')}>Builder</span>
+                    <span className={`modal-builder-settings__content-tab ${activeTab === 'Consent' ? 'modal-builder-settings__content-tab--active' : ''}`} onClick={() => setActiveTab('Consent')}>Consent</span>
+                    <span className={`modal-builder-settings__content-tab ${activeTab === 'Actions' ? 'modal-builder-settings__content-tab--active' : ''}`} onClick={() => setActiveTab('Actions')}>Actions</span>
                 </div>
                 <div className='modal-builder-settings__content-divider modal-builder-settings__content-divider--vertical'></div>
                 <div className='modal-builder-settings__content-body'>
+                    {activeTab === 'Builder' && (
+                        <>
+                            <span className='modal-builder-settings__content-body-title'>Canvas Background</span>
+                            <div className='modal-builder-settings__content-body-setting'>
+                                <span className='modal-builder-settings__content-body-subtitle'>Live Website</span>
+                                <label className="modal-builder-settings__content-body-label">
+                                    <input
+                                        type="checkbox"
+                                        className="modal-builder-settings__content-body-checkbox"
+                                        checked={!!liveWebsite}
+                                        onChange={handleLiveWebsiteChange}
+                                    />
+                                    <span className="modal-builder-settings__content-body-switch"></span>
+                                </label>
+                            </div>
+                            <div className='modal-builder-settings__content-body-setting'>
+                                <span className='modal-builder-settings__content-body-subtitle'>Color</span>
+                                <input type="color" className="modal-builder-settings__content-body-color" value={color} onChange={handleColorChange} />
+                            </div>
+                        </>
+
+                    )}
+                    {activeTab === 'Consent' && (
+                        <>
+                            <span className='modal-builder-settings__content-body-title'>Until a decision is made</span>
+                            <div className='modal-builder-settings__content-body-setting'>
+                                <span className='modal-builder-settings__content-body-subtitle'>Block events</span>
+                                <label className="modal-builder-settings__content-body-label">
+                                    <input
+                                        type="checkbox"
+                                        className="modal-builder-settings__content-body-checkbox"
+                                        checked={!!events}
+                                        onChange={handleEventsChange}
+                                    />
+                                    <span className="modal-builder-settings__content-body-switch"></span>
+                                </label>
+                            </div>
+                            <div className='modal-builder-settings__content-body-setting'>
+                                <span className='modal-builder-settings__content-body-subtitle'>Block scroll</span>
+                                <label className="modal-builder-settings__content-body-label">
+                                    <input
+                                        type="checkbox"
+                                        className="modal-builder-settings__content-body-checkbox"
+                                        checked={!!scroll}
+                                        onChange={handleScrollChange}
+                                    />
+                                    <span className="modal-builder-settings__content-body-switch"></span>
+                                </label>
+                            </div>
+                        </>
+                    )}
+                    {activeTab === 'Actions' && (
+                        <div className='modal-builder-settings__content-body-actions'>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Close banner</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-close-banner</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Open banner</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-open-banner</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Close modal</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-close-modal</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Open modal</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-open-modal</span>
+                                    <span className='modal-builder-settings__content-body-clip'onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Enable all categories checkboxes</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-enable-all</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Disable all categories checkboxes</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-disable-all</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Save checkboxes</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-save-choices</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Accept a category</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-accept-category="name"</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Reject a category</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-reject-category="name"</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Accept all categories</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-accept-all</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="modal-builder-settings__content-body-action">
+                                <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Reject all categories</span>
+                                <div className="modal-builder-settings__content-body-clipper">
+                                    <span className='modal-builder-settings__content-body-subtitle'>data-tw-reject-all</span>
+                                    <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

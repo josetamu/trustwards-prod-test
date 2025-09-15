@@ -408,7 +408,8 @@ const renderModal = () => {
     case 'Builder':
       return (
         <ModalBuilderSettings
-
+          onClose={() => setIsModalOpen(false)}
+          showNotification={showNotification}
         />
       )
     
