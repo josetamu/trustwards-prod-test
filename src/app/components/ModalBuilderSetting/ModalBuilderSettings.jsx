@@ -1,24 +1,31 @@
 import './ModalBuilderSettings.css';
 import { useState } from 'react';
+import { useCanvas } from '@contexts/CanvasContext';
 
 export const ModalBuilderSettings = ({onClose, showNotification}) => {
     const [activeTab, setActiveTab] = useState('Builder');
-    const [liveWebsite, setLiveWebsite] = useState(false);
     const [color, setColor] = useState('#FFFFFF');
-    const [events, setEvents] = useState(false);
-    const [scroll, setScroll] = useState(false);
     const [copied, setCopied] = useState('');
+
+    const{setJSONtree, JSONtree} = useCanvas();
+    
     const handleColorChange = (e) => {
         setColor(e.target.value);
     }
     const handleLiveWebsiteChange = () => {
-        setLiveWebsite(!liveWebsite);
+        if (!JSONtree) return;
+        const updated = { ...JSONtree, liveWebsite: !JSONtree.liveWebsite };
+        setJSONtree(updated);
     }
     const handleEventsChange = () => {
-        setEvents(!events);
+        if (!JSONtree) return;
+        const updated = { ...JSONtree, blockEvents: !JSONtree.blockEvents };
+        setJSONtree(updated);
     }
     const handleScrollChange = () => {
-        setScroll(!scroll);
+        if (!JSONtree) return;
+        const updated = { ...JSONtree, blockScroll: !JSONtree.blockScroll };
+        setJSONtree(updated);
     }
     const copyFromSubtitle = (e) => {
         const text = e.currentTarget.previousElementSibling.textContent.trim();
@@ -55,7 +62,7 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <input
                                         type="checkbox"
                                         className="modal-builder-settings__content-body-checkbox"
-                                        checked={!!liveWebsite}
+                                        checked={!!JSONtree.liveWebsite}
                                         onChange={handleLiveWebsiteChange}
                                     />
                                     <span className="modal-builder-settings__content-body-switch"></span>
@@ -75,9 +82,10 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                 <span className='modal-builder-settings__content-body-subtitle'>Block events</span>
                                 <label className="modal-builder-settings__content-body-label">
                                     <input
+                                        id='event'
                                         type="checkbox"
                                         className="modal-builder-settings__content-body-checkbox"
-                                        checked={!!events}
+                                        checked={!!JSONtree.blockEvents}
                                         onChange={handleEventsChange}
                                     />
                                     <span className="modal-builder-settings__content-body-switch"></span>
@@ -87,9 +95,10 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                 <span className='modal-builder-settings__content-body-subtitle'>Block scroll</span>
                                 <label className="modal-builder-settings__content-body-label">
                                     <input
+                                        id='scroll'
                                         type="checkbox"
                                         className="modal-builder-settings__content-body-checkbox"
-                                        checked={!!scroll}
+                                        checked={!!JSONtree.blockScroll}
                                         onChange={handleScrollChange}
                                     />
                                     <span className="modal-builder-settings__content-body-switch"></span>

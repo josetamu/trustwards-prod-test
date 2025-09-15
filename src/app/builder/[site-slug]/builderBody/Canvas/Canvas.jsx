@@ -462,7 +462,7 @@ export const Canvas = () => {
         };
 
         //For each id, add its CSS selector and properties (if id is empty, it won't be added)
-        JSONtree.idsCSSData.forEach(({ id, properties }) => {
+        JSONtree?.idsCSSData?.forEach(({ id, properties }) => {
             const propertyEntries = Object.entries(properties);
             if (propertyEntries.length > 0) {
                 //use :where has specificity 0, so classes with the same name will override the id
@@ -477,7 +477,7 @@ export const Canvas = () => {
         });
 
         //For each class, add its CSS selector and properties (if class is empty, it won't be added)
-        JSONtree.classesCSSData.forEach(({ className, properties }) => {
+        JSONtree?.classesCSSData?.forEach(({ className, properties }) => {
             const propertyEntries = Object.entries(properties);
             if (propertyEntries.length > 0) {
                 cssContent += `.${className} {\n`;
@@ -517,7 +517,7 @@ export const Canvas = () => {
             onMouseLeave={handleMouseLeave} /*Remove drop indicator instantly as soon as the mouse leaves the canvas*/
             onDragLeave={handleDragLeave} /*Remove drop indicator when drag leaves the canvas*/
             >
-                {JSONtree && JSONtree.roots.map(root => renderNode(root, selectedId))} {/* Renders both root nodes */}
+                {JSONtree && JSONtree?.roots?.map(root => renderNode(root, selectedId))} {/* Renders both root nodes */}
             </div>
             <div className="tw-builder__handlebar tw-builder__handlebar--right"></div>
         </div>

@@ -751,8 +751,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             }
             
             // Check both banner and modal trees
-            if (JSONtree.roots[0]) autoExpandBlocks([JSONtree.roots[0]])
-            if (JSONtree.roots[1]) autoExpandBlocks([JSONtree.roots[1]])
+            if (JSONtree?.roots?.[0]) autoExpandBlocks([JSONtree.roots[0]])
+            if (JSONtree?.roots?.[1]) autoExpandBlocks([JSONtree.roots[1]])
         }
     },[JSONtree]);
 
@@ -1158,8 +1158,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         }}
                     >
 
-                        {activeTab === 'tw-root--banner' && JSONtree.roots[0] && [JSONtree.roots[0]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
-                        {activeTab === 'tw-root--modal' && JSONtree.roots[1] && [JSONtree.roots[1]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
+                        {activeTab === 'tw-root--banner' && JSONtree?.roots?.[0] && [JSONtree.roots[0]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
+                        {activeTab === 'tw-root--modal' && JSONtree?.roots?.[1] && [JSONtree.roots[1]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
                     </div>
                 </div>
             </div>
