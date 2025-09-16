@@ -1,17 +1,31 @@
 import './ModalBuilderSettings.css';
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useCanvas } from '@contexts/CanvasContext';
 
 export const ModalBuilderSettings = ({onClose, showNotification}) => {
     const [activeTab, setActiveTab] = useState('Builder');
     const [color, setColor] = useState('#FFFFFF');
     const [copied, setCopied] = useState('');
+    const colorTimeoutRef = useRef(null);
 
     const{setJSONtree, JSONtree} = useCanvas();
     
-    const handleColorChange = (e) => {
-        setColor(e.target.value);
-    }
+    const handleColorChange = useCallback((e) => {
+        const newColor = e.target.value;
+        if(!JSONtree) return;
+        
+        // Clear previous timeout
+        if (colorTimeoutRef.current) {
+            clearTimeout(colorTimeoutRef.current);
+        }
+        
+        // Set new timeout for debounced update
+        colorTimeoutRef.current = setTimeout(() => {
+            const updated = {...JSONtree, canvasColor: newColor};
+            setJSONtree(updated);
+        }, 150); // 150ms delay for smooth color picker experience
+    }, [JSONtree, setJSONtree]);
+    
     const handleLiveWebsiteChange = () => {
         if (!JSONtree) return;
         const updated = { ...JSONtree, liveWebsite: !JSONtree.liveWebsite };
@@ -70,7 +84,7 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                             </div>
                             <div className='modal-builder-settings__content-body-setting'>
                                 <span className='modal-builder-settings__content-body-subtitle'>Color</span>
-                                <input type="color" className="modal-builder-settings__content-body-color" value={color} onChange={handleColorChange} />
+                                <input type="color" className="modal-builder-settings__content-body-color" value={JSONtree.canvasColor || '#FFFFFF'} onChange={handleColorChange} />
                             </div>
                         </>
 
@@ -114,8 +128,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-close-banner</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -126,8 +140,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-open-banner</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -138,8 +152,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-close-modal</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -150,8 +164,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-open-modal</span>
                                     <span className='modal-builder-settings__content-body-clip'onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -162,8 +176,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-enable-all</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -174,8 +188,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-disable-all</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -186,8 +200,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-save-choices</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -198,8 +212,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-accept-category="name"</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -210,8 +224,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-reject-category="name"</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -222,8 +236,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-accept-all</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>
@@ -234,8 +248,8 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <span className='modal-builder-settings__content-body-subtitle'>data-tw-reject-all</span>
                                     <span className='modal-builder-settings__content-body-clip' onClick={copyFromSubtitle}>
                                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4.5 7.5C4.5 6.0858 4.5 5.3787 4.93934 4.93934C5.3787 4.5 6.0858 4.5 7.5 4.5H8C9.4142 4.5 10.1213 4.5 10.5606 4.93934C11 5.3787 11 6.0858 11 7.5V8C11 9.4142 11 10.1213 10.5606 10.5606C10.1213 11 9.4142 11 8 11H7.5C6.0858 11 5.3787 11 4.93934 10.5606C4.5 10.1213 4.5 9.4142 4.5 8V7.5Z" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M8.49995 4.5C8.49875 3.02146 8.4764 2.25561 8.046 1.73122C7.9629 1.62995 7.87005 1.53709 7.7688 1.45398C7.2156 1 6.39375 1 4.75 1C3.10626 1 2.28439 1 1.73122 1.45398C1.62995 1.53709 1.53709 1.62995 1.45398 1.73122C1 2.28439 1 3.10626 1 4.75C1 6.39375 1 7.2156 1.45398 7.7688C1.53709 7.87005 1.62995 7.9629 1.73122 8.046C2.25561 8.4764 3.02146 8.49875 4.5 8.49995" stroke="#AAAAAA" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </span>
                                 </div>

@@ -511,7 +511,7 @@ export const Canvas = () => {
         <div className="tw-builder__handlebars-canvas-wrapper">
             <div className="tw-builder__handlebar tw-builder__handlebar--left"></div>
             <div className="tw-builder__canvas"
-            
+            style={{backgroundColor: JSONtree?.canvasColor || '#FFFFFF'}}
             onDragOver={handleDragOver} /*Handle where the element is being dragged over and will be dropped (using drop indicator)*/
             onDrop={handleDrop} /*Create element on drop (resposability transfered from toolbar)*/
             onMouseLeave={handleMouseLeave} /*Remove drop indicator instantly as soon as the mouse leaves the canvas*/
