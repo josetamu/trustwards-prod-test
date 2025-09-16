@@ -7,7 +7,7 @@ export const revalidate = 0;            // evita cache
 export const dynamic = 'force-dynamic'; // asegura SSR con cookies
 
 export default async function RootLayout({ children }) {
-  const supabase = supabaseServer();
+  const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
 
   let initialSidebarState = null;

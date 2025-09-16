@@ -252,7 +252,7 @@ const SiteStyle = (site) => {
       };
   }, []);
 
-  //Guard de autenticación (cliente): redirige a /login si no hay sesión
+  //Redirect to login if no session
   const [checkingAuth, setCheckingAuth] = useState(true);
   useEffect(() => {
     let cancelled = false;
@@ -273,8 +273,6 @@ const SiteStyle = (site) => {
     })();
     return () => { cancelled = true; };
   }, [pathname, router, supabase]);
-
-
   
     // Function to update the appearance settings in the database
     const updateAppearanceSettings = async (settings) => {
