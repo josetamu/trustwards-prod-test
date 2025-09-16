@@ -12,6 +12,7 @@ import { ModalDelete } from '@components/ModalDelete/ModalDelete'
 import { ModalSupport } from '@components/ModalSupport/ModalSupport'
 import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
+import { ModalWelcome } from '@components/ModalWelcome/ModalWelcome'
 import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
 import { useSidebarSettings } from '../../contexts/SidebarSettingsContext';
@@ -47,6 +48,9 @@ function DashboardLayout({ children }) {
   const [modalType, setModalType] = useState(null);
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [changeType, setChangeType] = useState('');
+
+  // ModalWelcome state
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
 
   // Notification state
   const [notification, setNotification] = useState({
@@ -418,6 +422,17 @@ const handleBackdropClick = useCallback((e) => {
         setChangeType('');
       };
 
+    //UseEffect to open the ModalWelcome modal
+    useEffect(() => {
+      if (allUserDataResource && !user?.Name) {
+        setIsWelcomeModalOpen(true);
+      }
+    }, [user?.Name]);
+    //Function to close the ModalWelcome modal
+    const closeWelcomeModal = () => {
+      setIsWelcomeModalOpen(false);
+    };
+
     //Function to show the notification
     const showNotification = (message, position = 'top', contentCenter = false) => {
       setNotification({
@@ -723,9 +738,10 @@ useEffect(() => {
                     >
                         {renderModal()}
                 </ModalContainer>
+
                     {/* ModalChange as independent modal */}
                     <ModalContainer 
-                    isOpen={isChangeModalOpen} 
+                    isOpen={isChangeModalOpen}
                     onClose={closeChangeModal} 
                     onBackdropClick={handleBackdropClick}
                     >
@@ -743,6 +759,20 @@ useEffect(() => {
                         allUserDataResource={allUserDataResource}
                     />
                     </ModalContainer>
+
+                    <ModalContainer
+                    isOpen={isWelcomeModalOpen}
+                    onClose={closeWelcomeModal}
+                    modalType="Welcome"
+                    >
+                      <ModalWelcome
+                      onClose={closeWelcomeModal}
+                      user={user}
+                      setUser={setUser}
+                      allUserDataResource={allUserDataResource}
+                      />
+                    </ModalContainer>
+                    
                     <Notification
                     open={notification.open}
                     onClose={hideNotification}

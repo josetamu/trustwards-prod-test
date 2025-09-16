@@ -4,7 +4,7 @@ import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
 import './ModalContainer.css';
 
 
-export function ModalContainer({ isOpen, onClose, children, onBackdropClick }) {
+export function ModalContainer({ isOpen, onClose, children, onBackdropClick, modalType }) {
   
   
 
@@ -23,7 +23,7 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick }) {
       {isOpen && (
         <motion.div 
           className="modal__backdrop" 
-          onClick={handleBackdropClick}
+          onClick={modalType !== 'Welcome' ? handleBackdropClick : undefined}
         >
           <motion.div
             {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
