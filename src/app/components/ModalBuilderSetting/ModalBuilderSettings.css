@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 50px;
 
 }
 .modal-builder-settings__header {
@@ -27,6 +28,11 @@
 }
 .modal-builder-settings__content {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
+}
+.modal-builder-settings__content-divider--vertical {
+    height: 100%;
+    width: 1px;
+    background-color: var(--tree-item-hover-background);
 }
