@@ -1,6 +1,6 @@
 // app/layout.jsx (Server Component)
 import { ThemeProvider } from 'next-themes';
-import { SidebarSettingsProvider } from '../contexts/SidebarSettingsContext';
+import { SidebarSettingsProvider } from '@contexts/SidebarSettingsContext';
 import { supabaseServer } from '@supabase/supabaseServer';
 
 export const revalidate = 0;            // evita cache
@@ -22,7 +22,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="es" suppressHydrationWarning>
-      <head><title>Dashboard</title></head>
+      <head><title>Trustwards</title></head>
       <body>
         <ThemeProvider>
           <SidebarSettingsProvider initialState={initialSidebarState}>

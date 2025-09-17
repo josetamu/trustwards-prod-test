@@ -1,16 +1,16 @@
 import { useState, useMemo, Suspense, useEffect } from 'react';
-import { Site } from '../site/Site';
-import { Sort } from '../sort/Sort';
-import { View } from '../view/View';
-import { NewSite } from '../NewSite/NewSite';
+import { Site } from '@components/site/Site';
+import { Sort } from '@components/sort/Sort';
+import { View } from '@components/view/View';
+import { NewSite } from '@components/NewSite/NewSite';
 import Image from 'next/image';
 import { SitesWelcome } from './SitesWelcome';
-import { UserNameSkeleton } from '../Skeletons/UserNameSkeleton';
-import { useDashboard } from '../../dashboard/layout';
+import { UserNameSkeleton } from '@components/Skeletons/UserNameSkeleton';
+import { useDashboard } from '@dashboard/layout';
 import './Sites.css'
 import { SitesList } from './SitesList';
-import { SitesSkeleton } from '../Skeletons/SitesSkeleton';
-import { PlanSkeleton } from '../Skeletons/PlanSkeleton';
+import { SitesSkeleton } from '@components/Skeletons/SitesSkeleton';
+import { PlanSkeleton } from '@components/Skeletons/PlanSkeleton';
 
 
 export const Sites = ({ isModalOpen, setIsModalOpen, user, webs, setModalType, isDropdownOpen, setIsDropdownOpen, setSiteData, openChangeModal, checkSitePicture, SiteStyle, openChangeModalSettings, showNotification}) => {

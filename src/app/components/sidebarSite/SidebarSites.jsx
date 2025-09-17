@@ -1,13 +1,13 @@
 import "./SidebarSites.css";
-import "../../components/dropdown/Dropdown.css";
+import "@components/dropdown/Dropdown.css";
 
 import { useId, useState, useEffect} from "react";
-import { Dropdown } from "../dropdown/Dropdown";
-import { Tooltip } from "../tooltip/Tooltip";
+import { Dropdown } from "@components/dropdown/Dropdown";
+import { Tooltip } from "@components/tooltip/Tooltip";
 import Link from "next/link";
-import { useDashboard } from "../../dashboard/layout";
+import { useDashboard } from "@dashboard/layout";
 import { useRouter } from "next/navigation";
-import { SidebarSiteSkeleton } from "../Skeletons/SidebarSiteSkeleton";
+import { SidebarSiteSkeleton } from "@components/Skeletons/SidebarSiteSkeleton";
 
 export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, setIsSidebarMenu}) {
     const sidebarSitesId = useId();
@@ -101,7 +101,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
 
     return(
         <Link 
-            href={`/dashboard/${siteData.id}`}
+            href={`/${siteData.id}`}
             className="sidebar-sites__site" 
             id={sidebarSitesId}
             //on mouse enter, set is hovered to true to show the tooltip

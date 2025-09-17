@@ -1,7 +1,7 @@
 import './BuilderSave.css';
 import { useState, useEffect, useCallback } from 'react';
 import { useCanvas } from '@contexts/CanvasContext';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 import { createCDN } from '@contexts/CDNsContext';
 
 export default function BuilderSave({showNotification, siteSlug}) {

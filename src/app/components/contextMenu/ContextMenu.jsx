@@ -2,8 +2,8 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
-import { useCanvas } from '../../../contexts/CanvasContext';
+import { ANIM_TYPES } from '@animations/animations';
+import { useCanvas } from '@contexts/CanvasContext';
 import './ContextMenu.css';
 
 // ContextMenu component

@@ -1,11 +1,11 @@
 import './BuilderThemes.css';
 import { useState, useEffect, useCallback } from 'react';
 import { useCanvas } from '@contexts/CanvasContext';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 import { createCDN } from '@contexts/CDNsContext';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
+import { ANIM_TYPES } from '@animations/animations';
 
 export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThemesOpen, setIsManualThemesOpen, showNotification, siteSlug}) {
     const { setJSONtree } = useCanvas();

@@ -1,5 +1,5 @@
-import { useDashboard } from '../../dashboard/layout';
-import PlanSkeleton from '../Skeletons/PlanSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 
 export const DashboardHeaderPlan = ({siteSlug, setModalType, setIsModalOpen}) => {
     const { allUserDataResource } = useDashboard();

@@ -2,12 +2,12 @@
 import { Tooltip } from '@components/tooltip/Tooltip';
 import { useState, useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
 import React from 'react';
-import BuilderControl from '../BuilderControl/BuilderControl';
+import BuilderControl from '@components/BuilderControl/BuilderControl';
 import { useCanvas } from '@contexts/CanvasContext';
-import BuilderClasses from '../BuilderClasses/BuilderClasses';
-import { supabase } from '../../../supabase/supabaseClient';
+import BuilderClasses from '@components/BuilderClasses/BuilderClasses';
+import { supabase } from '@supabase/supabaseClient';
 import './ControlComponents.css';
-import { StylesDeleter } from '../StylesDeleter/StylesDeleter';
+import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 
 
 

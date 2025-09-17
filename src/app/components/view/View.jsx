@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './View.css';
 import { useDashboard } from '@dashboard/layout';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 
 // View: Toggle component for switching between grid and list view
 export const View = ({ isGridView, onViewChange }) => {

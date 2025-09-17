@@ -1,7 +1,7 @@
-import { useDashboard } from '../../dashboard/layout';
-import { NewSite } from '../NewSite/NewSite';
-import { SidebarSites } from '../sidebarSite/SidebarSites';
-import { SidebarSiteSkeleton } from '../Skeletons/SidebarSiteSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import { NewSite } from '@components/NewSite/NewSite';
+import { SidebarSites } from '@components/sidebarSite/SidebarSites';
+import { SidebarSiteSkeleton } from '@components/Skeletons/SidebarSiteSkeleton';
 import { useMemo } from 'react';
 
 export function SidebarSitesList({ searchQuery, openChangeModal, setIsModalOpen, setModalType, showNotification, isSidebarOpen, isModalOpen, isDropdownOpen, setIsDropdownOpen, siteData, setSiteData, toggleSidebar, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModalSettings, isSidebarMenu, setIsSidebarMenu, filteredWebs }) {

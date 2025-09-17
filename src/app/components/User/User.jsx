@@ -2,13 +2,13 @@ import "./User.css";
 
 import { Suspense } from 'react';
 
-import { SidebarLink } from '../sidebarLink/SidebarLink';
-import { profilePages } from '../sideBar/Sidebar';
-import { Dropdown } from '../dropdown/Dropdown';
+import { SidebarLink } from '@components/sidebarLink/SidebarLink';
+import { profilePages } from '@components/sideBar/Sidebar';
+import { Dropdown } from '@components/dropdown/Dropdown';
 import { UserName } from './UserName';
-import { UserNameSkeleton } from '../Skeletons/UserNameSkeleton';
+import { UserNameSkeleton } from '@components/Skeletons/UserNameSkeleton';
 import { UserAvatar } from './UserAvatar';
-import { UserAvatarSkeleton } from '../Skeletons/UserAvatarSkeleton';
+import { UserAvatarSkeleton } from '@components/Skeletons/UserAvatarSkeleton';
 
 import { supabase } from '@supabase/supabaseClient';
 import { useRouter } from 'next/navigation';

@@ -1,5 +1,5 @@
-import { useDashboard } from '../../dashboard/layout'; // Ajusta el import según tu estructura
-import PlanSkeleton from '../Skeletons/PlanSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import Link from 'next/link';
 
 export const DashboardHeaderBuilder = ({siteSlug}) => {

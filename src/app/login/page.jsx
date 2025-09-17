@@ -7,13 +7,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@supabase/supabaseClient';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '../dashboard/dashboard_animations';
+import { ANIM_TYPES } from '@animations/animations';
 import { ThemeProvider } from 'next-themes';
 
 export default function LoginPage() {
     const router = useRouter();
     const search = useSearchParams();
-    const next = search.get('next') || '/dashboard'; // To redirect to the dashboard after the login
+    const next = search.get('next') || '/'; // To redirect to the home after the login
 
     const [loading, setLoading] = useState(false); // To disable the Continue button when is submitting
     const [err, setErr] = useState(null); // To catch an error message and show it later
@@ -22,7 +22,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState(''); // To store the email for the resend link
     const [resendEmail, setResendEmail] = useState(false); // To store if an email was resent, then hide resend email message
 
-    // If there is a session, redirect to the dashboard
+    // If there is a session, redirect to the home
     useEffect(() => {
         supabase.auth.getUser().then(({ data: { user } }) => {
         if (user) router.replace(next);

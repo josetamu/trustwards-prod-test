@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import './Sort.css';
-import { Dropdown } from '../dropdown/Dropdown';
+import { Dropdown } from '@components/dropdown/Dropdown';
 import {useDashboard} from '@dashboard/layout';
-import PlanSkeleton from '../Skeletons/PlanSkeleton';
-import { supabase } from '../../../supabase/supabaseClient';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
+import { supabase } from '@supabase/supabaseClient';
 
 // Sort: Dropdown component for sorting sites by date or alphabetically
 export const Sort = ({ }) => {

@@ -1,5 +1,5 @@
-import { useDashboard } from '../../dashboard/layout'; // Ajusta el import según tu estructura
-import UserAvatarSkeleton from '../Skeletons/UserAvatarSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import UserAvatarSkeleton from '@components/Skeletons/UserAvatarSkeleton';
 
 export const UserAvatar = ({checkProfilePicture, profileStyle}) => {
   const { allUserDataResource } = useDashboard();

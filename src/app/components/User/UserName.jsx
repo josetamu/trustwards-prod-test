@@ -1,5 +1,5 @@
-import { useDashboard } from '../../dashboard/layout'; // Ajusta el import según tu estructura
-import UserNameSkeleton from '../Skeletons/UserNameSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 
 export const UserName = () => {
   const { allUserDataResource } = useDashboard();

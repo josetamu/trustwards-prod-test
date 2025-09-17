@@ -1,7 +1,7 @@
 import './ModalChange.css';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 
 export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, createNewSite, setWebs, allUserDataResource }) {
 

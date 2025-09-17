@@ -1,6 +1,6 @@
 import './builderRightPanel.css'
-import BuilderUser from '../../../components/BuilderUser/BuilderUser';
-import NoSelectedItem from '../../../components/NoSelectedItem/NoSelectedItem';
+import BuilderUser from '@components/BuilderUser/BuilderUser';
+import NoSelectedItem from '@components/NoSelectedItem/NoSelectedItem';
 import { useCanvas } from '@contexts/CanvasContext';
 import BuilderSave from '@components/BuilderSave/BuilderSave';
 import ControlComponent from '@components/ControlComponents/ControlComponents';
