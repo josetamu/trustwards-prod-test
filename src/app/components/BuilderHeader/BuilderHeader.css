@@ -120,3 +120,22 @@
     padding: 5px;
     border-radius: 4px;
 }
+
+.tw-builder__header-breakpoints{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px;
+}
+.tw-builder__header-breakpoint{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--shadow-color);
+}
+.tw-builder__header-breakpoint-icon--active{
+    color: var(--body-strong-color);
+}
