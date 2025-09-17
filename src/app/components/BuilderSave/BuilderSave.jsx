@@ -14,6 +14,14 @@ export default function BuilderSave({showNotification, siteSlug}) {
         try {
             // Simulate a delay of saving
             await new Promise(resolve => setTimeout(resolve, 1000));
+
+            //Capture the canvas
+            try {
+            await captureCanvas();
+            } catch (error) {
+                console.error('Error capturing canvas:', error);
+            }
+
             //Update the site with the new JSONtree in supabase
             const {data, error} = await supabase
                 .from('Site')
@@ -34,6 +42,61 @@ export default function BuilderSave({showNotification, siteSlug}) {
             setIsLoading(false);
         }
     }, [JSONtree, siteSlug, showNotification, markClean]);
+
+
+    // Function to capture canvas and save to Supabase storage
+const captureCanvas = useCallback(async () => {
+    try {
+        // Get the canvas element
+        const canvasElement = document.querySelector('.tw-builder__canvas');
+        if (!canvasElement) {
+            console.error('Canvas element not found');
+            return;
+        }
+
+        // Use html2canvas to capture the canvas element
+        const { default: html2canvas } = await import('html2canvas');
+        
+        const canvas = await html2canvas(canvasElement, {
+            backgroundColor: null,
+            scale: 1,
+            useCORS: true,
+            allowTaint: true,
+            ignoreElements: (element) => {
+                // Ignore builder-specific UI elements
+                return element.classList.contains('tw-builder__active') || 
+                       element.classList.contains('tw-builder__drop-indicator') ||
+                       element.classList.contains('tw-builder__handlebar');
+            }
+        });
+
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => {
+            canvas.toBlob(resolve, 'image/png');
+        });
+
+        // Create file path: {siteId}/canvas-capture.png
+        const filePath = `${siteSlug}/canvas-capture.png`;
+
+        // Upload to Supabase storage bucket "Canvas capture"
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('Canvas capture')
+            .upload(filePath, blob, {
+                contentType: 'image/png',
+                upsert: true
+            });
+
+        if (uploadError) {
+            console.error('Error uploading canvas capture:', uploadError);
+            return;
+        }
+
+        console.log('Canvas capture saved successfully:', filePath);
+        
+    } catch (error) {
+        console.error('Error capturing canvas:', error);
+    }
+}, [siteSlug]);
 
     // Add keyboard shortcut for Ctrl+S or Cmd+S to save the changes
     useEffect(() => {
