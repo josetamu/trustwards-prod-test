@@ -1,7 +1,7 @@
 import "./Canvas.css";
 
 import { useCanvas } from '@contexts/CanvasContext';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 /*Elements*/
 import { Banner } from '@builderElements/Banner/Banner';
@@ -15,10 +15,32 @@ import { Categories } from '@builderElements/Categories/Categories';
 import { Checkbox } from '@builderElements/Checkbox/Checkbox';
 import { Icon } from '@builderElements/Icon/Icon';
 
-export const Canvas = () => {
+export const Canvas = ({site}) => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
         runElementScript, notifyElementCreatedFromToolbar, setJSONtree, deepCopy} = useCanvas();
 
+        const [screenshotUrl, setScreenshotUrl] = useState(null);
+        const [isLoadingScreenshot, setIsLoadingScreenshot] = useState(false);
+    
+    // Function to generate screenshot URL using existing scan API
+    const generateScreenshotUrl = (domain) => {
+        if (!domain) return null;
+        
+        const encodedDomain = encodeURIComponent(domain);
+        return `/api/screenshot?domain=${encodedDomain}`;
+    };
+    
+        // Effect to handle live website screenshot
+        useEffect(() => {
+            if (JSONtree?.liveWebsite && site?.Domain) {
+                setIsLoadingScreenshot(true);
+                const url = generateScreenshotUrl(site.Domain);
+                setScreenshotUrl(url);                
+            } else {
+                setScreenshotUrl(null);
+                setIsLoadingScreenshot(false);
+            }
+        }, [JSONtree?.liveWebsite, site?.Domain]);
     /*
     * Custom hook to track elements after they are created and run their scripts
     * Used by trackElement() inside renderNode()
@@ -510,14 +532,48 @@ export const Canvas = () => {
     return (
         <div className="tw-builder__handlebars-canvas-wrapper">
             <div className="tw-builder__handlebar tw-builder__handlebar--left"></div>
-            <div className="tw-builder__canvas"
-            style={{backgroundColor: JSONtree?.canvasColor || '#FFFFFF'}}
-            onDragOver={handleDragOver} /*Handle where the element is being dragged over and will be dropped (using drop indicator)*/
-            onDrop={handleDrop} /*Create element on drop (resposability transfered from toolbar)*/
-            onMouseLeave={handleMouseLeave} /*Remove drop indicator instantly as soon as the mouse leaves the canvas*/
-            onDragLeave={handleDragLeave} /*Remove drop indicator when drag leaves the canvas*/
+            <div 
+                className="tw-builder__canvas"
+                style={{
+                    backgroundColor: JSONtree?.liveWebsite ? 'transparent' : (JSONtree?.canvasColor || '#FFFFFF'),
+                    backgroundImage: JSONtree?.liveWebsite && screenshotUrl ? `url(${screenshotUrl})` : 'none',
+                    backgroundSize: JSONtree?.liveWebsite ? 'cover' : 'initial',
+                    backgroundPosition: JSONtree?.liveWebsite ? 'top left' : 'initial',
+                    backgroundRepeat: JSONtree?.liveWebsite ? 'no-repeat' : 'initial',
+                    position: 'relative'
+                }}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onMouseLeave={handleMouseLeave}
+                onDragLeave={handleDragLeave}
             >
-                {JSONtree && JSONtree?.roots?.map(root => renderNode(root, selectedId))} {/* Renders both root nodes */}
+                {isLoadingScreenshot && JSONtree?.liveWebsite && (
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 1000
+                    }}>
+                        <div>Loading website screenshot...</div>
+                    </div>
+                )}
+                {JSONtree.liveWebsite && screenshotUrl &&(
+                    <img 
+                    src={screenshotUrl}
+                    onLoad={() => setIsLoadingScreenshot(false)}
+                    onError={() => setIsLoadingScreenshot(false)}
+                    style={{ display: 'none' }}
+                    alt=""
+                    
+                    />
+                )}
+                {JSONtree && JSONtree?.roots?.map(root => renderNode(root, selectedId))}
             </div>
             <div className="tw-builder__handlebar tw-builder__handlebar--right"></div>
         </div>

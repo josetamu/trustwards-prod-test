@@ -8,7 +8,7 @@ function BuilderBody({site, setSite, setModalType, setIsModalOpen, checkSitePict
     return (
         <div className="tw-builder__body">
                 <BuilderHeader site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
-                <Canvas/>
+                <Canvas site={site}/>
                 <Toolbar/>
         </div>
     )

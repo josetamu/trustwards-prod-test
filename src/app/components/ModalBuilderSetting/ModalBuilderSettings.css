@@ -86,6 +86,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+   
 }
 .modal-builder-settings__content-body-subtitle {
     font-size: var(--font-size-small);
@@ -101,6 +102,9 @@
     position: relative;
     width: 26px;
     height: 16px;
+}
+.modal-builder-settings__content-body-label .tooltip__mask{
+    width: 200px;
 }
 .modal-builder-settings__content-body-checkbox {
     display: none;

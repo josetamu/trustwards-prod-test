@@ -1,13 +1,14 @@
 import './ModalBuilderSettings.css';
 import { useState, useRef, useCallback } from 'react';
 import { useCanvas } from '@contexts/CanvasContext';
+import { Tooltip } from '@components/tooltip/Tooltip';
 
 export const ModalBuilderSettings = ({onClose, showNotification}) => {
     const [activeTab, setActiveTab] = useState('Builder');
     const [color, setColor] = useState('#FFFFFF');
     const [copied, setCopied] = useState('');
     const colorTimeoutRef = useRef(null);
-
+    const [activeTooltip, setActiveTooltip] = useState('');
     const{setJSONtree, JSONtree} = useCanvas();
     
     const handleColorChange = useCallback((e) => {
@@ -48,6 +49,12 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
         showNotification(`Copied: ${text}`, false)
         
       };
+      const handleMouseEnter = (tooltip) => {
+        setActiveTooltip(tooltip);
+      };
+      const handleMouseLeave = () => {
+        setActiveTooltip('');
+      };
     return (
         <div className='modal-builder-settings'>
             <div className='modal-builder-settings__header'>
@@ -70,9 +77,11 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                     {activeTab === 'Builder' && (
                         <>
                             <span className='modal-builder-settings__content-body-title'>Canvas Background</span>
-                            <div className='modal-builder-settings__content-body-setting'>
+                            <div className='modal-builder-settings__content-body-setting'
+>
                                 <span className='modal-builder-settings__content-body-subtitle'>Live Website</span>
-                                <label className="modal-builder-settings__content-body-label">
+                                <label className="modal-builder-settings__content-body-label"                            onMouseEnter={() => handleMouseEnter('liveWebsite')} 
+                            onMouseLeave={handleMouseLeave}>
                                     <input
                                         type="checkbox"
                                         className="modal-builder-settings__content-body-checkbox"
@@ -80,6 +89,12 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                         onChange={handleLiveWebsiteChange}
                                     />
                                     <span className="modal-builder-settings__content-body-switch"></span>
+                                    <Tooltip 
+                                    message="May not work with bot blockers or anti-automation tools" 
+                                    open={activeTooltip === 'liveWebsite'} 
+                                    responsivePosition={{ desktop: 'left', mobile: 'left' }}
+                                    width="auto"
+                                    />
                                 </label>
                             </div>
                             <div className='modal-builder-settings__content-body-setting'>
