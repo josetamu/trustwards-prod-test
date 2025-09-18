@@ -1,8 +1,8 @@
 import './ModalUser.css';
 
 import { ModalAccount } from '@components/ModalAccount/ModalAccount';
-import { ModalAppearance } from '../ModalAppearance/ModalAppearance';
-import ModalUpgradePlan from '../ModalUpgradePlan/ModalUpgradePlan';
+import { ModalAppearance } from '@components/ModalAppearance/ModalAppearance';
+import ModalUpgradePlan from '@components/ModalUpgradePlan/ModalUpgradePlan';
 
 export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings, openChangeModal, avatarColors, checkProfilePicture, profileStyle, allUserDataResource }) {
 //Modal User is a modal that allows the user to change their account settings, appearance settings, and upgrade plan.

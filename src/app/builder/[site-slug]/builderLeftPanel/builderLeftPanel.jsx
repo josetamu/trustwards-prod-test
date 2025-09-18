@@ -1,6 +1,6 @@
 import './builderLeftPanel.css'
 import { useState, useEffect } from 'react'
-import { Dropdown } from '../../../components/dropdown/Dropdown'
+import { Dropdown } from '@components/dropdown/Dropdown'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCanvas } from "@contexts/CanvasContext";
@@ -70,7 +70,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         
         switch (action) {
             case 'home':
-                router.push('/dashboard')
+                router.push('/')
                 break
             case 'settings':
                 openChangeModal('settings')
@@ -1055,7 +1055,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <Link href="/dashboard" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={() => handleDropdownAction('home')}>
+            <Link href="/" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={() => handleDropdownAction('home')}>
                 <span>Back to Dashboard</span>
             </Link>
             <div className="dropdown__divider"></div>

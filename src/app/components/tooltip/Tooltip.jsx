@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
+import { ANIM_TYPES } from '@animations/animations';
 import './Tooltip.css';
 import { useId } from 'react';
 

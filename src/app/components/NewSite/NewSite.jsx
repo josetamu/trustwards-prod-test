@@ -1,6 +1,6 @@
 import './NewSite.css';
-import { useDashboard } from '../../dashboard/layout';
-import PlanSkeleton from '../Skeletons/PlanSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 
 export function NewSite({openChangeModal, showNotification, setIsModalOpen, setModalType}) {
     const { allUserDataResource } = useDashboard();

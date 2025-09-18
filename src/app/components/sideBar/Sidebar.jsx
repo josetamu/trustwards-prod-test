@@ -3,20 +3,20 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, usePathname } from 'next/navigation';     
 import { Suspense } from 'react';
-import { SidebarSiteSkeleton } from '../Skeletons/SidebarSiteSkeleton';
-import { useDashboard } from '../../dashboard/layout';
+import { SidebarSiteSkeleton } from '@components/Skeletons/SidebarSiteSkeleton';
+import { useDashboard } from '@dashboard/layout';
 
 import "./sideBar.css";
 
-import { SidebarLink } from '../sidebarLink/SidebarLink';
-import { User } from '../User/User';
-import { SidebarSites } from '../sidebarSite/SidebarSites';
-import { NewSite } from '../NewSite/NewSite';
+import { SidebarLink } from '@components/sidebarLink/SidebarLink';
+import { User } from '@components/User/User';
+import { SidebarSites } from '@components/sidebarSite/SidebarSites';
+import { NewSite } from '@components/NewSite/NewSite';
 import Link from 'next/link';
-import { Tooltip } from "../tooltip/Tooltip";
+import { Tooltip } from '@components/tooltip/Tooltip';
 import { SidebarSitesList } from './SidebarSitesList';
 import { SiteName } from './siteName';
-import UserNameSkeleton from '../Skeletons/UserNameSkeleton';
+import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 
                                               
 
@@ -189,10 +189,10 @@ export function Sidebar({
     // Update isActive based on current pathname
     useEffect(() => {
         const routeMap = {
-          [`/dashboard/${siteSlug}`]: 'Home',
-          [`/dashboard/${siteSlug}/scanner`]: 'Scanner',
-          [`/dashboard/${siteSlug}/comply-map`]: 'Comply Map',
-          [`/dashboard/${siteSlug}/integrations`]: 'Integrations',
+          [`/${siteSlug}`]: 'Home',
+          [`/${siteSlug}/scanner`]: 'Scanner',
+          [`/${siteSlug}/comply-map`]: 'Comply Map',
+          [`/${siteSlug}/integrations`]: 'Integrations',
         };
       
         setIsActive(routeMap[pathname] || '');
@@ -263,14 +263,14 @@ export function Sidebar({
     // Define overviewPages inside the component to access siteData
     const overviewPages = [
         {
-            href: `/dashboard/${siteSlug}`,
+            href: `/${siteSlug}`,
             name:'Home',
             icon: <svg width="12" height="12" viewBox="0 0 10 11" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 10.285V4.07039C0 3.88736 0.0409523 3.71409 0.122857 3.5506C0.204762 3.38711 0.317619 3.25245 0.461429 3.14664L4.30786 0.23094C4.50929 0.0769801 4.73929 0 4.99786 0C5.25643 0 5.48786 0.0769801 5.69214 0.23094L9.53857 3.14592C9.68286 3.25174 9.79571 3.38663 9.87714 3.5506C9.95905 3.71409 10 3.88736 10 4.07039V10.285C10 10.4766 9.92881 10.6437 9.78643 10.7862C9.64405 10.9287 9.47714 11 9.28571 11H6.86857C6.70476 11 6.56762 10.9447 6.45714 10.8341C6.34667 10.7231 6.29143 10.5858 6.29143 10.4223V7.01254C6.29143 6.84905 6.23619 6.71201 6.12571 6.60143C6.01476 6.49037 5.87762 6.43484 5.71429 6.43484H4.28571C4.12238 6.43484 3.98548 6.49037 3.875 6.60143C3.76405 6.71201 3.70857 6.84905 3.70857 7.01254V10.423C3.70857 10.5865 3.65333 10.7235 3.54286 10.8341C3.43238 10.9447 3.29548 11 3.13214 11H0.714286C0.522857 11 0.355952 10.9287 0.213571 10.7862C0.0711903 10.6437 0 10.4766 0 10.285Z" fill="currentColor"/>
             </svg> 
         },
         {
-            href: `/dashboard/${siteSlug}/scanner`,
+            href: `/${siteSlug}/scanner`,
             name:'Scanner',
             icon: <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" clipRule="evenodd" d="M0.728516 6.99624C0.728516 3.23765 4.15007 0.381093 7.73715 0.762745C8.06726 0.797874 8.46993 0.886272 8.63653 1.27772C8.70607 1.44123 8.70951 1.60997 8.70321 1.73974C8.69755 1.85688 8.67392 2.03939 8.65701 2.1702C8.59722 2.63583 8.76171 3.06457 9.02252 3.26742C9.07963 3.31189 9.14817 3.36616 9.2047 3.42516C9.26519 3.48824 9.3412 3.58596 9.37299 3.72509C9.40455 3.86302 9.37917 3.98304 9.35409 4.06366C9.33041 4.13973 9.29453 4.21803 9.26455 4.28237C9.17886 4.46656 9.20715 4.70298 9.37048 4.92683C9.53422 5.15122 9.79725 5.30569 10.0714 5.31709C10.1691 5.32115 10.2739 5.32588 10.3665 5.34027C10.4637 5.35536 10.585 5.38599 10.7005 5.46627C10.819 5.54861 10.8911 5.65484 10.9396 5.75107C10.9849 5.84078 11.0202 5.94362 11.0517 6.04104C11.1795 6.43607 11.5274 6.69974 11.9224 6.76892C12.0268 6.78572 12.3359 6.83624 12.4174 6.85234C12.5616 6.88086 12.7413 6.9249 12.8969 7.02524C13.0779 7.1419 13.1986 7.31527 13.2463 7.53641C13.2884 7.73154 13.2699 7.94615 13.2285 8.1649C12.6777 11.073 10.1125 13.2701 7.03312 13.2701C3.55336 13.2701 0.728516 10.4634 0.728516 6.99624ZM7.0039 6.99928C7.0039 7.32145 6.74274 7.58261 6.42057 7.58261H6.41532C6.09314 7.58261 5.832 7.32145 5.832 6.99928C5.832 6.6771 6.09314 6.41595 6.41532 6.41595H6.42057C6.74274 6.41595 7.0039 6.6771 7.0039 6.99928ZM3.5039 6.41595C3.82607 6.41595 4.08724 6.15479 4.08724 5.83261C4.08724 5.51044 3.82607 5.24928 3.5039 5.24928H3.49867C3.1765 5.24928 2.91533 5.51044 2.91533 5.83261C2.91533 6.15479 3.1765 6.41595 3.49867 6.41595H3.5039ZM7.58723 10.4993C7.58723 10.8215 7.32607 11.0826 7.0039 11.0826H6.99865C6.67647 11.0826 6.41532 10.8215 6.41532 10.4993C6.41532 10.1771 6.67647 9.91595 6.99865 9.91595H7.0039C7.32607 9.91595 7.58723 10.1771 7.58723 10.4993ZM6.14202 3.80864C6.31288 3.63779 6.31288 3.36077 6.14202 3.18992C5.97117 3.01907 5.69418 3.01907 5.52332 3.18992L4.93999 3.77325C4.76914 3.94411 4.76914 4.22112 4.93999 4.39197C5.11084 4.56282 5.38786 4.56282 5.55871 4.39197L6.14202 3.80864ZM10.2254 7.8566C10.3962 8.02746 10.3962 8.30443 10.2254 8.47529L9.64202 9.05862C9.47117 9.22948 9.1942 9.22948 9.02334 9.05862C8.85248 8.88776 8.85248 8.6108 9.02334 8.43994L9.60667 7.8566C9.77753 7.68575 10.0545 7.68575 10.2254 7.8566ZM3.77332 9.05862C3.60247 8.88776 3.60247 8.6108 3.77332 8.43994C3.94418 8.26908 4.22119 8.26908 4.39204 8.43994L4.97537 9.02327C5.14623 9.19413 5.14623 9.4711 4.97537 9.64195C4.80452 9.81281 4.52751 9.81281 4.35666 9.64195L3.77332 9.05862Z" fill="currentColor"/>
@@ -278,7 +278,7 @@ export function Sidebar({
             
         },
         {
-            href: `/dashboard/${siteSlug}/comply-map`,
+            href: `/${siteSlug}/comply-map`,
             name:'Comply Map',
             icon: <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_391_681)">
@@ -293,7 +293,7 @@ export function Sidebar({
             </svg>
         },
         {
-            href: `/dashboard/${siteSlug}/integrations`,
+            href: `/${siteSlug}/integrations`,
             name:'Integrations',
             icon: <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12.25 3.79102C12.25 4.75751 11.4665 5.54102 10.5 5.54102C9.53347 5.54102 8.75 4.75751 8.75 3.79102C8.75 2.82452 9.53347 2.04102 10.5 2.04102C11.4665 2.04102 12.25 2.82452 12.25 3.79102Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
@@ -397,8 +397,8 @@ export function Sidebar({
                     <div className="sidebar__upper">
                         <div className="sidebar__home">
                                 <Link
-                                href={`/dashboard`}
-                                className={`sidebar-header ${pathname === '/dashboard' ? 'sidebar-header--active' : ''} ${isSidebarMenu ? 'sidebar-header--mobile' : ''}`}
+                                href={`/`}
+                                className={`sidebar-header ${pathname === '/' ? 'sidebar-header--active' : ''} ${isSidebarMenu ? 'sidebar-header--mobile' : ''}`}
                                 onMouseEnter={() => setIsDashboardHovered(true)}
                                 onMouseLeave={() => setIsDashboardHovered(false)}
                                 onClick={() => setIsSidebarMenu(false)}

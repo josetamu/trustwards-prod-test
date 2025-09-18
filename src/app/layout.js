@@ -1,13 +1,13 @@
 // app/layout.jsx (Server Component)
 import { ThemeProvider } from 'next-themes';
-import { SidebarSettingsProvider } from '../contexts/SidebarSettingsContext';
+import { SidebarSettingsProvider } from '@contexts/SidebarSettingsContext';
 import { supabaseServer } from '@supabase/supabaseServer';
 
 export const revalidate = 0;            // evita cache
 export const dynamic = 'force-dynamic'; // asegura SSR con cookies
 
 export default async function RootLayout({ children }) {
-  const supabase = supabaseServer();
+  const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
 
   let initialSidebarState = null;
@@ -22,7 +22,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="es" suppressHydrationWarning>
-      <head><title>Dashboard</title></head>
+      <head><title>Trustwards</title></head>
       <body>
         <ThemeProvider>
           <SidebarSettingsProvider initialState={initialSidebarState}>

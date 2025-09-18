@@ -1,7 +1,7 @@
-import { useDashboard } from '../../dashboard/layout';
-import UserAvatarSkeleton from '../Skeletons/UserAvatarSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import UserAvatarSkeleton from '@components/Skeletons/UserAvatarSkeleton';
 import { useState, useRef } from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 
 export const DashboardAvatar = ({siteSlug, checkSitePicture, SiteStyle, setSiteData}) => {
     const [errors, setErrors] = useState({});

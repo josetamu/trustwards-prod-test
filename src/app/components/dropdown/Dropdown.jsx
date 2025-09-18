@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '../../dashboard/dashboard_animations';
+import { ANIM_TYPES } from '@animations/animations';
 import './Dropdown.css';
 
 // Dropdown component for menus and actions

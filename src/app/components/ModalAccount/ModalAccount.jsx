@@ -2,7 +2,7 @@ import './ModalAccount.css';
 
 import { useEffect, useState } from 'react';
 import { useRef } from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 
 // Modal Account is a modal that allows the user to change their profile information.
 export function ModalAccount({ user, openChangeModal, checkProfilePicture, profileStyle, setUser, allUserDataResource }) {

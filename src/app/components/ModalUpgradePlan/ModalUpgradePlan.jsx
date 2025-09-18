@@ -1,6 +1,6 @@
 import './ModalUpgradePlan.css';
 
-import { Tooltip } from '../tooltip/Tooltip';
+import { Tooltip } from '@components/tooltip/Tooltip';
 
 import { useState } from 'react';
 const ModalUpgradePlan = ({ userPlan }) => {

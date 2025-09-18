@@ -1,17 +1,17 @@
 import './DashboardHeader.css';
-import { useDashboard } from '../../dashboard/layout';
+import { useDashboard } from '@dashboard/layout';
 import { useState, useRef, Suspense} from 'react';
-import { Dropdown } from '../dropdown/Dropdown';
-import { supabase } from '../../../supabase/supabaseClient';
+import { Dropdown } from '@components/dropdown/Dropdown';
+import { supabase } from '@supabase/supabaseClient';
 
 import { useParams } from 'next/navigation';    
 import Link from 'next/link';
 import { DashboardHeaderName } from './DashboardHeaderName';
-import UserNameSkeleton from '../Skeletons/UserNameSkeleton';
+import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 import { DashboardAvatar } from './DashboardAvatar';
-import UserAvatarSkeleton from '../Skeletons/UserAvatarSkeleton';
+import UserAvatarSkeleton from '@components/Skeletons/UserAvatarSkeleton';
 import { DashboardHeaderPlan } from './DashboardHeaderPlan';
-import PlanSkeleton from '../Skeletons/PlanSkeleton';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import { DashboardHeaderBuilder } from './DashboardHeaderBuilder';
 import { useRouter } from 'next/navigation';
 

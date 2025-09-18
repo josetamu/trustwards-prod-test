@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 import './BuilderHeader.css';
 import { useCanvas } from '@contexts/CanvasContext';
 export default function BuilderHeader({site, setSite, setModalType, setIsModalOpen, checkSitePicture, SiteStyle, openChangeModalSettings}) {

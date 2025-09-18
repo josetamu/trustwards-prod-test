@@ -1,5 +1,5 @@
 import { useParams } from 'next/navigation';
-import { useDashboard } from '../../dashboard/layout';
+import { useDashboard } from '@dashboard/layout';
 import './ScriptCopy.css';
 import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 

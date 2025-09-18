@@ -1,5 +1,5 @@
 import './builderBody.css'
-import BuilderHeader from '../../../components/BuilderHeader/BuilderHeader';
+import BuilderHeader from '@components/BuilderHeader/BuilderHeader';
 
 import { Toolbar } from './Toolbar/Toolbar';
 import { Canvas } from './Canvas/Canvas';

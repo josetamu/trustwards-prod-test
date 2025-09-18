@@ -1,4 +1,4 @@
-import Scanner from '../components/scan/scanner';
+import Scanner from '@components/scan/scanner';
 
 export default function Page() {
     // Domain and siteId (urlPath for the domain)

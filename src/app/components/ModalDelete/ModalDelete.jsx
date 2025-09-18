@@ -1,19 +1,19 @@
 import './ModalDelete.css';
 
 import React from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 
 // ModalDelete: Confirmation for deleting a site
 export const ModalDelete = ({ onClose, siteData, setIsModalOpen, setSiteData }) => {
 
   const handleDelete = async () => {
     try {
-    // Redirect to /dashboard only if currently inside a site page (e.g., /dashboard/[siteId])
+    // Redirect to / only if currently inside a site page (e.g., /[siteId])
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      // Matches /dashboard/anything (but not exactly /dashboard)
-      if (/^\/dashboard\/[^/]+$/.test(path)) {
-        window.location.href = '/dashboard';
+      // Matches /anything (but not exactly /, and excluding paths like /login, /api, etc)
+      if (/^\/[a-zA-Z0-9-]+/.test(path) && !path.startsWith('/login') && !path.startsWith('/api') && !path.startsWith('/builder')) {
+        window.location.href = '/';
       }
     }
     // Delete the site from Supabase

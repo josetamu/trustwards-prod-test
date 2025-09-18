@@ -1,5 +1,5 @@
-import { useDashboard } from '../../dashboard/layout';
-import UserNameSkeleton from '../Skeletons/UserNameSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 
 
 export const SitesWelcome = () => {

@@ -1,7 +1,7 @@
-import { useDashboard } from '../../dashboard/layout';
-import { Site } from '../site/Site';
-import { NewSite } from '../NewSite/NewSite';
-import { SitesSkeleton } from '../Skeletons/SitesSkeleton';
+import { useDashboard } from '@dashboard/layout';
+import { Site } from '@components/site/Site';
+import { NewSite } from '@components/NewSite/NewSite';
+import { SitesSkeleton } from '@components/Skeletons/SitesSkeleton';
 import { useMemo } from 'react';
 
 export function SitesList({ openChangeModal, setIsModalOpen, setModalType, showNotification, isModalOpen, isDropdownOpen, setIsDropdownOpen, setSiteData, checkSitePicture, SiteStyle, openChangeModalSettings }) {

@@ -1,5 +1,14 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"Processing: $file\")",
+      "Bash(done)",
+      "Bash(awk:*)"
+    ],
     "defaultMode": "acceptEdits"
   }
 }

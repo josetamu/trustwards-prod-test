@@ -6,21 +6,21 @@ import './builder.css'
 import BuilderLeftPanel from './builderLeftPanel/builderLeftPanel'
 import BuilderBody from './builderBody/builderBody'
 import BuilderRightPanel from './builderRightPanel/builderRightPanel'
-import { ContextMenu } from '../../components/contextMenu/ContextMenu'
+import { ContextMenu } from '@components/contextMenu/ContextMenu'
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 import { useParams, notFound } from 'next/navigation';
-import { ModalContainer } from '../../components/ModalContainer/ModalContainer';
-import { ModalUser } from '../../components/ModalUser/ModalUser';
-import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
-import { ModalSupport } from '../../components/ModalSupport/ModalSupport';
-import { ModalChange } from '../../components/ModalChange/ModalChange';
-import  Notification  from '../../components/Notification/Notification';
+import { ModalContainer } from '@components/ModalContainer/ModalContainer';
+import { ModalUser } from '@components/ModalUser/ModalUser';
+import { ModalDelete } from '@components/ModalDelete/ModalDelete';
+import { ModalSupport } from '@components/ModalSupport/ModalSupport';
+import { ModalChange } from '@components/ModalChange/ModalChange';
+import  Notification  from '@components/Notification/Notification';
 import { CanvasProvider } from '@contexts/CanvasContext';
-import Loader from '../../components/Loader/Loader';
-import MobileWarning from '../../components/MobileWarning/MobileWarning';
+import Loader from '@components/Loader/Loader';
+import MobileWarning from '@components/MobileWarning/MobileWarning';
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes';
-import { ModalBuilderSettings } from '../../components/ModalBuilderSetting/ModalBuilderSettings';
+import { ModalBuilderSettings } from '@components/ModalBuilderSetting/ModalBuilderSettings';
 
 function Builder() {
   const params = useParams();

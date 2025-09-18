@@ -7,11 +7,88 @@
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.03em;
 }
-html{
+html.trustwards-login{
     padding: 0;
 }
+
+/*
+Light selected: use root
+Dark selected: use html[data-theme="dark"]
+System selected: will fallback to root or html[data-theme="dark"]
+*/
+:root{
+    --login-background: #FFFFFF;
+    --login-title-color: #232323;
+    --login-text-color: #444;
+
+    --login-email-background: #FFFFFF;
+    --login-email-text-color: #333333;
+    --login-email-border: 1px solid #dce0e6;
+    --login-email-box-shadow: 0 1px 2px #0d131e1a;
+
+    --login-or-color: #444;
+    --login-or-divider-color: #CCC;
+
+    --login-continue-with-background: #EEEEEE;
+    --login-continue-with-text-color: #444;
+
+    --login-sent-email-background: #FFF;
+    --login-sent-email-border-color: #dce0e6;
+    --login-sent-email-box-shadow: 0 1px 2px #0d131e1a;
+    --login-sent-email-title-color: #232323;
+    --login-sent-email-text-color: #444;
+    --login-sent-email-link-color: #0099FE;
+
+    --login-sent-email-icon-fill: #FFF;
+    --login-sent-email-icon-stroke: #aaa;
+
+    --login-error-color: #D00606;
+}
+.tw-login__logo{
+    background: url('/assets/logo-light-mode.svg');
+    background-size: cover;
+    width: 30px;
+    height: 22px;
+
+    margin-bottom: 10px;
+}
+html[data-theme="dark"]{
+    --login-background: #191919;
+    --login-title-color: #FFFFFF;
+    --login-text-color: #CCCCCC;
+
+    --login-email-background: #292929;
+    --login-email-text-color: #FFFFFF;
+    --login-email-border: unset;
+    --login-email-box-shadow: 0 1px 2px #0d131e1a;
+
+    --login-or-color: #CCC;
+    --login-or-divider-color: #444;
+
+    --login-continue-with-background: #333333;
+    --login-continue-with-text-color: #F5F5F5;
+
+    --login-sent-email-background: #33333350;
+    --login-sent-email-border-color: #333333;
+    --login-sent-email-box-shadow: unset;
+    --login-sent-email-title-color: #FFFFFF;
+    --login-sent-email-text-color: #CCCCCC;
+
+    --login-sent-email-icon-fill: #232323;
+    --login-sent-email-icon-stroke: #999;
+}
+html[data-theme="dark"] .tw-login__logo{
+    background: url('/assets/logo-dark-mode.svg');
+    background-size: cover;
+    width: 30px;
+    height: 22px;
+
+    margin-bottom: 10px;
+}
+
+/* Login Wrappers */
 .tw-login{
-    background: #191919;
+    background: var(--login-background);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,6 +104,8 @@ html{
 
     position: relative;
     z-index: 1;
+
+    max-width: 253px;
 }
 
 /* Top Content */
@@ -36,16 +115,8 @@ html{
     align-items: center;
     gap: 10px;
 }
-.tw-login__logo{
-    background: url('/assets/logo-dark-mode.svg');
-    background-size: cover;
-    width: 30px;
-    height: 22px;
-
-    margin-bottom: 10px;
-}
 .tw-login__title{
-    background: linear-gradient(90deg, #FFF 75%, #0099FE 100%);
+    background: linear-gradient(90deg, var(--login-title-color) 75%, #0099FE 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -58,7 +129,7 @@ html{
 .tw-login__text{
     font-size: 14px;
     font-weight: 500;
-    color: #CCC;
+    color: var(--login-text-color);
 
     text-align: center;
 }
@@ -72,24 +143,24 @@ html{
     width: 100%;
     margin-top: 25px;
 }
-.tw-login__email,
-.tw-login__password{
+.tw-login__email{
     outline: unset;
     border: unset;
 
-    background: #292929 !important;
+    border: var(--login-email-border);
+    box-shadow: var(--login-email-box-shadow);
+    background: var(--login-email-background) !important;
     padding: 10px 12px;
     border-radius: 8px;
 
     font-size: 14px;
     font-weight: 500;
-    color: #FFFFFF;
+    color: var(--login-email-text-color);
 
     transition-delay: calc(infinity * 1s);
 }
-.tw-login__email::placeholder,
-.tw-login__password::placeholder{
-    color: #FFFFFF;
+.tw-login__email::placeholder{
+    color: var(--login-email-text-color);
 }
 .tw-login__continue{
     outline: unset;
@@ -125,18 +196,18 @@ html{
     max-width: 60px;
     height: 1px;
 
-    background: #444;
+    background: var(--login-or-divider-color);
 }
 .tw-login__or-separator{
     font-size: 14px;
     font-weight: 500;
-    color: #CCC;
+    color: var(--login-or-color);
 
     margin: 10px 0;
 }
 
 /* Continue with Google */
-.tw-login__continue-with-google{
+.tw-login__continue-with{
     outline: unset;
     border: unset;
 
@@ -145,11 +216,14 @@ html{
 
     font-size: 14px;
     font-weight: 500;
-    color: #FFFFFF;
-    background: #666666;
+    color: var(--login-continue-with-text-color);
+    background: var(--login-continue-with-background);
     cursor: pointer;
 
     width: 100%;
+}
+.tw-login__continue-with--github{
+    margin-top: 10px;
 }
 
 /* Blurs */
@@ -165,4 +239,65 @@ html{
 
     height: 100%;
     width: 100%;
+}
+
+/* Sent email */
+.tw-login__sent-email{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+
+    border: 1px solid var(--login-sent-email-border-color);
+    background: var(--login-sent-email-background);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--login-sent-email-box-shadow);
+
+    padding: 25px;
+    border-radius: 16px;
+
+    width: 100%;
+    max-width: 350px;
+
+    position: relative;
+    z-index: 1;
+
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tw-login__sent-email-icon{
+    margin-bottom: 5px;
+}
+.tw-login__sent-email-icon path{
+    fill: var(--login-sent-email-icon-fill);
+    stroke: var(--login-sent-email-icon-stroke);
+}
+
+.tw-login__sent-email-title{
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--login-sent-email-title-color);
+    text-align: center;
+}
+.tw-login__sent-email-text{
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--login-sent-email-text-color);
+    text-align: center;
+    line-height: 1.5;
+}
+.tw-login__sent-email-link{
+    color: var(--login-sent-email-link-color);
+    cursor: pointer;
+}
+
+/* Error */
+.tw-login__error{
+    margin-top: 10px;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--login-error-color);
+    text-align: center;
 }

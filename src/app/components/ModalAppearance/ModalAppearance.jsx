@@ -1,7 +1,7 @@
 import './ModalAppearance.css';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
+import { supabase } from '@supabase/supabaseClient';
 import { useTheme } from 'next-themes';
 
 export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSettings}) => {

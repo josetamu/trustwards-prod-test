@@ -1,10 +1,10 @@
 import './Site.css';
-import { Dropdown } from '../../components/dropdown/Dropdown';
-import { ModalContainer } from '../../components/ModalContainer/ModalContainer';
-import { ModalDelete } from '../../components/ModalDelete/ModalDelete';
+import { Dropdown } from '@components/dropdown/Dropdown';
+import { ModalContainer } from '@components/ModalContainer/ModalContainer';
+import { ModalDelete } from '@components/ModalDelete/ModalDelete';
 import { useState} from 'react';
-import { supabase } from '../../../supabase/supabaseClient';
-import { useDashboard } from '../../dashboard/layout';
+import { supabase } from '@supabase/supabaseClient';
+import { useDashboard } from '@dashboard/layout';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
