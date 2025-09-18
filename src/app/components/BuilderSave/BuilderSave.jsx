@@ -12,15 +12,6 @@ export default function BuilderSave({showNotification, siteSlug}) {
     const save = useCallback(async () => {
         setIsLoading(true);
         try {
-            // Simulate a delay of saving
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            //Capture the canvas
-            try {
-            await captureCanvas();
-            } catch (error) {
-                console.error('Error capturing canvas:', error);
-            }
 
             //Update the site with the new JSONtree in supabase
             const {data, error} = await supabase
@@ -36,6 +27,12 @@ export default function BuilderSave({showNotification, siteSlug}) {
             showNotification('Changes saved successfully');
 
             createCDN(siteSlug); //Finally, update the CDN
+
+            Promise.all([
+                captureCanvas().catch(error => console.error('Error capturing canvas:', error)),
+            ]);
+
+            
         } catch (error) {
             showNotification('Error saving changes');
         } finally {
@@ -54,20 +51,35 @@ const captureCanvas = useCallback(async () => {
             return;
         }
 
-        // Use html2canvas to capture the canvas element
-        const { default: html2canvas } = await import('html2canvas');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+
+        // Use html2canvas to capture the canvas element - try different import approaches
+        let html2canvas;
+        try {
+            // Try the standard dynamic import first
+            const module = await import('html2canvas');
+            html2canvas = module.default || module;
+        } catch (importError) {
+            console.error('Failed to import html2canvas:', importError);
+            // Fallback: try to access from window if it's loaded globally
+            if (typeof window !== 'undefined' && window.html2canvas) {
+                html2canvas = window.html2canvas;
+            } else {
+                throw new Error('html2canvas is not available');
+            }
+        }
+
+        if (!html2canvas || typeof html2canvas !== 'function') {
+            throw new Error('html2canvas is not a valid function');
+        }
         
         const canvas = await html2canvas(canvasElement, {
             backgroundColor: null,
             scale: 1,
             useCORS: true,
             allowTaint: true,
-            ignoreElements: (element) => {
-                // Ignore builder-specific UI elements
-                return element.classList.contains('tw-builder__active') || 
-                       element.classList.contains('tw-builder__drop-indicator') ||
-                       element.classList.contains('tw-builder__handlebar');
-            }
+
         });
 
         // Convert canvas to blob
@@ -75,15 +87,24 @@ const captureCanvas = useCallback(async () => {
             canvas.toBlob(resolve, 'image/png');
         });
 
+        
+        // Get the current user to include in the file path
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            console.error('User not authenticated');
+            return;
+        }
+
         // Create file path: {siteId}/canvas-capture.png
-        const filePath = `${siteSlug}/canvas-capture.png`;
+        const filePath = `${user.id}/${siteSlug}.png`;
 
         // Upload to Supabase storage bucket "Canvas capture"
         const { data: uploadData, error: uploadError } = await supabase.storage
             .from('Canvas capture')
             .upload(filePath, blob, {
                 contentType: 'image/png',
-                upsert: true
+                upsert: true,
+                cacheControl: '0'
             });
 
         if (uploadError) {
