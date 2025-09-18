@@ -31,6 +31,7 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
         if (!JSONtree) return;
         const updated = { ...JSONtree, liveWebsite: !JSONtree.liveWebsite };
         setJSONtree(updated);
+        
     }
     const handleEventsChange = () => {
         if (!JSONtree) return;
@@ -90,7 +91,7 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     />
                                     <span className="modal-builder-settings__content-body-switch"></span>
                                     <Tooltip 
-                                    message="May not work with bot blockers or anti-automation tools" 
+                                    message="May not work with bot blockers or anti-automation tools. Be patient, it may take a few seconds" 
                                     open={activeTooltip === 'liveWebsite'} 
                                     responsivePosition={{ desktop: 'left', mobile: 'left' }}
                                     width="auto"

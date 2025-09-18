@@ -15,26 +15,20 @@ import { Categories } from '@builderElements/Categories/Categories';
 import { Checkbox } from '@builderElements/Checkbox/Checkbox';
 import { Icon } from '@builderElements/Icon/Icon';
 
-export const Canvas = ({site}) => {
+export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
         runElementScript, notifyElementCreatedFromToolbar, setJSONtree, deepCopy} = useCanvas();
 
-        const [screenshotUrl, setScreenshotUrl] = useState(null);
+        
         const [isLoadingScreenshot, setIsLoadingScreenshot] = useState(false);
     
-    // Function to generate screenshot URL using existing scan API
-    const generateScreenshotUrl = (domain) => {
-        if (!domain) return null;
-        
-        const encodedDomain = encodeURIComponent(domain);
-        return `/api/screenshot?domain=${encodedDomain}`;
-    };
+
     
         // Effect to handle live website screenshot
         useEffect(() => {
             if (JSONtree?.liveWebsite && site?.Domain) {
                 setIsLoadingScreenshot(true);
-                const url = generateScreenshotUrl(site.Domain);
+                const url = `/api/screenshot?domain=${encodeURIComponent(site.Domain)}`;
                 setScreenshotUrl(url);                
             } else {
                 setScreenshotUrl(null);

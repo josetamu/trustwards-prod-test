@@ -73,6 +73,8 @@ function Builder() {
 
   //Loader state
   const [loaderCompleted, setLoaderCompleted] = useState(false);
+  const [screenshotUrl, setScreenshotUrl] = useState(null);
+  const [isScreenshotLoading, setIsScreenshotLoading] = useState(false);
 
   //Context menu state
   const [clipboard, setClipboard] = useState(null);
@@ -145,6 +147,34 @@ function Builder() {
       setUser(userData);
       setSite(siteData);
       setAppearanceSettings(appearanceData);
+
+        // Handle screenshot loading if liveWebsite is enabled
+    if(siteData?.JSON?.liveWebsite === true){
+      setIsScreenshotLoading(true);
+      const url = `/api/screenshot?domain=${encodeURIComponent(siteData.Domain)}`;
+      
+      // Preload the image to detect when it's ready
+      const img = new Image();
+      img.onload = () => {
+        // Apply 5 second delay after image loads
+        setTimeout(() => {
+          setScreenshotUrl(url);
+          setIsScreenshotLoading(false);
+        }, 5000);
+      };
+      img.onerror = () => {
+        // If image fails, still apply delay then continue without screenshot
+        setTimeout(() => {
+          setScreenshotUrl(null);
+          setIsScreenshotLoading(false);
+        }, 5000);
+      };
+      img.src = url;
+    } else {
+      setScreenshotUrl(null);
+      setIsScreenshotLoading(false);
+    }
+      
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -456,11 +486,10 @@ const renderModal = () => {
   const isMobile = useMediaQuery('(max-width: 820px)');
 
   return (
-    <>
-    <Loader isVisible={isLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted}/>
+    <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
+    <Loader isVisible={isLoading || isScreenshotLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted}/>
     {isMobile && <MobileWarning/>}
     {!isMobile && !isLoading && (
-    <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
     <div className="tw-builder">
       <BuilderThemes isFirstTime={isFirstTime} setIsFirstTime={setIsFirstTime} isManualThemesOpen={isManualThemesOpen} setIsManualThemesOpen={setIsManualThemesOpen} showNotification={showNotification} siteSlug={siteSlug}/>
 
@@ -478,9 +507,11 @@ const renderModal = () => {
         clipboard={clipboard}
         setClipboard={setClipboard}
       />
-      <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
+      <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings} screenshotUrl={screenshotUrl} setScreenshotUrl={setScreenshotUrl}/>
       
-      <BuilderRightPanel user={user} site={site} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isRightPanelOpen}/>
+      <BuilderRightPanel user={user} site={site} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isRightPanelOpen}
+      
+      />
       
       <ModalContainer 
         isOpen={isModalOpen} 
@@ -530,9 +561,9 @@ const renderModal = () => {
                       setClipboard={setClipboard}
                     />
       </div>
-    </CanvasProvider>
     )}
-    </>
+    </CanvasProvider>
+
   );
 }
 

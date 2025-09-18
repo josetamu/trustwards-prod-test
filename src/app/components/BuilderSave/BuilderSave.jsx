@@ -80,9 +80,11 @@ const captureCanvas = useCallback(async () => {
             useCORS: true,
             allowTaint: true,
             onclone: (element) => {
+                if(element && element.style){
                 element.style.width = '1440px';
                 element.style.maxWidth = '1440px';
             }
+        }
         });
 
         // Convert canvas to blob
