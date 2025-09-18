@@ -535,10 +535,10 @@ export const Canvas = ({site}) => {
             <div 
                 className="tw-builder__canvas"
                 style={{
-                    backgroundColor: JSONtree?.liveWebsite ? 'transparent' : (JSONtree?.canvasColor || '#FFFFFF'),
+                    backgroundColor: JSONtree?.liveWebsite ? '' : (JSONtree?.canvasColor || '#FFFFFF'),
                     backgroundImage: JSONtree?.liveWebsite && screenshotUrl ? `url(${screenshotUrl})` : 'none',
                     backgroundSize: JSONtree?.liveWebsite ? 'cover' : 'initial',
-                    backgroundPosition: JSONtree?.liveWebsite ? 'top left' : 'initial',
+                    backgroundPosition: JSONtree?.liveWebsite ? 'center' : 'initial',
                     backgroundRepeat: JSONtree?.liveWebsite ? 'no-repeat' : 'initial',
                     position: 'relative'
                 }}
@@ -547,32 +547,6 @@ export const Canvas = ({site}) => {
                 onMouseLeave={handleMouseLeave}
                 onDragLeave={handleDragLeave}
             >
-                {isLoadingScreenshot && JSONtree?.liveWebsite && (
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1000
-                    }}>
-                        <div>Loading website screenshot...</div>
-                    </div>
-                )}
-                {JSONtree.liveWebsite && screenshotUrl &&(
-                    <img 
-                    src={screenshotUrl}
-                    onLoad={() => setIsLoadingScreenshot(false)}
-                    onError={() => setIsLoadingScreenshot(false)}
-                    style={{ display: 'none' }}
-                    alt=""
-                    
-                    />
-                )}
                 {JSONtree && JSONtree?.roots?.map(root => renderNode(root, selectedId))}
             </div>
             <div className="tw-builder__handlebar tw-builder__handlebar--right"></div>
