@@ -486,10 +486,10 @@ const renderModal = () => {
   const isMobile = useMediaQuery('(max-width: 820px)');
 
   return (
-    <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
-    <Loader isVisible={isLoading || isScreenshotLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted}/>
+  <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
+ <Loader isVisible={isLoading || isScreenshotLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted}/>
     {isMobile && <MobileWarning/>}
-    {!isMobile && !isLoading && (
+    {!isMobile && !isLoading && ( 
     <div className="tw-builder">
       <BuilderThemes isFirstTime={isFirstTime} setIsFirstTime={setIsFirstTime} isManualThemesOpen={isManualThemesOpen} setIsManualThemesOpen={setIsManualThemesOpen} showNotification={showNotification} siteSlug={siteSlug}/>
 

@@ -79,12 +79,19 @@ const captureCanvas = useCallback(async () => {
             scale: 1,
             useCORS: true,
             allowTaint: true,
-            onclone: (element) => {
+            onclone: (clonedDoc, element) => {
+                // Remove box-shadow from the cloned canvas to avoid shadow in capture
+                const clonedCanvas = clonedDoc.querySelector('.tw-builder__canvas');
+                if (clonedCanvas) {
+                    clonedCanvas.style.setProperty('box-shadow', 'none', 'important');
+                    clonedCanvas.style.setProperty('border', 'none', 'important');
+                }
+            
                 if(element && element.style){
-                element.style.width = '1440px';
-                element.style.maxWidth = '1440px';
+                    element.style.width = '1440px';
+                    element.style.maxWidth = '1440px';
+                }
             }
-        }
         });
 
         // Convert canvas to blob
