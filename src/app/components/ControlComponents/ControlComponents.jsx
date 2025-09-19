@@ -1888,6 +1888,55 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
 }
 const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange}) =>{
     
+    const [fontOptions, setFontOptions] = useState([]);
+
+useEffect(() => {
+    if (name !== 'Font') return;
+    fetch('/api/fonts')
+        .then(r => r.json())
+        .then(d => setFontOptions(d.items?.map(i => i.family) || []))
+        .catch(() => setFontOptions([]));
+}, [name]);
+
+const ensureFontLoaded = (family) => {
+    if (!family) return;
+    const famParam = family.trim().replace(/\s+/g, '+'); // "Exo 2" -> "Exo+2"
+    const id = `tw-gf-${famParam}`;
+
+    // Si el canvas está dentro de un iframe, inyecta en ese head; si no, en document
+    const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
+
+    // Preconnects (una vez)
+    if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+        const pc1 = document.createElement('link');
+        pc1.rel = 'preconnect';
+        pc1.href = 'https://fonts.googleapis.com';
+        pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
+        head.appendChild(pc1);
+
+        const pc2 = document.createElement('link');
+        pc2.rel = 'preconnect';
+        pc2.href = 'https://fonts.gstatic.com';
+        pc2.crossOrigin = '';
+        pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
+        head.appendChild(pc2);
+    }
+
+    // URL simple sin ejes (compatible con variables o estáticas)
+    const href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+
+    let link = head.querySelector(`link#${id}`);
+    if (!link) {
+        link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = href;
+        head.appendChild(link);
+    } else if (link.href !== href) {
+        link.href = href; // actualiza si quedó mal
+    }
+};
+
     //Object to map the font weight to the css value
     const fontWeightMap = {
         'Thin': '100',
@@ -1982,6 +2031,15 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     const handleSelectChange = (e) => {
         const newValue = e;
         setSelected(newValue);
+
+        if (name === 'Font') {
+            ensureFontLoaded(newValue);
+            if (applyGlobalCSSChange) {
+                applyGlobalCSSChange(cssProperty || 'font-family', newValue);
+            }
+            onChange && onChange(newValue);
+            return;
+        }
         //If the name is Weight, apply the font weight and the font style
         if(name === 'Weight') {
             let fontWeight;
@@ -2023,10 +2081,15 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     };
 
     // Combine options for Weight
-    const allOptions = name === 'Weight' && options2 ? 
-        [...options, '---', ...options2] : 
-        options;
-
+    const allOptions = (() => {
+        if (name === 'Font') {
+          return fontOptions?.length ? fontOptions : options || [];
+        }
+        if (name === 'Weight') {
+          return options2 ? [...(options || []), '---', ...options2] : options || [];
+        }
+        return options || [];
+      })();
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}
@@ -2082,7 +2145,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                         handleSelectChange(opt);
                         setOpen(false);
                     }}
-                    className={`tw-builder__settings-option ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
+                    className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
                     >
                     {opt === selected ? 
                         <span className="tw-builder__settings-check"> 
@@ -2103,6 +2166,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
       );
 
 }
+
 const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [open, setOpen] = useState(false);
     const [inset, setInset] = useState(false);

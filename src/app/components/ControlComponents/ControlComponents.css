@@ -355,6 +355,11 @@
     white-space: nowrap;
     font-weight: var(--font-weight);
   }
+  .tw-builder__settings-option--font {
+    padding: 8px 3px;
+    font-size: var(--font-size-extreme-mini);
+
+  }
   
   .tw-builder__settings-option:hover {
     background: var(--accent-bg-color); 

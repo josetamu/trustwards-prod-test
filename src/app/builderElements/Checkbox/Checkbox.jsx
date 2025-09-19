@@ -63,7 +63,7 @@ export const Checkbox = (node, nodeProps = {}) => {
                 label: 'Text',
                 controls: [
                     { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'color' },
-                    { name: 'Font', type: 'text', cssProperty: 'font-family' },
+                    { name: 'Font', type: 'select', cssProperty: 'font-family' },
                     { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
                     { name: 'Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
                     { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},

@@ -3,23 +3,25 @@
 import { useEffect, useState } from 'react';
 import './Loader.css';
 
-const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted }) => {
+const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted, isLiveWebsiteLoading }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [progressWidth, setProgressWidth] = useState(0);
 
   // Data not available - Progress bar will go to a random width between 0 and 50% of 250px
   useEffect(() => {
-    setProgressWidth(Math.floor(Math.random() * 50));
-    // Al iniciar, el progressWidth va a un valor aleatorio entre 0 y 50
+   
+    // starts with a random width between 0 and 50
     const initialWidth = Math.floor(Math.random() * 50);
     setProgressWidth(initialWidth);
 
-    // Después de 3 segundos, avanza a un valor aleatorio entre 50 y 80 (sin volver al inicio)
+    // if the live website is loading, the progress bar will advance to a random width between 100 and 150 after 2 seconds
+    if(isLiveWebsiteLoading){
     setTimeout(() => {
-      const nextWidth = 100 + Math.floor(Math.random() * 50); // 50-79
-      setProgressWidth(nextWidth);
-    }, 2000);
-  }, []);
+      const nextWidth = 100 + Math.floor(Math.random() * 50); 
+        setProgressWidth(nextWidth);
+      }, 2000);
+    }
+  }, [isLiveWebsiteLoading]);
 
   // Data available - Fade out animation
   useEffect(() => {

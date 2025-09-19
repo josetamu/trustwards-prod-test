@@ -48,7 +48,7 @@ export const Banner = (node, nodeProps = {}, children) => {
                 controls: [
                     { name: 'Font Size', type: 'text' },
                     { name: 'Text Transform', type: 'select', value: 'none', options: ['None', 'Capitalize', 'Uppercase', 'Lowercase'] },
-                    { name: 'Font Family', type: 'text' },
+                    { name: 'Font Family', type: 'select' },
                     { name: 'Font Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
                     { name: 'Font Style', type: 'select', value: 'normal', options: ['Normal', 'Italic', 'Oblique'] },
                     { name: 'Line Height', type: 'text' },
