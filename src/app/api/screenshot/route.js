@@ -28,7 +28,7 @@ export async function GET(req) {
       let waitMs = 2000;
       if (delayParam !== null) {
         const n = parseInt(delayParam, 10);
-        if (!Number.isNaN(n)) waitMs = Math.max(0, Math.min(n, 15000));
+        if (!Number.isNaN(n)) waitMs = Math.max(0, Math.min(n, 3000));
       }
 
       // Use the same browser setup as the POST endpoint
@@ -36,7 +36,6 @@ export async function GET(req) {
         headless: true,
         args: [
             '--no-sandbox',
-            '--disable-gpu',
             '--disable-dev-shm-usage',
             '--disable-features=Prerender2,InterestCohortApi,PrivacySandboxAdsAPIs',
           ],
@@ -62,7 +61,7 @@ export async function GET(req) {
 
       await Promise.race([
         page.waitForLoadState('networkidle').catch(() => {}),
-        new Promise((r) => setTimeout(r, 5000)),
+        new Promise((r) => setTimeout(r, 3000)),
       ]);
 
       await page.waitForTimeout(waitMs);

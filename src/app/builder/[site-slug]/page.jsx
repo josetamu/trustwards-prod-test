@@ -21,6 +21,7 @@ import Loader from '@components/Loader/Loader';
 import MobileWarning from '@components/MobileWarning/MobileWarning';
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes';
 import { ModalBuilderSettings } from '@components/ModalBuilderSetting/ModalBuilderSettings';
+import BuilderSave from '@components/BuilderSave/BuilderSave';
 
 function Builder() {
   const params = useParams();
@@ -78,6 +79,7 @@ function Builder() {
 
   //Context menu state
   const [clipboard, setClipboard] = useState(null);
+
 
   // Set userSettings based on modalType
   useEffect(() => {
@@ -156,18 +158,14 @@ function Builder() {
       // Preload the image to detect when it's ready
       const img = new Image();
       img.onload = () => {
-        // Apply 5 second delay after image loads
-        setTimeout(() => {
           setScreenshotUrl(url);
           setIsScreenshotLoading(false);
-        }, 5000);
+        
       };
       img.onerror = () => {
-        // If image fails, still apply delay then continue without screenshot
-        setTimeout(() => {
           setScreenshotUrl(null);
           setIsScreenshotLoading(false);
-        }, 5000);
+     
       };
       img.src = url;
     } else {
@@ -440,6 +438,7 @@ const renderModal = () => {
         <ModalBuilderSettings
           onClose={() => setIsModalOpen(false)}
           showNotification={showNotification}
+         
         />
       )
     
@@ -509,9 +508,9 @@ const renderModal = () => {
       />
       <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings} screenshotUrl={screenshotUrl} setScreenshotUrl={setScreenshotUrl}/>
       
-      <BuilderRightPanel user={user} site={site} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isRightPanelOpen}
+      <BuilderRightPanel user={user} site={site} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isRightPanelOpen}/>
+   
       
-      />
       
       <ModalContainer 
         isOpen={isModalOpen} 
@@ -560,6 +559,7 @@ const renderModal = () => {
                       clipboard={clipboard}
                       setClipboard={setClipboard}
                     />
+                 
       </div>
     )}
     </CanvasProvider>

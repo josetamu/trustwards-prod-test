@@ -1,5 +1,5 @@
 import './BuilderSave.css';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useImperativeHandle } from 'react';
 import { useCanvas } from '@contexts/CanvasContext';
 import { supabase } from '@supabase/supabaseClient';
 import { createCDN } from '@contexts/CDNsContext';
@@ -39,6 +39,9 @@ export default function BuilderSave({showNotification, siteSlug}) {
             setIsLoading(false);
         }
     }, [JSONtree, siteSlug, showNotification, markClean]);
+
+    
+
 
 
     // Function to capture canvas and save to Supabase storage
