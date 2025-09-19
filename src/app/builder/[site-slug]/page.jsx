@@ -486,7 +486,7 @@ const renderModal = () => {
 
   return (
   <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
- <Loader isVisible={isLoading || isScreenshotLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted}/>
+ <Loader isVisible={isLoading || isScreenshotLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading}/>
     {isMobile && <MobileWarning/>}
     {!isMobile && !isLoading && ( 
     <div className="tw-builder">

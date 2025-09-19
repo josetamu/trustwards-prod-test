@@ -10,6 +10,15 @@ const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted }) => {
   // Data not available - Progress bar will go to a random width between 0 and 50% of 250px
   useEffect(() => {
     setProgressWidth(Math.floor(Math.random() * 50));
+    // Al iniciar, el progressWidth va a un valor aleatorio entre 0 y 50
+    const initialWidth = Math.floor(Math.random() * 50);
+    setProgressWidth(initialWidth);
+
+    // Después de 3 segundos, avanza a un valor aleatorio entre 50 y 80 (sin volver al inicio)
+    setTimeout(() => {
+      const nextWidth = 100 + Math.floor(Math.random() * 50); // 50-79
+      setProgressWidth(nextWidth);
+    }, 2000);
   }, []);
 
   // Data available - Fade out animation
