@@ -333,7 +333,7 @@
     top: calc(100% + 6px);
     right: 5%;
     width: fit-content;
-    background: #111;
+    background: #2B2B2B;
     color: white;
     border-radius: 5px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -345,6 +345,9 @@
     overflow-y: auto;
     scrollbar-width: none;
     
+  }
+  .tw-builder__settings-options:has(.tw-builder__settings-search){
+    min-width: 177px;
   }
 
   .tw-builder__settings-option {
@@ -360,23 +363,45 @@
     font-weight: var(--font-weight);
   }
   .tw-builder__settings-option--font {
-    padding: 8px 3px;
+    padding: 8px 1px;
     font-size: var(--font-size-extreme-mini);
-
+    margin-left: 5px;
   }
   
   .tw-builder__settings-option:hover {
     background: var(--accent-bg-color); 
     border-radius: 3px;
   }
-
-
   .tw-builder__settings-check {
     display: flex;
     align-items: center;
     position: absolute;
     left: 2px;
-
+  }
+  .tw-builder__settings-check--font{
+    left: -7.5px;
+  }
+  .tw-builder__settings-search{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border: none;
+    padding: 5px 0;
+  }
+  .tw-builder__settings-search-input{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border: none;
+    padding: 5px 10px;
+    background-color: transparent;
+    color: #FFFFFF;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+  }
+  .tw-builder__settings-search-input:focus{
+    outline: none;
   }
   .tw-builder__settings-divider {
     height: 1px;
