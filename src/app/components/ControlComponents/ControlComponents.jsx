@@ -1893,10 +1893,11 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     const [weightOptions, setWeightOptions] = useState([]);
     const systemFontOptions = ['Arial', 'Courier New', 'Georgia', 'Helvetica', 'Verdana', 'Tahoma', 'Times','Times New Roman', 'Sans-serif'];
     const [searchFilter, setSearchFilter] = useState('');
+    const [italicWeightOptions, setItalicWeightOptions] = useState([]);
 
 
     useEffect(() => {
-        if (name !== 'Font') return;
+        if (name !== 'Font' && name !== 'Weight') return;
         fetch('/api/fonts')
             .then(r => r.json())
             .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
@@ -1911,42 +1912,69 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
 
     const ensureFontLoaded = (family) => {
         if (!family) return;
-        const famParam = family.trim().replace(/\s+/g, '+'); // "Exo 2" -> "Exo+2"
+        const famParam = family.trim().replace(/\s+/g, '+');
         const id = `tw-gf-${famParam}`;
-
-    // Si el canvas está dentro de un iframe, inyecta en ese head; si no, en document
-    const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
-
-    // Preconnects (una vez)
-    if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
-        const pc1 = document.createElement('link');
-        pc1.rel = 'preconnect';
-        pc1.href = 'https://fonts.googleapis.com';
-        pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
-        head.appendChild(pc1);
-
-        const pc2 = document.createElement('link');
-        pc2.rel = 'preconnect';
-        pc2.href = 'https://fonts.gstatic.com';
-        pc2.crossOrigin = '';
-        pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
-        head.appendChild(pc2);
-    }
-
-    // URL simple sin ejes (compatible con variables o estáticas)
-    const href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
-
-    let link = head.querySelector(`link#${id}`);
-    if (!link) {
-        link = document.createElement('link');
-        link.id = id;
-        link.rel = 'stylesheet';
-        link.href = href;
-        head.appendChild(link);
-    } else if (link.href !== href) {
-        link.href = href; // actualiza si quedó mal
-    }
-};
+    
+        const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
+    
+        if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+            const pc1 = document.createElement('link');
+            pc1.rel = 'preconnect';
+            pc1.href = 'https://fonts.googleapis.com';
+            pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
+            head.appendChild(pc1);
+    
+            const pc2 = document.createElement('link');
+            pc2.rel = 'preconnect';
+            pc2.href = 'https://fonts.gstatic.com';
+            pc2.crossOrigin = '';
+            pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
+            head.appendChild(pc2);
+        }
+    
+        // Construir href con todos los variants
+        const entry = fontOptions.find(f => f.family === family);
+        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+    
+        if (entry && Array.isArray(entry.variants)) {
+            const normal = new Set();
+            const italic = new Set();
+    
+            entry.variants.forEach(v => {
+                if (v === 'regular') { normal.add(400); return; }
+                if (v === 'italic')  { italic.add(400); return; }
+                const m = v.match(/^(\d{3})(italic)?$/);
+                if (m) {
+                    const n = parseInt(m[1], 10);
+                    if (m[2]) italic.add(n); else normal.add(n);
+                }
+            });
+    
+            const sortNums = arr => Array.from(arr).sort((a,b) => a - b).join(';');
+    
+            if (italic.size) {
+                const parts = [];
+                const nList = sortNums(normal);
+                const iList = sortNums(italic);
+                if (nList) parts.push(`0,${nList}`);
+                if (iList) parts.push(`1,${iList}`);
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
+            } else if (normal.size) {
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
+            }
+        }
+    
+        let link = head.querySelector(`link#${id}`);
+        if (!link) {
+            link = document.createElement('link');
+            link.id = id;
+            link.rel = 'stylesheet';
+            link.href = href;
+            head.appendChild(link);
+        } else if (link.href !== href) {
+            link.href = href;
+        }
+    };
 
     //Object to map the font weight to the css value
     const fontWeightMap = {
@@ -1965,6 +1993,68 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         Object.fromEntries(
             Object.entries(fontWeightMap).map(([key, value]) => [value, key])
         )
+
+        const weightNameOrder = ['Thin','Extra Light','Light','Normal','Medium','Semi Bold','Bold','Extra Bold','Black'];
+        const reverseMap = fontWeightMapReverse();
+    
+        const computeWeightOptionsForFamily = (family) => {
+            if (!family) {
+                // fallback completo (sistemas)
+                return {
+                    weights: weightNameOrder,
+                    italics: weightNameOrder.map(w => `${w} Italic`)
+                };
+            }
+            const entry = fontOptions.find(f => f.family === family);
+            if (!entry || !entry.variants?.length) {
+                return {
+                    weights: weightNameOrder,
+                    italics: weightNameOrder.map(w => `${w} Italic`)
+                };
+            }
+            const weightsSet = new Set();
+            const italicsSet = new Set();
+    
+            entry.variants.forEach(v => {
+                if (v === 'regular') {
+                    weightsSet.add('Normal');
+                    return;
+                }
+                if (v === 'italic') {
+                    italicsSet.add('Normal Italic');
+                    return;
+                }
+                const m = v.match(/^(\d{3})(italic)?$/);
+                if (m) {
+                    const num = m[1];
+                    const label = reverseMap[num] || num;
+                    if (m[2]) italicsSet.add(`${label} Italic`);
+                    else weightsSet.add(label);
+                }
+            });
+    
+            const sortByOrder = (a, b) => weightNameOrder.indexOf(a) - weightNameOrder.indexOf(b);
+            const weights = Array.from(weightsSet).sort(sortByOrder);
+            const italics = Array.from(italicsSet).sort((a, b) =>
+                sortByOrder(a.replace(' Italic',''), b.replace(' Italic',''))
+            );
+    
+            // si no salió nada, usa fallback
+            return {
+                weights: weights.length ? weights : weightNameOrder,
+                italics: italics
+            };
+        };
+    
+        useEffect(() => {
+            if (name !== 'Weight') return;
+            const cssFamily = getGlobalCSSValue?.('font-family');
+            const currentFamily = extractPrimaryFamily(cssFamily);
+            const { weights, italics } = computeWeightOptionsForFamily(currentFamily);
+            setWeightOptions(weights);
+            setItalicWeightOptions(italics);
+        }, [name, getGlobalCSSValue, selectedId, fontOptions]);
+
     //State to store the selected value
     const [selected, setSelected] = useState(() => {
         if (JSONProperty && getGlobalJSONValue) {
@@ -2034,6 +2124,14 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             }
         }
     }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue, options2]);
+    
+    useEffect(() => {
+        // Reinyecta la familia actual con todos los pesos cuando llegan fontOptions
+        const cssVal = getGlobalCSSValue?.(cssProperty || 'font-family');
+        const fam = extractPrimaryFamily(cssVal) || (name === 'Font' ? selected : '');
+        if (fam) ensureFontLoaded(fam);
+    }, [fontOptions]);
+    
     // Handle select change with global CSS or JSON application
     const handleSelectChange = (e) => {
         const newValue = e;
@@ -2068,6 +2166,9 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                         "font-style": "normal"
                       });
                 }
+                const fam = extractPrimaryFamily(getGlobalCSSValue?.('font-family'));
+                if (fam) ensureFontLoaded(fam);
+                return;
             }
             return;
         }
@@ -2104,8 +2205,15 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             return options || [];
         }
         if (name === 'Weight') {
-            return options2 ? [...(options || []), '---', ...options2] : options || [];
-        }
+            const hasDynamic = (weightOptions?.length || italicWeightOptions?.length);
+            if (hasDynamic) {
+              return italicWeightOptions?.length
+                ? [...(weightOptions || []), '---', ...italicWeightOptions]
+                : (weightOptions || []);
+            }
+            // Solo si no hay dinámicos (por ejemplo, fuentes del sistema o no encontrada en fontOptions)
+            return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
+          }
         return options || [];
     })();
 

@@ -23,15 +23,17 @@ export async function GET(req) {
       // Build complete URL
       const url = /^https?:\/\//i.test(domain) ? domain : `https://${domain}`;
 
-      // Retardo opcional para animaciones (por defecto 2000ms, máx 15000ms)
+      // Delay optional for animations 
       const delayParam = searchParams.get('delay');
       let waitMs = 2000;
       if (delayParam !== null) {
         const n = parseInt(delayParam, 10);
+        //limit the delay between 0 and 3000ms and set the delay
         if (!Number.isNaN(n)) waitMs = Math.max(0, Math.min(n, 3000));
       }
 
-      // Use the same browser setup as the POST endpoint
+
+      //browser setup
       browser = await chromium.launch({
         headless: true,
         args: [
@@ -59,11 +61,13 @@ export async function GET(req) {
         timeout: 30000 
       });
 
+      //wait for the page to load
       await Promise.race([
         page.waitForLoadState('networkidle').catch(() => {}),
         new Promise((r) => setTimeout(r, 3000)),
       ]);
 
+      //wait for the delay
       await page.waitForTimeout(waitMs);
 
       // Take screenshot
