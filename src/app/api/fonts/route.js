@@ -4,7 +4,7 @@ export async function GET() {
       return new Response(JSON.stringify({ error: 'Missing GOOGLE_FONTS_API_KEY' }), { status: 500 });
     }
   
-    const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${key}&sort=popularity`;
+    const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${key}&sort=alpha`;
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) {
       return new Response(JSON.stringify({ error: 'Failed to fetch Google Fonts' }), { status: 502 });
@@ -12,6 +12,6 @@ export async function GET() {
   
     const data = await res.json();
     // Devolvemos solo lo necesario
-    const items = (data.items || []).map(i => ({ family: i.family }));
+    const items = (data.items || []).map(i => ({ family: i.family, variants: i.variants || []}));
     return new Response(JSON.stringify({ items }), { status: 200 });
   }
