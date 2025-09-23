@@ -1971,8 +1971,6 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             link.rel = 'stylesheet';
             link.href = href;
             head.appendChild(link);
-        } else if (link.href !== href) {
-            link.href = href;
         }
     };
 

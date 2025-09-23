@@ -19,58 +19,11 @@ import { Banner } from '@builderElements/Banner/Banner';
 import { Modal } from '@builderElements/Modal/Modal';
 import { useEffect} from 'react';
 
-const extractPrimaryFamily = (cssFontFamily) => {
-    if (!cssFontFamily) return '';
-    const first = cssFontFamily.split(',')[0].trim();
-    return first.replace(/^["']|["']$/g, '');
-  };
-  
-  const ensureFontLoaded = (family) => {
-    if (!family) return;
-    const famParam = family.trim().replace(/\s+/g, '+');
-    const id = `tw-gf-${famParam}`;
-    const iframeHead = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head;
-    const heads = [document.head, iframeHead].filter(Boolean);
-  
-    heads.forEach((head) => {
-      if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
-        const pc1 = document.createElement('link'); pc1.rel = 'preconnect'; pc1.href = 'https://fonts.googleapis.com'; pc1.setAttribute('data-tw-preconnect','gfonts-apis'); head.appendChild(pc1);
-        const pc2 = document.createElement('link'); pc2.rel = 'preconnect'; pc2.href = 'https://fonts.gstatic.com'; pc2.crossOrigin = ''; pc2.setAttribute('data-tw-preconnect','gfonts-apis'); head.appendChild(pc2);
-      }
-  
-      const href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
-      let link = head.querySelector(`link#${id}`);
-      if (!link) { link = document.createElement('link'); link.id = id; link.rel = 'stylesheet'; link.href = href; head.appendChild(link); }
-      else if (link.href !== href) { link.href = href; }
-    });
-  };
+
 
 function BuilderRightPanel({user, site, checkProfilePicture, profileStyle, setModalType, setIsModalOpen, showNotification, siteSlug, isPanelOpen}) {
     const { selectedId, JSONtree, activeRoot } = useCanvas();
 
-    useEffect(() => {
-        if (!JSONtree) return;
-        const fonts = new Set();
-      
-      
-        JSONtree.idsCSSData?.forEach(item => {
-          const src = item?.css || item?.properties;
-          const ff = src?.['font-family'] || src?.fontFamily;
-          const fam = extractPrimaryFamily(ff);
-          if (fam) fonts.add(fam);
-        });
-      
-     
-        const activeRootNode = JSONtree.roots?.find(r => r.id === activeRoot);
-        const rootCSS = activeRootNode?.css || activeRootNode?.properties || activeRootNode?.defaultCSS;
-        if (rootCSS) {
-          const ff = rootCSS['font-family'] || rootCSS.fontFamily;
-          const fam = extractPrimaryFamily(ff);
-          if (fam) fonts.add(fam);
-        }
-      
-        fonts.forEach(ensureFontLoaded);
-      }, [JSONtree, activeRoot]);
     // Function to find the element in the JSON tree
     const findElement = (node, targetId) => {
         //If the node is not found, return null

@@ -19,15 +19,16 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
         runElementScript, notifyElementCreatedFromToolbar, setJSONtree, deepCopy} = useCanvas();
 
-        
+        //state to handle the loading of the live website screenshot
         const [isLoadingScreenshot, setIsLoadingScreenshot] = useState(false);
     
 
     
-        // Effect to handle live website screenshot
+        // Effect to handle live website screenshot. This is local because the screenshot is generated in the builder page
         useEffect(() => {
             if (JSONtree?.liveWebsite && site?.Domain) {
                 setIsLoadingScreenshot(true);
+                //set the url of the live website screenshot
                 const url = `/api/screenshot?domain=${encodeURIComponent(site.Domain)}`;
                 setScreenshotUrl(url);                
             } else {
@@ -410,6 +411,93 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
         };
     }, [dropIndicator]);
 
+    // Helpers to extract and load Google Fonts variants in use
+const extractPrimaryFamily = (cssFontFamily) => {
+    if (!cssFontFamily) return '';
+    const first = cssFontFamily.split(',')[0].trim();
+    return first.replace(/^["']|["']$/g, '');
+};
+
+const ensureGoogleFontLoaded = (family, weights = new Set(['400']), includeItalic = false) => {
+    if (!family) return;
+
+    // Skip generic/system keywords
+    const lower = family.toLowerCase();
+    const skip = new Set(['serif','sans-serif','monospace','cursive','fantasy','system-ui','inherit','initial','unset','revert']);
+    if (skip.has(lower)) return;
+
+    const famParam = family.trim().replace(/\s+/g, '+');
+    const id = `tw-gf-${famParam}`;
+
+    // Preconnect once
+    const head = document.head;
+    if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+        const pc1 = document.createElement('link');
+        pc1.rel = 'preconnect';
+        pc1.href = 'https://fonts.googleapis.com';
+        pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
+        head.appendChild(pc1);
+
+        const pc2 = document.createElement('link');
+        pc2.rel = 'preconnect';
+        pc2.href = 'https://fonts.gstatic.com';
+        pc2.crossOrigin = '';
+        pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
+        head.appendChild(pc2);
+    }
+
+    const sortNums = (arr) => Array.from(arr).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n)).sort((a,b)=>a-b).join(';');
+    const w = sortNums(weights.size ? weights : new Set(['400']));
+
+    let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+    if (includeItalic) {
+        // request normal and italic rows
+        href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@0,${w};1,${w}&display=swap`;
+    } else if (w) {
+        href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${w}&display=swap`;
+    }
+
+    let link = head.querySelector(`link#${id}`);
+    if (!link) {
+        link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = href;
+        head.appendChild(link);
+    } else if (link.href !== href) {
+        link.href = href;
+    }
+};
+
+// Scan JSONtree CSS to load all used font families/weights
+useEffect(() => {
+    const famMap = new Map(); // family -> { weights: Set, italic: bool }
+
+    const collectFromProps = (props) => {
+        if (!props) return;
+        const fam = extractPrimaryFamily(props['font-family']);
+        if (!fam) return;
+        const weight = props['font-weight'];
+        const italic = (props['font-style'] || '').toLowerCase() === 'italic';
+
+        if (!famMap.has(fam)) famMap.set(fam, { weights: new Set(), italic: false });
+        const entry = famMap.get(fam);
+        if (weight && /^\d{3}$/.test(weight)) entry.weights.add(weight);
+        if (italic) entry.italic = true;
+    };
+
+    JSONtree?.idsCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.classesCSSData?.forEach(({ properties }) => collectFromProps(properties));
+
+    // If nothing specified, try defaults on common classes to avoid missing regular
+    if (famMap.size === 0) return;
+
+    famMap.forEach(({ weights, italic }, fam) => {
+        if (!weights.size) weights.add('400'); // ensure regular
+        ensureGoogleFontLoaded(fam, weights, italic);
+    });
+}, [JSONtree?.idsCSSData, JSONtree?.classesCSSData]);
+
     //Create a stylesheet for the properties every time the idsData or classesData changes
     //For each id, add its CSS selector and properties
     //For each class, add its CSS selector and properties
@@ -529,6 +617,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
             <div 
                 className="tw-builder__canvas"
                 style={{
+                    //set the background color or live website screenshot
                     backgroundColor: JSONtree?.liveWebsite ? '' : (JSONtree?.canvasColor || '#FFFFFF'),
                     backgroundImage: JSONtree?.liveWebsite && screenshotUrl ? `url(${screenshotUrl})` : 'none',
                     backgroundSize: JSONtree?.liveWebsite ? 'cover' : 'initial',
