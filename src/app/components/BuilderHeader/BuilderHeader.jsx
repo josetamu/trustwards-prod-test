@@ -1,15 +1,37 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '@supabase/supabaseClient';
 import './BuilderHeader.css';
 import { useCanvas } from '@contexts/CanvasContext';
+import { Tooltip } from '@components/tooltip/Tooltip';
 export default function BuilderHeader({site, setSite, setModalType, setIsModalOpen, checkSitePicture, SiteStyle, openChangeModalSettings}) {
     const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
-    const [breakpoint, setBreakpoint] = useState('');
-
+    const [breakpoint, setBreakpoint] = useState('desktop');
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [editingBreakpoint, setEditingBreakpoint] = useState(null);
+    const [editingValue, setEditingValue] = useState('');
+    
     const { undo, redo, canUndo, canRedo, setJSONtree, JSONtree} = useCanvas();
 
 
+    // Determine active breakpoint based on current canvas width
+    useEffect(() => {
+      if (JSONtree?.canvasMaxWidth && JSONtree?.breakpoints) {
+          const canvasWidth = parseInt(JSONtree.canvasMaxWidth);
+          const { tablet, mobile } = JSONtree.breakpoints;
+          
+          const tabletWidth = parseInt(tablet);
+          const mobileWidth = parseInt(mobile);
+          
+          if (canvasWidth > tabletWidth) {
+              setBreakpoint('desktop');
+          } else if (canvasWidth > mobileWidth) {
+              setBreakpoint('tablet');
+          } else {
+              setBreakpoint('mobile');
+          }
+      }
+  }, [JSONtree?.canvasMaxWidth, JSONtree?.breakpoints]);
 
 
   const handleImgEditClick = () => {
@@ -84,49 +106,178 @@ export default function BuilderHeader({site, setSite, setModalType, setIsModalOp
     }
   };
 
-   // Define breakpoint widths
-   const breakpointWidths = {
-    desktop: '1440px',
-    tablet: '767px',
-    mobile: '467px'
-};
+
 
 // Handle breakpoint changes and update canvas directly
 const handleBreakpointChange = (newBreakpoint) => {
     setBreakpoint(newBreakpoint);
-    const updated = { ...JSONtree, canvasMaxWidth: breakpointWidths[newBreakpoint] };
+    const updated = { ...JSONtree, canvasMaxWidth: JSONtree.breakpoints[newBreakpoint] };
     setJSONtree(updated);
 
 };
+let tooltipTimeout = null;
+
+const handleMouseEnter = (id) => {
+  tooltipTimeout = setTimeout(() => setShowTooltip(id), 500);
+};
+
+const handleMouseLeave = () => {
+  if (tooltipTimeout) {
+    clearTimeout(tooltipTimeout);
+    tooltipTimeout = null;
+    setEditingBreakpoint(null);
+    setEditingValue('');
+  }
+  setShowTooltip('');
+  setEditingBreakpoint(null);
+  setEditingValue('');
+};
+
+// Helpers para parsear/validar valores en px
+const toPxString = (val) => {
+  if (typeof val === 'number' && !isNaN(val)) return `${val}px`;
+  if (typeof val === 'string') {
+    const match = val.trim().match(/^(\d+)\s*(px)?$/i);
+    if (match) return `${parseInt(match[1], 10)}px`;
+  }
+  return null;
+};
+
+// Gestor de edición inline
+const startEditing = (key) => {
+  const current = JSONtree?.breakpoints?.[key] || '';
+  const num = parseInt(current, 10);
+  setEditingBreakpoint(key);
+  setEditingValue(isNaN(num) ? '' : String(num));
+};
+
+const cancelEditing = () => {
+  setEditingBreakpoint(null);
+  setEditingValue('');
+};
+
+const commitEditing = (key) => {
+  const px = toPxString(editingValue);
+  if (!px) { cancelEditing(); return; }
+
+  let newNum = parseInt(px, 10);
+  const tabletNum = parseInt(JSONtree?.breakpoints?.tablet || '0', 10);
+  const mobileNum = parseInt(JSONtree?.breakpoints?.mobile || '0', 10);
+
+  // Help: Clamp breakpoints so Mobile ≤ Tablet, no warnings
+  if (key === 'mobile' && newNum >= tabletNum) newNum = Math.max(0, tabletNum - 1);
+  if (key === 'tablet' && newNum <= mobileNum) newNum = mobileNum + 1;
+
+  const finalPx = `${newNum}px`;
+  handleBreakpointEdit(key, finalPx);
+  cancelEditing();
+};
+
+// Editar breakpoint (un solo set en el historial; actualiza canvas si es el activo)
+const handleBreakpointEdit = (breakpointKey, newValue) => {
+  const updated = {
+    ...JSONtree,
+    breakpoints: { ...JSONtree.breakpoints, [breakpointKey]: newValue }
+  };
+
+  if (breakpoint === breakpointKey) {
+    updated.canvasMaxWidth = newValue;
+  }
+
+  setJSONtree(updated);
+};
+
+const renderTooltip = (id) => (
+  <div className="tw-builder__header-tooltip">
+    <span>{id === 'desktop' ? 'Desktop' : id === 'tablet' ? 'Tablet' : 'Mobile'}</span>
+    {id !== 'desktop' && (
+      <>
+        <span className="tw-builder__header-tooltip-divider">|</span>
+
+        {editingBreakpoint === id ? (
+          <span className="tw-builder__header-tooltip-span" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+            <input
+              className="tw-builder__header-tooltip-input"
+              value={editingValue}
+              onChange={(e) => setEditingValue(e.target.value.replace(/[^\d]/g, ''))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') commitEditing(id);
+                if (e.key === 'Escape') cancelEditing();
+              }}
+              onBlur={() => commitEditing(id)}
+              autoFocus
+              style={{ width: Math.max(3, (editingValue || '').length) + 'ch' }}
+            />
+            <span>px</span>
+          </span>
+        ) : (
+          <span
+            className="tw-builder__header-tooltip-span"
+            onClick={(e) => { e.stopPropagation(); startEditing(id); }}
+          >
+            {JSONtree?.breakpoints?.[id] || ''}
+          </span>
+        )}
+
+        <svg
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => { e.stopPropagation(); startEditing(id); }}
+          className="tw-builder__header-tooltip-edit" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M5.77443 0.920991C5.72967 0.916961 5.6846 0.916961 5.63983 0.920991C5.48187 0.935221 5.35453 1.00753 5.23947 1.09801C5.1315 1.1829 5.01227 1.30216 4.87393 1.44052L4.5 1.81443L6.1869 3.5013L6.5608 3.12742C6.69917 2.98907 6.81843 2.86981 6.9033 2.76187C6.9938 2.6468 7.0661 2.51944 7.08033 2.36148C7.08437 2.31671 7.08437 2.27167 7.08033 2.22691C7.0661 2.06894 6.9938 1.94159 6.9033 1.82652C6.81843 1.71857 6.69917 1.59932 6.5608 1.46097C6.42247 1.32261 6.28277 1.1829 6.1748 1.09801C6.05973 1.00753 5.9324 0.935221 5.77443 0.920991Z" fill="#FFFFFF"/>
+          <path d="M5.83269 3.85486L4.14582 2.16797L1.54143 4.77232C1.28492 5.02859 1.10666 5.20669 1.0112 5.43716C0.915737 5.66762 0.915857 5.91959 0.91603 6.28219L0.916047 6.83462C0.916047 6.97269 1.02797 7.08462 1.16605 7.08462H1.71849C2.08108 7.08482 2.33306 7.08492 2.56352 6.98946C2.79398 6.89402 2.97207 6.71575 3.22834 6.45922L5.83269 3.85486Z" fill="#999999"/>
+        </svg>
+      </>
+    )}
+  </div>
+);
 
     return (
       <div className="tw-builder__header">
         <div className="tw-builder__header-settings">
           <div className="tw-builder__header-breakpoints">
-            <div className="tw-builder__header-breakpoint" onClick={() => handleBreakpointChange('desktop')}>
+            <div className="tw-builder__header-breakpoint" onClick={() => handleBreakpointChange('desktop')} onMouseEnter={() => handleMouseEnter('desktop')} onMouseLeave={handleMouseLeave}>
               <span className={`tw-builder__header-breakpoint-icon ${breakpoint === 'desktop' ? 'tw-builder__header-breakpoint-icon--active' : ''}`}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9.33398 13.9987H10.6673M9.33398 13.9987C8.78172 13.9987 8.33398 13.551 8.33398 12.9987V11.332H8.00065M9.33398 13.9987H6.66732M8.00065 11.332H7.66732V12.9987C7.66732 13.551 7.21958 13.9987 6.66732 13.9987M8.00065 11.332V13.9987M6.66732 13.9987H5.33398" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M10.6673 2H5.33398C3.44836 2 2.50556 2 1.91977 2.58579C1.33398 3.17157 1.33398 4.11438 1.33398 6V7.33333C1.33398 9.21893 1.33398 10.1617 1.91977 10.7475C2.50556 11.3333 3.44836 11.3333 5.33398 11.3333H10.6673C12.5529 11.3333 13.4957 11.3333 14.0815 10.7475C14.6673 10.1617 14.6673 9.21893 14.6673 7.33333V6C14.6673 4.11438 14.6673 3.17157 14.0815 2.58579C13.4957 2 12.5529 2 10.6673 2Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
+              <Tooltip
+                message={renderTooltip('desktop')}
+                open={showTooltip === 'desktop'}
+                responsivePosition={{ desktop: 'bottom', mobile: 'bottom' }}
+                width="auto"
+              />
 
             </div>
-            <div className="tw-builder__header-breakpoint" onClick={() => handleBreakpointChange('tablet')}>
+            <div className="tw-builder__header-breakpoint" onClick={() => handleBreakpointChange('tablet')} onMouseEnter={() => handleMouseEnter('tablet')} onMouseLeave={handleMouseLeave}>
               <span className={`tw-builder__header-breakpoint-icon ${breakpoint === 'tablet' ? 'tw-builder__header-breakpoint-icon--active' : ''}`}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9.66732 1.33203H6.33398C4.44836 1.33203 3.50556 1.33203 2.91977 1.91782C2.33398 2.5036 2.33398 3.44641 2.33398 5.33203V10.6654C2.33398 12.551 2.33398 13.4938 2.91977 14.0796C3.50556 14.6654 4.44836 14.6654 6.33398 14.6654H9.66732C11.5529 14.6654 12.4957 14.6654 13.0815 14.0796C13.6673 13.4938 13.6673 12.551 13.6673 10.6654V5.33203C13.6673 3.44641 13.6673 2.5036 13.0815 1.91782C12.4957 1.33203 11.5529 1.33203 9.66732 1.33203Z" stroke="currentColor" strokeLinecap="round"/>
                   <path d="M8 12.668H8.00667" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round"/>
                 </svg>
               </span>
+              <Tooltip
+                message={renderTooltip('tablet')}
+                open={showTooltip === 'tablet'}
+                responsivePosition={{ desktop: 'bottom', mobile: 'bottom' }}
+                width="auto"
+              />
               </div>
-              <div className="tw-builder__header-breakpoint" onClick={() => handleBreakpointChange('mobile')}>
+              <div className="tw-builder__header-breakpoint" onClick={() => handleBreakpointChange('mobile')} onMouseEnter={() => handleMouseEnter('mobile')} onMouseLeave={handleMouseLeave}>
               <span className={`tw-builder__header-breakpoint-icon ${breakpoint === 'mobile' ? 'tw-builder__header-breakpoint-icon--active' : ''}`}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M8 12.668H8.00667" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M8.99935 1.33203H6.99935C5.428 1.33203 4.64233 1.33203 4.15417 1.82018C3.66602 2.30834 3.66602 3.09402 3.66602 4.66536V11.332C3.66602 12.9034 3.66602 13.689 4.15417 14.1772C4.64233 14.6654 5.428 14.6654 6.99935 14.6654H8.99935C10.5707 14.6654 11.3563 14.6654 11.8445 14.1772C12.3327 13.689 12.3327 12.9034 12.3327 11.332V4.66536C12.3327 3.09402 12.3327 2.30834 11.8445 1.82018C11.3563 1.33203 10.5707 1.33203 8.99935 1.33203Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </span>
+              <Tooltip
+                message={renderTooltip('mobile')}
+                open={showTooltip === 'mobile'}
+                responsivePosition={{ desktop: 'bottom', mobile: 'bottom' }}
+                width="auto"
+              />
               </div>
           </div>
           <div className="tw-builder__header-divider"></div>

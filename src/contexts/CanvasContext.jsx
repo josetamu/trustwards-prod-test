@@ -82,6 +82,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         liveWebsite: false, //to set a screenshot of the domain in the builder canvas
         canvasColor: '#FFFFFF', //to set the color of the builder canvas
         canvasMaxWidth: null, //stored the max width of the canvas by root
+        breakpoints: {
+            tablet: '767px',
+            mobile: '467px'
+        },
         roots: [
             {
                 id: "tw-root--banner", //banner root
@@ -119,9 +123,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     useEffect(() => {
         if (siteData) {
             const userJSON = siteData.JSON;
+            // Merge userJSON with defaultTree to ensure all properties exist
+            const mergedTree = userJSON ? { ...defaultTree, ...userJSON } : defaultTree;
+
             const initialState = {
                 past: [],
-                present: userJSON ? userJSON : defaultTree,
+                present: mergedTree,
                 future: []
             };
             dispatch({ type: 'INIT', payload: initialState.present });

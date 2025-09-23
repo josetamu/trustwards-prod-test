@@ -128,14 +128,48 @@
     justify-content: center;
     gap: 5px;
     padding: 10px;
+    
 }
-.tw-builder__header-breakpoint{
+.tw-builder__header-breakpoint{ 
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     color: var(--shadow-color);
+    position: relative;
 }
 .tw-builder__header-breakpoint-icon--active{
     color: var(--body-strong-color);
+}
+.tw-builder__header-breakpoint .tooltip__mask{
+    width: max-content;
+}
+.tw-builder__header-tooltip{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+.tw-builder__header-tooltip-divider{
+    opacity: 0.5;
+}
+.tw-builder__header-tooltip-edit{
+    width: 12px;
+    height: 12px;
+    opacity: 0.7;
+}
+.tw-builder__header-tooltip-input{
+background-color: transparent;
+color: #fff;
+border: none;
+outline: none;
+
+} 
+.tw-builder__header-tooltip-span{
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__header-tooltip-input:focus{
+    outline: none;
 }
