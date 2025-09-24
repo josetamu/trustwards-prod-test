@@ -1895,7 +1895,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     const [searchFilter, setSearchFilter] = useState('');
     const [italicWeightOptions, setItalicWeightOptions] = useState([]);
 
-
+    //Fetch the font options(families and variants) from the API
     useEffect(() => {
         if (name !== 'Font' && name !== 'Weight') return;
         fetch('/api/fonts')
@@ -1904,6 +1904,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             .catch(() => setFontOptions([]));
     }, [name]);
 
+    //Extract the first family from the css font family
     const extractPrimaryFamily = (cssFontFamily) => {
         if (!cssFontFamily) return '';
         const first = cssFontFamily.split(',')[0].trim();
@@ -1912,18 +1913,22 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
 
     const ensureFontLoaded = (family) => {
         if (!family) return;
+        //Create the id for the link taking off the spaces and replacing them with +
         const famParam = family.trim().replace(/\s+/g, '+');
         const id = `tw-gf-${famParam}`;
     
+        //Get the head of the iframe
         const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
-    
+        //Check if the preconnect link exists
         if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+            //Create the preconnect link for the Google Fonts API. Reduce latency
             const pc1 = document.createElement('link');
             pc1.rel = 'preconnect';
             pc1.href = 'https://fonts.googleapis.com';
             pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
             head.appendChild(pc1);
     
+            //Create the preconnect link for the Google Fonts static API. Reduce latency
             const pc2 = document.createElement('link');
             pc2.rel = 'preconnect';
             pc2.href = 'https://fonts.gstatic.com';
@@ -1932,14 +1937,16 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             head.appendChild(pc2);
         }
     
-        // Construir href con todos los variants
+        // Build the href with all the variants
         const entry = fontOptions.find(f => f.family === family);
         let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
     
         if (entry && Array.isArray(entry.variants)) {
+            //Create the sets for the normal and italic weights
             const normal = new Set();
             const italic = new Set();
     
+            //map the variants to the normal and italic sets
             entry.variants.forEach(v => {
                 if (v === 'regular') { normal.add(400); return; }
                 if (v === 'italic')  { italic.add(400); return; }
@@ -1949,9 +1956,10 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     if (m[2]) italic.add(n); else normal.add(n);
                 }
             });
-    
+            //Sort the weights
             const sortNums = arr => Array.from(arr).sort((a,b) => a - b).join(';');
     
+            //Build the href with the normal or italic weights
             if (italic.size) {
                 const parts = [];
                 const nList = sortNums(normal);
@@ -1963,13 +1971,15 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
             }
         }
-    
+        //Check if the link exists and append it to the head
         let link = head.querySelector(`link#${id}`);
         if (!link) {
+            //If the link doesn't exist, create it
             link = document.createElement('link');
             link.id = id;
             link.rel = 'stylesheet';
             link.href = href;
+            //Append the link to the head
             head.appendChild(link);
         }
     };
@@ -1997,35 +2007,42 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     
         const computeWeightOptionsForFamily = (family) => {
             if (!family) {
-                // fallback completo (sistemas)
+                // fallback complete (system fonts)
                 return {
                     weights: weightNameOrder,
                     italics: weightNameOrder.map(w => `${w} Italic`)
                 };
             }
+            //Find the family in the font options
             const entry = fontOptions.find(f => f.family === family);
+            //If the family is not found or the variants are not found, return the default weights and italics
             if (!entry || !entry.variants?.length) {
                 return {
                     weights: weightNameOrder,
                     italics: weightNameOrder.map(w => `${w} Italic`)
                 };
             }
+            //Create the sets for the normal and italic weights
             const weightsSet = new Set();
             const italicsSet = new Set();
     
             entry.variants.forEach(v => {
+                //If the variant is regular, add the Normal weight
                 if (v === 'regular') {
                     weightsSet.add('Normal');
                     return;
                 }
+                //If the variant is italic, add the Normal Italic weight
                 if (v === 'italic') {
                     italicsSet.add('Normal Italic');
                     return;
                 }
+                //If the variant is a number, add the weight
                 const m = v.match(/^(\d{3})(italic)?$/);
                 if (m) {
                     const num = m[1];
                     const label = reverseMap[num] || num;
+                    //If the variant is italic, add the Italic weight
                     if (m[2]) italicsSet.add(`${label} Italic`);
                     else weightsSet.add(label);
                 }
@@ -2037,7 +2054,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 sortByOrder(a.replace(' Italic',''), b.replace(' Italic',''))
             );
     
-            // si no salió nada, usa fallback
+           //return the weights and italics arrays
             return {
                 weights: weights.length ? weights : weightNameOrder,
                 italics: italics
@@ -2045,13 +2062,13 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         };
     
         useEffect(() => {
-            if (name !== 'Weight') return;
-            const cssFamily = getGlobalCSSValue?.('font-family');
-            const currentFamily = extractPrimaryFamily(cssFamily);
-            const { weights, italics } = computeWeightOptionsForFamily(currentFamily);
-            setWeightOptions(weights);
-            setItalicWeightOptions(italics);
-        }, [name, getGlobalCSSValue, selectedId, fontOptions]);
+            if (name !== 'Weight') return; // Only run for Weight 
+            const cssFamily = getGlobalCSSValue?.('font-family'); // Read the current global font-family from CSS
+            const currentFamily = extractPrimaryFamily(cssFamily); // Extract the primary family 
+            const { weights, italics } = computeWeightOptionsForFamily(currentFamily); // Compute available options from Google Fonts variants
+            setWeightOptions(weights); // Set normal weight options for the dropdown
+            setItalicWeightOptions(italics); // Set italic weight options for the dropdown
+        }, [name, getGlobalCSSValue, selectedId, fontOptions]); 
 
     //State to store the selected value
     const [selected, setSelected] = useState(() => {
@@ -2094,19 +2111,20 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     useEffect(() => {
         if (!selectedId) return;
     
-        // Si el control usa JSON, respeta ese flujo
+        // If the control uses JSON, respect that flow
         if (JSONProperty && getGlobalJSONValue) {
             const next = getGlobalJSONValue(JSONProperty) ?? '';
             if (next !== selected) setSelected(next);
             return;
         }
-    
+        
         if (getGlobalCSSValue && cssProperty) {
+            //If the name is Weight, apply the font weight and the font style
             if (name === 'Weight') {
                 const cssValue = getGlobalCSSValue(cssProperty);
                 const fontStyle = getGlobalCSSValue('font-style');
                 let nextLabel = fontWeightMapReverse()[cssValue] || cssValue || '';
-    
+                //If the font style is italic, apply the italic weight
                 if (fontStyle === 'italic' && nextLabel) {
                     const italicOption = `${nextLabel} Italic`;
                     if (options2 && options2.includes(italicOption)) {
@@ -2115,16 +2133,17 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 }
                 if ((nextLabel || '') !== selected) setSelected(nextLabel || '');
             } else {
+                
                 const cssValue = getGlobalCSSValue(cssProperty);
                 const next = name === 'Font' ? extractPrimaryFamily(cssValue) : (cssValue ?? '');
-                if (name === 'Font' && next) ensureFontLoaded(next); // carga la fuente guardada
+                if (name === 'Font' && next) ensureFontLoaded(next); // load the saved font
                 if (next !== selected) setSelected(next);
             }
         }
     }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue, options2]);
     
     useEffect(() => {
-        // Reinyecta la familia actual con todos los pesos cuando llegan fontOptions
+        //Reinject the current family with all the weights when fontOptions arrive
         const cssVal = getGlobalCSSValue?.(cssProperty || 'font-family');
         const fam = extractPrimaryFamily(cssVal) || (name === 'Font' ? selected : '');
         if (fam) ensureFontLoaded(fam);
@@ -2202,6 +2221,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             }
             return options || [];
         }
+        //Show the weights and if there are italic weights, show them separated by '---'
         if (name === 'Weight') {
             const hasDynamic = (weightOptions?.length || italicWeightOptions?.length);
             if (hasDynamic) {
@@ -2209,7 +2229,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 ? [...(weightOptions || []), '---', ...italicWeightOptions]
                 : (weightOptions || []);
             }
-            // Solo si no hay dinámicos (por ejemplo, fuentes del sistema o no encontrada en fontOptions)
+            // If there are no dynamic (for example, system fonts or not found in fontOptions)
             return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
           }
         return options || [];
@@ -2242,7 +2262,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     applyGlobalJSONChange={applyGlobalJSONChange}
                     cssDeleteBatch={name === 'Weight' ? { [cssProperty]: '', 'font-style': '' } : undefined}
                     onDelete={() => {
-                        setSelected(''); // Dejar vacío para mostrar placeholder
+                        setSelected(''); // Leave empty to show placeholder
                         if (onChange) {
                             onChange(''); // Notificar al SuperSelectType
                         }
@@ -2251,7 +2271,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             
             </span>
             <div className="tw-builder__settings-select-container" ref={containerRef}>
-            {/* Botón principal */}
+            {/* Main button */}
             <button
                 onClick={() => setOpen(!open)}
                 className="tw-builder__settings-select"
@@ -2273,10 +2293,10 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     </svg>
                 </span>
         
-            {/* Lista desplegable */}
+            {/* Dropdown list */}
             {open && (
                 <ul className="tw-builder__settings-options">
-                    {/* Buscador para Font - dentro del contenedor de opciones */}
+                    {/* Search for Font - inside the options container */}
                     {name === 'Font' && (
                         <>
                         <li className="tw-builder__settings-search">

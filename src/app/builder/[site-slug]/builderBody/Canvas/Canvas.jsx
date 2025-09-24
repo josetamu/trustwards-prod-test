@@ -411,60 +411,76 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
         };
     }, [dropIndicator]);
 
-    // Helpers to extract and load Google Fonts variants in use
+    /*
+    * Load Google Fonts
+    */
+
+    // Helper to extract and load Google Fonts variants in use
 const extractPrimaryFamily = (cssFontFamily) => {
     if (!cssFontFamily) return '';
+    //Take the first item of the css font family
     const first = cssFontFamily.split(',')[0].trim();
     return first.replace(/^["']|["']$/g, '');
 };
 
+//This function injects the Google Fonts stylesheet into the head
 const ensureGoogleFontLoaded = (family, weights = new Set(['400']), includeItalic = false) => {
     if (!family) return;
 
-    // Skip generic/system keywords
+    //If the family is a generic/system keyword, skip it
     const lower = family.toLowerCase();
     const skip = new Set(['serif','sans-serif','monospace','cursive','fantasy','system-ui','inherit','initial','unset','revert']);
     if (skip.has(lower)) return;
 
+    //Replace the spaces with + (Open Sans -> Open+Sans) and create the id for the link
     const famParam = family.trim().replace(/\s+/g, '+');
     const id = `tw-gf-${famParam}`;
 
-    // Preconnect once
+    // Preconnect once for the Google Fonts API and the Google Fonts static API to have less latency
     const head = document.head;
+    //Check if the preconnect link exists
     if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+        //If the preconnect link doesn't exist, create it
         const pc1 = document.createElement('link');
         pc1.rel = 'preconnect';
-        pc1.href = 'https://fonts.googleapis.com';
-        pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
+        pc1.href = 'https://fonts.googleapis.com';//CSS font
+        pc1.setAttribute('data-tw-preconnect', 'gfonts-apis'); 
         head.appendChild(pc1);
 
+        //Create the preconnect link for the static Google Fonts API
         const pc2 = document.createElement('link');
         pc2.rel = 'preconnect';
-        pc2.href = 'https://fonts.gstatic.com';
+        pc2.href = 'https://fonts.gstatic.com'; //Binary font files
         pc2.crossOrigin = '';
         pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
         head.appendChild(pc2);
     }
-
+    //Sort the weights
     const sortNums = (arr) => Array.from(arr).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n)).sort((a,b)=>a-b).join(';');
     const w = sortNums(weights.size ? weights : new Set(['400']));
-
+    //Build the href
     let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+    //If the family has italic, add the italic row
     if (includeItalic) {
         // request normal and italic rows
         href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@0,${w};1,${w}&display=swap`;
+    //If the family has weights, add the weights row
     } else if (w) {
         href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${w}&display=swap`;
     }
 
+    //Check if the link exists
     let link = head.querySelector(`link#${id}`);
+    //If the link doesn't exist, create it
     if (!link) {
         link = document.createElement('link');
         link.id = id;
         link.rel = 'stylesheet';
         link.href = href;
+        //Append the link to the head
         head.appendChild(link);
     } else if (link.href !== href) {
+        //If the link already exists and the href is different, update the href
         link.href = href;
     }
 };
@@ -473,6 +489,7 @@ const ensureGoogleFontLoaded = (family, weights = new Set(['400']), includeItali
 useEffect(() => {
     const famMap = new Map(); // family -> { weights: Set, italic: bool }
 
+    //Function to collect the font families and weights from the idsCSSData and classesCSSData mapping them
     const collectFromProps = (props) => {
         if (!props) return;
         const fam = extractPrimaryFamily(props['font-family']);
@@ -486,6 +503,7 @@ useEffect(() => {
         if (italic) entry.italic = true;
     };
 
+    //Use prev function 
     JSONtree?.idsCSSData?.forEach(({ properties }) => collectFromProps(properties));
     JSONtree?.classesCSSData?.forEach(({ properties }) => collectFromProps(properties));
 
@@ -494,6 +512,7 @@ useEffect(() => {
 
     famMap.forEach(({ weights, italic }, fam) => {
         if (!weights.size) weights.add('400'); // ensure regular
+        //Inject the Google Fonts stylesheet into the head
         ensureGoogleFontLoaded(fam, weights, italic);
     });
 }, [JSONtree?.idsCSSData, JSONtree?.classesCSSData]);

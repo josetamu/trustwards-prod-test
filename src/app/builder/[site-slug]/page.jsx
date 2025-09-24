@@ -150,7 +150,7 @@ function Builder() {
       setSite(siteData);
       setAppearanceSettings(appearanceData);
 
-        // Handle screenshot loading if liveWebsite is enabled
+    // Handle loading if liveWebsite is enabled
     if(siteData?.JSON?.liveWebsite === true){
       setIsScreenshotLoading(true);
       const url = `/api/screenshot?domain=${encodeURIComponent(siteData.Domain)}`;

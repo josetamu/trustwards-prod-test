@@ -76,12 +76,13 @@ const captureCanvas = useCallback(async () => {
         if (!html2canvas || typeof html2canvas !== 'function') {
             throw new Error('html2canvas is not a valid function');
         }
-        
+        //Make the capture of the canvas without shadows and always in desktop size
         const canvas = await html2canvas(canvasElement, {
             backgroundColor: null,
             scale: 1,
             useCORS: true,
             allowTaint: true,
+            //Clone the canvas and set the width and max-width to 1440px and remove the box-shadow(box-shadow cause errors in the capture)
             onclone: (clonedDoc, element) => {
                 // Remove box-shadow from the cloned canvas to avoid shadow in capture
                 const clonedCanvas = clonedDoc.querySelector('.tw-builder__canvas');
@@ -97,7 +98,7 @@ const captureCanvas = useCallback(async () => {
             }
         });
 
-        // Convert canvas to blob
+        // Convert canvas to blob(image)
         const blob = await new Promise(resolve => {
             canvas.toBlob(resolve, 'image/png');
         });
@@ -110,7 +111,7 @@ const captureCanvas = useCallback(async () => {
             return;
         }
 
-        // Create file path: {siteId}/canvas-capture.png
+        // Create file path
         const filePath = `${user.id}/${siteSlug}.png`;
 
         // Upload to Supabase storage bucket "Canvas capture"
