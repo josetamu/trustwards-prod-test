@@ -133,7 +133,7 @@ const handleMouseLeave = () => {
   setEditingValue('');
 };
 
-// Helpers para parsear/validar valores en px
+// Helpers to parse/validate values in px
 const toPxString = (val) => {
   if (typeof val === 'number' && !isNaN(val)) return `${val}px`;
   if (typeof val === 'string') {
@@ -143,7 +143,7 @@ const toPxString = (val) => {
   return null;
 };
 
-// Gestor de edición inline
+// Inline editing manager
 const startEditing = (key) => {
   const current = JSONtree?.breakpoints?.[key] || '';
   const num = parseInt(current, 10);
@@ -173,7 +173,7 @@ const commitEditing = (key) => {
   cancelEditing();
 };
 
-// Editar breakpoint (un solo set en el historial; actualiza canvas si es el activo)
+// Edit breakpoint (one set in the history; update canvas if it is the active one)
 const handleBreakpointEdit = (breakpointKey, newValue) => {
   const updated = {
     ...JSONtree,

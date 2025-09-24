@@ -83,8 +83,8 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         canvasColor: '#FFFFFF', //to set the color of the builder canvas
         canvasMaxWidth: null, //stored the max width of the canvas by root
         breakpoints: {
-            tablet: '767px',
-            mobile: '467px'
+            tablet: '1024px',
+            mobile: '767px'
         },
         roots: [
             {
