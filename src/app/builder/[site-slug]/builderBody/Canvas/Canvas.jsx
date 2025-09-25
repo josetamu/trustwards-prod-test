@@ -163,6 +163,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
             !e.target.closest('.tw-builder__settings-classes-item') &&
             !e.target.closest('.tw-builder__settings-option') &&
             !e.target.closest('.tw-builder__settings-pen-controls')&&
+            !e.target.closest('.tw-builder__header-breakpoint') &&
             !e.target.closest('.tw-builder__settings-class')) {
                 setSelectedId(null);
                 setSelectedItem(null);
@@ -506,6 +507,10 @@ useEffect(() => {
     //Use prev function 
     JSONtree?.idsCSSData?.forEach(({ properties }) => collectFromProps(properties));
     JSONtree?.classesCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.responsive?.tablet?.idsCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.responsive?.tablet?.classesCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.responsive?.mobile?.idsCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.responsive?.mobile?.classesCSSData?.forEach(({ properties }) => collectFromProps(properties));
 
     // If nothing specified, try defaults on common classes to avoid missing regular
     if (famMap.size === 0) return;
@@ -583,43 +588,66 @@ useEffect(() => {
             }
             return value;
         };
-
-        //For each id, add its CSS selector and properties (if id is empty, it won't be added)
-        JSONtree?.idsCSSData?.forEach(({ id, properties }) => {
-            const propertyEntries = Object.entries(properties);
-            if (propertyEntries.length > 0) {
-                //use :where has specificity 0, so classes with the same name will override the id
-                cssContent += `#${id} {\n`;
-                propertyEntries.forEach(([prop, value]) => {
-                    //add units to the value if needed
-                    const validatedValue = addUnits(prop, value);
-                    cssContent += `${prop}: ${validatedValue};\n`;
+        const writeBlock = (idsArr = [], classesArr = [], prefix = '') => {
+            let out = '';
+            idsArr?.forEach(({ id, properties }) => {
+                const entries = Object.entries(properties || {});
+                if (!id || entries.length === 0) return;
+                out += `${prefix}#${id} {\n`;
+                entries.forEach(([prop, value]) => {
+                    out += `${prop}: ${addUnits(prop, String(value))};\n`;
                 });
-                cssContent += `}\n`;
-            }
-        });
-
-        //For each class, add its CSS selector and properties (if class is empty, it won't be added)
-        JSONtree?.classesCSSData?.forEach(({ className, properties }) => {
-            const propertyEntries = Object.entries(properties);
-            if (propertyEntries.length > 0) {
-                cssContent += `.${className} {\n`;
-                propertyEntries.forEach(([prop, value]) => {
-                    //add units to the value if needed
-                    const validatedValue = addUnits(prop, value);
-                    cssContent += `${prop}: ${validatedValue};\n`;
+                out += `}\n`;
+            });
+            classesArr?.forEach(({ className, properties }) => {
+                const entries = Object.entries(properties || {});
+                if (!className || entries.length === 0) return;
+                out += `${prefix}.${className} {\n`;
+                entries.forEach(([prop, value]) => {
+                    out += `${prop}: ${addUnits(prop, String(value))};\n`;
                 });
-                cssContent += `}\n`;
-            }
-        });
+                out += `}\n`;
+            });
+            return out;
+        };
+    
+        // Desktop (base)
+        cssContent += writeBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData);
+    
+        // Tablet
+        const tabletMax = JSONtree?.breakpoints?.tablet || '1024px';
+        const tabletBlock = writeBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData);
+        if (tabletBlock && tabletBlock.trim().length) {
+            cssContent += `@media (max-width: ${tabletMax}) {\n${tabletBlock}}\n`;
+        }
+    
+        // Mobile (place after tablet so it overrides)
+        const mobileMax = JSONtree?.breakpoints?.mobile || '767px';
+        const mobileBlock = writeBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData);
+        if (mobileBlock && mobileBlock.trim().length) {
+            cssContent += `@media (max-width: ${mobileMax}) {\n${mobileBlock}}\n`;
+        }
 
-        // Check if style element exists and if content has changed
+        // Scoped rules for builder preview (override base using data-bp)
+        const tbScoped = writeBlock(
+            JSONtree?.responsive?.tablet?.idsCSSData,
+            JSONtree?.responsive?.tablet?.classesCSSData,
+            '.tw-builder__canvas[data-bp="tablet"] '
+        );
+        if (tbScoped.trim()) cssContent += `${tbScoped}`;
+        const moScoped = writeBlock(
+            JSONtree?.responsive?.mobile?.idsCSSData,
+            JSONtree?.responsive?.mobile?.classesCSSData,
+            '.tw-builder__canvas[data-bp="mobile"] '
+        );
+        if (moScoped.trim()) cssContent += `${moScoped}`;
+    
         let existingStyle = document.getElementById(styleId);
-        if (existingStyle) { // Change current style element content if CSS properties have changed
+        if (existingStyle) {
             if(existingStyle.textContent !== cssContent) {
                 existingStyle.textContent = cssContent;
             }
-        } else { // Create new style element if it doesn't exist
+        } else {
             const css = document.createElement('style');
             css.id = styleId;
             css.textContent = cssContent;
@@ -630,11 +658,20 @@ useEffect(() => {
         createCSS(JSONtree);
     }, [JSONtree]);
 
+    const getBuilderBP = () => {
+        const canvasW = parseInt(JSONtree?.canvasMaxWidth || '99999', 10);
+        const tablet = parseInt(JSONtree?.breakpoints?.tablet || '1024', 10);
+        const mobile = parseInt(JSONtree?.breakpoints?.mobile || '767', 10);
+        if (canvasW > tablet) return 'desktop';
+        if (canvasW > mobile) return 'tablet';
+        return 'mobile';
+      };
     return (
         <div className="tw-builder__handlebars-canvas-wrapper">
             <div className="tw-builder__handlebar tw-builder__handlebar--left"></div>
             <div 
                 className="tw-builder__canvas"
+                data-bp={getBuilderBP()}
                 style={{
                     //set the background color or live website screenshot
                     backgroundColor: JSONtree?.liveWebsite ? '' : (JSONtree?.canvasColor || '#FFFFFF'),

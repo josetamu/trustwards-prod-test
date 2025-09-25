@@ -3062,7 +3062,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
@@ -3074,89 +3074,87 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
             setSelectedElementData(null);
             return;
         }
-
-        const findElement = (node, targetId) => {
-            if(!node) return null;
-            if(node.id === targetId) return node;
-            if(node.children) {
-                for(const child of node.children) {
-                    const result = findElement(child, targetId);
-                    if(result) return result;
-                }
-            }
-            return null;
-        }
-
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
         if(!activeRootNode) {
             setSelectedElementData(null);
             return;
         }
 
-        const selectedElement = findElement(activeRootNode, selectedId);
-        if(!selectedElement) {
-            setSelectedElementData(null);
-            return;
+        // Buscar el elemento seleccionado en el árbol
+    const findElement = (node, targetId) => {
+        if (!node) return null;
+        if (node.id === targetId) return node;
+        if (node.children) {
+            for (const child of node.children) {
+                const result = findElement(child, targetId);
+                if (result) return result;
+            }
         }
-        //find the css data for the selected element
-        const elementCssData = JSONtree.idsCSSData?.find(item => item.id === selectedId);
+        return null;
+    };
 
-        const elementData = {
-            id: selectedElement.id,
-            elementType: selectedElement.elementType,
-            tagName: selectedElement.tagName,
-            classList: selectedElement.classList,
-            children: selectedElement.children,
-            nestable: selectedElement.nestable,
-            icon: selectedElement.icon,
-            label: selectedElement.label,
-            href: selectedElement.href,
-            innerText: selectedElement.innerText,
-            properties: elementCssData?.properties || {},
+    const selectedElement = findElement(activeRootNode, selectedId);
 
-            hasChildren: selectedElement.children && selectedElement.children.length > 0,
-            className: selectedElement.classList?.[0] || null,
-        }
-        setSelectedElementData(elementData);
+    const bp = getActiveBreakpoint?.() || 'desktop';
+    const responsiveIdData = bp !== 'desktop'
+        ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
+        : null;
+    const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
+    const elementCssData = responsiveIdData || baseIdData;
 
+    const elementData = {
+        id: selectedElement.id,
+        elementType: selectedElement.elementType,
+        tagName: selectedElement.tagName,
+        classList: selectedElement.classList,
+        children: selectedElement.children,
+        nestable: selectedElement.nestable,
+        icon: selectedElement.icon,
+        label: selectedElement.label,
+        href: selectedElement.href,
+        innerText: selectedElement.innerText,
+        properties: elementCssData?.properties || {},
+        hasChildren: !!(selectedElement.children && selectedElement.children.length > 0),
+        className: selectedElement.classList?.[0] || null
+    };
 
-     }, [selectedId, JSONtree, activeRoot]);
+    setSelectedElementData(elementData);
+}, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
 
+// Aplica CSS (escribe en el dataset del breakpoint activo si no es desktop)
+const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
+    if (!selectedId || !cssPropertyOrObject) return;
 
-     //Function to apply the css to the element and save it in jsonTree
-     const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
-        if (!selectedId || !cssPropertyOrObject) return;
+    const type = activeClass ? 'class' : 'id';
+    const selector = activeClass ? activeClass : selectedId;
 
-        //We differentiate between class and id
-        const type = activeClass ? 'class' : 'id';
-        const selector = activeClass ? activeClass : selectedId;
+    if (typeof cssPropertyOrObject === 'string') {
+        addCSSProperty(type, selector, cssPropertyOrObject, value);
+    } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
+        addCSSProperty(type, selector, cssPropertyOrObject);
+    }
+}, [selectedId, addCSSProperty, JSONtree, activeClass]);
 
-        if (typeof cssPropertyOrObject === "string") {
+// Lee CSS (prioriza breakpoint, hace fallback a desktop)
+const getGlobalCSSValue = useCallback((cssProperty) => {
+    if (!selectedId || !cssProperty) return null;
 
-            addCSSProperty(type, selector, cssPropertyOrObject, value);
-        } else if (
-            //Accepts an object with multiple css properties
-            typeof cssPropertyOrObject === "object" &&
-            cssPropertyOrObject !== null
-        ) {
+    const bp = getActiveBreakpoint?.() || 'desktop';
 
-            addCSSProperty(type, selector, cssPropertyOrObject);
-        }
-    }, [selectedId, addCSSProperty, JSONtree, activeClass]);
-    
+    if (activeClass) {
+        const bpClassData = bp !== 'desktop'
+            ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
+            : null;
+        const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
+        return bpClassData?.properties?.[cssProperty] ?? baseClassData?.properties?.[cssProperty] ?? null;
+    }
 
-    //Function to get the css value from the jsonTree
-    const getGlobalCSSValue = useCallback((cssProperty) => {
-        if(!selectedId || !cssProperty) return null;
-    
-        if(activeClass) {
-            const classData = JSONtree.classesCSSData.find(item => item.className === activeClass);
-            return classData?.properties?.[cssProperty] ?? null;
-        }
-    
-        const idData = JSONtree.idsCSSData.find(item => item.id === selectedId);
-        return idData?.properties?.[cssProperty] ?? null;
-    }, [JSONtree, selectedId, activeClass]);
+    const bpIdData = bp !== 'desktop'
+        ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
+        : null;
+    const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
+    return bpIdData?.properties?.[cssProperty] ?? baseIdData?.properties?.[cssProperty] ?? null;
+}, [JSONtree, selectedId, activeClass, getActiveBreakpoint]);
 
     //Function to apply the json to the element and save it in jsonTree
     const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{

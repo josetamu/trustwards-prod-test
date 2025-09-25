@@ -44,8 +44,31 @@ const buildScript = async (siteId) => {
     //Define builderJSON constants
     const jsonBanner = await convertJSONtoHTML(builderJSON.roots?.[0]);
     const jsonModal = await convertJSONtoHTML(builderJSON.roots?.[1]);
-    const idsCSSData = convertJSONtoCSS(builderJSON.idsCSSData);
-    const classesCSSData = convertJSONtoCSS(builderJSON.classesCSSData);
+
+    //Base CSS
+    const baseIds = convertJSONtoCSS(builderJSON.idsCSSData);
+    const baseClasses = convertJSONtoCSS(builderJSON.classesCSSData);
+
+    //Responsive CSS
+    const bp = builderJSON.breakpoints || {};
+    const tabletMax = bp.tablet || '1024px';
+    const mobileMax = bp.mobile || '767px';
+    const r = builderJSON.responsive || {};
+    const tbIds = convertJSONtoCSS(r.tablet?.idsCSSData);
+    const tbClasses = convertJSONtoCSS(r.tablet?.classesCSSData);
+    const moIds = convertJSONtoCSS(r.mobile?.idsCSSData);
+    const moClasses = convertJSONtoCSS(r.mobile?.classesCSSData);
+
+    const idsCSSCombined = [
+      baseIds,
+      tbIds ? `@media (max-width: ${tabletMax}) {${tbIds}}` : '',
+      moIds ? `@media (max-width: ${mobileMax}) {${moIds}}` : '',
+    ].filter(Boolean).join('\n');
+    const classesCSSCombined = [
+      baseClasses,
+      tbClasses ? `@media (max-width: ${tabletMax}) {${tbClasses}}` : '',
+      moClasses ? `@media (max-width: ${mobileMax}) {${moClasses}}` : '',
+    ].filter(Boolean).join('\n');
 
     //Define general constants
     var blockEvents = builderJSON.blockEvents;
@@ -84,8 +107,8 @@ const buildScript = async (siteId) => {
         .replace(/(\r\n|\n|\r)/g, ' ')
         .replace(/\s{2,}/g, ' ')
         .trim();
-    const flatIdsCSSData = flattenSingleLine(idsCSSData);
-    const flatClassesCSSData = flattenSingleLine(classesCSSData);
+    const flatIdsCSSData = flattenSingleLine(idsCSSCombined);
+    const flatClassesCSSData = flattenSingleLine(classesCSSCombined);
     const flatDefaultCSS = flattenSingleLine(defaultCSS);
 
     //Merge jsonBanner, jsonModal, idsCSSData, classesCSSData, defaultCSS, trustwardsTextsVersion, siteID, TW_COOKIE_RETENTION_MONTHS, categoriesDescriptions, scriptsScanned, iframesScanned, defaultCDNscript content
@@ -137,6 +160,7 @@ const convertJSONtoCSS = (json) => {
       let selector = null;
       if (it.id) selector = '#' + cssEscape(it.id);
       else if (it.class) selector = '.' + cssEscape(it.class);
+      else if (it.className) selector = '.' + cssEscape(it.className);
       if (!selector) continue;
   
       const bag = rules.get(selector) || {};

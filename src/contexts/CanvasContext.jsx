@@ -86,6 +86,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             tablet: '1024px',
             mobile: '767px'
         },
+        responsive: {
+            tablet: { idsCSSData: [], classesCSSData: [] },
+            mobile: { idsCSSData: [], classesCSSData: [] }
+        },
         roots: [
             {
                 id: "tw-root--banner", //banner root
@@ -154,6 +158,19 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const [isCreatingElementFromToolbar, setIsCreatingElementFromToolbar] = React.useState(false);
     const [previousTreeStateBeforeCreation, setPreviousTreeStateBeforeCreation] = React.useState(null);
 
+    //Compute current breakpoint from canvas width and configured breakpoints
+    const getActiveBreakpoint = () => {
+        try {
+            const canvasWidth = parseInt(JSONtree?.canvasMaxWidth || '99999', 10);
+            const tablet = parseInt(JSONtree?.breakpoints?.tablet || '1024', 10);
+            const mobile = parseInt(JSONtree?.breakpoints?.mobile || '767', 10);
+            if (canvasWidth > tablet) return 'desktop';
+            if (canvasWidth > mobile) return 'tablet';
+            return 'mobile';
+        } catch {
+            return 'desktop';
+        }
+    };
     //this happens when changing the tab: changes active root, nothing is selected, sets the active tab and updates the real JSONtree
     const updateActiveRoot = (newActiveRoot) => {
         setActiveRoot(newActiveRoot);
@@ -251,8 +268,23 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * value - the value of the property (if empty string "", the property will be removed)
     */
     const addCSSProperty = (type, selector, propertyOrObject, value) => {
-        let updatedIdsCSSData = JSONtree.idsCSSData;
-        let updatedClassesCSSData = JSONtree.classesCSSData;
+        //Determine target data based on current breakpoint
+        const bp = getActiveBreakpoint();
+        const isResponsive = bp !== 'desktop';
+
+        const getIdsArr = () => {
+            if(isResponsive) return JSONtree.responsive?.[bp]?.idsCSSData || [];
+            return JSONtree.idsCSSData || [];
+        };
+        const getClassesArr = () => {
+            if(isResponsive) return JSONtree.responsive?.[bp]?.classesCSSData || [];
+            return JSONtree.classesCSSData || [];
+        };
+
+        let currentIds = getIdsArr();
+        let currentClasses = getClassesArr();
+        let updatedIdsCSSData = currentIds;
+        let updatedClassesCSSData = currentClasses;
     
         // Normalize to object
         const propertiesToAdd =
@@ -275,23 +307,23 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     
         switch (type) {
             case "id": {
-                const existingIdIndex = JSONtree.idsCSSData.findIndex(
+                const existingIdIndex = currentIds.findIndex(
                     (item) => item.id === selector
                 );
     
                 if (existingIdIndex !== -1) {
                     const updatedProperties = cleanProperties(
-                        JSONtree.idsCSSData[existingIdIndex].properties,
+                        currentIds[existingIdIndex].properties || {},
                         propertiesToAdd
                     );
-                    updatedIdsCSSData = [...JSONtree.idsCSSData];
+                    updatedIdsCSSData = [...currentIds];
                     updatedIdsCSSData[existingIdIndex] = {
-                        ...JSONtree.idsCSSData[existingIdIndex],
+                        ...currentIds[existingIdIndex],
                         properties: updatedProperties,
                     };
                 } else {
                     updatedIdsCSSData = [
-                        ...JSONtree.idsCSSData,
+                        ...currentIds,
                         { id: selector, properties: propertiesToAdd },
                     ];
                 }
@@ -299,23 +331,23 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
     
             case "class": {
-                const existingClassIndex = JSONtree.classesCSSData.findIndex(
+                const existingClassIndex = currentClasses.findIndex(
                     (item) => item.className === selector
                 );
     
                 if (existingClassIndex !== -1) {
                     const updatedProperties = cleanProperties(
-                        JSONtree.classesCSSData[existingClassIndex].properties,
+                        currentClasses[existingClassIndex].properties || {},
                         propertiesToAdd
                     );
-                    updatedClassesCSSData = [...JSONtree.classesCSSData];
+                    updatedClassesCSSData = [...currentClasses];
                     updatedClassesCSSData[existingClassIndex] = {
-                        ...JSONtree.classesCSSData[existingClassIndex],
+                        ...currentClasses[existingClassIndex],
                         properties: updatedProperties,
                     };
                 } else {
                     updatedClassesCSSData = [
-                        ...JSONtree.classesCSSData,
+                        ...currentClasses,
                         { className: selector, properties: propertiesToAdd },
                     ];
                 }
@@ -324,8 +356,15 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         }
     
         const updated = deepCopy(JSONtree);
-        updated.idsCSSData = updatedIdsCSSData;
-        updated.classesCSSData = updatedClassesCSSData;
+        if(isResponsive) {
+            if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
+            if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+            updated.responsive[bp].idsCSSData = updatedIdsCSSData;
+            updated.responsive[bp].classesCSSData = updatedClassesCSSData;
+        } else {
+            updated.idsCSSData = updatedIdsCSSData;
+            updated.classesCSSData = updatedClassesCSSData;
+        }
         setJSONtree(updated);
     };
     
@@ -433,6 +472,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         //update the updated JSONtree with the new idsCSSData
         const finalIdsCSSData = [...JSONtree.idsCSSData, ...idsCSSDataToMerge];
         updated.idsCSSData = finalIdsCSSData;
+        
 
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };    
@@ -465,6 +505,15 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         //update the updated JSONtree with the new idsCSSData
         const finalIdsCSSData = JSONtree.idsCSSData.filter(item => !idsDataToRemove.includes(item.id));
         updated.idsCSSData = finalIdsCSSData;
+
+        //Also clean responsive datasets
+        ['tablet', 'mobile'].forEach(bp => {
+           const idsArr = JSONtree.responsive?.[bp]?.idsCSSData || [];
+           const filtered = idsArr.filter(item => !idsDataToRemove.includes(item.id));
+           if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
+           if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+           updated.responsive[bp].idsCSSData = filtered;
+        });
 
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
 
@@ -1018,7 +1067,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo}}>
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint}}>
             {children}
         </CanvasContext.Provider>
     );
