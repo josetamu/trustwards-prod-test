@@ -1,12 +1,32 @@
 import { useState } from 'react';
 import './BuilderControl.css';
+import {Tooltip} from '@components/tooltip/Tooltip';
 // Component to render the control(label with + and -) Pass the label(title) and the control to render
-export default function BuilderControl({label, controls, whatType}) {
+export default function BuilderControl({label, controls, whatType, activeRoot}) {
     const [isOpen, setIsOpen] = useState(false);
+    const [activeTooltip, setActiveTooltip] = useState(null);
+
+    const activeRootName = {
+        'tw-root--banner': 'Banner',
+        'tw-root--modal': 'Modal',
+    }
+
     return (
         <div className="tw-builder__control">
             <div className="tw-builder__control-header" onClick={() => setIsOpen(!isOpen)}>
-                <span className="tw-builder__control-label">{label}</span>
+                <span className="tw-builder__control-label">{label}
+                    {label === 'Enter Animation' && isOpen && (
+                        <span className="tw-builder__control-info" onMouseEnter={() => setActiveTooltip('enter-animation')} onMouseLeave={() => setActiveTooltip(null)}>
+                            i
+                            <Tooltip
+                            message={`The following properties will be applied when “${activeRootName[activeRoot]}” shows up.`}
+                            open={activeTooltip === 'enter-animation'}
+                            responsivePosition={{ desktop: 'top', mobile: 'top' }}
+                            width="auto"
+                            />
+                        </span>
+                    )}
+                </span>
                 <div className="tw-builder__control-icons">
                     <span className={`tw-builder__control-icon ${!isOpen ? 'tw-builder__control-icon--active' : ''}`}>
                         <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">

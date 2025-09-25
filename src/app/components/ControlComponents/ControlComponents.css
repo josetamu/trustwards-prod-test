@@ -704,3 +704,75 @@
 .tw-builder__settings-actions:has(.tw-builder__settings-action--active) .tw-builder__settings-slider {
     display: block;
 }
+
+.tw-builder__settings-animation{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tw-builder__settings-animation .tw-builder__settings-input{
+    width: 100px;
+}
+.tw-builder__settings-animation-container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.tw-builder__settings-properties{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    
+}
+.tw-builder__settings-properties-pair{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 47%
+}
+
+.tw-builder__settings-properties .tw-builder__settings-setting{
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+}
+.tw-builder__settings-add-property{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    width: 100%;
+    border: 2px dotted var(--shadow-color);
+    border-radius: 5px;
+    padding: 5px 20px;
+    cursor: pointer;
+}
+.tw-builder__settings-add-property-label{
+    color: var(--shadow-color);
+    font-size: 11px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__settings-properties-span{
+    color: var(--subtitle-color);
+    font-size: 9px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__settings-properties-input{
+    
+    height: 22px;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--builder-background);
+    color: var(--builder-text-color);
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    cursor: text;
+    &::placeholder{
+        color: var(--shadow-color);
+    }
+}

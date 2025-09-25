@@ -8,6 +8,8 @@ import BuilderClasses from '@components/BuilderClasses/BuilderClasses';
 import { supabase } from '@supabase/supabaseClient';
 import './ControlComponents.css';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ANIM_TYPES } from '@animations/animations';
 
 
 
@@ -2294,8 +2296,9 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 </span>
         
             {/* Dropdown list */}
+            <AnimatePresence>
             {open && (
-                <ul className="tw-builder__settings-options">
+                <motion.ul className="tw-builder__settings-options" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
                     {/* Search for Font - inside the options container */}
                     {name === 'Font' && (
                         <>
@@ -2340,8 +2343,9 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                         </li>
                     );
                 })}
-                </ul>
+                </motion.ul>
             )}
+            </AnimatePresence>
             </div>
         </div>
 
@@ -2679,8 +2683,9 @@ const parseRadius = useCallback((radiusStr) => {
                         <path d="M8.3834 0.493193C8.31065 0.486644 8.23748 0.486644 8.16473 0.493193C7.90803 0.516317 7.70106 0.63382 7.51408 0.780856C7.33869 0.918791 7.14488 1.1126 6.92009 1.33743L6.3125 1.94503L9.05366 4.6862L9.66125 4.07864C9.88609 3.85382 10.0799 3.66003 10.2179 3.48462C10.3649 3.29763 10.4824 3.09068 10.5055 2.83398C10.512 2.76124 10.512 2.68805 10.5055 2.61531C10.4824 2.35861 10.3649 2.15166 10.2179 1.96468C10.0799 1.78927 9.88609 1.59547 9.66125 1.37066C9.43645 1.14583 9.20944 0.918797 9.034 0.780856C8.84701 0.63382 8.6401 0.516317 8.3834 0.493193Z" fill="white"/>
                     </svg>
                 </span>
+                <AnimatePresence>
                 {open && (
-                    <div className="tw-builder__settings-pen-controls">
+                    <motion.div className="tw-builder__settings-pen-controls" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
                             <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
@@ -2818,10 +2823,11 @@ const parseRadius = useCallback((radiusStr) => {
                                     </div>
 
                                 </div>
-                              
+
                         </div>
-                    </div>
+                    </motion.div>
                 )}
+                </AnimatePresence>
             </div>
         </div>
     )
@@ -2985,8 +2991,9 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                         <path d="M8.3834 0.493193C8.31065 0.486644 8.23748 0.486644 8.16473 0.493193C7.90803 0.516317 7.70106 0.63382 7.51408 0.780856C7.33869 0.918791 7.14488 1.1126 6.92009 1.33743L6.3125 1.94503L9.05366 4.6862L9.66125 4.07864C9.88609 3.85382 10.0799 3.66003 10.2179 3.48462C10.3649 3.29763 10.4824 3.09068 10.5055 2.83398C10.512 2.76124 10.512 2.68805 10.5055 2.61531C10.4824 2.35861 10.3649 2.15166 10.2179 1.96468C10.0799 1.78927 9.88609 1.59547 9.66125 1.37066C9.43645 1.14583 9.20944 0.918797 9.034 0.780856C8.84701 0.63382 8.6401 0.516317 8.3834 0.493193Z" fill="white"/>
                     </svg>
                 </span>
+                <AnimatePresence>
                 {open && (
-                    <div className="tw-builder__settings-pen-controls">
+                    <motion.div className="tw-builder__settings-pen-controls" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
                             <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
@@ -3053,12 +3060,65 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                     </label>
                                 </div>
                         </div>
-                    </div>
+                    </motion.div>
                 )}
+                </AnimatePresence>
             </div>
         </div>
     )
 }
+
+
+
+const EnterAnimationType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+    const [properties, setProperties] = useState([]);
+
+    const handleAddProperty = () => {
+        setProperties(prev => [
+            ...prev,
+            { property: '', value: '' }
+        ]);
+    };
+
+    const handlePropertyChange = (i, key, val) => {
+        setProperties(prev => {
+            const updated = [...prev];
+            updated[i] = { ...updated[i], [key]: val };
+            return updated;
+        });
+    };
+
+    return (
+        <div className="tw-builder__settings-animation" key={index}>
+            <TextType
+                name={'Transition'}
+                index={index}
+                applyGlobalCSSChange={applyGlobalCSSChange}
+                getGlobalCSSValue={getGlobalCSSValue}
+                selectedElementData={selectedElementData}
+                cssProperty={'transition'}
+                placeholder={'all 0.2s ease'}
+            />
+            <div className="tw-builder__settings-animation-container">
+            {properties.map((prop, i) => (
+                <div className="tw-builder__settings-properties" key={`prop-${i}`}>
+                        <div className="tw-builder__settings-properties-pair">
+                            <span className="tw-builder__settings-properties-span">Property</span>
+                            <input className="tw-builder__settings-properties-input" type="text" />
+                        </div>
+                        <div className="tw-builder__settings-properties-pair">
+                            <span className="tw-builder__settings-properties-span">Value</span>
+                            <input className="tw-builder__settings-properties-input" type="text" />
+                        </div>
+                </div>
+            ))}
+                <div className="tw-builder__settings-add-property" onClick={handleAddProperty}>
+                    <span className="tw-builder__settings-add-property-label">Add Property</span>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
@@ -3241,6 +3301,8 @@ const getGlobalCSSValue = useCallback((cssProperty) => {
                 return <BorderType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
             case 'box-shadow':
                 return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+            case 'enter-animation':
+                return <EnterAnimationType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
         }
     }
     return (
@@ -3261,6 +3323,7 @@ const getGlobalCSSValue = useCallback((cssProperty) => {
                     globalControlProps={globalControlProps}
                     />
                 ))}
+               <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} />
             </div>
         </div>
     )
