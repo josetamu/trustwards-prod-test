@@ -3062,7 +3062,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
@@ -3135,17 +3135,24 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
     }
 }, [selectedId, addCSSProperty, JSONtree, activeClass]);
 
-// Lee CSS (prioriza breakpoint, hace fallback a desktop)
+// Lee CSS (prioriza breakpoint y estado, hace fallback a desktop/base)
 const getGlobalCSSValue = useCallback((cssProperty) => {
     if (!selectedId || !cssProperty) return null;
 
     const bp = getActiveBreakpoint?.() || 'desktop';
+    
 
     if (activeClass) {
         const bpClassData = bp !== 'desktop'
             ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
             : null;
         const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
+
+        const stVal = activeState
+            ? (bpClassData?.states?.[activeState]?.[cssProperty] ?? baseClassData?.states?.[activeState]?.[cssProperty])
+            : undefined;
+        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+
         return bpClassData?.properties?.[cssProperty] ?? baseClassData?.properties?.[cssProperty] ?? null;
     }
 
@@ -3153,6 +3160,12 @@ const getGlobalCSSValue = useCallback((cssProperty) => {
         ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
         : null;
     const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
+
+    const stVal = activeState
+        ? (bpIdData?.states?.[activeState]?.[cssProperty] ?? baseIdData?.states?.[activeState]?.[cssProperty])
+        : undefined;
+    if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+
     return bpIdData?.properties?.[cssProperty] ?? baseIdData?.properties?.[cssProperty] ?? null;
 }, [JSONtree, selectedId, activeClass, getActiveBreakpoint]);
 

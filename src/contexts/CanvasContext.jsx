@@ -158,6 +158,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const [isCreatingElementFromToolbar, setIsCreatingElementFromToolbar] = React.useState(false);
     const [previousTreeStateBeforeCreation, setPreviousTreeStateBeforeCreation] = React.useState(null);
 
+    //Active pseudo state for styles (hover, active, focus)
+    const [activeState, setActiveState] = React.useState(null);
+
     //Compute current breakpoint from canvas width and configured breakpoints
     const getActiveBreakpoint = () => {
         try {
@@ -304,6 +307,23 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             });
             return updated;
         };
+
+        const applyToEntry = (entry) => {
+            if (activeState) {
+                const st = { ...(entry.states || {}) };
+                const cur = { ...(st[activeState] || {}) };
+                const next = cleanProperties(cur, propertiesToAdd);
+                if (Object.keys(next).length === 0) {
+                    delete st[activeState];
+                } else {
+                    st[activeState] = next;
+                }
+                entry.states = st;
+            } else {
+                entry.properties = cleanProperties(entry.properties || {}, propertiesToAdd);
+            }
+            return entry;
+        };
     
         switch (type) {
             case "id": {
@@ -312,19 +332,14 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 );
     
                 if (existingIdIndex !== -1) {
-                    const updatedProperties = cleanProperties(
-                        currentIds[existingIdIndex].properties || {},
-                        propertiesToAdd
-                    );
+                    const updatedEntry = applyToEntry({ ...currentIds[existingIdIndex] });
                     updatedIdsCSSData = [...currentIds];
-                    updatedIdsCSSData[existingIdIndex] = {
-                        ...currentIds[existingIdIndex],
-                        properties: updatedProperties,
-                    };
+                    updatedIdsCSSData[existingIdIndex] = updatedEntry;
                 } else {
+                    const newEntry = applyToEntry({ id: selector, properties: {} });
                     updatedIdsCSSData = [
                         ...currentIds,
-                        { id: selector, properties: propertiesToAdd },
+                        newEntry,
                     ];
                 }
                 break;
@@ -336,19 +351,14 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 );
     
                 if (existingClassIndex !== -1) {
-                    const updatedProperties = cleanProperties(
-                        currentClasses[existingClassIndex].properties || {},
-                        propertiesToAdd
-                    );
+                    const updatedEntry = applyToEntry({ ...currentClasses[existingClassIndex] });
                     updatedClassesCSSData = [...currentClasses];
-                    updatedClassesCSSData[existingClassIndex] = {
-                        ...currentClasses[existingClassIndex],
-                        properties: updatedProperties,
-                    };
+                    updatedClassesCSSData[existingClassIndex] = updatedEntry;
                 } else {
+                    const newEntry = applyToEntry({ className: selector, properties: {} });
                     updatedClassesCSSData = [
                         ...currentClasses,
-                        { className: selector, properties: propertiesToAdd },
+                        newEntry,
                     ];
                 }
                 break;
@@ -1067,7 +1077,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint}}>
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState}}>
             {children}
         </CanvasContext.Provider>
     );

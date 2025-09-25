@@ -590,23 +590,51 @@ useEffect(() => {
         };
         const writeBlock = (idsArr = [], classesArr = [], prefix = '') => {
             let out = '';
-            idsArr?.forEach(({ id, properties }) => {
+            idsArr?.forEach(({ id, properties, states }) => {
+                const baseSel = `${prefix}#${id}`;
                 const entries = Object.entries(properties || {});
-                if (!id || entries.length === 0) return;
-                out += `${prefix}#${id} {\n`;
-                entries.forEach(([prop, value]) => {
-                    out += `${prop}: ${addUnits(prop, String(value))};\n`;
-                });
-                out += `}\n`;
+                if (id && entries.length > 0) {
+                    out += `${baseSel} {\n`;
+                    entries.forEach(([prop, value]) => {
+                        out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                    });
+                    out += `}\n`;
+                }
+                if (states && typeof states === 'object') {
+                    Object.entries(states).forEach(([pseudo, props]) => {
+                        const stEntries = Object.entries(props || {});
+                        if (stEntries.length > 0) {
+                            out += `${baseSel}${pseudo} {\n`;
+                            stEntries.forEach(([prop, value]) => {
+                                out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                            });
+                            out += `}\n`;
+                        }
+                    });
+                }
             });
-            classesArr?.forEach(({ className, properties }) => {
+            classesArr?.forEach(({ className, properties, states }) => {
+                const baseSel = `${prefix}.${className}`;
                 const entries = Object.entries(properties || {});
-                if (!className || entries.length === 0) return;
-                out += `${prefix}.${className} {\n`;
-                entries.forEach(([prop, value]) => {
-                    out += `${prop}: ${addUnits(prop, String(value))};\n`;
-                });
-                out += `}\n`;
+                if (className && entries.length > 0) {
+                    out += `${baseSel} {\n`;
+                    entries.forEach(([prop, value]) => {
+                        out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                    });
+                    out += `}\n`;
+                }
+                if (states && typeof states === 'object') {
+                    Object.entries(states).forEach(([pseudo, props]) => {
+                        const stEntries = Object.entries(props || {});
+                        if (stEntries.length > 0) {
+                            out += `${baseSel}${pseudo} {\n`;
+                            stEntries.forEach(([prop, value]) => {
+                                out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                            });
+                            out += `}\n`;
+                        }
+                    });
+                }
             });
             return out;
         };
