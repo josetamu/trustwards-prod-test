@@ -143,11 +143,13 @@ useEffect(() => {
 						setIsOpen(!isOpen);
 					}
 				}}>
+                    {/*take the id or the class. Also if state is active, show it*/}
 					{activeClass ? (
 						`.${activeClass}${activeState ? `:${activeState}` : ''}`
 					) : (
 						`#${selectedId}${activeState ? `:${activeState}` : ''}`
 					)}
+                    {/*Dropdown to select the state*/}
 					<Dropdown
 						open={isStatesOpen}
 						onClose={() => setIsStatesOpen(false)}
@@ -164,7 +166,9 @@ useEffect(() => {
 							className={`tw-builder__settings-states ${activeState ? `tw-builder__settings-states--active` : ''}`}
 							onClick={(e) => { 
                                 e.stopPropagation(); 
+                                //if the state is active, set it to null and close the dropdown
                                 if(activeState) {setActiveState(null); setIsStatesOpen(false);}
+                                //if the state is not active, open the dropdown
                                 else {setIsStatesOpen(v => !v);}
                                 }}
 						>
@@ -185,7 +189,7 @@ useEffect(() => {
                             <span className="tw-builder__settings-class-name">#{selectedId}</span>
                         </div>
                     )}
-    
+                    {/*List of classes selected*/}
                     {filteredClasses
                         .filter((className) => className !== activeClass)
                         .map((className, index) => (
@@ -203,6 +207,7 @@ useEffect(() => {
                             </div>
                         ))}
                 </div>
+                {/*Pool of classes*/}
                 {isOpen && (
                     <div className="tw-builder__settings-classes-pool" ref={poolRef}>
                         <div className="tw-builder__settings-classes-adder">

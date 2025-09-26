@@ -2159,7 +2159,10 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         if (name === 'Font') {
             ensureFontLoaded(newValue);
             if (applyGlobalCSSChange) {
-                applyGlobalCSSChange(cssProperty || 'font-family', `"${newValue}"`);
+                applyGlobalCSSChange({
+                    [cssProperty || 'font-family']: `"${newValue}"`,
+                    'font-weight': '' // reset when changing family
+                });
             }
             onChange && onChange(newValue);
             return;
@@ -3067,9 +3070,6 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
         </div>
     )
 }
-
-
-
 const EnterAnimationType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [properties, setProperties] = useState([]);
 
@@ -3090,25 +3090,26 @@ const EnterAnimationType = ({name, index, applyGlobalCSSChange, getGlobalCSSValu
 
     return (
         <div className="tw-builder__settings-animation" key={index}>
-            <TextType
-                name={'Transition'}
-                index={index}
-                applyGlobalCSSChange={applyGlobalCSSChange}
-                getGlobalCSSValue={getGlobalCSSValue}
-                selectedElementData={selectedElementData}
-                cssProperty={'transition'}
-                placeholder={'all 0.2s ease'}
-            />
             <div className="tw-builder__settings-animation-container">
+            <div className="tw-builder__settings-properties">
+                        <div className="tw-builder__settings-properties-pair">
+                            <span className="tw-builder__settings-properties-span">Property</span>
+                            <input className="tw-builder__settings-properties-input" type="text" placeholder="top" />
+                        </div>
+                        <div className="tw-builder__settings-properties-pair">
+                            <span className="tw-builder__settings-properties-span">Value</span>
+                            <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px" />
+                        </div>
+                </div>
             {properties.map((prop, i) => (
                 <div className="tw-builder__settings-properties" key={`prop-${i}`}>
                         <div className="tw-builder__settings-properties-pair">
                             <span className="tw-builder__settings-properties-span">Property</span>
-                            <input className="tw-builder__settings-properties-input" type="text" />
+                            <input className="tw-builder__settings-properties-input" type="text" placeholder="top" />
                         </div>
                         <div className="tw-builder__settings-properties-pair">
                             <span className="tw-builder__settings-properties-span">Value</span>
-                            <input className="tw-builder__settings-properties-input" type="text" />
+                            <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px" />
                         </div>
                 </div>
             ))}
@@ -3181,10 +3182,10 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     setSelectedElementData(elementData);
 }, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
 
-// Aplica CSS (escribe en el dataset del breakpoint activo si no es desktop)
+// Apply CSS (writes in the dataset of the active breakpoint if not desktop)
 const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
     if (!selectedId || !cssPropertyOrObject) return;
-
+//Check if is active class or id
     const type = activeClass ? 'class' : 'id';
     const selector = activeClass ? activeClass : selectedId;
 
@@ -3195,7 +3196,7 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
     }
 }, [selectedId, addCSSProperty, JSONtree, activeClass]);
 
-// Lee CSS (prioriza breakpoint y estado, hace fallback a desktop/base)
+// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
 const getGlobalCSSValue = useCallback((cssProperty) => {
     if (!selectedId || !cssProperty) return null;
 
@@ -3203,6 +3204,7 @@ const getGlobalCSSValue = useCallback((cssProperty) => {
     
 
     if (activeClass) {
+        //if the breakpoint is not desktop, get the responsive classesCSSData, otherwise get the classesCSSData
         const bpClassData = bp !== 'desktop'
             ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
             : null;
@@ -3215,12 +3217,13 @@ const getGlobalCSSValue = useCallback((cssProperty) => {
 
         return bpClassData?.properties?.[cssProperty] ?? baseClassData?.properties?.[cssProperty] ?? null;
     }
-
+    //if the breakpoint is not desktop, get the responsive idsCSSData, otherwise get the idsCSSData
     const bpIdData = bp !== 'desktop'
         ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
         : null;
     const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
 
+    //if the state is active, get the state value, otherwise get the base value
     const stVal = activeState
         ? (bpIdData?.states?.[activeState]?.[cssProperty] ?? baseIdData?.states?.[activeState]?.[cssProperty])
         : undefined;

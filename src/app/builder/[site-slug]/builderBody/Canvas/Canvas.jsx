@@ -588,24 +588,35 @@ useEffect(() => {
             }
             return value;
         };
+        //build the CSS for the ids and classes. prefix is used to add the prefix to the CSS selector. Example: if prefix is .tw-builder__canvas, the CSS selector will be .tw-builder__canvas#id or .tw-builder__canvas.class
         const writeBlock = (idsArr = [], classesArr = [], prefix = '') => {
+            //out is the CSS content to return. Starts empty
             let out = '';
+            //loop through the ids
             idsArr?.forEach(({ id, properties, states }) => {
+                //baseSel is the CSS selector for the id. Example: .tw-builder__canvas#id(if has prefix) or #id(if no prefix)
                 const baseSel = `${prefix}#${id}`;
+                //entries is an array of the properties of the id
                 const entries = Object.entries(properties || {});
+                //if the id has properties, add the CSS selector and the properties to the out
                 if (id && entries.length > 0) {
                     out += `${baseSel} {\n`;
                     entries.forEach(([prop, value]) => {
+                        //add the property and the value to the out
                         out += `${prop}: ${addUnits(prop, String(value))};\n`;
                     });
                     out += `}\n`;
                 }
+                //if the id has states, add the CSS selector and the states to the out
                 if (states && typeof states === 'object') {
                     Object.entries(states).forEach(([pseudo, props]) => {
                         const stEntries = Object.entries(props || {});
+                        //if the states has properties, add the CSS selector and the properties to the out
                         if (stEntries.length > 0) {
+                            //add the CSS selector with the pseudo
                             out += `${baseSel}${pseudo} {\n`;
                             stEntries.forEach(([prop, value]) => {
+                                //add the property and the value to the out
                                 out += `${prop}: ${addUnits(prop, String(value))};\n`;
                             });
                             out += `}\n`;
@@ -613,22 +624,30 @@ useEffect(() => {
                     });
                 }
             });
+            //loop through the classes
             classesArr?.forEach(({ className, properties, states }) => {
+                //baseSel is the CSS selector for the class. Example: .tw-builder__canvas.class(if has prefix) or .class(if no prefix)
                 const baseSel = `${prefix}.${className}`;
+                //entries is an array of the properties of the class
                 const entries = Object.entries(properties || {});
+                //if the class has properties, add the CSS selector and the properties to the out
                 if (className && entries.length > 0) {
                     out += `${baseSel} {\n`;
                     entries.forEach(([prop, value]) => {
+                        //add the property and the value to the out
                         out += `${prop}: ${addUnits(prop, String(value))};\n`;
                     });
                     out += `}\n`;
                 }
+                //if the class has states, add the CSS selector and the states to the out
                 if (states && typeof states === 'object') {
                     Object.entries(states).forEach(([pseudo, props]) => {
                         const stEntries = Object.entries(props || {});
+                        //if the states has properties, add the CSS selector and the properties to the out
                         if (stEntries.length > 0) {
                             out += `${baseSel}${pseudo} {\n`;
                             stEntries.forEach(([prop, value]) => {
+                                //add the property and the value to the out
                                 out += `${prop}: ${addUnits(prop, String(value))};\n`;
                             });
                             out += `}\n`;
@@ -639,24 +658,26 @@ useEffect(() => {
             return out;
         };
     
-        // Desktop (base)
+        // Desktop (base). Build the CSS for the ids and classes
         cssContent += writeBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData);
     
-        // Tablet
+        // Tablet. Build the CSS for the ids and classes
         const tabletMax = JSONtree?.breakpoints?.tablet || '1024px';
         const tabletBlock = writeBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData);
+        //if the tablet block has properties, add the media query 
         if (tabletBlock && tabletBlock.trim().length) {
             cssContent += `@media (max-width: ${tabletMax}) {\n${tabletBlock}}\n`;
         }
     
-        // Mobile (place after tablet so it overrides)
+        // Mobile. Build the CSS for the ids and classes
         const mobileMax = JSONtree?.breakpoints?.mobile || '767px';
         const mobileBlock = writeBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData);
+        //if the mobile block has properties, add the media query
         if (mobileBlock && mobileBlock.trim().length) {
             cssContent += `@media (max-width: ${mobileMax}) {\n${mobileBlock}}\n`;
         }
 
-        // Scoped rules for builder preview (override base using data-bp)
+        //Emulate breakpoints in canvas using data-bp attribute
         const tbScoped = writeBlock(
             JSONtree?.responsive?.tablet?.idsCSSData,
             JSONtree?.responsive?.tablet?.classesCSSData,
@@ -686,6 +707,7 @@ useEffect(() => {
         createCSS(JSONtree);
     }, [JSONtree]);
 
+    //Get the builder breakpoint to set the data-bp attribute
     const getBuilderBP = () => {
         const canvasW = parseInt(JSONtree?.canvasMaxWidth || '99999', 10);
         const tablet = parseInt(JSONtree?.breakpoints?.tablet || '1024', 10);

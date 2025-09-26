@@ -19,15 +19,19 @@ export default function BuilderHeader({site, setSite, setModalType, setIsModalOp
       if (JSONtree?.canvasMaxWidth && JSONtree?.breakpoints) {
           const canvasWidth = parseInt(JSONtree.canvasMaxWidth);
           const { tablet, mobile } = JSONtree.breakpoints;
-          
+          //take the number of the breakpoints
           const tabletWidth = parseInt(tablet);
           const mobileWidth = parseInt(mobile);
           
+          //compare the canvas width with the breakpoints
+          //if the canvas width is greater than the tablet width, set the breakpoint to desktop
           if (canvasWidth > tabletWidth) {
               setBreakpoint('desktop');
+          //set the canvas width to the tablet width, if the canvas width is greater than the mobile width
           } else if (canvasWidth > mobileWidth) {
               setBreakpoint('tablet');
           } else {
+              //set the canvas width to the mobile width, if the canvas width is less than the tablet width
               setBreakpoint('mobile');
           }
       }
@@ -108,19 +112,24 @@ export default function BuilderHeader({site, setSite, setModalType, setIsModalOp
 
 
 
-// Handle breakpoint changes and update canvas directly
+
+//this function is used to change the breakpoint and update the JSONtree
 const handleBreakpointChange = (newBreakpoint) => {
     setBreakpoint(newBreakpoint);
     const updated = { ...JSONtree, canvasMaxWidth: JSONtree.breakpoints[newBreakpoint] };
     setJSONtree(updated);
 
 };
+
+//tooltip timeout
 let tooltipTimeout = null;
 
+//open the tooltip
 const handleMouseEnter = (id) => {
   tooltipTimeout = setTimeout(() => setShowTooltip(id), 500);
 };
 
+//close the tooltip
 const handleMouseLeave = () => {
   if (tooltipTimeout) {
     clearTimeout(tooltipTimeout);
@@ -133,60 +142,81 @@ const handleMouseLeave = () => {
   setEditingValue('');
 };
 
-// Helpers to parse/validate values in px
+
+//parse the value to px
 const toPxString = (val) => {
+  //if the value is a number, return the value with px
   if (typeof val === 'number' && !isNaN(val)) return `${val}px`;
+  //if the value is a string, check if it is a number with px. If it is, return the value with px. (So users cant write letters or symbols)
   if (typeof val === 'string') {
+    //check if the value is a number with px
     const match = val.trim().match(/^(\d+)\s*(px)?$/i);
+    //if the value is a number with px, return the value with px
     if (match) return `${parseInt(match[1], 10)}px`;
   }
+  //if the value is not a number or a string, return null
   return null;
 };
 
-// Inline editing manager
+//start editing the breakpoint
 const startEditing = (key) => {
+  //get the current value of the breakpoint
   const current = JSONtree?.breakpoints?.[key] || '';
   const num = parseInt(current, 10);
+  //set the editing breakpoint to the key(desktop, tablet, mobile)
   setEditingBreakpoint(key);
+  //set the editing value to the current value
   setEditingValue(isNaN(num) ? '' : String(num));
 };
 
+//cancel editing the breakpoint
 const cancelEditing = () => {
+  //set the editing breakpoint to null
   setEditingBreakpoint(null);
   setEditingValue('');
 };
 
 const commitEditing = (key) => {
+  //convert the value to px
   const px = toPxString(editingValue);
   if (!px) { cancelEditing(); return; }
 
+  //convert the value to a number
   let newNum = parseInt(px, 10);
+  //get the current value of the tablet and mobile breakpoints
   const tabletNum = parseInt(JSONtree?.breakpoints?.tablet || '0', 10);
   const mobileNum = parseInt(JSONtree?.breakpoints?.mobile || '0', 10);
 
-  // Help: Clamp breakpoints so Mobile ≤ Tablet, no warnings
+  //clamp the breakpoints so Mobile < Tablet, no warnings
+  //if the breakpoint is mobile and the new value is greater than the tablet value, set the new value to the tablet value - 1
   if (key === 'mobile' && newNum >= tabletNum) newNum = Math.max(0, tabletNum - 1);
+  //if the breakpoint is tablet and the new value is less than the mobile value, set the new value to the mobile value + 1
   if (key === 'tablet' && newNum <= mobileNum) newNum = mobileNum + 1;
 
+  //set the new value of the breakpoint in the JSONtree using handleBreakpointEdit function
   const finalPx = `${newNum}px`;
   handleBreakpointEdit(key, finalPx);
   cancelEditing();
 };
 
-// Edit breakpoint (one set in the history; update canvas if it is the active one)
+//Save the new value of the breakpoint in the JSONtree
 const handleBreakpointEdit = (breakpointKey, newValue) => {
+  //update the JSONtree with the new value of the breakpoint
   const updated = {
     ...JSONtree,
     breakpoints: { ...JSONtree.breakpoints, [breakpointKey]: newValue }
   };
 
+  //if the breakpoint is the active one, update the canvasMaxWidth
   if (breakpoint === breakpointKey) {
     updated.canvasMaxWidth = newValue;
   }
 
+  //set the new value of the breakpoint in the JSONtree
   setJSONtree(updated);
 };
 
+//render the tooltip. Desktop is just the text, the other ones have a divider and an input to edit the value
 const renderTooltip = (id) => (
   <div className="tw-builder__header-tooltip">
     <span>{id === 'desktop' ? 'Desktop' : id === 'tablet' ? 'Tablet' : 'Mobile'}</span>
@@ -195,7 +225,8 @@ const renderTooltip = (id) => (
         <span className="tw-builder__header-tooltip-divider">|</span>
 
         {editingBreakpoint === id ? (
-          <span className="tw-builder__header-tooltip-span" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+          //if the breakpoint is being edited, show the input to edit the value
+          <span className="tw-builder__header-tooltip-span">
             <input
               className="tw-builder__header-tooltip-input"
               value={editingValue}
@@ -211,6 +242,7 @@ const renderTooltip = (id) => (
             <span>px</span>
           </span>
         ) : (
+          //if the breakpoint is not being edited, show the value
           <span
             className="tw-builder__header-tooltip-span"
             onClick={(e) => { e.stopPropagation(); startEditing(id); }}
@@ -220,6 +252,7 @@ const renderTooltip = (id) => (
         )}
 
         <svg
+          //edit icon
           onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => { e.stopPropagation(); startEditing(id); }}
           className="tw-builder__header-tooltip-edit" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg"

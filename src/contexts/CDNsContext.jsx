@@ -54,11 +54,13 @@ const buildScript = async (siteId) => {
     const tabletMax = bp.tablet || '1024px';
     const mobileMax = bp.mobile || '767px';
     const r = builderJSON.responsive || {};
+    //convert the JSON to CSS
     const tbIds = convertJSONtoCSS(r.tablet?.idsCSSData);
     const tbClasses = convertJSONtoCSS(r.tablet?.classesCSSData);
     const moIds = convertJSONtoCSS(r.mobile?.idsCSSData);
     const moClasses = convertJSONtoCSS(r.mobile?.classesCSSData);
 
+    //build the media queries for the responsive CSS to inject
     const idsCSSCombined = [
       baseIds,
       tbIds ? `@media (max-width: ${tabletMax}) {${tbIds}}` : '',

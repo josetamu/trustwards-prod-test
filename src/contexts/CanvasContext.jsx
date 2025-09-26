@@ -82,14 +82,14 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         liveWebsite: false, //to set a screenshot of the domain in the builder canvas
         canvasColor: '#FFFFFF', //to set the color of the builder canvas
         canvasMaxWidth: null, //stored the max width of the canvas by root
-        breakpoints: {
+        breakpoints: { 
             tablet: '1024px',
             mobile: '767px'
-        },
+        },//stored the breakpoints 
         responsive: {
             tablet: { idsCSSData: [], classesCSSData: [] },
             mobile: { idsCSSData: [], classesCSSData: [] }
-        },
+        },//stored the responsive CSS for each breakpoint
         roots: [
             {
                 id: "tw-root--banner", //banner root
@@ -164,9 +164,11 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     //Compute current breakpoint from canvas width and configured breakpoints
     const getActiveBreakpoint = () => {
         try {
+            //get the canvas width and the breakpoints
             const canvasWidth = parseInt(JSONtree?.canvasMaxWidth || '99999', 10);
             const tablet = parseInt(JSONtree?.breakpoints?.tablet || '1024', 10);
             const mobile = parseInt(JSONtree?.breakpoints?.mobile || '767', 10);
+            //compare the canvas width with the breakpoints to know in which breakpoint the canvas is
             if (canvasWidth > tablet) return 'desktop';
             if (canvasWidth > mobile) return 'tablet';
             return 'mobile';
@@ -239,6 +241,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const redo = useCallback(() => {
         dispatch({ type: 'REDO' });
     }, []);
+    //check if there is something to undo or redo(used in the builder header)
     const canUndo = state.past.length > 0;
     const canRedo = state.future.length > 0;
   
@@ -271,19 +274,23 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * value - the value of the property (if empty string "", the property will be removed)
     */
     const addCSSProperty = (type, selector, propertyOrObject, value) => {
-        //Determine target data based on current breakpoint
+       
         const bp = getActiveBreakpoint();
+        //Responsive is true if the breakpoint is not desktop
         const isResponsive = bp !== 'desktop';
 
         const getIdsArr = () => {
+            //if the breakpoint is not desktop, return the responsive idsCSSData, otherwise return the idsCSSData
             if(isResponsive) return JSONtree.responsive?.[bp]?.idsCSSData || [];
             return JSONtree.idsCSSData || [];
         };
         const getClassesArr = () => {
+            //if the breakpoint is not desktop, return the responsive classesCSSData, otherwise return the classesCSSData
             if(isResponsive) return JSONtree.responsive?.[bp]?.classesCSSData || [];
             return JSONtree.classesCSSData || [];
         };
 
+        //get the current idsCSSData and classesCSSData
         let currentIds = getIdsArr();
         let currentClasses = getClassesArr();
         let updatedIdsCSSData = currentIds;

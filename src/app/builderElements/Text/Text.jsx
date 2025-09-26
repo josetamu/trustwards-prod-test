@@ -80,6 +80,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                         { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
                         {name: 'Border', type: 'border'},
                         {name: 'Shadow', type: 'box-shadow'},
+                        {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
                     ]
                 }
             ]

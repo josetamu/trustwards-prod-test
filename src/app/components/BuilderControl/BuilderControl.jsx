@@ -6,6 +6,7 @@ export default function BuilderControl({label, controls, whatType, activeRoot}) 
     const [isOpen, setIsOpen] = useState(false);
     const [activeTooltip, setActiveTooltip] = useState(null);
 
+    //get the name of the active root to show in the tooltip
     const activeRootName = {
         'tw-root--banner': 'Banner',
         'tw-root--modal': 'Modal',
@@ -15,6 +16,7 @@ export default function BuilderControl({label, controls, whatType, activeRoot}) 
         <div className="tw-builder__control">
             <div className="tw-builder__control-header" onClick={() => setIsOpen(!isOpen)}>
                 <span className="tw-builder__control-label">{label}
+                    {/*if the label is Enter Animation, show the tooltip */}
                     {label === 'Enter Animation' && isOpen && (
                         <span className="tw-builder__control-info" onMouseEnter={() => setActiveTooltip('enter-animation')} onMouseLeave={() => setActiveTooltip(null)}>
                             i
