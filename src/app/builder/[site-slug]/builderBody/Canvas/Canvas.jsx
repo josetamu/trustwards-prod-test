@@ -103,6 +103,8 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
                 ...(node.classList.includes('tw-block') && node.children.length === 0 ? ['tw-block--empty'] : []), // Add the class tw-block--empty if the node has the class tw-block and no children
                 ...(isSelected ? ['tw-builder__active'] : []), // Add the class tw-builder__active to the classList of the selected element
                 ...(isActiveRoot ? ['tw-active-root'] : []), // Add the class tw-active-root to the classList of the active root element
+                ...(isActiveRoot && node.id === 'tw-root--modal' ? ['tw-modal--open'] : []),
+                ...(isActiveRoot && node.id === 'tw-root--banner' ? ['tw-banner--open'] : []),
             ].join(' '),
 
             ...(!isRoot ? { //Make all nodes draggable except banner and modal
