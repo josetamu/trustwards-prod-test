@@ -18,7 +18,7 @@ export const Modal = (node, nodeProps = {}, children) => {
     const groupControls =  {
         header: [
             { name: 'Tag', type: 'super-select', value: 'div', category: 'text'},
-            { name: 'Display', type: 'super-select', value: 'flex', category: 'display'},
+            { name: 'Display', type: 'super-select', value: 'flex', category: 'display', placeholder: 'flex'},
         ],
         body: [
             {
