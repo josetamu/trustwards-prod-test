@@ -21,6 +21,16 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
 
         //state to handle the loading of the live website screenshot
         const [isLoadingScreenshot, setIsLoadingScreenshot] = useState(false);
+
+        const [enterReady, setEnterReady] = useState(false);
+
+        useEffect(() => {
+            setEnterReady(false);
+            const id = requestAnimationFrame(() => {
+              requestAnimationFrame(() => setEnterReady(true));
+            });
+            return () => cancelAnimationFrame(id);
+          }, [activeRoot]);
     
 
     
@@ -103,8 +113,8 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
                 ...(node.classList.includes('tw-block') && node.children.length === 0 ? ['tw-block--empty'] : []), // Add the class tw-block--empty if the node has the class tw-block and no children
                 ...(isSelected ? ['tw-builder__active'] : []), // Add the class tw-builder__active to the classList of the selected element
                 ...(isActiveRoot ? ['tw-active-root'] : []), // Add the class tw-active-root to the classList of the active root element
-                ...(isActiveRoot && node.id === 'tw-root--modal' ? ['tw-modal--open'] : []),
-                ...(isActiveRoot && node.id === 'tw-root--banner' ? ['tw-banner--open'] : []),
+                ...(isActiveRoot && enterReady && node.id === 'tw-root--modal' ? ['tw-modal--open'] : []),
+                ...(isActiveRoot && enterReady && node.id === 'tw-root--banner' ? ['tw-banner--open'] : []),
             ].join(' '),
 
             ...(!isRoot ? { //Make all nodes draggable except banner and modal
@@ -692,6 +702,58 @@ useEffect(() => {
             '.tw-builder__canvas[data-bp="mobile"] '
         );
         if (moScoped.trim()) cssContent += `${moScoped}`;
+        
+        // Enter Animation CSS (base + responsive + canvas-scoped)
+        const writeEnterBlock = (idsArr = [], classesArr = [], scope, prefix = '') => {
+            const openClass = scope === 'modal' ? '.tw-modal--open' : '.tw-banner--open';
+            let out = '';
+
+            idsArr?.forEach(({ id, enter }) => {
+                const props = enter?.[scope];
+                if (!id || !props || Object.keys(props).length === 0) return;
+                const baseSel = `${prefix}${openClass} #${id}`;
+                out += `${baseSel} {\n`;
+                Object.entries(props).forEach(([prop, value]) => {
+                    out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                });
+                out += `}\n`;
+            });
+
+            classesArr?.forEach(({ className, enter }) => {
+                const props = enter?.[scope];
+                if (!className || !props || Object.keys(props).length === 0) return;
+                const isOpenClass = (scope === 'modal' && className === 'tw-modal--open') || (scope === 'banner' && className === 'tw-banner--open');
+                const baseSel = isOpenClass ? `${prefix}.${className}` : `${prefix}${openClass} .${className}`;
+                out += `${baseSel} {\n`;
+                Object.entries(props).forEach(([prop, value]) => {
+                    out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                });
+                out += `}\n`;
+            });
+
+            return out;
+        };
+
+        // Base (desktop)
+        cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'banner');
+        cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'modal');
+
+        // @media Tablet/Mobile
+        const tabletEnter = 
+            writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner') +
+            writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal');
+        if (tabletEnter.trim()) cssContent += `@media (max-width: ${tabletMax}) {\n${tabletEnter}}\n`;
+
+        const mobileEnter = 
+            writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner') +
+            writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal');
+        if (mobileEnter.trim()) cssContent += `@media (max-width: ${mobileMax}) {\n${mobileEnter}}\n`;
+
+        // Canvas-scoped (emulación)
+        cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="tablet"] ');
+        cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="tablet"] ');
+        cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="mobile"] ');
+        cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="mobile"] ');
     
         let existingStyle = document.getElementById(styleId);
         if (existingStyle) {

@@ -384,6 +384,111 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         }
         setJSONtree(updated);
     };
+
+
+
+/*
+* Enter Animation - Guarda propiedades en idsCSSData/classesCSSData con ámbito por root
+* type - 'id' | 'class'
+* selector - id o className; si es root, será 'tw-modal--open' o 'tw-banner--open' (type 'class')
+* propertyOrObject - string propiedad o objeto {prop: val}
+* value - valor cuando propertyOrObject es string
+* scope - 'modal' | 'banner'
+*/
+const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scope) => {
+    if (!scope || (scope !== 'modal' && scope !== 'banner')) return;
+
+    const bp = getActiveBreakpoint();
+    const isResponsive = bp !== 'desktop';
+
+    const toObj = (k, v) =>
+        typeof k === 'object' && k !== null ? k : { [k]: v };
+
+    const mergeEnter = (entry, props) => {
+        const prev = entry.enter || {};
+        const nextScopeProps = { ...(prev[scope] || {}) };
+        Object.entries(props).forEach(([prop, val]) => {
+            if (val === "") {
+                delete nextScopeProps[prop];
+            } else {
+                nextScopeProps[prop] = val;
+            }
+        });
+        const cleaned = nextScopeProps;
+        const nextEnter = { ...prev };
+        if (Object.keys(cleaned).length === 0) {
+            delete nextEnter[scope];
+        } else {
+            nextEnter[scope] = cleaned;
+        }
+        if (Object.keys(nextEnter).length === 0) {
+            const { enter, ...rest } = entry;
+            return rest;
+        }
+        return { ...entry, enter: nextEnter };
+    };
+
+    const updated = deepCopy(JSONtree);
+    const getIdsArr = () => isResponsive ? (updated.responsive?.[bp]?.idsCSSData || []) : (updated.idsCSSData || []);
+    const getClassesArr = () => isResponsive ? (updated.responsive?.[bp]?.classesCSSData || []) : (updated.classesCSSData || []);
+
+    if (type === 'id') {
+        const arr = getIdsArr();
+        const idx = arr.findIndex(e => e.id === selector);
+        if (idx !== -1) {
+            const cur = arr[idx];
+            const next = mergeEnter(cur, toObj(propertyOrObject, value));
+            const nextArr = [...arr];
+            nextArr[idx] = next;
+            if (isResponsive) {
+                if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+                if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+                updated.responsive[bp].idsCSSData = nextArr;
+            } else {
+                updated.idsCSSData = nextArr;
+            }
+        } else {
+            const entry = mergeEnter({ id: selector, properties: {} }, toObj(propertyOrObject, value));
+            const nextArr = [...arr, entry];
+            if (isResponsive) {
+                if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+                if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+                updated.responsive[bp].idsCSSData = nextArr;
+            } else {
+                updated.idsCSSData = nextArr;
+            }
+        }
+    } else if (type === 'class') {
+        const arr = getClassesArr();
+        const idx = arr.findIndex(e => e.className === selector);
+        if (idx !== -1) {
+            const cur = arr[idx];
+            const next = mergeEnter(cur, toObj(propertyOrObject, value));
+            const nextArr = [...arr];
+            nextArr[idx] = next;
+            if (isResponsive) {
+                if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+                if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+                updated.responsive[bp].classesCSSData = nextArr;
+            } else {
+                updated.classesCSSData = nextArr;
+            }
+        } else {
+            const entry = mergeEnter({ className: selector, properties: {} }, toObj(propertyOrObject, value));
+            const nextArr = [...arr, entry];
+            if (isResponsive) {
+                if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+                if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+                updated.responsive[bp].classesCSSData = nextArr;
+            } else {
+                updated.classesCSSData = nextArr;
+            }
+        }
+    }
+
+    setJSONtree(updated);
+};
+
     
 
     /*
@@ -1084,7 +1189,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState}}>
+            addCSSProperty,addEnterAnimationProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState}}>
             {children}
         </CanvasContext.Provider>
     );

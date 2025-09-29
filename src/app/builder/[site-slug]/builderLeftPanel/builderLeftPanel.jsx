@@ -9,7 +9,7 @@ import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
 
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu, setIsManualThemesOpen, clipboard, setClipboard }) {
     const router = useRouter()
-    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, createElement, moveElement, deepCopy, handleToolbarDragStart, handleToolbarDragEnd, isToolbarDragActive, notifyElementCreatedFromToolbar } = useCanvas();
+    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, createElement, moveElement, deepCopy, handleToolbarDragStart, handleToolbarDragEnd, isToolbarDragActive, notifyElementCreatedFromToolbar, isUnsaved } = useCanvas();
     
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -69,9 +69,14 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setIsDropdownOpen(false)
         
         switch (action) {
-            case 'home':
+            case 'home': {
+            if (isUnsaved) {
+                const leave = window.confirm('You have unsaved changes. Are you sure you want to leave?')
+                if(!leave) return;
+            }
                 router.push('/')
                 break
+            }    
             case 'settings':
                 openChangeModal('settings')
                 break
@@ -1055,7 +1060,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <Link href="/" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={() => handleDropdownAction('home')}>
+            <Link href="/" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" 
+            onClick={() => handleDropdownAction('home')}>
                 <span>Back to Dashboard</span>
             </Link>
             <div className="dropdown__divider"></div>

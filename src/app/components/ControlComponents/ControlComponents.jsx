@@ -3070,8 +3070,19 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
         </div>
     )
 }
-const EnterAnimationType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
-    const [properties, setProperties] = useState([]);
+
+const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
+    const [properties, setProperties] = useState([ { property: '', value: '' } ]);
+    const prevPropsRef = useRef([]);
+    
+    useEffect(() => {
+        const list = Object.entries(savedProps || {}).map(([property, value]) => ({ property, value }));
+        if (list.length) {
+            setProperties(list);
+        } else {
+            setProperties([ { property: '', value: '' } ]);
+        }
+    }, [selectedElementData, savedProps]);
 
     const handleAddProperty = () => {
         setProperties(prev => [
@@ -3091,25 +3102,39 @@ const EnterAnimationType = ({name, index, applyGlobalCSSChange, getGlobalCSSValu
     return (
         <div className="tw-builder__settings-animation" key={index}>
             <div className="tw-builder__settings-animation-container">
-            <div className="tw-builder__settings-properties">
-                        <div className="tw-builder__settings-properties-pair">
-                            <span className="tw-builder__settings-properties-span">Property</span>
-                            <input className="tw-builder__settings-properties-input" type="text" placeholder="top" />
-                        </div>
-                        <div className="tw-builder__settings-properties-pair">
-                            <span className="tw-builder__settings-properties-span">Value</span>
-                            <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px" />
-                        </div>
-                </div>
             {properties.map((prop, i) => (
                 <div className="tw-builder__settings-properties" key={`prop-${i}`}>
                         <div className="tw-builder__settings-properties-pair">
                             <span className="tw-builder__settings-properties-span">Property</span>
-                            <input className="tw-builder__settings-properties-input" type="text" placeholder="top" />
+                            <input
+                            className="tw-builder__settings-properties-input"
+                            value={prop.property}
+                            onFocus={() => { prevPropsRef.current[i] = prop.property; }}
+                            onChange={(e)=>handlePropertyChange(i, 'property', e.target.value)}
+                            onBlur={() => {
+                                const prev = prevPropsRef.current[i];
+                                const now = (properties[i]?.property || '').trim();
+                                const val = (properties[i]?.value ?? '').trim();
+                                            
+                                if (prev && !now) {
+                                  applyEnterAnimationChange(prev, "");
+                                  setProperties(prevList => prevList.filter((_, idx) => idx !== i));
+                                  return;
+                                }
+                                if (now && val) {
+                                  applyEnterAnimationChange(now, val);
+                                }
+                              }}
+                            />
                         </div>
                         <div className="tw-builder__settings-properties-pair">
                             <span className="tw-builder__settings-properties-span">Value</span>
-                            <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px" />
+
+                            <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px"
+                                value={prop.value}
+                                onChange={(e)=>handlePropertyChange(i, 'value', e.target.value)}
+                                onBlur={()=> { if (prop.property) applyEnterAnimationChange(prop.property, prop.value || ''); }}
+                            />
                         </div>
                 </div>
             ))}
@@ -3118,12 +3143,11 @@ const EnterAnimationType = ({name, index, applyGlobalCSSChange, getGlobalCSSValu
                 </div>
             </div>
         </div>
-    );
-};
+    )};
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
@@ -3185,7 +3209,6 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 // Apply CSS (writes in the dataset of the active breakpoint if not desktop)
 const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
     if (!selectedId || !cssPropertyOrObject) return;
-//Check if is active class or id
     const type = activeClass ? 'class' : 'id';
     const selector = activeClass ? activeClass : selectedId;
 
@@ -3195,6 +3218,24 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
         addCSSProperty(type, selector, cssPropertyOrObject);
     }
 }, [selectedId, addCSSProperty, JSONtree, activeClass]);
+
+// Enter Animation: guarda en ids/classes CSSData con el scope del root y selector correcto
+const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
+    if (!selectedId || !cssPropertyOrObject) return;
+    const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    const isRoot = selectedId === activeRoot;
+
+    if (isRoot) {
+        const selector = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        addEnterAnimationProperty('class', selector, cssPropertyOrObject, value, scope);
+        return;
+    }
+    if (activeClass) {
+        addEnterAnimationProperty('class', activeClass, cssPropertyOrObject, value, scope);
+    } else {
+        addEnterAnimationProperty('id', selectedId, cssPropertyOrObject, value, scope);
+    }
+}, [selectedId, activeClass, activeRoot, addEnterAnimationProperty]);
 
 // Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
 const getGlobalCSSValue = useCallback((cssProperty) => {
@@ -3231,6 +3272,33 @@ const getGlobalCSSValue = useCallback((cssProperty) => {
 
     return bpIdData?.properties?.[cssProperty] ?? baseIdData?.properties?.[cssProperty] ?? null;
 }, [JSONtree, selectedId, activeClass, getActiveBreakpoint]);
+
+// debajo de applyEnterAnimationChange y/o cerca de getGlobalCSSValue
+const getEnterAnimationProps = useCallback(() => {
+    if (!selectedId) return {};
+
+    const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    const bp = getActiveBreakpoint?.() || 'desktop';
+    const isResponsive = bp !== 'desktop';
+
+    const idsArr = isResponsive ? (JSONtree?.responsive?.[bp]?.idsCSSData || []) : (JSONtree?.idsCSSData || []);
+    const classesArr = isResponsive ? (JSONtree?.responsive?.[bp]?.classesCSSData || []) : (JSONtree?.classesCSSData || []);
+
+    let entry = null;
+
+    // Si es el root, las props se guardan en la clase .tw-*-–open
+    if (selectedId === activeRoot) {
+        const openClass = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        entry = classesArr.find(e => e.className === openClass);
+    } else if (activeClass) {
+        entry = classesArr.find(e => e.className === activeClass);
+    } else {
+        entry = idsArr.find(e => e.id === selectedId);
+    }
+
+    return entry?.enter?.[scope] || {};
+}, [JSONtree, activeRoot, selectedId, activeClass, getActiveBreakpoint]);
+
 
     //Function to apply the json to the element and save it in jsonTree
     const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
@@ -3305,7 +3373,7 @@ const getGlobalCSSValue = useCallback((cssProperty) => {
             case 'box-shadow':
                 return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
             case 'enter-animation':
-                return <EnterAnimationType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <EnterAnimationType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
         }
     }
     return (
