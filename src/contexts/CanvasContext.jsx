@@ -234,6 +234,35 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 		return () => window.removeEventListener('beforeunload', handler);
 	}, [isUnsaved]);
 
+    //Block the back button when there are unsaved changes
+    useEffect(() => {
+        if (!isUnsaved) return;
+    
+        // Push a sentinel entry so the first "Back" hits here
+        const sentinel = { __tw_blocker: true, t: Date.now() };
+        try {
+            history.pushState(sentinel, '');
+        } catch {}
+    
+        const onPopState = (e) => {
+            // Show confirm when user presses Back
+            const leave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+            if (!leave) {
+                // Cancel: restore the sentinel to keep user on the page
+                try { history.pushState(sentinel, ''); } catch {}
+            } else {
+                // Allow: remove listener and go back one more
+                window.removeEventListener('popstate', onPopState);
+                history.back();
+            }
+        };
+    
+        window.addEventListener('popstate', onPopState);
+        return () => {
+            window.removeEventListener('popstate', onPopState);
+        };
+    }, [isUnsaved]);
+
     //Undo and Redo JSONtree (Ctrl+Z / Ctrl+Y) or (Cmd+Z / Cmd+Y)
     const undo = useCallback(() => {
         dispatch({ type: 'UNDO' });
@@ -540,6 +569,8 @@ const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scop
     * insertIndex - The index where the element will be added (optional - used by drag & drop)
     */
     const addElement = (properties, parentId, insertIndex = null) => {
+        
+        //Create a map to store the original id and the new id
         const idMap = new Map();
 
         const add = (node, parent) => {
@@ -548,7 +579,7 @@ const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scop
             if (node.id === currentSelectedId) {
                 const newNode = { ...properties, id: generateUniqueId(JSONtree) }; //Creates a new node with the properties given and a unique id
                 
-                //map root original id to new id when pasting
+                //Check if the properties has an original id and map it to the new id, then delete the original id to avoid persisting it in the JSONtree
                 if(properties && properties.__originalId) {
                     idMap.set(properties.__originalId, newNode.id);
                     delete newNode.__originalId;

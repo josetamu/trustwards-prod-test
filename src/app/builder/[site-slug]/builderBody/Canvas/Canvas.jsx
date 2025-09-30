@@ -24,6 +24,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
 
         const [enterReady, setEnterReady] = useState(false);
 
+        //Effect to handle the enter animation. Change the enterReady state to true when the active root changes. Used by renderNode()
         useEffect(() => {
             setEnterReady(false);
             const id = requestAnimationFrame(() => {
@@ -113,8 +114,8 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
                 ...(node.classList.includes('tw-block') && node.children.length === 0 ? ['tw-block--empty'] : []), // Add the class tw-block--empty if the node has the class tw-block and no children
                 ...(isSelected ? ['tw-builder__active'] : []), // Add the class tw-builder__active to the classList of the selected element
                 ...(isActiveRoot ? ['tw-active-root'] : []), // Add the class tw-active-root to the classList of the active root element
-                ...(isActiveRoot && enterReady && node.id === 'tw-root--modal' ? ['tw-modal--open'] : []),
-                ...(isActiveRoot && enterReady && node.id === 'tw-root--banner' ? ['tw-banner--open'] : []),
+                ...(isActiveRoot && enterReady && node.id === 'tw-root--modal' ? ['tw-modal--open'] : []), // Add the class tw-modal--open to the classList of the active root element if the active root is modal and the enter animation is ready
+                ...(isActiveRoot && enterReady && node.id === 'tw-root--banner' ? ['tw-banner--open'] : []), // Add the class tw-banner--open to the classList of the active root element if the active root is banner and the enter animation is ready
             ].join(' '),
 
             ...(!isRoot ? { //Make all nodes draggable except banner and modal
@@ -703,29 +704,39 @@ useEffect(() => {
         );
         if (moScoped.trim()) cssContent += `${moScoped}`;
         
-        // Enter Animation CSS (base + responsive + canvas-scoped)
+        // Build the CSS for the enter animation. Using tw-modal--open and tw-banner--open classes next to the id or class
         const writeEnterBlock = (idsArr = [], classesArr = [], scope, prefix = '') => {
+            //Declare the class depending the active root
             const openClass = scope === 'modal' ? '.tw-modal--open' : '.tw-banner--open';
+            //out is the CSS content to return. Starts empty
             let out = '';
 
             idsArr?.forEach(({ id, enter }) => {
+                //props is the properties of the id
                 const props = enter?.[scope];
                 if (!id || !props || Object.keys(props).length === 0) return;
+                //baseSel is the CSS selector for the id. Example: .tw-builder__canvas.tw-modal--open#id(if has prefix) or .tw-modal--open#id(if no prefix)
                 const baseSel = `${prefix}${openClass} #${id}`;
+                //add the CSS selector and the properties to the out
                 out += `${baseSel} {\n`;
                 Object.entries(props).forEach(([prop, value]) => {
+                    //add the property and the value to the out
                     out += `${prop}: ${addUnits(prop, String(value))};\n`;
                 });
                 out += `}\n`;
             });
 
             classesArr?.forEach(({ className, enter }) => {
+                //props is the properties of the class
                 const props = enter?.[scope];
                 if (!className || !props || Object.keys(props).length === 0) return;
+                //isOpenClass is true if the class is tw-modal--open or tw-banner--open
                 const isOpenClass = (scope === 'modal' && className === 'tw-modal--open') || (scope === 'banner' && className === 'tw-banner--open');
+                //baseSel is the CSS selector for the class. Example: .tw-builder__canvas.tw-modal--open.class(if has prefix) or .tw-modal--open.class(if no prefix)
                 const baseSel = isOpenClass ? `${prefix}.${className}` : `${prefix}${openClass} .${className}`;
                 out += `${baseSel} {\n`;
                 Object.entries(props).forEach(([prop, value]) => {
+                    //add the property and the value to the out
                     out += `${prop}: ${addUnits(prop, String(value))};\n`;
                 });
                 out += `}\n`;
@@ -734,11 +745,11 @@ useEffect(() => {
             return out;
         };
 
-        // Base (desktop)
+        // Build the CSS for the enter animation for banner and modal
         cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'banner');
         cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'modal');
 
-        // @media Tablet/Mobile
+        // Build the CSS for the enter animation for banner and modal for tablet and mobile
         const tabletEnter = 
             writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner') +
             writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal');
@@ -749,24 +760,27 @@ useEffect(() => {
             writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal');
         if (mobileEnter.trim()) cssContent += `@media (max-width: ${mobileMax}) {\n${mobileEnter}}\n`;
 
-        // Canvas-scoped (emulación)
+        // Build the CSS for the enter animation for banner and modal for tablet and mobile for canvas-scoped
         cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="tablet"] ');
         cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="tablet"] ');
         cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="mobile"] ');
         cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="mobile"] ');
     
+        //Check if the style exists. If it does, update the content. If it doesn't, create a new style
         let existingStyle = document.getElementById(styleId);
         if (existingStyle) {
             if(existingStyle.textContent !== cssContent) {
                 existingStyle.textContent = cssContent;
             }
         } else {
+            //If the style doesn't exist, create a new style
             const css = document.createElement('style');
             css.id = styleId;
             css.textContent = cssContent;
             document.head.appendChild(css);
         }
     }
+    //Create the CSS for the ids and classes every time the JSONtree changes
     useEffect(() => {
         createCSS(JSONtree);
     }, [JSONtree]);

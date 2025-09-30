@@ -70,10 +70,6 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         
         switch (action) {
             case 'home': {
-            if (isUnsaved) {
-                const leave = window.confirm('You have unsaved changes. Are you sure you want to leave?')
-                if(!leave) return;
-            }
                 router.push('/')
                 break
             }    
@@ -1063,9 +1059,22 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <Link href="/" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" 
-            onClick={() => handleDropdownAction('home')}>
-                <span>Back to Dashboard</span>
+            <Link
+            href="/"
+            className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home"
+            onClick={(e) => {
+                //alert the user if there are unsaved changes
+                if (isUnsaved) {
+                const leave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+                if (!leave) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                }
+            }}
+            >
+            <span>Back to Dashboard</span>
             </Link>
             <div className="dropdown__divider"></div>
             <button className="dropdown__item tw-builder__dropdown-item" onClick={() => handleDropdownAction('settings')}>
