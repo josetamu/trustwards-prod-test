@@ -422,16 +422,40 @@ const handleBackdropClick = useCallback((e) => {
         setChangeType('');
       };
 
-    //UseEffect to open the ModalWelcome modal
-    useEffect(() => {
-      if (allUserDataResource && !user?.Name) {
-        setIsWelcomeModalOpen(true);
-      }
-    }, [user?.Name]);
-    //Function to close the ModalWelcome modal
-    const closeWelcomeModal = () => {
-      setIsWelcomeModalOpen(false);
-    };
+  //UseEffect to open the ModalWelcome modal
+  useEffect(() => {
+    if (allUserDataResource && !user?.Name) {
+      setIsWelcomeModalOpen(true);
+    }
+  }, [user?.Name]);
+  //Function to close the ModalWelcome modal
+  const closeWelcomeModal = () => {
+    setIsWelcomeModalOpen(false);
+  };
+
+  // Ensure a default avatar color for the user if missing
+  useEffect(() => {
+    if (!user?.id) return;
+    if (!user?.["Avatar Color"]) {
+      const colorKeys = Object.keys(avatarColors);
+      const randomColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+
+      (async () => {
+        const { error } = await supabase
+          .from('User')
+          .update({ 'Avatar Color': randomColorKey })
+          .eq('id', user.id);
+
+        if (!error) {
+          setUser(prev => ({ ...prev, 'Avatar Color': randomColorKey }));
+          if (allUserDataResource) {
+            const currentData = allUserDataResource.read();
+            currentData.user = { ...currentData.user, 'Avatar Color': randomColorKey };
+          }
+        }
+      })();
+    }
+  }, [user?.id, user?.["Avatar Color"]]);
 
     //Function to show the notification
     const showNotification = (message, position = 'top', contentCenter = false) => {
