@@ -18,7 +18,7 @@ export const Image = (node, nodeProps = {}) => {
 
     const groupControls =  {
         header: [
-            { name: 'Tag', type: 'select', value: 'img', options: ['img', 'figure', 'div']},
+            { name: 'Tag', type: 'select', placeholder: 'img', options: ['img', 'figure', 'div'], JSONProperty: 'tagName'},
             { name: 'Image', type: 'image', JSONProperty: 'src'},
 
         ],
@@ -26,27 +26,27 @@ export const Image = (node, nodeProps = {}) => {
             {
                 label: 'Layout',
                 controls: [
-                    { name: 'Direction', type: 'choose', category: 'direction'},
-                    { name: 'Justify', type: 'choose', category: 'justify'},
-                    { name: 'Align', type: 'choose', category: 'align'},
-                    { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap']},
-                    { name: 'Gap', type: 'text', placeholder: '0'},
+                    { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction'},
+                    { name: 'Justify', type: 'choose', category: 'justify', cssProperty: 'justify-content'},
+                    { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items'},
+                    { name: 'Wrap', type: 'select', placeholder: 'Wrap', options: ['Wrap', 'No Wrap'], cssProperty: 'flex-wrap'},
+                    { name: 'Gap', type: 'text', placeholder: '0', cssProperty: 'gap', autoUnit: 'px'},
                 ]
             },
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel'},
-                    { name: 'Margin', type: 'panel'},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
                 ]
             },
             {
                 label: 'Size',
                 controls: [
-                    { name: 'Width', type: 'text'},
-                    { name: 'Max. Width', type: 'text'},
-                    { name: 'Height', type: 'text'},
-                    { name: 'Max. Height', type: 'text'},
+                    { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+                    { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                    { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+                    { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
                 ]
             },
             {

@@ -58,7 +58,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
                         
                     ]
                 },
-                {   
+                {
                     label: 'Styles',
                     controls: [
                         { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},

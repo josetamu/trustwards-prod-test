@@ -32,7 +32,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                         { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction'},
                         { name: 'Justify', type: 'choose', category: 'justify', cssProperty: 'justify-content'},
                         { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items'},
-                        { name: 'Wrap', type: 'select', placeholder: 'Wrap',/* value: 'wrap', */ options: ['Wrap', 'No Wrap'], cssProperty: 'flex-wrap'},
+                        { name: 'Wrap', type: 'select', placeholder: 'Wrap',options: ['Wrap', 'No Wrap'], cssProperty: 'flex-wrap'},
                         { name: 'Gap', type: 'text', placeholder: '0', cssProperty: 'gap', autoUnit: 'px'},
                     ]
                 },
