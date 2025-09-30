@@ -86,7 +86,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     )
 }
 const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder}) => {
-    //At this point we have two superselects. One is for the block with the tags, and the other is for the display with the display properties.
+    //At this point we have three superselects. One is for the block with the tags, the other is for the display with the display properties, and the third is for the position with the position properties.
     const [blockSelectValue, setBlockSelectValue] = useState(() => {
         if (category === 'block') {
             const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -123,11 +123,6 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
         if (category === 'display') setDisplaySelectValue(value);
         if (category === 'position') setPositionSelectValue(value);
     };
-    const measureRef = useRef(null);
-    const wrapMeasureRef = useRef(null);
-    const flowMeasureRef = useRef(null);
-
-
 
     const [selectedWrap, setSelectedWrap] = useState(() =>{
         return getGlobalCSSValue?.('flex-wrap') || 'wrap';
@@ -1877,11 +1872,6 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     const [textareaValue, setTextareaValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         
-        //Treat New Text 2(Default text) like empty string
-/*         if (savedJSONValue === "New Text 2") {
-            return '';
-        }
-         */
         if (!savedJSONValue && value) {
             setTimeout(() => {
                 if (JSONProperty && applyGlobalJSONChange) {
@@ -3136,8 +3126,11 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
 const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
     const [properties, setProperties] = useState([ { property: '', value: '' } ]);
+
     const prevPropsRef = useRef([]);
     
+
+    //Update the properties when the selected element changes
     useEffect(() => {
         const list = Object.entries(savedProps || {}).map(([property, value]) => ({ property, value }));
         if (list.length) {
@@ -3147,6 +3140,7 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
         }
     }, [selectedElementData, savedProps]);
 
+    //Add a new property
     const handleAddProperty = () => {
         setProperties(prev => [
             ...prev,
@@ -3154,6 +3148,7 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
         ]);
     };
 
+    //Change the property
     const handlePropertyChange = (i, key, val) => {
         setProperties(prev => {
             const updated = [...prev];
@@ -3178,12 +3173,13 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
                                 const prev = prevPropsRef.current[i];
                                 const now = (properties[i]?.property || '').trim();
                                 const val = (properties[i]?.value ?? '').trim();
-                                            
+                                //If the property is empty, remove it
                                 if (prev && !now) {
                                   applyEnterAnimationChange(prev, "");
                                   setProperties(prevList => prevList.filter((_, idx) => idx !== i));
                                   return;
                                 }
+                                //If the property is not empty, apply the value
                                 if (now && val) {
                                   applyEnterAnimationChange(now, val);
                                 }
@@ -3195,6 +3191,7 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
 
                             <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px"
                                 value={prop.value}
+
                                 onChange={(e)=>handlePropertyChange(i, 'value', e.target.value)}
                                 onBlur={()=> { if (prop.property) applyEnterAnimationChange(prop.property, prop.value || ''); }}
                             />
@@ -3222,13 +3219,14 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
             setSelectedElementData(null);
             return;
         }
+
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
         if(!activeRootNode) {
             setSelectedElementData(null);
             return;
         }
 
-        // Buscar el elemento seleccionado en el árbol
+        // Find the selected element in the JSON tree
     const findElement = (node, targetId) => {
         if (!node) return null;
         if (node.id === targetId) return node;
@@ -3282,17 +3280,22 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
     }
 }, [selectedId, addCSSProperty, JSONtree, activeClass]);
 
-// Enter Animation: guarda en ids/classes CSSData con el scope del root y selector correcto
+// Enter Animation: saves in ids/classes CSSData with the scope of the root and the correct selector
 const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
     if (!selectedId || !cssPropertyOrObject) return;
+
+    //Get the scope of the root
     const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    //Check if the selected id is the root
     const isRoot = selectedId === activeRoot;
 
+    //If the selected id is the root, add the property to the class .tw-modal--open or .tw-banner--open
     if (isRoot) {
         const selector = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
         addEnterAnimationProperty('class', selector, cssPropertyOrObject, value, scope);
         return;
     }
+    //If the selected id is not the root, add the property to the class or id
     if (activeClass) {
         addEnterAnimationProperty('class', activeClass, cssPropertyOrObject, value, scope);
     } else {
@@ -3304,22 +3307,24 @@ const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
 const getGlobalCSSValue = useCallback((cssProperty) => {
     if (!selectedId || !cssProperty) return null;
 
+    //Get the breakpoint
     const bp = getActiveBreakpoint?.() || 'desktop';
+    //Check if the breakpoint is not desktop
     
 
     if (activeClass) {
         //if the breakpoint is not desktop, get the responsive classesCSSData, otherwise get the classesCSSData
-        const bpClassData = bp !== 'desktop'
+        const bpClassData = bp !== 'desktop' //Check if the breakpoint is not desktop
             ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
             : null;
-        const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
+        const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass); //Get the base classesCSSData
 
-        const stVal = activeState
+        const stVal = activeState //Check if the state is active
             ? (bpClassData?.states?.[activeState]?.[cssProperty] ?? baseClassData?.states?.[activeState]?.[cssProperty])
             : undefined;
-        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+        if (typeof stVal !== 'undefined' && stVal !== null) return stVal; //If the state value is not undefined or null, return it
 
-        return bpClassData?.properties?.[cssProperty] ?? baseClassData?.properties?.[cssProperty] ?? null;
+        return bpClassData?.properties?.[cssProperty] ?? baseClassData?.properties?.[cssProperty] ?? null; //If the property is not undefined or null, return it
     }
     //if the breakpoint is not desktop, get the responsive idsCSSData, otherwise get the idsCSSData
     const bpIdData = bp !== 'desktop'
@@ -3336,27 +3341,29 @@ const getGlobalCSSValue = useCallback((cssProperty) => {
     return bpIdData?.properties?.[cssProperty] ?? baseIdData?.properties?.[cssProperty] ?? null;
 }, [JSONtree, selectedId, activeClass, getActiveBreakpoint]);
 
-// debajo de applyEnterAnimationChange y/o cerca de getGlobalCSSValue
+
 const getEnterAnimationProps = useCallback(() => {
+    //Check if the selected id is not null
     if (!selectedId) return {};
 
     const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    //Get the breakpoint
     const bp = getActiveBreakpoint?.() || 'desktop';
-    const isResponsive = bp !== 'desktop';
+    const isResponsive = bp !== 'desktop'; //Check if breakpoint 
 
-    const idsArr = isResponsive ? (JSONtree?.responsive?.[bp]?.idsCSSData || []) : (JSONtree?.idsCSSData || []);
-    const classesArr = isResponsive ? (JSONtree?.responsive?.[bp]?.classesCSSData || []) : (JSONtree?.classesCSSData || []);
+    const idsArr = isResponsive ? (JSONtree?.responsive?.[bp]?.idsCSSData || []) : (JSONtree?.idsCSSData || []); //Get the idsCSSData
+    const classesArr = isResponsive ? (JSONtree?.responsive?.[bp]?.classesCSSData || []) : (JSONtree?.classesCSSData || []); //Get the classesCSSData
 
-    let entry = null;
+    let entry = null; 
 
-    // Si es el root, las props se guardan en la clase .tw-*-–open
+    // If it is the root, the props are saved in the class .tw-*-–open
     if (selectedId === activeRoot) {
-        const openClass = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        const openClass = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open'; 
         entry = classesArr.find(e => e.className === openClass);
     } else if (activeClass) {
-        entry = classesArr.find(e => e.className === activeClass);
+        entry = classesArr.find(e => e.className === activeClass); 
     } else {
-        entry = idsArr.find(e => e.id === selectedId);
+        entry = idsArr.find(e => e.id === selectedId); 
     }
 
     return entry?.enter?.[scope] || {};
@@ -3375,7 +3382,7 @@ const getEnterAnimationProps = useCallback(() => {
      const getGlobalJSONValue = useCallback((JSONProperty)=>{
         if(!selectedId || !JSONProperty || !JSONtree?.roots) return null;
 
-        // Buscar el elemento en el árbol JSON
+        // Find the element in the JSON tree
         const findElement = (node, targetId) => {
             if(!node) return null;
             if(node.id === targetId) return node;

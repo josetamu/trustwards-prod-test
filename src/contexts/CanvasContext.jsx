@@ -417,108 +417,106 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 
 
 /*
-* Enter Animation - Guarda propiedades en idsCSSData/classesCSSData con ámbito por root
+* Enter Animation - Store properties in idsCSSData/classesCSSData with scope by root
 * type - 'id' | 'class'
-* selector - id o className; si es root, será 'tw-modal--open' o 'tw-banner--open' (type 'class')
-* propertyOrObject - string propiedad o objeto {prop: val}
-* value - valor cuando propertyOrObject es string
+* selector - id or className; if it is root, it will be 'tw-modal--open' or 'tw-banner--open' (type 'class')
+* propertyOrObject - string property or object {prop: val}
+* value - value when propertyOrObject is string
 * scope - 'modal' | 'banner'
 */
-const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scope) => {
-    if (!scope || (scope !== 'modal' && scope !== 'banner')) return;
+const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scope) => { // Add/update "enter" animation props for an id/class, scoped to 'modal' or 'banner'
+	if (!scope || (scope !== 'modal' && scope !== 'banner')) return; // Only proceed for valid scopes
 
-    const bp = getActiveBreakpoint();
-    const isResponsive = bp !== 'desktop';
+	const bp = getActiveBreakpoint(); // Current breakpoint ('desktop' | 'tablet' | 'mobile')
+	const isResponsive = bp !== 'desktop'; // Whether we’re editing a responsive layer
 
-    const toObj = (k, v) =>
-        typeof k === 'object' && k !== null ? k : { [k]: v };
+	const toObj = (k, v) =>
+		typeof k === 'object' && k !== null ? k : { [k]: v }; // Normalize (key,value) into an object, or pass through if already an object
 
-    const mergeEnter = (entry, props) => {
-        const prev = entry.enter || {};
-        const nextScopeProps = { ...(prev[scope] || {}) };
-        Object.entries(props).forEach(([prop, val]) => {
-            if (val === "") {
-                delete nextScopeProps[prop];
-            } else {
-                nextScopeProps[prop] = val;
-            }
-        });
-        const cleaned = nextScopeProps;
-        const nextEnter = { ...prev };
-        if (Object.keys(cleaned).length === 0) {
-            delete nextEnter[scope];
-        } else {
-            nextEnter[scope] = cleaned;
-        }
-        if (Object.keys(nextEnter).length === 0) {
-            const { enter, ...rest } = entry;
-            return rest;
-        }
-        return { ...entry, enter: nextEnter };
-    };
+	const mergeEnter = (entry, props) => { // Merge new enter properties for the current scope into an entry
+		const prev = entry.enter || {}; // Existing enter object: { banner?: {...}, modal?: {...} }
+		const nextScopeProps = { ...(prev[scope] || {}) }; // Start from existing props for this scope
+		Object.entries(props).forEach(([prop, val]) => { // Apply each incoming prop
+			if (val === "") {
+				delete nextScopeProps[prop]; // Empty string removes the property
+			} else {
+				nextScopeProps[prop] = val; // Otherwise set/update the property
+			}
+		});
+		const cleaned = nextScopeProps; // Post-mutation scope props
+		const nextEnter = { ...prev }; // Clone the enter object
+		if (Object.keys(cleaned).length === 0) {
+			delete nextEnter[scope]; // If scope has no props left, remove the scope key
+		} else {
+			nextEnter[scope] = cleaned; // Otherwise write back cleaned scope props
+		}
+		if (Object.keys(nextEnter).length === 0) {
+			const { enter, ...rest } = entry; // If no scopes left at all, drop the enter field entirely
+			return rest;
+		}
+		return { ...entry, enter: nextEnter }; // Return entry with updated enter
+	};
 
-    const updated = deepCopy(JSONtree);
-    const getIdsArr = () => isResponsive ? (updated.responsive?.[bp]?.idsCSSData || []) : (updated.idsCSSData || []);
-    const getClassesArr = () => isResponsive ? (updated.responsive?.[bp]?.classesCSSData || []) : (updated.classesCSSData || []);
+	const updated = deepCopy(JSONtree); // Work on a cloned tree
+	const getIdsArr = () => isResponsive ? (updated.responsive?.[bp]?.idsCSSData || []) : (updated.idsCSSData || []); // Pick ids array for active layer
+	const getClassesArr = () => isResponsive ? (updated.responsive?.[bp]?.classesCSSData || []) : (updated.classesCSSData || []); // Pick classes array for active layer
 
-    if (type === 'id') {
-        const arr = getIdsArr();
-        const idx = arr.findIndex(e => e.id === selector);
-        if (idx !== -1) {
-            const cur = arr[idx];
-            const next = mergeEnter(cur, toObj(propertyOrObject, value));
-            const nextArr = [...arr];
-            nextArr[idx] = next;
-            if (isResponsive) {
-                if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
-                if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
-                updated.responsive[bp].idsCSSData = nextArr;
-            } else {
-                updated.idsCSSData = nextArr;
-            }
-        } else {
-            const entry = mergeEnter({ id: selector, properties: {} }, toObj(propertyOrObject, value));
-            const nextArr = [...arr, entry];
-            if (isResponsive) {
-                if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
-                if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
-                updated.responsive[bp].idsCSSData = nextArr;
-            } else {
-                updated.idsCSSData = nextArr;
-            }
-        }
-    } else if (type === 'class') {
-        const arr = getClassesArr();
-        const idx = arr.findIndex(e => e.className === selector);
-        if (idx !== -1) {
-            const cur = arr[idx];
-            const next = mergeEnter(cur, toObj(propertyOrObject, value));
-            const nextArr = [...arr];
-            nextArr[idx] = next;
-            if (isResponsive) {
-                if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
-                if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
-                updated.responsive[bp].classesCSSData = nextArr;
-            } else {
-                updated.classesCSSData = nextArr;
-            }
-        } else {
-            const entry = mergeEnter({ className: selector, properties: {} }, toObj(propertyOrObject, value));
-            const nextArr = [...arr, entry];
-            if (isResponsive) {
-                if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
-                if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
-                updated.responsive[bp].classesCSSData = nextArr;
-            } else {
-                updated.classesCSSData = nextArr;
-            }
-        }
-    }
+	if (type === 'id') { // Targeting an element by id
+		const arr = getIdsArr();
+		const idx = arr.findIndex(e => e.id === selector); // Find existing entry for this id
+		if (idx !== -1) { // Update existing
+			const cur = arr[idx];
+			const next = mergeEnter(cur, toObj(propertyOrObject, value)); // Merge new enter props
+			const nextArr = [...arr];
+			nextArr[idx] = next;
+			if (isResponsive) {
+				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } }; // Ensure responsive container
+				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] }; // Ensure bp container
+				updated.responsive[bp].idsCSSData = nextArr; // Save into responsive layer
+			} else {
+				updated.idsCSSData = nextArr; // Save into base layer
+			}
+		} else { // Create new entry for this id
+			const entry = mergeEnter({ id: selector, properties: {} }, toObj(propertyOrObject, value));
+			const nextArr = [...arr, entry];
+			if (isResponsive) {
+				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+				updated.responsive[bp].idsCSSData = nextArr;
+			} else {
+				updated.idsCSSData = nextArr;
+			}
+		}
+	} else if (type === 'class') { // Targeting a class selector
+		const arr = getClassesArr();
+		const idx = arr.findIndex(e => e.className === selector); // Find existing entry for this class
+		if (idx !== -1) { // Update existing
+			const cur = arr[idx];
+			const next = mergeEnter(cur, toObj(propertyOrObject, value));
+			const nextArr = [...arr];
+			nextArr[idx] = next;
+			if (isResponsive) {
+				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+				updated.responsive[bp].classesCSSData = nextArr; // Save class entry into responsive layer
+			} else {
+				updated.classesCSSData = nextArr; // Save class entry into base layer
+			}
+		} else { // Create new entry for this class
+			const entry = mergeEnter({ className: selector, properties: {} }, toObj(propertyOrObject, value));
+			const nextArr = [...arr, entry];
+			if (isResponsive) {
+				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+				updated.responsive[bp].classesCSSData = nextArr;
+			} else {
+				updated.classesCSSData = nextArr;
+			}
+		}
+	}
 
-    setJSONtree(updated);
+	setJSONtree(updated); // Commit changes to the builder state
 };
-
-    
 
     /*
     * Add a JSON property (for HTML and Javascript (attr) controls)
@@ -637,7 +635,10 @@ const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scop
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addElement
         add(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1], null); //Add the element in the current JSONtree, in the activeRoot
 
-        //Clone CSS entries for remapped ids
+        /* Clone CSS entries for remapped ids created during paste operations.
+        For each mapping in idMap (oldId -> newId), look up the source entry by oldId,
+        deep-copy it, swap its id to newId, and collect it so the new node
+         inherits the same CSS rules as the original. */
         const cloneEntriesForIds = (sourceArr = []) =>{
             const cloned = [];
             idMap.forEach((newId, oldId) =>{
@@ -650,44 +651,52 @@ const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scop
             })
             return cloned;
         };
-        const mergeById = (arr) => {
-            const map = new Map();
-            for (const e of arr) {
-                if (!e || !e.id) continue;
-                const prev = map.get(e.id);
-                if (prev) {
-                    const merged = { ...prev, ...e };
+
+        const mergeById = (arr) => { // Merge an array of entries by id, deduplicating and combining fields
+            const map = new Map(); // Accumulator keyed by entry.id
+            for (const e of arr) { // Iterate over all entries to merge
+                if (!e || !e.id) continue; // Skip invalid entries or those without an id
+                const prev = map.get(e.id); // Retrieve any previously merged entry for this id
+                if (prev) { // If an entry with this id already exists, merge them
+                    const merged = { ...prev, ...e }; // Shallow-merge top-level fields; later entry overrides
                     if (prev.properties || e.properties) {
-                        merged.properties = { ...(prev?.properties || {}), ...(e?.properties || {}) };
+                        merged.properties = { ...(prev?.properties || {}), ...(e?.properties || {}) }; // Combine CSS properties
                     }
                     if (prev.states || e.states) {
-                        merged.states = { ...(prev?.states || {}), ...(e?.states || {}) };
+                        merged.states = { ...(prev?.states || {}), ...(e?.states || {}) }; // Combine pseudo-state rules (e.g., :hover)
                     }
                     if (prev.enter || e.enter) {
-                        merged.enter = { ...(prev?.enter || {}), ...(e?.enter || {}) };
+                        merged.enter = { ...(prev?.enter || {}), ...(e?.enter || {}) }; // Combine enter animation rules
                     }
-                    map.set(e.id, merged);
+                    map.set(e.id, merged); // Save the merged result back under this id
                 } else {
-                    map.set(e.id, deepCopy(e));
+                    map.set(e.id, deepCopy(e)); // First encounter of this id: store a cloned copy
                 }
             }
-            return Array.from(map.values());
+            return Array.from(map.values()); // Convert the map back to an array of merged entries
         };
         
-        // Base
+        // Desktop. 
+        // Declare the base array
         const baseSrc = JSONtree.idsCSSData || [];
+        // Clone the base array
         const clonedBase = cloneEntriesForIds(baseSrc);
+        // Merge the base array with any incoming entries and with the cloned entries
         updated.idsCSSData = mergeById([...baseSrc, ...idsCSSDataToMerge, ...clonedBase]);
         
         // Responsive
-        ['tablet', 'mobile'].forEach(bp => {
+        ['tablet', 'mobile'].forEach(bp => { // Iterate over all breakpoints
+            // Declare the base array
             const baseArr = JSONtree.responsive?.[bp]?.idsCSSData || [];
+            // Clone the base array
             const cloned = cloneEntriesForIds(baseArr);
+            // Ensure the responsive object exists
             if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
             if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+            //merge the base array with the cloned entries
             updated.responsive[bp].idsCSSData = mergeById([...baseArr, ...cloned]);
         });
-        
+        // Commit the merged result into the JSON tree used by the builder runtime.
         setJSONtree(updated);
     };    
 
