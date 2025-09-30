@@ -54,6 +54,18 @@ export const Image = (node, nodeProps = {}) => {
                 controls: [
                     { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' },
                 ]
+            },
+            {
+                label: 'Styles',
+                controls: [
+                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
+                    { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
+                    { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                    { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                    {name: 'Border', type: 'border'},
+                    {name: 'Shadow', type: 'box-shadow'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                ]
             }
         ]
     }
