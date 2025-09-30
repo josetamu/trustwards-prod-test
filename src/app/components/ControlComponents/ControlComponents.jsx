@@ -102,11 +102,18 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
         }
         return '';
     });
-    
+    const [positionSelectValue, setPositionSelectValue] = useState(() => {
+        if (category === 'position') {
+            const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+            return savedCSSValue || '';
+        }
+        return '';
+    });
     //function to get the correct value depending on the category
     const getCurrentSelectValue = () => {
         if (category === 'block') return blockSelectValue;
         if (category === 'display') return displaySelectValue;
+        if (category === 'position') return positionSelectValue;
         return '';
     };
     
@@ -114,6 +121,7 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     const setCurrentSelectValue = (value) => {
         if (category === 'block') setBlockSelectValue(value);
         if (category === 'display') setDisplaySelectValue(value);
+        if (category === 'position') setPositionSelectValue(value);
     };
     const measureRef = useRef(null);
     const wrapMeasureRef = useRef(null);
@@ -263,14 +271,14 @@ useEffect(() => {
         options={['div','a','section','article','aside','nav']}
         />
        )}
-       {category === 'display' && (
+             {category === 'display' && (
         <SelectType
         name={name}
         value={getCurrentSelectValue()}
         placeholder={placeholder}
-        cssProperty={cssProperty}  // Añadir esta línea
-        applyGlobalCSSChange={applyGlobalCSSChange}  // Añadir esta línea
-        getGlobalCSSValue={getGlobalCSSValue}  // Añadir esta línea
+        cssProperty={cssProperty}  
+        applyGlobalCSSChange={applyGlobalCSSChange}  
+        getGlobalCSSValue={getGlobalCSSValue}  
         JSONProperty={JSONProperty}
         applyGlobalJSONChange={applyGlobalJSONChange}
         getGlobalJSONValue={getGlobalJSONValue}
@@ -280,8 +288,63 @@ useEffect(() => {
         onChange={handleSuperSelectChange}
         defaultValue={placeholder}
         />
-       )}
-
+      )}
+      {category === 'position' && (
+        <SelectType
+        name={name}
+        value={getCurrentSelectValue()}
+        placeholder={placeholder}
+        cssProperty={cssProperty}
+        applyGlobalCSSChange={applyGlobalCSSChange}
+        getGlobalCSSValue={getGlobalCSSValue}
+        selectedId={selectedId}
+        index={index}
+        options={['static','relative','absolute','fixed','sticky']}
+        onChange={handleSuperSelectChange}
+        defaultValue={placeholder}
+        />
+      )}
+               
+        {(category === 'position' && (getCurrentSelectValue() === 'absolute' || getCurrentSelectValue() === 'relative' || getCurrentSelectValue() === 'fixed')) && (
+            <>
+                <TextType
+                    name="Top"
+                    placeholder="0"
+                    cssProperty="top"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={`${index}-top`}
+                />
+                <TextType
+                    name="Right"
+                    placeholder="0"
+                    cssProperty="right"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={`${index}-right`}
+                />
+                <TextType
+                    name="Bottom"
+                    placeholder="0"
+                    cssProperty="bottom"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={`${index}-bottom`}
+                />
+                <TextType
+                    name="Left"
+                    placeholder="0"
+                    cssProperty="left"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={`${index}-left`}
+                />
+            </>
+        )}
         {getCurrentSelectValue() === 'a' && (
            <TextType
            name="Link to"

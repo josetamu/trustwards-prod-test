@@ -19,7 +19,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
 
     const groupControls =  {
             header: [
-                {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span'],  /* value: 'h3', */ placeholder: 'h3', JSONProperty: 'tagName'},
+                {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span'], placeholder: 'h3', JSONProperty: 'tagName'},
                
                 { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
                 { name: 'Text', type: 'textarea', placeholder: 'Text goes here...', JSONProperty: 'text'},
@@ -74,7 +74,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                 {
                     label: 'Styles',
                     controls: [
-                        { name: 'Position', type: 'select', placeholder: 'Static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'], cssProperty: 'position' },
+                        { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                         { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
                         { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
                         { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },

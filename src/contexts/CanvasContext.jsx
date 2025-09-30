@@ -540,19 +540,35 @@ const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scop
     * insertIndex - The index where the element will be added (optional - used by drag & drop)
     */
     const addElement = (properties, parentId, insertIndex = null) => {
+        const idMap = new Map();
+
         const add = (node, parent) => {
             const currentSelectedId = parentId || selectedId || activeRoot; //Put it inside the parentId directly if given, otherwise use the selected element, otherwise fallback to the root
 
             if (node.id === currentSelectedId) {
                 const newNode = { ...properties, id: generateUniqueId(JSONtree) }; //Creates a new node with the properties given and a unique id
+                
+                //map root original id to new id when pasting
+                if(properties && properties.__originalId) {
+                    idMap.set(properties.__originalId, newNode.id);
+                    delete newNode.__originalId;
+                }
+                
                 addDefaultCSSProperties(newNode); //Add default CSS properties to the new node
 
                 // Assign unique IDs to all children recursively
                 const assignIdsRecursively = (children) => {
                     return children.map(child => {
+                        const originalChildId = child.id;
                         const newChild = { ...child, id: generateUniqueId(JSONtree) };
+                        //Map child original id to new id (only if original existed)
+                        if(originalChildId) {
+                            idMap.set(originalChildId, newChild.id);
+                        }
+
                         addDefaultCSSProperties(newChild); //Add default CSS properties to the new child
 
+                        
                         if (newChild.children) {
                             newChild.children = assignIdsRecursively(newChild.children);
                         }
@@ -590,13 +606,58 @@ const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scop
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addElement
         add(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1], null); //Add the element in the current JSONtree, in the activeRoot
 
-        //Update the idsCSSData with the default CSS on idsCSSDataToMerge
-        //update the updated JSONtree with the new idsCSSData
-        const finalIdsCSSData = [...JSONtree.idsCSSData, ...idsCSSDataToMerge];
-        updated.idsCSSData = finalIdsCSSData;
+        //Clone CSS entries for remapped ids
+        const cloneEntriesForIds = (sourceArr = []) =>{
+            const cloned = [];
+            idMap.forEach((newId, oldId) =>{
+                const entry = sourceArr.find(e => e.id === oldId);
+                if(entry) {
+                    const next = deepCopy(entry);
+                    next.id = newId;
+                    cloned.push(next);
+                }
+            })
+            return cloned;
+        };
+        const mergeById = (arr) => {
+            const map = new Map();
+            for (const e of arr) {
+                if (!e || !e.id) continue;
+                const prev = map.get(e.id);
+                if (prev) {
+                    const merged = { ...prev, ...e };
+                    if (prev.properties || e.properties) {
+                        merged.properties = { ...(prev?.properties || {}), ...(e?.properties || {}) };
+                    }
+                    if (prev.states || e.states) {
+                        merged.states = { ...(prev?.states || {}), ...(e?.states || {}) };
+                    }
+                    if (prev.enter || e.enter) {
+                        merged.enter = { ...(prev?.enter || {}), ...(e?.enter || {}) };
+                    }
+                    map.set(e.id, merged);
+                } else {
+                    map.set(e.id, deepCopy(e));
+                }
+            }
+            return Array.from(map.values());
+        };
         
-
-        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+        // Base
+        const baseSrc = JSONtree.idsCSSData || [];
+        const clonedBase = cloneEntriesForIds(baseSrc);
+        updated.idsCSSData = mergeById([...baseSrc, ...idsCSSDataToMerge, ...clonedBase]);
+        
+        // Responsive
+        ['tablet', 'mobile'].forEach(bp => {
+            const baseArr = JSONtree.responsive?.[bp]?.idsCSSData || [];
+            const cloned = cloneEntriesForIds(baseArr);
+            if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
+            if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+            updated.responsive[bp].idsCSSData = mergeById([...baseArr, ...cloned]);
+        });
+        
+        setJSONtree(updated);
     };    
 
     /*

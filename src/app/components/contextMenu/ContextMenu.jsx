@@ -150,6 +150,7 @@ export function ContextMenu({
         
         // Create a deep copy of the clipboard item without the id (addElement will generate new IDs)
         const copiedItem = deepCopy(clipboard);
+        copiedItem.__originalId = clipboard.id;
         delete copiedItem.id; // Remove the original ID so addElement can generate new ones
         
         // Use the children attribute from CanvasContext to determine if element can accept children
@@ -184,6 +185,7 @@ export function ContextMenu({
         
         // Create a deep copy of the target item without the id (addElement will generate new IDs)
         const duplicatedItem = deepCopy(targetItem);
+        duplicatedItem.__originalId = targetItem.id;
         delete duplicatedItem.id; // Remove the original ID so addElement can generate new ones
         
         // Use addElement to properly duplicate the item with all its CSS data and initialization

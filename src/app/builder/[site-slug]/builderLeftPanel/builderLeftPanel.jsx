@@ -507,12 +507,14 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             if (currentRoot) {
                 // Create a deep copy of the clipboard item without the id (addElement will generate new IDs)
                 const copiedItem = deepCopy(clipboard);
+                // Preserve original root id for CSS cloning
+                copiedItem.__originalId = clipboard.id;
                 delete copiedItem.id; // Remove the original ID so addElement can generate new ones
                 
                 // Add to the end of the root tree (last position)
                 addElement(copiedItem, currentRoot.id);
                 
-
+                
             }
             return;
         }
@@ -543,6 +545,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         if (targetElement) {
             // Create a deep copy of the clipboard item without the id (addElement will generate new IDs)
             const copiedItem = deepCopy(clipboard);
+            copiedItem.__originalId = clipboard.id;
             delete copiedItem.id; // Remove the original ID so addElement can generate new ones
             
             // GLOBAL NESTING DETECTION: Use the global function for ANY element
