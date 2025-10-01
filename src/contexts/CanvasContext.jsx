@@ -345,6 +345,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         };
 
         const applyToEntry = (entry) => {
+ /*            const hasNested = typeof nestedSelector === 'string' && nestedSelector.trim() !== '';
+            if (hasNested) {
+                const key = nestedSelector.trim();
+                const nest
+
+            } */
             if (activeState) {
                 const st = { ...(entry.states || {}) };
                 const cur = { ...(st[activeState] || {}) };

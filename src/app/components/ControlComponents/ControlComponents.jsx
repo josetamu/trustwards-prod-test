@@ -12,7 +12,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '@animations/animations';
 
 
-
+//Apply the control on enter
+const applyOnEnter = (e,f) => {
+    if(e.key === 'Enter') {
+        e.preventDefault();
+        e.currentTarget.blur();
+        
+    }
+}
 
 
 //Define each type of control.
@@ -81,6 +88,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             placeholder={placeholder} 
             onChange={handleChange}
             onBlur={handleBlur}
+            onKeyDown={(e) => applyOnEnter(e, handleBlur)}
             />
         </div>
     )
@@ -192,16 +200,18 @@ useEffect(() => {
     //Handle the chooseType controls
 
     const handleDirectionChange = (direction) => {
-        setSelectedDirection(direction);
+        const newDirection = selectedDirection === direction ? '' : direction;
+        setSelectedDirection(newDirection);
         if (applyGlobalCSSChange) {
-            const finalDirection = isReverse ? `${direction}-reverse` : direction;
+            const finalDirection = isReverse ? `${newDirection}-reverse` : newDirection;
             applyGlobalCSSChange('flex-direction', finalDirection);
         }
     };
     const handleJustifyChange = (justify) => {
-        setSelectedJustify(justify);
+        const newJustify = selectedJustify === justify ? '' : justify;
+        setSelectedJustify(newJustify);
         if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('justify-content', justify);
+            applyGlobalCSSChange('justify-content', newJustify);
         }
     };
 
@@ -218,9 +228,10 @@ useEffect(() => {
     
 
     const handleAlignChange = (align) => {
-        setSelectedAlign(align);
+        const newAlign = selectedAlign === align ? '' : align;
+        setSelectedAlign(newAlign);
         if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('align-items', align);
+            applyGlobalCSSChange('align-items', newAlign);
         }
     };
 
@@ -948,12 +959,12 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur} onKeyDown={(e) => applyOnEnter(e, handleLeftBlur)}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur} onKeyDown={(e) => applyOnEnter(e, handleTopBlur)}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur} onKeyDown={(e) => applyOnEnter(e, handleBottomBlur)}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur} onKeyDown={(e) => applyOnEnter(e, handleRightBlur)}/>
         </div>
     </div>
     )
@@ -1153,10 +1164,10 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
                         backgroundColor: finalColor, 
                     }}>
                 </div>
-                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="Hex here..."/>
+                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} onKeyDown={(e) => applyOnEnter(e, handleHexBlur)} placeholder="Hex here..."/>
             </div>
             <div className="tw-builder__settings-percentages">
-                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} />
+                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} onKeyDown={(e) => applyOnEnter(e, handlePercentageChange)} />
             </div>
         </div>
     </div>
@@ -1284,7 +1295,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             value={imageUrl}
             onChange={handleUrlChange}
             onBlur={handleUrlSubmit}
-            onKeyDown={handleUrlSubmit}
+            onKeyDown={(e) => applyOnEnter(e, handleUrlSubmit)}
             />
         </div>
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -1342,17 +1353,19 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 
     //Function to apply the correct css
     const handleChooseChange = useCallback((choose) => {
-        setSelectedChoose(choose);
+
+        const newValue = selectedChoose === choose ? '' : choose;
+        setSelectedChoose(newValue);
         if (cssProperty && applyGlobalCSSChange) {
-            let finalValue = choose;
+            let finalValue = newValue;
             //If reverse is active row === row-reverse, and column === column-reverse
             if(category === 'flex-direction' && isReverse) {
-                finalValue = choose === 'row'? 'row-reverse' : 'column-reverse';
+                finalValue = newValue === 'row'? 'row-reverse' : 'column-reverse';
             }
             //Global function to apply and saved css
             applyGlobalCSSChange(cssProperty, finalValue);
         }
-    }, [cssProperty, applyGlobalCSSChange, category, isReverse]);
+    }, [cssProperty, applyGlobalCSSChange, category, isReverse, selectedChoose]);
 
     //Handle the reverse choose
     const handleReverseToggle = useCallback(() => {
@@ -1936,6 +1949,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
                 value={textareaValue}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                onKeyDown={(e) => applyOnEnter(e, handleBlur)}
                 className="tw-builder__settings-textarea"
             />
         </div>
@@ -2766,7 +2780,7 @@ const parseRadius = useCallback((radiusStr) => {
                                             value={isWidthLinked ? bwLinked : ''}
                                             onChange={(e) => handleBorderWidthChange(e.target.value)}
                                             onBlur={handleBorderWidthBlur}
-                   
+                                            onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur)}
                                         />
                                         <div className="tw-builder__settings-actions">
                                             <button className={`tw-builder__settings-action ${isWidthLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleWidthLinkToggle(true)} onMouseEnter={() => handleMouseEnter('link')} onMouseLeave={handleMouseLeave}>
@@ -2798,13 +2812,13 @@ const parseRadius = useCallback((radiusStr) => {
                                     </div>
                                     <div className="tw-builder__settings-units">
                                         <div className="tw-builder__settings-units-label">
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit"value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit"value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')} onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur('t'))}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')} onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur('r'))}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')} onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur('b'))}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')} onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur('l'))}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">T</span>
@@ -2831,6 +2845,7 @@ const parseRadius = useCallback((radiusStr) => {
                                             value={isRadiusLinked ? brLinked : ''}
                                             onChange={(e) => handleRadiusChange(e.target.value)}
                                             onBlur={handleRadiusBlur}
+                                            onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur)}
                                         />
                                         <div className="tw-builder__settings-actions">
                                             <button className={`tw-builder__settings-action ${isRadiusLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleRadiusLinkToggle(true)} onMouseEnter={() => handleMouseEnter('rlink')} onMouseLeave={handleMouseLeave}>
@@ -2862,13 +2877,13 @@ const parseRadius = useCallback((radiusStr) => {
                                     </div>
                                     <div className="tw-builder__settings-units">
                                         <div className="tw-builder__settings-units-label">
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')} onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur('tl'))}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} onBlur={() => handleRadiusBlur('tr')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} onBlur={() => handleRadiusBlur('tr')} onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur('tr'))}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} onBlur={() => handleRadiusBlur('br')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} onBlur={() => handleRadiusBlur('br')} onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur('br'))}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} onBlur={() => handleRadiusBlur('bl')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} onBlur={() => handleRadiusBlur('bl')} onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur('bl'))}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">TL</span>
@@ -3184,6 +3199,7 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
                                   applyEnterAnimationChange(now, val);
                                 }
                               }}
+                              onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
                             />
                         </div>
                         <div className="tw-builder__settings-properties-pair">
@@ -3191,9 +3207,9 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
 
                             <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px"
                                 value={prop.value}
-
                                 onChange={(e)=>handlePropertyChange(i, 'value', e.target.value)}
                                 onBlur={()=> { if (prop.property) applyEnterAnimationChange(prop.property, prop.value || ''); }}
+                                onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'value', e.target.value))}
                             />
                         </div>
                 </div>
@@ -3446,6 +3462,7 @@ const getEnterAnimationProps = useCallback(() => {
                 return <EnterAnimationType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
         }
     }
+
     return (
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>
