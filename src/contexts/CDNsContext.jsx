@@ -142,48 +142,49 @@ const buildScript = async (siteId) => {
 
     return minifiedScript.code;
 }
-//To convert idsCSSData and classesCSSData to raw CSS
+///To convert idsCSSData and classesCSSData to raw CSS
 const convertJSONtoCSS = (json) => {
-    const items = Array.isArray(json) ? json : [];
-  
-    const cssEscape = (ident) => {
-      if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') return CSS.escape(String(ident));
-      return String(ident).replace(/[^a-zA-Z0-9_-]/g, (ch) => '\\' + ch);
-    };
-  
-    const toKebab = (prop) => String(prop).replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
-  
-    // Group by selector to merge repeated properties
-    const rules = new Map(); // selector -> { prop: value }
-  
-    for (const it of items) {
-      if (!it || typeof it !== 'object') continue;
-  
-      let selector = null;
-      if (it.id) selector = '#' + cssEscape(it.id);
-      else if (it.class) selector = '.' + cssEscape(it.class);
-      else if (it.className) selector = '.' + cssEscape(it.className);
-      if (!selector) continue;
-  
-      const bag = rules.get(selector) || {};
-      const props = (it.properties && typeof it.properties === 'object') ? it.properties : {};
-  
-      for (const [k, v] of Object.entries(props)) {
-        if (v === null || v === undefined) continue;
-        bag[toKebab(k)] = String(v);
-      }
-      rules.set(selector, bag);
+  const items = Array.isArray(json) ? json : [];
+
+  const cssEscape = (ident) => {
+    if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') return CSS.escape(String(ident));
+    return String(ident).replace(/[^a-zA-Z0-9_-]/g, (ch) => '\\' + ch);
+  };
+
+  const toKebab = (prop) => String(prop).replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
+
+  const rules = new Map(); // selector -> { prop: value }
+  const ensure = (sel) => { const bag = rules.get(sel) || {}; rules.set(sel, bag); return bag; };
+
+  for (const it of items) {
+    if (!it || typeof it !== 'object') continue;
+
+    let baseSel = null;
+    if (it.id) baseSel = '#' + cssEscape(it.id);
+    else if (it.class) baseSel = '.' + cssEscape(it.class);
+    else if (it.className) baseSel = '.' + cssEscape(it.className);
+    if (!baseSel) continue;
+
+    const baseProps = (it.properties && typeof it.properties === 'object') ? it.properties : {};
+    const bag = ensure(baseSel);
+    Object.entries(baseProps).forEach(([k, v]) => { if (v != null) bag[toKebab(k)] = String(v); });
+
+    if (it.nested && typeof it.nested === 'object') {
+      Object.entries(it.nested).forEach(([sel, node]) => {
+        const outSel = sel.includes('&') ? sel.split('&').join(baseSel) : `${baseSel} ${sel.trim()}`;
+        const nBag = ensure(outSel);
+        const nProps = (node.properties && typeof node.properties === 'object') ? node.properties : {};
+        Object.entries(nProps).forEach(([k, v]) => { if (v != null) nBag[toKebab(k)] = String(v); });
+      });
     }
-  
-    // Convert to CSS
-    let css = '';
-    for (const [selector, props] of rules) {
-      const body = Object.entries(props)
-        .map(([k, v]) => `  ${k}: ${v};`)
-        .join('\n');
-      css += `${selector} {\n${body}\n}\n`;
-    }
-    return css.trim();
+  }
+
+  let css = '';
+  for (const [selector, props] of rules) {
+    const body = Object.entries(props).map(([k, v]) => `  ${k}: ${v};`).join('\n');
+    css += `${selector} {\n${body}\n}\n`;
+  }
+  return css.trim();
 };
 //To convert jsonBanner and jsonModal to raw HTML 
 const convertJSONtoHTML = async (node) => {

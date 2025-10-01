@@ -3284,15 +3284,15 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 }, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
 
 // Apply CSS (writes in the dataset of the active breakpoint if not desktop)
-const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
+const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, nestedSelector) => {
     if (!selectedId || !cssPropertyOrObject) return;
     const type = activeClass ? 'class' : 'id';
     const selector = activeClass ? activeClass : selectedId;
 
     if (typeof cssPropertyOrObject === 'string') {
-        addCSSProperty(type, selector, cssPropertyOrObject, value);
+        addCSSProperty(type, selector, cssPropertyOrObject, value, nestedSelector);
     } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
-        addCSSProperty(type, selector, cssPropertyOrObject);
+        addCSSProperty(type, selector, cssPropertyOrObject, undefined, nestedSelector);
     }
 }, [selectedId, addCSSProperty, JSONtree, activeClass]);
 
@@ -3319,43 +3319,41 @@ const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
     }
 }, [selectedId, activeClass, activeRoot, addEnterAnimationProperty]);
 
-// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
-const getGlobalCSSValue = useCallback((cssProperty) => {
+/// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
+const getGlobalCSSValue = useCallback((cssProperty, nestedSelector) => {
     if (!selectedId || !cssProperty) return null;
-
-    //Get the breakpoint
     const bp = getActiveBreakpoint?.() || 'desktop';
-    //Check if the breakpoint is not desktop
-    
-
+  
+    const readFromEntry = (entry) => {
+      if (!entry) return null;
+  
+      if (nestedSelector && nestedSelector.trim()) {
+        const node = entry.nested?.[nestedSelector.trim()];
+        if (!node) return null;
+        const stVal = activeState ? node.states?.[activeState]?.[cssProperty] : undefined;
+        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+        return node.properties?.[cssProperty] ?? null;
+      }
+  
+      const stVal = activeState ? entry.states?.[activeState]?.[cssProperty] : undefined;
+      if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+      return entry.properties?.[cssProperty] ?? null;
+    };
+  
     if (activeClass) {
-        //if the breakpoint is not desktop, get the responsive classesCSSData, otherwise get the classesCSSData
-        const bpClassData = bp !== 'desktop' //Check if the breakpoint is not desktop
-            ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
-            : null;
-        const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass); //Get the base classesCSSData
-
-        const stVal = activeState //Check if the state is active
-            ? (bpClassData?.states?.[activeState]?.[cssProperty] ?? baseClassData?.states?.[activeState]?.[cssProperty])
-            : undefined;
-        if (typeof stVal !== 'undefined' && stVal !== null) return stVal; //If the state value is not undefined or null, return it
-
-        return bpClassData?.properties?.[cssProperty] ?? baseClassData?.properties?.[cssProperty] ?? null; //If the property is not undefined or null, return it
-    }
-    //if the breakpoint is not desktop, get the responsive idsCSSData, otherwise get the idsCSSData
-    const bpIdData = bp !== 'desktop'
-        ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
+      const bpClassData = bp !== 'desktop'
+        ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
         : null;
+      const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
+      return readFromEntry(bpClassData) ?? readFromEntry(baseClassData);
+    }
+  
+    const bpIdData = bp !== 'desktop'
+      ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
+      : null;
     const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
-
-    //if the state is active, get the state value, otherwise get the base value
-    const stVal = activeState
-        ? (bpIdData?.states?.[activeState]?.[cssProperty] ?? baseIdData?.states?.[activeState]?.[cssProperty])
-        : undefined;
-    if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
-
-    return bpIdData?.properties?.[cssProperty] ?? baseIdData?.properties?.[cssProperty] ?? null;
-}, [JSONtree, selectedId, activeClass, getActiveBreakpoint]);
+    return readFromEntry(bpIdData) ?? readFromEntry(baseIdData);
+  }, [JSONtree, selectedId, activeClass, getActiveBreakpoint, activeState]);
 
 
 const getEnterAnimationProps = useCallback(() => {
@@ -3429,37 +3427,45 @@ const getEnterAnimationProps = useCallback(() => {
         selectedId,
      };
 
-    const whatType = (item, index) => {
-
+     const whatType = (item, index) => {
+        // If the control defines a selector, override helpers to use it
+        const overrideProps = item.selector ? {
+            applyGlobalCSSChange: (propOrObj, val) => applyGlobalCSSChange(propOrObj, val, item.selector),
+            getGlobalCSSValue: (prop) => getGlobalCSSValue(prop, item.selector),
+          } : {};
+          
         const enhancedItem = {
             ...item,
             elementId: selectedId,
             ...globalControlProps,
+            
         };
-           
+
+        
+
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
+                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
             case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
+                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
             case 'panel':
-                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
+                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
-                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
+                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
             case 'image':
-                return <ImageType key={index} {...enhancedItem} name={item.name} index={index} user={user} site={site}/>;
+                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site}/>;
             case 'choose':
-                return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
+                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
             case 'textarea':
-                return <TextAreaType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
+                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
             case 'select':
-                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
+                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
             case 'border':
-                return <BorderType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
             case 'box-shadow':
-                return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
             case 'enter-animation':
-                return <EnterAnimationType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
+                return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
         }
     }
 

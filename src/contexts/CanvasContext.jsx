@@ -302,7 +302,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * property - the CSS property: color, background-color, padding, margin, etc...
     * value - the value of the property (if empty string "", the property will be removed)
     */
-    const addCSSProperty = (type, selector, propertyOrObject, value) => {
+    const addCSSProperty = (type, selector, propertyOrObject, value, nestedSelector = null) => {
        
         const bp = getActiveBreakpoint();
         //Responsive is true if the breakpoint is not desktop
@@ -345,12 +345,36 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         };
 
         const applyToEntry = (entry) => {
- /*            const hasNested = typeof nestedSelector === 'string' && nestedSelector.trim() !== '';
+            const hasNested = typeof nestedSelector === 'string' && nestedSelector.trim() !== '';
             if (hasNested) {
                 const key = nestedSelector.trim();
-                const nest
+                const nest = { ...(entry.nested || {}) };
+                const node = { ...(nest[key] || {}) };
 
-            } */
+                if (activeState) {
+                    const st = { ...(node.states || {}) };
+                    const cur = { ...(st[activeState] || {}) };
+                    const next = cleanProperties(cur, propertiesToAdd);
+                    if (Object.keys(next).length === 0) {
+                        delete st[activeState];
+                }else{
+                    st[activeState] = next;
+                }
+                node.states = st;
+                } else {
+                    node.properties = cleanProperties(node.properties || {}, propertiesToAdd);
+                }
+
+                const emptyProps = !node.properties || Object.keys(node.properties).length === 0;
+                const emptyStates = !node.states || Object.keys(node.states).length === 0;
+                if (emptyProps && emptyStates) {
+                    delete nest[key];
+                } else {
+                    nest[key] = node;
+                } 
+                entry.nested = Object.keys(nest).length ? nest : undefined;
+                return entry;
+            }
             if (activeState) {
                 const st = { ...(entry.states || {}) };
                 const cur = { ...(st[activeState] || {}) };
