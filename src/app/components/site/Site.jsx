@@ -2,7 +2,7 @@ import './Site.css';
 import { Dropdown } from '@components/dropdown/Dropdown';
 import { ModalContainer } from '@components/ModalContainer/ModalContainer';
 import { ModalDelete } from '@components/ModalDelete/ModalDelete';
-import { useState} from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@supabase/supabaseClient';
 import { useDashboard } from '@dashboard/layout';
 import { useRouter } from 'next/navigation';
@@ -114,7 +114,38 @@ export const Site = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  
+  // State for image loading
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
+  // Simple function to get canvas preview URL
+  const getCanvasPreviewUrl = () => {
+    // Get the current user ID from siteData or use a fallback
+    const userId = siteData?.userid || 'anonymous';
+    const filePath = `${userId}/${id}.png`;
+    
+    // Get the public URL from Supabase Storage
+    const { data: { publicUrl } } = supabase.storage
+      .from('Canvas capture')
+      .getPublicUrl(filePath);
+    
+    return publicUrl;
+  };
 
+  // Check if there's a canvas capture image
+  const hasCanvasCapture = () => {
+    return getCanvasPreviewUrl() && imageLoaded;
+  };
+
+  // Get canvas color from site data
+  const getCanvasColor = () => {
+    // Only use canvas color if the site has been saved (has JSON data)
+    if (siteData?.JSON?.canvasColor) {
+      return siteData.JSON.canvasColor;
+    }
+    // Default to black if no canvas color has been saved
+    return 'var(--site-background)';
+  };
 
   // Handle site delete (list mode)
   const handleDeleteSite = async () => {
@@ -161,7 +192,24 @@ export const Site = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="site__visual" />
+        <div 
+          className={`site__visual ${imageLoaded ? 'site__visual--loaded' : ''} ${hasCanvasCapture() ? 'site__visual--with-capture' : ''}`}
+          style={{
+            backgroundColor: hasCanvasCapture() ? 'transparent' : getCanvasColor(),
+            backgroundImage: hasCanvasCapture() ? `url(${getCanvasPreviewUrl()})` : 'none'
+          }}
+        >
+          {getCanvasPreviewUrl() && (
+            <img 
+              src={getCanvasPreviewUrl()}
+              alt=""
+              className="site__visual-image"
+              style={{ display: imageLoaded ? 'block' : 'none' }}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageLoaded(false)}
+            />
+          )}
+        </div>
         <div className="site__footer">
           <div className="site__avatar">
             <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 

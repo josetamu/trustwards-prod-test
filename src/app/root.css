@@ -394,7 +394,8 @@ html[data-theme="dark"] {
   --dashboard-hello-grid-text-strong-color: #FFFFFFB2;
 
   /*Sites List*/
-  --site-background: #252525;
+  --site-background: #202020;
+  --site-footer-background: #252525;
   --site-pro-toggle-background: #2B2B2B;
   --site-pro-toggle-text-color: #9B9B9B;
   --view-toggle-color: #666666;
