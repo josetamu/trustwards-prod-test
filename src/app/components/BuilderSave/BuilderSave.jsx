@@ -94,6 +94,10 @@ const captureCanvas = useCallback(async () => {
                 if(element && element.style){
                     element.style.width = '1440px';
                     element.style.maxWidth = '1440px';
+                    element.style.height = '1080px';
+                    element.style.maxHeight = '1080px';
+                   
+
                 }
             }
         });

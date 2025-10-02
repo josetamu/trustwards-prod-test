@@ -85,12 +85,6 @@ export const Icon = (node, nodeProps = {}) => {
                     {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
                 ]
             },
-            {
-                label: 'Nested',
-                controls: [
-                    { name: 'Nested', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'color', selector: 'svg'},
-                ]
-            }
         ]
     }
 

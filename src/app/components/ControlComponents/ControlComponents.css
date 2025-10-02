@@ -481,7 +481,12 @@
     background-color: #404040;
     color: #F5F5F5;
     width: 54px;
-
+}
+.tw-builder__settings-pen-body .tw-builder__settings-input--abled{
+    background-color: #666666;
+}
+.tw-builder__settings-pen-body .tw-builder__settings-input--disabled{
+    background-color: #404040;
 }
 .tw-builder__settings-pen-body .tw-builder__settings-background{
     background-color: #404040;
@@ -779,3 +784,4 @@
         outline: none;
     }
 }
+
