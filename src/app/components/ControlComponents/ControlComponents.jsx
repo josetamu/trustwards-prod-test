@@ -2630,15 +2630,15 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
                 applyGlobalCSSChange('border-width', bwLinked);
             }
         } else {
-            // Individual modification: side = side ('t','r','b','l'), applies to a single side
-            const sideMap = { t: 'top', r: 'right', b: 'bottom', l: 'left' };
-
-                const property = `border-${sideMap[side]}-width`;
-                if (applyGlobalCSSChange) {
-                    applyGlobalCSSChange(property, bw[side] || '');
-                    console.log('Applied individual property:', property, bw[side] || '');
-                }
-    
+            // Apply all individual sides at once on any small input blur
+            if (applyGlobalCSSChange) {
+                applyGlobalCSSChange({
+                    'border-top-width': bw.t || '0',
+                    'border-right-width': bw.r || '0',
+                    'border-bottom-width': bw.b || '0',
+                    'border-left-width': bw.l || '0'
+                });
+            }
         }
     };
     
