@@ -1,6 +1,6 @@
 import './DashboardHeader.css';
 import { useDashboard } from '@dashboard/layout';
-import { useState, useRef, Suspense} from 'react';
+import { useState, Suspense} from 'react';
 import { Dropdown } from '@components/dropdown/Dropdown';
 import { supabase } from '@supabase/supabaseClient';
 
@@ -17,18 +17,13 @@ import { useRouter } from 'next/navigation';
 
 
 function DashboardHeader() {
-    const { siteData, checkSitePicture, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings} = useDashboard();
-    const fileInputRef = useRef(null);
+    const { siteData, SiteStyle, setSiteData, setModalType, setIsModalOpen, handleCopy, openChangeModalSettings} = useDashboard();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
 
 
     const { 'site-slug': siteSlug } = useParams();
 
-    // Don't render until siteData is available
-/*     if (!siteData) {
-        return null;
-    }  */
 
  
 
@@ -109,7 +104,7 @@ function DashboardHeader() {
             <div className='dashboard-header__header'>
                 <div className='dashboard-header__avatar'>
                     <Suspense fallback={<UserAvatarSkeleton />}> 
-                      <DashboardAvatar siteSlug={siteSlug} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} setSiteData={setSiteData} />
+                      <DashboardAvatar siteSlug={siteSlug}  SiteStyle={SiteStyle} setSiteData={setSiteData} />
                     </Suspense>
                     <Suspense fallback={<UserNameSkeleton />}>
                         <DashboardHeaderName siteSlug={siteSlug} openChangeModalSettings={openChangeModalSettings} />

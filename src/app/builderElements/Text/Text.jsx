@@ -86,7 +86,134 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
             ]
     }
 
+    // Función de sanitización manual sin librerías
+    const sanitizeHTML = (html) => {
+        if (typeof window === 'undefined') return html; // SSR safety
+        
+        // Tags permitidos (whitelist)
+        const allowedTags = ['span', 'strong', 'em', 'u', 'b', 'i', 'br', 'small', 'mark', 'del', 's', 'ins', 'sub', 'sup'];
+        
+        // Atributos permitidos
+        const allowedAttributes = {
+            'span': ['style', 'class'],
+            'strong': ['style', 'class'],
+            'em': ['style', 'class'],
+            'u': ['style', 'class'],
+            'b': ['style', 'class'],
+            'i': ['style', 'class'],
+            'small': ['style', 'class'],
+            'mark': ['style', 'class'],
+            'del': ['style', 'class'],
+            's': ['style', 'class'],
+            'ins': ['style', 'class'],
+            'sub': ['style', 'class'],
+            'sup': ['style', 'class'],
+            'br': []
+        };
+
+        // Propiedades CSS permitidas en inline styles
+        const allowedCSSProperties = [
+            'color', 'background-color', 'font-size', 'font-weight', 
+            'text-decoration', 'font-style', 'font-family', 'text-align',
+            'letter-spacing', 'line-height', 'text-transform', 'opacity',
+            'padding', 'margin', 'display'
+        ];
+
+        // Crear un elemento temporal para parsear el HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        // Función recursiva para limpiar nodos
+        const cleanNode = (node) => {
+            // Si es un nodo de texto, retornarlo tal cual
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.cloneNode(true);
+            }
+
+            // Si es un nodo elemento
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+
+                // Si el tag no está permitido, retornar solo su contenido de texto
+                if (!allowedTags.includes(tagName)) {
+                    return document.createTextNode(node.textContent);
+                }
+
+                // Crear un nuevo elemento limpio
+                const cleanElement = document.createElement(tagName);
+
+                // Copiar solo atributos permitidos
+                const allowedAttrs = allowedAttributes[tagName] || [];
+                for (let attr of node.attributes) {
+                    if (allowedAttrs.includes(attr.name)) {
+                        // Sanitizar atributo style especialmente
+                        if (attr.name === 'style') {
+                            const sanitizedStyle = sanitizeStyle(attr.value);
+                            if (sanitizedStyle) {
+                                cleanElement.setAttribute('style', sanitizedStyle);
+                            }
+                        } else if (attr.name === 'class') {
+                            cleanElement.setAttribute('class', attr.value);
+                        }
+                    }
+                }
+
+                // Limpiar recursivamente los hijos
+                for (let child of node.childNodes) {
+                    const cleanChild = cleanNode(child);
+                    if (cleanChild) {
+                        cleanElement.appendChild(cleanChild);
+                    }
+                }
+
+                return cleanElement;
+            }
+
+            return null;
+        };
+
+        // Función para sanitizar estilos inline
+        const sanitizeStyle = (styleString) => {
+            const styles = styleString.split(';').filter(s => s.trim());
+            const cleanStyles = [];
+
+            for (let style of styles) {
+                const [property, value] = style.split(':').map(s => s.trim());
+                
+                if (property && value && allowedCSSProperties.includes(property.toLowerCase())) {
+                    // Verificar que el valor no contenga javascript: o expresiones peligrosas
+                    if (!value.toLowerCase().includes('javascript:') && 
+                        !value.toLowerCase().includes('expression') &&
+                        !value.toLowerCase().includes('import') &&
+                        !value.toLowerCase().includes('url(javascript:')) {
+                        cleanStyles.push(`${property}: ${value}`);
+                    }
+                }
+            }
+
+            return cleanStyles.join('; ');
+        };
+
+        // Limpiar todos los nodos
+        const fragment = document.createDocumentFragment();
+        for (let child of tempDiv.childNodes) {
+            const cleanChild = cleanNode(child);
+            if (cleanChild) {
+                fragment.appendChild(cleanChild);
+            }
+        }
+
+        // Crear un div temporal para obtener el HTML resultante
+        const resultDiv = document.createElement('div');
+        resultDiv.appendChild(fragment);
+        
+        return resultDiv.innerHTML;
+    };
+
     const render = () => {
+        // Detectar si el texto contiene HTML
+        const containsHTML = /<[^>]*>/g.test(text);
+        
         return (
             <Tag
               key={id}
@@ -104,10 +231,16 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                       onClick={e => e.preventDefault()}
                       aria-disabled="true"
                     >
-                      {text}
+                      {containsHTML 
+                        ? <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(text) }} />
+                        : text
+                      }
                     </a>
                   )
-                : text}
+                : containsHTML 
+                    ? <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(text) }} />
+                    : text
+              }
             </Tag>
           )
     }

@@ -2478,6 +2478,19 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [open]);
 
+    useEffect(() => {
+        if (!open) return;
+        
+        const handleEscKey = (e) => {
+            if (e.key === 'Escape') {
+                setOpen(false);
+            }
+        };
+        
+        document.addEventListener('keydown', handleEscKey);
+        return () => document.removeEventListener('keydown', handleEscKey);
+    }, [open]);
+
     //Handle the mouse enter and leave of the tooltip
     const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
     const handleMouseLeave = () => setActiveTooltip(null);
@@ -3211,6 +3224,19 @@ const wrappedApplyCSS = useCallback((prop, val) => {
             
             document.addEventListener('mousedown', handleClickOutside);
             return () => document.removeEventListener('mousedown', handleClickOutside);
+        }, [open]);
+
+        useEffect(() => {
+            if (!open) return;
+            
+            const handleEscKey = (e) => {
+                if (e.key === 'Escape') {
+                    setOpen(false);
+                }
+            };
+            
+            document.addEventListener('keydown', handleEscKey);
+            return () => document.removeEventListener('keydown', handleEscKey);
         }, [open]);
     
     return (

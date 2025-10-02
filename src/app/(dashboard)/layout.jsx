@@ -189,6 +189,14 @@ const avatarColors = {
     backgroundColor: '#0099FE',
     color: '#FFFFFF',
   },
+  purple: {
+    backgroundColor: '#9D4EDD',
+    color: '#FFFFFF',
+  },
+  orange: {
+    backgroundColor: '#FF6B35',
+    color: '#000000',
+  },
 };
 
 // Function to check if the profile picture is null, undefined or empty, to know if we should show the avatar color or the avatar image
@@ -211,15 +219,7 @@ const ProfileStyle = (user) => {
   }
 }
 
-// Function to check if the site picture is null, undefined or empty, to know if we should show the avatar color or the avatar image
-const checkSitePicture = (site) => {
-  const sitePicture = site?.["Avatar URL"];
-  if(sitePicture === null || sitePicture === undefined || sitePicture === ''){
-    return '';
-  } else {
-    return sitePicture;
-  }
-}
+
 
 
 const SiteStyle = (site) => {
@@ -690,7 +690,6 @@ useEffect(() => {
         setSiteData,
         siteData,
         setIsDropdownOpen,
-        checkSitePicture,
         SiteStyle,
         showNotification,
         supabase,
@@ -737,7 +736,6 @@ useEffect(() => {
                     setUserSettings={setUserSettings}
                     checkProfilePicture={checkProfilePicture}
                     profileStyle={ProfileStyle}
-                    checkSitePicture={checkSitePicture}
                     SiteStyle={SiteStyle}
                     openChangeModal={openChangeModal}
                     openChangeModalSettings={openChangeModalSettings}

@@ -80,8 +80,8 @@
     box-shadow: 0 0 5px var(--shadow-fresco-color);
     font-size: var(--font-size-mini);
     font-weight: 500;
-    padding-left: 1px;
-    padding-top: 1px;
+    
+    padding-top: 2px;
     text-transform: uppercase;
 }
 

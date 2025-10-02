@@ -108,7 +108,7 @@ const SiteMenu = ({setIsModalOpen, setModalType, isModalOpen, setSiteData, siteD
 // Site: Card/list for a single site
 export const Site = ({
   id, text, onRemove, setIsModalOpen, setModalType,
-  isModalOpen, modalType, setSiteData, siteData, view, checkSitePicture, SiteStyle, openChangeModalSettings
+  isModalOpen, modalType, setSiteData, siteData, view, SiteStyle, openChangeModalSettings
 }) => {
   // State for delete modal and dropdown
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -164,11 +164,10 @@ export const Site = ({
         <div className="site__visual" />
         <div className="site__footer">
           <div className="site__avatar">
-            <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 
+            <span className={`site__color`} 
                         style={SiteStyle(siteData)}>
                           {siteData.Name.charAt(0)}
                     </span> 
-            <img className={`site__img ${checkSitePicture(siteData) === '' ? 'site__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt="logo" />
           </div>
           <span className="site__name">{siteData.Name}</span>
           <div className="site__footer-right">
@@ -207,11 +206,10 @@ export const Site = ({
     >
       <div className="site__list-left">
         <div className="site__list-avatar">
-          <span className={`site__color ${checkSitePicture(siteData) === '' ? '' : 'site__color--null'}`} 
+          <span className={`site__color`} 
                         style={SiteStyle(siteData)}>
                           {siteData.Name.charAt(0)}
                     </span> 
-          <img className={`site__img ${checkSitePicture(siteData) === '' ? 'site__img--null' : ''}`} src={siteData?.["Avatar URL"]} alt="logo" />
         </div>
         <span className="site__list-name">{siteData.Name}</span>
       </div>
