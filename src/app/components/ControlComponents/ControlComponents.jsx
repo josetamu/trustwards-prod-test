@@ -2465,6 +2465,19 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         return () => window.removeEventListener('tw-pen-open', onPenOpen);
     }, []);
 
+    useEffect(() => {
+        if (!open) return;
+        
+        const handleClickOutside = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [open]);
+
     //Handle the mouse enter and leave of the tooltip
     const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
     const handleMouseLeave = () => setActiveTooltip(null);
@@ -2772,7 +2785,9 @@ const parseRadius = useCallback((radiusStr) => {
                                     applyGlobalCSSChange={applyGlobalCSSChange}
                                     getGlobalCSSValue={getGlobalCSSValue}
                                     selectedElementData={selectedElementData}
+                                    name={'Border Color'}
                                 />
+                            
                                <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Width</span>
                                     <div className="tw-builder__settings-width">
@@ -2830,7 +2845,7 @@ const parseRadius = useCallback((radiusStr) => {
                                 </div>
                                 <SelectType
                                     name={'Style'}
-                                    value={'None'}
+                                    placeholder={'None'}
                                     options={['None', 'Solid', 'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset','Hidden']}
                                     index={'border-style'}
                                     cssProperty={'border-style'}
@@ -2907,14 +2922,15 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     const [open, setOpen] = useState(false);
     const [inset, setInset] = useState(false);
-    const instanceId = useRef(Symbol('pen'));    const [activeTooltip, setActiveTooltip] = useState(null);
+    const instanceId = useRef(Symbol('pen'));    
+    const [activeTooltip, setActiveTooltip] = useState(null);
     const containerRef = useRef(null);
 
     //Function to parse the box-shadow string in parts
     const parseBoxShadow = useCallback((shadowStr) => {
         //If the shadowStr is not a string, return the default values
         if (!shadowStr || typeof shadowStr !== 'string') {
-            return { inset: false, x: '0', y: '0', blur: '0', spread: '0', color: '' };
+            return { inset: false, x: '', y: '', blur: '', spread: '', color: '' };
         }
         //Check if the shadowStr has inset
         const hasInset = /\binset\b/i.test(shadowStr);
@@ -2974,10 +2990,10 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     //Function get the box-shadow string from JSONtree and parse it in parts. Get each part to use it in the controls.
     const wrappedGetCSS = useCallback((prop) => {
-        if (prop === 'box-shadow-x') return parsed.x || '0';
-        if (prop === 'box-shadow-y') return parsed.y || '0';
-        if (prop === 'box-shadow-blur') return parsed.blur || '0';
-        if (prop === 'box-shadow-spread') return parsed.spread || '0';
+        if (prop === 'box-shadow-x') return parsed.x || '';
+        if (prop === 'box-shadow-y') return parsed.y || '';
+        if (prop === 'box-shadow-blur') return parsed.blur || '';
+        if (prop === 'box-shadow-spread') return parsed.spread || '';
         if (prop === 'box-shadow-color') return parsed.color || '';
         
         return getGlobalCSSValue?.(prop);
@@ -3048,6 +3064,19 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
             window.addEventListener('tw-pen-open', onPenOpen);
             return () => window.removeEventListener('tw-pen-open', onPenOpen);
         }, []);
+
+        useEffect(() => {
+            if (!open) return;
+            
+            const handleClickOutside = (e) => {
+                if (containerRef.current && !containerRef.current.contains(e.target)) {
+                    setOpen(false);
+                }
+            };
+            
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }, [open]);
     
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -3084,7 +3113,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'X'}
-                                    value={parsed.x}
+                                    /* value={parsed.x} */
                                     index={'box-shadow-x'}
                                     cssProperty={'box-shadow-x'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3093,7 +3122,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Y'}
-                                    value={parsed.y}
+                                    /* value={parsed.y} */
                                     index={'box-shadow-y'}
                                     cssProperty={'box-shadow-y'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3102,7 +3131,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Blur'}
-                                    value={parsed.blur}
+                                    /* value={parsed.blur} */
                                     index={'box-shadow-blur'}
                                     cssProperty={'box-shadow-blur'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3111,7 +3140,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Spread'}
-                                    value={parsed.spread}
+                                    /* value={parsed.spread} */
                                     index={'box-shadow-spread'}
                                     cssProperty={'box-shadow-spread'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3433,7 +3462,7 @@ const getEnterAnimationProps = useCallback(() => {
             applyGlobalCSSChange: (propOrObj, val) => applyGlobalCSSChange(propOrObj, val, item.selector),
             getGlobalCSSValue: (prop) => getGlobalCSSValue(prop, item.selector),
           } : {};
-          
+
         const enhancedItem = {
             ...item,
             elementId: selectedId,
