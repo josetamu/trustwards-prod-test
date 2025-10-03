@@ -18,7 +18,7 @@ export const Banner = (node, nodeProps = {}, children) => {
     const groupControls =  {
         header: [
             { name: 'Tag', type: 'super-select', category: 'block', JSONProperty: 'tagName', placeholder: 'div'},
-            { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'flex'},
+            { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'block'},
         ],
         body: [
             {

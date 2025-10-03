@@ -78,7 +78,6 @@ export function SidebarSitesList({ searchQuery, openChangeModal, setIsModalOpen,
                             globalSiteData={siteData}
                             setSelectedSite={setSelectedSite}
                             setIsSiteOpen={setIsSiteOpen}
-                            checkSitePicture={checkSitePicture}
                             SiteStyle={SiteStyle}
                             openChangeModal={openChangeModal}
                             openChangeModalSettings={openChangeModalSettings}

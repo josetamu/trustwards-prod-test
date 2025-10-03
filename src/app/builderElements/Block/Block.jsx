@@ -19,7 +19,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
     const groupControls =  {
         header: [
             { name: 'Tag', type: 'super-select', category: 'block', JSONProperty: 'tagName', placeholder: 'div'},
-            { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'flex'},
+            { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'block'},
         ],
         body: [
             {
@@ -69,7 +69,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
                         {name: 'Shadow', type: 'box-shadow'},
                         {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
                     ]
-                }
+                },
         ]
     }
 

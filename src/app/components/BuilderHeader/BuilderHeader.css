@@ -48,7 +48,7 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
-    cursor: pointer;
+    cursor: default;
 }
 .tw-builder__header-img{
     width: 24px;
@@ -62,8 +62,8 @@
     display: none;
 }
 .tw-builder__header-color{
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: flex;
     align-items: center;

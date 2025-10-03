@@ -12,7 +12,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '@animations/animations';
 
 
-
+//Apply the control on enter(applying the blur function)
+const applyOnEnter = (e,f) => {
+    if(e.key === 'Enter') {
+        e.preventDefault();
+        e.currentTarget.blur();
+        
+    }
+}
 
 
 //Define each type of control.
@@ -81,6 +88,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             placeholder={placeholder} 
             onChange={handleChange}
             onBlur={handleBlur}
+            onKeyDown={(e) => applyOnEnter(e, handleBlur)}
             />
         </div>
     )
@@ -192,16 +200,18 @@ useEffect(() => {
     //Handle the chooseType controls
 
     const handleDirectionChange = (direction) => {
-        setSelectedDirection(direction);
+        const newDirection = selectedDirection === direction ? '' : direction;
+        setSelectedDirection(newDirection);
         if (applyGlobalCSSChange) {
-            const finalDirection = isReverse ? `${direction}-reverse` : direction;
+            const finalDirection = isReverse ? `${newDirection}-reverse` : newDirection;
             applyGlobalCSSChange('flex-direction', finalDirection);
         }
     };
     const handleJustifyChange = (justify) => {
-        setSelectedJustify(justify);
+        const newJustify = selectedJustify === justify ? '' : justify;
+        setSelectedJustify(newJustify);
         if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('justify-content', justify);
+            applyGlobalCSSChange('justify-content', newJustify);
         }
     };
 
@@ -218,9 +228,10 @@ useEffect(() => {
     
 
     const handleAlignChange = (align) => {
-        setSelectedAlign(align);
+        const newAlign = selectedAlign === align ? '' : align;
+        setSelectedAlign(newAlign);
         if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('align-items', align);
+            applyGlobalCSSChange('align-items', newAlign);
         }
     };
 
@@ -948,12 +959,12 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur} onKeyDown={(e) => applyOnEnter(e, handleLeftBlur)}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur} onKeyDown={(e) => applyOnEnter(e, handleTopBlur)}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur} onKeyDown={(e) => applyOnEnter(e, handleBottomBlur)}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur} onKeyDown={(e) => applyOnEnter(e, handleRightBlur)}/>
         </div>
     </div>
     )
@@ -1153,10 +1164,10 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
                         backgroundColor: finalColor, 
                     }}>
                 </div>
-                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="Hex here..."/>
+                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} onKeyDown={(e) => applyOnEnter(e, handleHexBlur)} placeholder="Hex here..."/>
             </div>
             <div className="tw-builder__settings-percentages">
-                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} />
+                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} onKeyDown={(e) => applyOnEnter(e, handlePercentageChange)} />
             </div>
         </div>
     </div>
@@ -1284,7 +1295,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             value={imageUrl}
             onChange={handleUrlChange}
             onBlur={handleUrlSubmit}
-            onKeyDown={handleUrlSubmit}
+            onKeyDown={(e) => applyOnEnter(e, handleUrlSubmit)}
             />
         </div>
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -1342,17 +1353,19 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 
     //Function to apply the correct css
     const handleChooseChange = useCallback((choose) => {
-        setSelectedChoose(choose);
+
+        const newValue = selectedChoose === choose ? '' : choose;
+        setSelectedChoose(newValue);
         if (cssProperty && applyGlobalCSSChange) {
-            let finalValue = choose;
+            let finalValue = newValue;
             //If reverse is active row === row-reverse, and column === column-reverse
             if(category === 'flex-direction' && isReverse) {
-                finalValue = choose === 'row'? 'row-reverse' : 'column-reverse';
+                finalValue = newValue === 'row'? 'row-reverse' : 'column-reverse';
             }
             //Global function to apply and saved css
             applyGlobalCSSChange(cssProperty, finalValue);
         }
-    }, [cssProperty, applyGlobalCSSChange, category, isReverse]);
+    }, [cssProperty, applyGlobalCSSChange, category, isReverse, selectedChoose]);
 
     //Handle the reverse choose
     const handleReverseToggle = useCallback(() => {
@@ -1936,6 +1949,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
                 value={textareaValue}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                onKeyDown={(e) => applyOnEnter(e, handleBlur)}
                 className="tw-builder__settings-textarea"
             />
         </div>
@@ -2451,6 +2465,34 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         return () => window.removeEventListener('tw-pen-open', onPenOpen);
     }, []);
 
+    //Close the border control when clicking outside
+    useEffect(() => {
+        if (!open) return;
+        
+        const handleClickOutside = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [open]);
+
+    //Close the border control when pressing the escape key
+    useEffect(() => {
+        if (!open) return;
+        
+        const handleEscKey = (e) => {
+            if (e.key === 'Escape') {
+                setOpen(false);
+            }
+        };
+        
+        document.addEventListener('keydown', handleEscKey);
+        return () => document.removeEventListener('keydown', handleEscKey);
+    }, [open]);
+
     //Handle the mouse enter and leave of the tooltip
     const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
     const handleMouseLeave = () => setActiveTooltip(null);
@@ -2483,6 +2525,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
             }
         }
     };
+    //Function to link the border radius. If value is false, unlink the border radius and work with individual sides. If value is true, link the border radius and give each side the same value by using border-radius.
     const handleRadiusLinkToggle = (value) => {
         setIsRadiusLinked(value);
         if(!value){
@@ -2603,15 +2646,15 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
                 applyGlobalCSSChange('border-width', bwLinked);
             }
         } else {
-            // Individual modification: side = side ('t','r','b','l'), applies to a single side
-            const sideMap = { t: 'top', r: 'right', b: 'bottom', l: 'left' };
-
-                const property = `border-${sideMap[side]}-width`;
-                if (applyGlobalCSSChange) {
-                    applyGlobalCSSChange(property, bw[side] || '0');
-                    console.log('Applied individual property:', property, bw[side] || '0');
-                }
-    
+            // Apply all individual sides at once on any small input blur
+            if (applyGlobalCSSChange) {
+                applyGlobalCSSChange({
+                    'border-top-width': bw.t || '0',
+                    'border-right-width': bw.r || '0',
+                    'border-bottom-width': bw.b || '0',
+                    'border-left-width': bw.l || '0'
+                });
+            }
         }
     };
     
@@ -2687,8 +2730,6 @@ const parseRadius = useCallback((radiusStr) => {
         }else{
             const value = sideOrValue || '';
             setBrLinked(value);
-            const newBr = { tl: value, tr: value, br: value, bl: value };
-            setBr(newBr);
         }
     
 
@@ -2702,8 +2743,8 @@ const parseRadius = useCallback((radiusStr) => {
             const sideMap = { tl: 'top-left', tr: 'top-right', br: 'bottom-right', bl: 'bottom-left' };
             const property = `border-${sideMap[side]}-radius`;
             if (applyGlobalCSSChange) {
-                applyGlobalCSSChange(property, br[side] || '0');
-                console.log('Applied individual property:', property, br[side] || '0');
+                applyGlobalCSSChange(property, br[side] || '');
+                console.log('Applied individual property:', property, br[side] || '');
             }
         }
     };
@@ -2758,15 +2799,33 @@ const parseRadius = useCallback((radiusStr) => {
                                     applyGlobalCSSChange={applyGlobalCSSChange}
                                     getGlobalCSSValue={getGlobalCSSValue}
                                     selectedElementData={selectedElementData}
+                                    name={'Border Color'}
                                 />
-                               <div className="tw-builder__settings-setting">
-                                    <span className="tw-builder__settings-subtitle">Width</span>
+                            
+                            <div className="tw-builder__settings-setting">
+                                    <span className="tw-builder__settings-subtitle">Width
+                                        <StylesDeleter 
+                                            value={currentBorderWidth || currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth}
+                                            cssDeleteBatch={{
+                                                'border-width': '',
+                                                'border-top-width': '',
+                                                'border-right-width': '',
+                                                'border-bottom-width': '',
+                                                'border-left-width': ''
+                                            }}
+                                            getGlobalCSSValue={getGlobalCSSValue} 
+                                            applyGlobalCSSChange={applyGlobalCSSChange}
+                                        />
+                                    </span>
                                     <div className="tw-builder__settings-width">
-                                        <input type="text" className="tw-builder__settings-input" 
+                                        <input 
+                                            type="text" 
+                                            className={`tw-builder__settings-input ${isWidthLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`}
                                             value={isWidthLinked ? bwLinked : ''}
                                             onChange={(e) => handleBorderWidthChange(e.target.value)}
                                             onBlur={handleBorderWidthBlur}
-                   
+                                            onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur)}
+                                            disabled={!isWidthLinked}    
                                         />
                                         <div className="tw-builder__settings-actions">
                                             <button className={`tw-builder__settings-action ${isWidthLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleWidthLinkToggle(true)} onMouseEnter={() => handleMouseEnter('link')} onMouseLeave={handleMouseLeave}>
@@ -2796,15 +2855,16 @@ const parseRadius = useCallback((radiusStr) => {
                                             </button> 
                                         </div>
                                     </div>
+                                    
                                     <div className="tw-builder__settings-units">
-                                        <div className="tw-builder__settings-units-label">
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit"value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')}/>
+                                        <div className={`tw-builder__settings-units-label ${isWidthLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={isWidthLinked ? '' : bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('t'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('r'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('b'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('l'))} disabled={isWidthLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">T</span>
@@ -2813,10 +2873,11 @@ const parseRadius = useCallback((radiusStr) => {
                                             <span className="tw-builder__settings-units-direction">L</span>
                                         </div>
                                     </div>
+                                    
                                 </div>
                                 <SelectType
                                     name={'Style'}
-                                    value={'None'}
+                                    placeholder={'None'}
                                     options={['None', 'Solid', 'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset','Hidden']}
                                     index={'border-style'}
                                     cssProperty={'border-style'}
@@ -2825,12 +2886,29 @@ const parseRadius = useCallback((radiusStr) => {
                                     selectedElementData={selectedElementData}
                                 />
                                 <div className="tw-builder__settings-setting">
-                                    <span className="tw-builder__settings-subtitle">Radius</span>
+                                    <span className="tw-builder__settings-subtitle">Radius
+                                        <StylesDeleter 
+                                            value={currentRadius || currentBorderTopLeftRadius || currentBorderTopRightRadius || currentBorderBottomRightRadius || currentBorderBottomLeftRadius}
+                                            cssDeleteBatch={{
+                                                'border-radius': '',
+                                                'border-top-left-radius': '',
+                                                'border-top-right-radius': '',
+                                                'border-bottom-right-radius': '',
+                                                'border-bottom-left-radius': ''
+                                            }}
+                                            getGlobalCSSValue={getGlobalCSSValue} 
+                                            applyGlobalCSSChange={applyGlobalCSSChange}
+                                        />
+                                    </span>
                                     <div className="tw-builder__settings-width">
-                                        <input type="text" className="tw-builder__settings-input" 
+                                        <input 
+                                            type="text" 
+                                            className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`} 
                                             value={isRadiusLinked ? brLinked : ''}
                                             onChange={(e) => handleRadiusChange(e.target.value)}
                                             onBlur={handleRadiusBlur}
+                                            onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur)}
+                                            disabled={!isRadiusLinked}
                                         />
                                         <div className="tw-builder__settings-actions">
                                             <button className={`tw-builder__settings-action ${isRadiusLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleRadiusLinkToggle(true)} onMouseEnter={() => handleMouseEnter('rlink')} onMouseLeave={handleMouseLeave}>
@@ -2860,15 +2938,16 @@ const parseRadius = useCallback((radiusStr) => {
                                             </button> 
                                         </div>
                                     </div>
+                                    
                                     <div className="tw-builder__settings-units">
-                                        <div className="tw-builder__settings-units-label">
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')}/>
+                                        <div className={`tw-builder__settings-units-label ${isRadiusLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
+                                                <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('tl'))} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} onBlur={() => handleRadiusBlur('tr')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} onBlur={() => handleRadiusBlur('tr')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('tr'))} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} onBlur={() => handleRadiusBlur('br')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} onBlur={() => handleRadiusBlur('br')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('br'))} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} onBlur={() => handleRadiusBlur('bl')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} onBlur={() => handleRadiusBlur('bl')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('bl'))} disabled={isRadiusLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">TL</span>
@@ -2877,7 +2956,7 @@ const parseRadius = useCallback((radiusStr) => {
                                             <span className="tw-builder__settings-units-direction">BL</span>
                                         </div>
                                     </div>
-
+                                   
                                 </div>
 
                         </div>
@@ -2892,14 +2971,23 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     const [open, setOpen] = useState(false);
     const [inset, setInset] = useState(false);
-    const instanceId = useRef(Symbol('pen'));    const [activeTooltip, setActiveTooltip] = useState(null);
+    const instanceId = useRef(Symbol('pen'));    
     const containerRef = useRef(null);
+    
+    //Local state to keep the values that the user writes
+    const [localValues, setLocalValues] = useState({
+        x: '',
+        y: '',
+        blur: '',
+        spread: '',
+        color: ''
+    });
 
     //Function to parse the box-shadow string in parts
     const parseBoxShadow = useCallback((shadowStr) => {
         //If the shadowStr is not a string, return the default values
         if (!shadowStr || typeof shadowStr !== 'string') {
-            return { inset: false, x: '0', y: '0', blur: '0', spread: '0', color: '' };
+            return { inset: false, x: '', y: '', blur: '', spread: '', color: '' };
         }
         //Check if the shadowStr has inset
         const hasInset = /\binset\b/i.test(shadowStr);
@@ -2916,99 +3004,194 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
         //Return the parsed shadowStr
         return {
             inset: hasInset,
-            x: parts[0],
-            y: parts[1],
-            blur: parts[2],
-            spread: parts[3],
+            x: parts[0] || '',
+            y: parts[1] || '',
+            blur: parts[2] || '',
+            spread: parts[3] || '',
             color
         };
     }, []);
 
     //Function to compose the box-shadow string from the parts
     const composeBoxShadow = useCallback((parts) => {
+        // Check if ALL fields are empty (except inset)
+        const allEmpty = 
+            (!parts.x || parts.x.trim() === '') &&
+            (!parts.y || parts.y.trim() === '') &&
+            (!parts.blur || parts.blur.trim() === '') &&
+            (!parts.spread || parts.spread.trim() === '') &&
+            (!parts.color || parts.color.trim() === '');
+        
+        // If all fields are empty, return empty string
+        if (allEmpty) {
+            return '';
+        }
 
         //Create an array to store the parts
         const tokens = [];
+        
         //Add the inset part if it is true
         if (parts.inset) tokens.push('inset');
-        //Add the x part
-        tokens.push(parts.x);
-        //Add the y part
-        tokens.push(parts.y);
-        //Add the blur part if it is not 0 and not null
-        if (parts.blur && parts.blur !== '0') tokens.push(parts.blur);
-        else tokens.push(parts.blur); 
-        //Add the spread part if it is not 0 and not null
-        if (parts.spread && parts.spread !== '0') tokens.push(parts.spread);
-        else tokens.push(parts.spread);
-        //Add the color part if it is not null and not empty
-        if (parts.color && parts.color !== '') tokens.push(parts.color);
+        
+        //Add X (required by CSS, use 0 if empty but other values exist)
+        tokens.push((parts.x && parts.x.trim() !== '') ? parts.x : '0');
+        
+        //Add Y (required by CSS, use 0 if empty but other values exist)
+        tokens.push((parts.y && parts.y.trim() !== '') ? parts.y : '0');
+        
+        //Add blur if it exists OR if spread exists (because spread needs blur before it)
+        const hasBlur = parts.blur && parts.blur.trim() !== '';
+        const hasSpread = parts.spread && parts.spread.trim() !== '';
+        
+        if (hasBlur) {
+            tokens.push(parts.blur);
+        } else if (hasSpread) {
+            // If there is spread but no blur, add 0 for blur
+            tokens.push('0');
+        }
+        
+        //Add spread if it exists
+        if (hasSpread) {
+            tokens.push(parts.spread);
+        }
+        
+        //Add color if it exists
+        if (parts.color && parts.color.trim() !== '') {
+            tokens.push(parts.color);
+        }
+        
         //Join the parts and return the string
         return tokens.join(' ').trim();
     }, []);
 
     //Get the current box-shadow string from the global CSS value
     const currentShadow = getGlobalCSSValue?.('box-shadow') || '';
-    //Parse the box-shadow string in parts. Create an object with the parts. Example: { inset: false, x: '1', y: '1', blur: '10', spread: '1', color: '#ff0000' }
-    const parsed = parseBoxShadow(currentShadow);
 
+    // Synchronize local state when the selected element changes
     useEffect(() => {
-        //Set the inset part if it is true
+        const parsed = parseBoxShadow(currentShadow);
         setInset(!!parsed.inset);
-    }, [selectedElementData, currentShadow]);
+        
+        // Only update localValues if the currentShadow changed by selection of element
+        // Do not update if it is an empty string and we already have local values
+        if (currentShadow || (!currentShadow && !Object.values(localValues).some(v => v))) {
+            setLocalValues({
+                x: parsed.x === '0' ? '' : parsed.x,
+                y: parsed.y === '0' ? '' : parsed.y,
+                blur: parsed.blur === '0' ? '' : parsed.blur,
+                spread: parsed.spread === '0' ? '' : parsed.spread,
+                color: parsed.color
+            });
+        }
+    }, [selectedElementData?.id]);
 
-    //Function get the box-shadow string from JSONtree and parse it in parts. Get each part to use it in the controls.
+    //Function get the box-shadow values from local state
     const wrappedGetCSS = useCallback((prop) => {
-        if (prop === 'box-shadow-x') return parsed.x || '0';
-        if (prop === 'box-shadow-y') return parsed.y || '0';
-        if (prop === 'box-shadow-blur') return parsed.blur || '0';
-        if (prop === 'box-shadow-spread') return parsed.spread || '0';
-        if (prop === 'box-shadow-color') return parsed.color || '';
+        if (prop === 'box-shadow-x') return localValues.x;
+        if (prop === 'box-shadow-y') return localValues.y;
+        if (prop === 'box-shadow-blur') return localValues.blur;
+        if (prop === 'box-shadow-spread') return localValues.spread;
+        if (prop === 'box-shadow-color') return localValues.color;
         
         return getGlobalCSSValue?.(prop);
-    }, [getGlobalCSSValue, parsed.x, parsed.y, parsed.blur, parsed.spread, parsed.color]);
+    }, [localValues, getGlobalCSSValue]);
 
     //Function apply the box-shadow string to the CSS and JSON.
-    const wrappedApplyCSS = useCallback((prop, val) => {
-        let next = { ...parsed, inset };
-        //Switch the property to apply the value to the correct part.
-        switch (prop) {
-            case 'box-shadow-x':
-                next.x = (val ?? '').toString().trim();
-                break;
-            case 'box-shadow-y':
-                next.y = (val ?? '').toString().trim();
-                break;
-            case 'box-shadow-blur':
-                next.blur = (val ?? '').toString().trim();
-                break;
-            case 'box-shadow-spread':
-                next.spread = (val ?? '').toString().trim();
-                break;
-            case 'box-shadow-color':
-                next.color = (val ?? '').toString().trim();
-                break;
-            
-            case 'box-shadow':
-                
-                if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
-                return;
-            default:
-                if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
-                return;
+const wrappedApplyCSS = useCallback((prop, val) => {
+    // If the first parameter is an object (batch), process it
+    if (typeof prop === 'object' && prop !== null && val === undefined) {
+        const batch = prop;
+        let nextLocal = { ...localValues };
+        let hasBoxShadowChange = false;
+        
+        // Process each property of the batch
+        Object.entries(batch).forEach(([key, value]) => {
+            switch (key) {
+                case 'box-shadow-x':
+                    nextLocal.x = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-y':
+                    nextLocal.y = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-blur':
+                    nextLocal.blur = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-spread':
+                    nextLocal.spread = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-color':
+                    nextLocal.color = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow':
+                    // If box-shadow is directly coming, apply it without more
+                    if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': value });
+                    return;
+                default:
+                    // For other properties, pass them to the original applyGlobalCSSChange
+                    if (applyGlobalCSSChange) applyGlobalCSSChange({ [key]: value });
+                    break;
+            }
+        });
+        
+        // If there were changes in box-shadow, update
+        if (hasBoxShadowChange) {
+            setLocalValues(nextLocal);
+            const finalStr = composeBoxShadow({ ...nextLocal, inset });
+            if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': finalStr });
         }
+        return;
+    }
+    
+   
+    let nextLocal = { ...localValues };
+    
+    //Switch the property to apply the value to the correct part.
+    switch (prop) {
+        case 'box-shadow-x':
+            nextLocal.x = val != null ? val.toString().trim() : '';
+            break;
+        case 'box-shadow-y':
+            nextLocal.y = val != null ? val.toString().trim() : '';
+            break;
+        case 'box-shadow-blur':
+            nextLocal.blur = val != null ? val.toString().trim() : '';
+            break;
+        case 'box-shadow-spread':
+            nextLocal.spread = val != null ? val.toString().trim() : '';
+            break;
+        case 'box-shadow-color':
+            nextLocal.color = val != null ? val.toString().trim() : '';
+            break;
+        
+        case 'box-shadow':
+            if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
+            return;
+        default:
+            if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
+            return;
+    }
+    
+        
+        // Update local state
+        setLocalValues(nextLocal);
+        
         //Compose the box-shadow string from the parts and then apply it to the CSS.
-        const finalStr = composeBoxShadow(next);
+        const finalStr = composeBoxShadow({ ...nextLocal, inset });
         if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', finalStr);
-    }, [applyGlobalCSSChange, composeBoxShadow, parsed, inset]);
+    }, [applyGlobalCSSChange, composeBoxShadow, localValues, inset]);
 
+    //Function to handle the inset checkbox change
     const handleInsetChange = useCallback((e) => {
         const nextInset = e.target.checked;
         setInset(nextInset);
-        const next = { ...parsed, inset: nextInset };
-        const finalStr = composeBoxShadow(next);
+        const finalStr = composeBoxShadow({ ...localValues, inset: nextInset });
         applyGlobalCSSChange?.('box-shadow', finalStr);
-    }, [parsed, composeBoxShadow, applyGlobalCSSChange]);
+    }, [localValues, composeBoxShadow, applyGlobalCSSChange]);
 
         //Function to open and close the border/shadow controls.
         const toggleOpen = () => {
@@ -3033,6 +3216,34 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
             window.addEventListener('tw-pen-open', onPenOpen);
             return () => window.removeEventListener('tw-pen-open', onPenOpen);
         }, []);
+
+        //Close the shadow control when clicking outside
+        useEffect(() => {
+            if (!open) return;
+            
+            const handleClickOutside = (e) => {
+                if (containerRef.current && !containerRef.current.contains(e.target)) {
+                    setOpen(false);
+                }
+            };
+            
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }, [open]);
+
+        //Close the shadow control when pressing the escape key
+        useEffect(() => {
+            if (!open) return;
+            
+            const handleEscKey = (e) => {
+                if (e.key === 'Escape') {
+                    setOpen(false);
+                }
+            };
+            
+            document.addEventListener('keydown', handleEscKey);
+            return () => document.removeEventListener('keydown', handleEscKey);
+        }, [open]);
     
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -3061,6 +3272,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                         <div className="tw-builder__settings-pen-divider"></div>
                         <div className="tw-builder__settings-pen-body">
                                 <ColorType
+                                    name={'Box Shadow Color'}
                                     index={'box-shadow'}
                                     cssProperty={'box-shadow-color'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3069,7 +3281,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'X'}
-                                    value={parsed.x}
+                                    value={localValues.x}
                                     index={'box-shadow-x'}
                                     cssProperty={'box-shadow-x'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3078,7 +3290,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Y'}
-                                    value={parsed.y}
+                                    value={localValues.y}
                                     index={'box-shadow-y'}
                                     cssProperty={'box-shadow-y'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3087,7 +3299,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Blur'}
-                                    value={parsed.blur}
+                                    value={localValues.blur}
                                     index={'box-shadow-blur'}
                                     cssProperty={'box-shadow-blur'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3096,7 +3308,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Spread'}
-                                    value={parsed.spread}
+                                    value={localValues.spread}
                                     index={'box-shadow-spread'}
                                     cssProperty={'box-shadow-spread'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -3124,7 +3336,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
     )
 }
 
-const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
+const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
     const [properties, setProperties] = useState([ { property: '', value: '' } ]);
 
     const prevPropsRef = useRef([]);
@@ -3132,26 +3344,31 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
 
     //Update the properties when the selected element changes
     useEffect(() => {
+        //Convert the saved props to a list of properties
         const list = Object.entries(savedProps || {}).map(([property, value]) => ({ property, value }));
+        //If there are saved props, set the properties
         if (list.length) {
             setProperties(list);
         } else {
+            //If there are no saved props, set the properties to an empty list
             setProperties([ { property: '', value: '' } ]);
         }
     }, [selectedElementData, savedProps]);
 
-    //Add a new property
+    //Add a new property row to the list
     const handleAddProperty = () => {
         setProperties(prev => [
             ...prev,
-            { property: '', value: '' }
+            { property: '', value: '' } //Add a new empty property row
         ]);
     };
 
-    //Change the property
+    //// Function to update a specific property when user types in the input fields
     const handlePropertyChange = (i, key, val) => {
         setProperties(prev => {
+            // Create a copy of the previous properties array
             const updated = [...prev];
+            // Update the specific property at index i with the new key-value pair
             updated[i] = { ...updated[i], [key]: val };
             return updated;
         });
@@ -3184,6 +3401,7 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
                                   applyEnterAnimationChange(now, val);
                                 }
                               }}
+                              onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
                             />
                         </div>
                         <div className="tw-builder__settings-properties-pair">
@@ -3191,9 +3409,9 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
 
                             <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px"
                                 value={prop.value}
-
                                 onChange={(e)=>handlePropertyChange(i, 'value', e.target.value)}
                                 onBlur={()=> { if (prop.property) applyEnterAnimationChange(prop.property, prop.value || ''); }}
+                                onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'value', e.target.value))}
                             />
                         </div>
                 </div>
@@ -3213,20 +3431,22 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     const [selectedElementData, setSelectedElementData] = useState(null);
     const [activeClass, setActiveClass] = useState(null);
 
-    //spreads the properties of the selected element
+    //spreads the properties of the selected element and updates the selectedElementData 
     useEffect(() => {
+        //Return early if required data is not available
         if(!selectedId || !JSONtree || !JSONtree.roots) {
             setSelectedElementData(null);
             return;
         }
-
+        // Find the active root node in the JSON tree
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
+        //Return if the active root node is not found
         if(!activeRootNode) {
             setSelectedElementData(null);
             return;
         }
 
-        // Find the selected element in the JSON tree
+        // Find the selected element in the JSON tree by ID
     const findElement = (node, targetId) => {
         if (!node) return null;
         if (node.id === targetId) return node;
@@ -3238,10 +3458,12 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         }
         return null;
     };
-
+    // Find the selected element in the active root
     const selectedElement = findElement(activeRootNode, selectedId);
 
+    // Get the active breakpoint
     const bp = getActiveBreakpoint?.() || 'desktop';
+    // Get the responsive idsCSSData or base idsCSSData
     const responsiveIdData = bp !== 'desktop'
         ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
         : null;
@@ -3263,20 +3485,22 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         hasChildren: !!(selectedElement.children && selectedElement.children.length > 0),
         className: selectedElement.classList?.[0] || null
     };
-
+    // Update the selected element data state
     setSelectedElementData(elementData);
 }, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
 
 // Apply CSS (writes in the dataset of the active breakpoint if not desktop)
-const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
+const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, nestedSelector) => {
     if (!selectedId || !cssPropertyOrObject) return;
+    //Determine the type of selector(class or id)
     const type = activeClass ? 'class' : 'id';
     const selector = activeClass ? activeClass : selectedId;
 
+    //Add the property to the CSS data. The cssProperty can be a string or an object(if need to add multiple properties).
     if (typeof cssPropertyOrObject === 'string') {
-        addCSSProperty(type, selector, cssPropertyOrObject, value);
+        addCSSProperty(type, selector, cssPropertyOrObject, value, nestedSelector);
     } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
-        addCSSProperty(type, selector, cssPropertyOrObject);
+        addCSSProperty(type, selector, cssPropertyOrObject, undefined, nestedSelector);
     }
 }, [selectedId, addCSSProperty, JSONtree, activeClass]);
 
@@ -3284,9 +3508,9 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
 const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
     if (!selectedId || !cssPropertyOrObject) return;
 
-    //Get the scope of the root
+    //Get the scope of the root(modal or banner)
     const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
-    //Check if the selected id is the root
+    //Check if the selected id is the root element
     const isRoot = selectedId === activeRoot;
 
     //If the selected id is the root, add the property to the class .tw-modal--open or .tw-banner--open
@@ -3303,43 +3527,49 @@ const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
     }
 }, [selectedId, activeClass, activeRoot, addEnterAnimationProperty]);
 
-// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
-const getGlobalCSSValue = useCallback((cssProperty) => {
+/// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
+const getGlobalCSSValue = useCallback((cssProperty, nestedSelector) => {
     if (!selectedId || !cssProperty) return null;
-
-    //Get the breakpoint
     const bp = getActiveBreakpoint?.() || 'desktop';
-    //Check if the breakpoint is not desktop
-    
+  
+    //Read the entry to check possible nested selector, states and breakpoints.
+    const readFromEntry = (entry) => {
+      if (!entry) return null;
+        //Get the CSS value with state
+      const getCSSValueWithState = (states, properties) => {
+        const stVal = activeState ? states?.[activeState]?.[cssProperty] : undefined;
+        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+        return properties?.[cssProperty] ?? null;
+    };
 
-    if (activeClass) {
-        //if the breakpoint is not desktop, get the responsive classesCSSData, otherwise get the classesCSSData
-        const bpClassData = bp !== 'desktop' //Check if the breakpoint is not desktop
-            ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
-            : null;
-        const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass); //Get the base classesCSSData
-
-        const stVal = activeState //Check if the state is active
-            ? (bpClassData?.states?.[activeState]?.[cssProperty] ?? baseClassData?.states?.[activeState]?.[cssProperty])
-            : undefined;
-        if (typeof stVal !== 'undefined' && stVal !== null) return stVal; //If the state value is not undefined or null, return it
-
-        return bpClassData?.properties?.[cssProperty] ?? baseClassData?.properties?.[cssProperty] ?? null; //If the property is not undefined or null, return it
+    //If there is a nested selector, get the node with the nested selector
+    if (nestedSelector && nestedSelector.trim()) {
+        const node = entry.nested?.[nestedSelector.trim()];
+        if (!node) return null;
+        return getCSSValueWithState(node.states, node.properties);
     }
-    //if the breakpoint is not desktop, get the responsive idsCSSData, otherwise get the idsCSSData
-    const bpIdData = bp !== 'desktop'
-        ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
+    //If there is no nested selector, get the node with the states and properties
+    return getCSSValueWithState(entry.states, entry.properties);
+    };
+  
+    if (activeClass) {
+    //If there is a breakpoint, get the classesCSSData with the active class and the breakpoint
+      const bpClassData = bp !== 'desktop'
+        ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
         : null;
+      //If there is no breakpoint, get the classesCSSData with the active class and the base
+      const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
+      return readFromEntry(bpClassData) ?? readFromEntry(baseClassData);
+    }
+  
+    //If there is a breakpoint, get the idsCSSData with the active id and the breakpoint
+    const bpIdData = bp !== 'desktop'
+      ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
+      : null;
+    //If there is no breakpoint, get the idsCSSData with the active id and the base
     const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
-
-    //if the state is active, get the state value, otherwise get the base value
-    const stVal = activeState
-        ? (bpIdData?.states?.[activeState]?.[cssProperty] ?? baseIdData?.states?.[activeState]?.[cssProperty])
-        : undefined;
-    if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
-
-    return bpIdData?.properties?.[cssProperty] ?? baseIdData?.properties?.[cssProperty] ?? null;
-}, [JSONtree, selectedId, activeClass, getActiveBreakpoint]);
+    return readFromEntry(bpIdData) ?? readFromEntry(baseIdData);
+  }, [JSONtree, selectedId, activeClass, getActiveBreakpoint, activeState]);
 
 
 const getEnterAnimationProps = useCallback(() => {
@@ -3413,39 +3643,48 @@ const getEnterAnimationProps = useCallback(() => {
         selectedId,
      };
 
-    const whatType = (item, index) => {
+     const whatType = (item, index) => {
+        // If the control defines a selector, override helpers to use it
+        const overrideProps = item.selector ? {
+            applyGlobalCSSChange: (propOrObj, val) => applyGlobalCSSChange(propOrObj, val, item.selector),
+            getGlobalCSSValue: (prop) => getGlobalCSSValue(prop, item.selector),
+          } : {};
 
         const enhancedItem = {
             ...item,
             elementId: selectedId,
             ...globalControlProps,
+            
         };
-           
+
+        
+
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
+                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
             case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
+                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
             case 'panel':
-                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
+                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
-                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
+                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
             case 'image':
-                return <ImageType key={index} {...enhancedItem} name={item.name} index={index} user={user} site={site}/>;
+                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site}/>;
             case 'choose':
-                return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
+                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
             case 'textarea':
-                return <TextAreaType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
+                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
             case 'select':
-                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
+                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
             case 'border':
-                return <BorderType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
             case 'box-shadow':
-                return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
             case 'enter-animation':
-                return <EnterAnimationType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
+                return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
         }
     }
+
     return (
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>

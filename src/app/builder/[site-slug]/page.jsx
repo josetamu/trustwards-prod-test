@@ -232,16 +232,17 @@ function Builder() {
       backgroundColor: '#0099FE',
       color: '#FFFFFF',
     },
+    purple: {
+      backgroundColor: '#9D4EDD',
+      color: '#FFFFFF',
+    },
+    orange: {
+      backgroundColor: '#FF6B35',
+      color: '#000000',
+    },
   };
-    // Function to check if the site picture is null, undefined or empty, to know if we should show the avatar color or the avatar image
-    const checkSitePicture = (site) => {
-        const sitePicture = site?.["Avatar URL"];
-        if(sitePicture === null || sitePicture === undefined || sitePicture === ''){
-        return '';
-        } else {
-        return sitePicture;
-        }
-  }
+
+
   // Function to set the style of the site picture
   const SiteStyle = (site) => {
     const color = avatarColors[site?.["Avatar Color"]]?.color || '#FFFFFF';
@@ -506,7 +507,7 @@ const renderModal = () => {
         clipboard={clipboard}
         setClipboard={setClipboard}
       />
-      <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings} screenshotUrl={screenshotUrl} setScreenshotUrl={setScreenshotUrl}/>
+      <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} /* checkSitePicture={checkSitePicture} */ SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings} screenshotUrl={screenshotUrl} setScreenshotUrl={setScreenshotUrl}/>
       
       <BuilderRightPanel user={user} site={site} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isRightPanelOpen}/>
    

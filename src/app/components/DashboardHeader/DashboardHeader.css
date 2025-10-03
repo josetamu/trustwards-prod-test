@@ -24,7 +24,7 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
-    cursor: pointer;
+    cursor: default;
 
 }
 .dashboard-header__img{

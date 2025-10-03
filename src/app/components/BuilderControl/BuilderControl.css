@@ -11,6 +11,7 @@
 
 .tw-builder__control-header{
     display: flex;
+    position: relative;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
@@ -61,4 +62,11 @@
 
 .tw-builder__control-info .tooltip__mask{
     width: 150px;
+}
+
+.tw-builder__control-deleter{
+    position: absolute;
+    right: calc(100% + 1px);
+    top: 12%;
+    height: 26px;
 }

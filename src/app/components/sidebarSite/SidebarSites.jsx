@@ -9,7 +9,7 @@ import { useDashboard } from "@dashboard/layout";
 import { useRouter } from "next/navigation";
 import { SidebarSiteSkeleton } from "@components/Skeletons/SidebarSiteSkeleton";
 
-export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, checkSitePicture, SiteStyle, openChangeModal, openChangeModalSettings, setIsSidebarMenu}) {
+export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType, siteData, setSiteData, toggleSidebar, toggleDropdown, setIsSidebarOpen, modalType, globalSiteData, setSelectedSite, setIsSiteOpen, SiteStyle, openChangeModal, openChangeModalSettings, setIsSidebarMenu}) {
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -131,11 +131,10 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
         >
             <div className="sidebar-sites__header">
                 <span className="sidebar-sites__avatar">
-                    <span className={`sidebar-sites__color ${checkSitePicture(siteData) === '' ? '' : 'sidebar-sites__color--null'}`} 
+                  <span className={`sidebar-sites__color`} 
                         style={SiteStyle(siteData)}>
                           {siteData.Name.charAt(0)}
                     </span> 
-                    <img className={`sidebar-sites__img ${checkSitePicture(siteData) === '' ? 'sidebar-sites__img--null' : ''}`} src={siteData["Avatar URL"]}/>
                 </span>
                 <span className="sidebar-sites__name">
                       {siteData.Name}

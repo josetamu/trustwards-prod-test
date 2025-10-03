@@ -86,7 +86,134 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
             ]
     }
 
+    // Function to sanitize HTML manually without libraries
+    const sanitizeHTML = (html) => {
+        if (typeof window === 'undefined') return html; // SSR safety
+        
+        // Allowed tags (whitelist)
+        const allowedTags = ['span', 'strong', 'em', 'u', 'b', 'i', 'br', 'small', 'mark', 'del', 's', 'ins', 'sub', 'sup'];
+        
+        // Allowed attributes
+        const allowedAttributes = {
+            'span': ['style', 'class'],
+            'strong': ['style', 'class'],
+            'em': ['style', 'class'],
+            'u': ['style', 'class'],
+            'b': ['style', 'class'],
+            'i': ['style', 'class'],
+            'small': ['style', 'class'],
+            'mark': ['style', 'class'],
+            'del': ['style', 'class'],
+            's': ['style', 'class'],
+            'ins': ['style', 'class'],
+            'sub': ['style', 'class'],
+            'sup': ['style', 'class'],
+            'br': []
+        };
+
+        // Allowed CSS properties in inline styles
+        const allowedCSSProperties = [
+            'color', 'background-color', 'font-size', 'font-weight', 
+            'text-decoration', 'font-style', 'font-family', 'text-align',
+            'letter-spacing', 'line-height', 'text-transform', 'opacity',
+            'padding', 'margin', 'display'
+        ];
+
+        // Create a temporary element to parse the HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        // Recursive function to clean nodes
+        const cleanNode = (node) => {
+            // If it is a text node, return it as is
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.cloneNode(true);
+            }
+
+            // If it is an element node
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+
+                // If the tag is not allowed, return only its text content
+                if (!allowedTags.includes(tagName)) {
+                    return document.createTextNode(node.textContent);
+                }
+
+                // Create a new clean element
+                const cleanElement = document.createElement(tagName);
+
+                // Copy only allowed attributes
+                const allowedAttrs = allowedAttributes[tagName] || [];
+                for (let attr of node.attributes) {
+                    if (allowedAttrs.includes(attr.name)) {
+                        // Sanitize style attribute especially
+                        if (attr.name === 'style') {
+                            const sanitizedStyle = sanitizeStyle(attr.value);
+                            if (sanitizedStyle) {
+                                cleanElement.setAttribute('style', sanitizedStyle);
+                            }
+                        } else if (attr.name === 'class') {
+                            cleanElement.setAttribute('class', attr.value);
+                        }
+                    }
+                }
+
+                // Clean recursively the children
+                for (let child of node.childNodes) {
+                    const cleanChild = cleanNode(child);
+                    if (cleanChild) {
+                        cleanElement.appendChild(cleanChild);
+                    }
+                }
+
+                return cleanElement;
+            }
+
+            return null;
+        };
+
+        // Function to sanitize inline styles
+        const sanitizeStyle = (styleString) => {
+            const styles = styleString.split(';').filter(s => s.trim());
+            const cleanStyles = [];
+
+            for (let style of styles) {
+                const [property, value] = style.split(':').map(s => s.trim());
+                
+                if (property && value && allowedCSSProperties.includes(property.toLowerCase())) {
+                    // Verify that the value does not contain javascript: or dangerous expressions
+                    if (!value.toLowerCase().includes('javascript:') && 
+                        !value.toLowerCase().includes('expression') &&
+                        !value.toLowerCase().includes('import') &&
+                        !value.toLowerCase().includes('url(javascript:')) {
+                        cleanStyles.push(`${property}: ${value}`);
+                    }
+                }
+            }
+
+            return cleanStyles.join('; ');
+        };
+
+        // Clean all nodes
+        const fragment = document.createDocumentFragment();
+        for (let child of tempDiv.childNodes) {
+            const cleanChild = cleanNode(child);
+            if (cleanChild) {
+                fragment.appendChild(cleanChild);
+            }
+        }
+
+        // Create a temporary div to get the resulting HTML
+        const resultDiv = document.createElement('div');
+        resultDiv.appendChild(fragment);
+        
+        return resultDiv.innerHTML;
+    };
+
     const render = () => {
+        // Detect if the text contains HTML
+        const containsHTML = /<[^>]*>/g.test(text);
+        
         return (
             <Tag
               key={id}
@@ -104,10 +231,16 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                       onClick={e => e.preventDefault()}
                       aria-disabled="true"
                     >
-                      {text}
+                      {containsHTML 
+                        ? <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(text) }} />
+                        : text
+                      }
                     </a>
                   )
-                : text}
+                : containsHTML 
+                    ? <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(text) }} />
+                    : text
+              }
             </Tag>
           )
     }

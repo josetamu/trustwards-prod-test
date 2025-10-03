@@ -302,7 +302,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * property - the CSS property: color, background-color, padding, margin, etc...
     * value - the value of the property (if empty string "", the property will be removed)
     */
-    const addCSSProperty = (type, selector, propertyOrObject, value) => {
+    const addCSSProperty = (type, selector, propertyOrObject, value, nestedSelector = null) => {
        
         const bp = getActiveBreakpoint();
         //Responsive is true if the breakpoint is not desktop
@@ -345,33 +345,85 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         };
 
         const applyToEntry = (entry) => {
+            //Check if there is a nested selector
+            const hasNested = typeof nestedSelector === 'string' && nestedSelector.trim() !== '';
+            if (hasNested) {
+                //Get the selector(trimmed string)
+                const key = nestedSelector.trim();
+                //Get the nested object with properties
+                const nest = { ...(entry.nested || {}) };
+                //Get the node
+                const node = { ...(nest[key] || {}) };
+                
+                //Check if there is a state and get the current state and properties
+                if (activeState) {
+                    const st = { ...(node.states || {}) };
+                    const cur = { ...(st[activeState] || {}) };
+                    const next = cleanProperties(cur, propertiesToAdd);
+                     // If no properties remain after cleaning, remove the state
+                    if (Object.keys(next).length === 0) {
+                        delete st[activeState];
+                    } else {
+                    // Update the state with cleaned properties
+                    st[activeState] = next;
+                }
+                node.states = st;
+                } else {
+                    // Apply properties directly to the node 
+                    node.properties = cleanProperties(node.properties || {}, propertiesToAdd);
+                }
+                // Check if the node is empty after property updates
+                const emptyProps = !node.properties || Object.keys(node.properties).length === 0;
+                const emptyStates = !node.states || Object.keys(node.states).length === 0;
+                // If node has no properties or states, remove it from nested structure
+                if (emptyProps && emptyStates) {
+                    // If the node is empty, remove the nested selector
+                    delete nest[key];
+                } else {
+                    // Otherwise, set the nested selector with the new node
+                    nest[key] = node;
+                } 
+                 // Update entry's nested property (remove if empty)
+                entry.nested = Object.keys(nest).length ? nest : undefined;
+                return entry;
+            }
+            //Handle state-specific properties for non-nested entries
             if (activeState) {
+                //Get the states object
                 const st = { ...(entry.states || {}) };
+                //Get the current state
                 const cur = { ...(st[activeState] || {}) };
+                // Merge current properties with new properties to add
                 const next = cleanProperties(cur, propertiesToAdd);
+                // If no properties remain after cleaning, remove the state
                 if (Object.keys(next).length === 0) {
                     delete st[activeState];
                 } else {
+                    //set the state with the new properties
                     st[activeState] = next;
                 }
                 entry.states = st;
             } else {
+                //Apply properties directly to the entry
                 entry.properties = cleanProperties(entry.properties || {}, propertiesToAdd);
             }
             return entry;
         };
-    
+    // Switch statement to handle different selector types (ID vs Class)
         switch (type) {
             case "id": {
+                // Find existing ID entry in the current IDs array
                 const existingIdIndex = currentIds.findIndex(
                     (item) => item.id === selector
                 );
     
                 if (existingIdIndex !== -1) {
+                    // Update existing ID entry with new properties
                     const updatedEntry = applyToEntry({ ...currentIds[existingIdIndex] });
                     updatedIdsCSSData = [...currentIds];
                     updatedIdsCSSData[existingIdIndex] = updatedEntry;
                 } else {
+                     // Create new ID entry if it doesn't exist
                     const newEntry = applyToEntry({ id: selector, properties: {} });
                     updatedIdsCSSData = [
                         ...currentIds,
@@ -382,15 +434,18 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
     
             case "class": {
+                // Find existing Class entry in the current Classes array
                 const existingClassIndex = currentClasses.findIndex(
                     (item) => item.className === selector
                 );
     
                 if (existingClassIndex !== -1) {
+                    // Update existing Class entry with new properties
                     const updatedEntry = applyToEntry({ ...currentClasses[existingClassIndex] });
                     updatedClassesCSSData = [...currentClasses];
                     updatedClassesCSSData[existingClassIndex] = updatedEntry;
                 } else {
+                    // Create new Class entry if it doesn't exist
                     const newEntry = applyToEntry({ className: selector, properties: {} });
                     updatedClassesCSSData = [
                         ...currentClasses,
@@ -401,16 +456,20 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
         }
     
+        // Create a deep copy of the JSONtree
         const updated = deepCopy(JSONtree);
+        // If the breakpoint is responsive, update the responsive IDs and Classes arrays
         if(isResponsive) {
             if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
             if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
             updated.responsive[bp].idsCSSData = updatedIdsCSSData;
             updated.responsive[bp].classesCSSData = updatedClassesCSSData;
         } else {
+            // If the breakpoint is not responsive, update the IDs and Classes arrays
             updated.idsCSSData = updatedIdsCSSData;
             updated.classesCSSData = updatedClassesCSSData;
         }
+        //updated JSONtree with new data
         setJSONtree(updated);
     };
 
