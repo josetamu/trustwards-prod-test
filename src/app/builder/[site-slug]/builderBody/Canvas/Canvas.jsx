@@ -604,7 +604,7 @@ useEffect(() => {
         //build the CSS for the ids and classes. prefix is used to add the prefix to the CSS selector. Example: if prefix is .tw-builder__canvas, the CSS selector will be .tw-builder__canvas#id or .tw-builder__canvas.class
         const writeBlock = (idsArr = [], classesArr = [], prefix = '') => {
             let out = '';
-          
+          //Build the normal CSS for the id or class. Could add states. Use out to build the CSS. First add the selector and then the properties with the addUnits function. Then add the states if they exist.
             const emitBase = (baseSel, properties, states) => {
               const entries = Object.entries(properties || {});
               if (entries.length > 0) {
@@ -628,6 +628,7 @@ useEffect(() => {
               }
             };
           
+            //Build the CSS for the nested selectors. If the nested selector has a &, replace it with the base selector. Otherwise, add the base selector and the nested selector.
             const emitNested = (baseSel, nested) => {
               if (!nested || typeof nested !== 'object') return;
               Object.entries(nested).forEach(([sel, node]) => {
@@ -636,6 +637,7 @@ useEffect(() => {
               });
             };
           
+            //Build the CSS for the ids.
             idsArr?.forEach(({ id, properties, states, nested }) => {
               if (!id) return;
               const baseSel = `${prefix}#${id}`;
@@ -643,6 +645,7 @@ useEffect(() => {
               emitNested(baseSel, nested);
             });
           
+            //Build the CSS for the classes.
             classesArr?.forEach(({ className, properties, states, nested }) => {
               if (!className) return;
               const baseSel = `${prefix}.${className}`;

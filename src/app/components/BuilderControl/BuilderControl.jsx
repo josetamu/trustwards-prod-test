@@ -8,6 +8,7 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 	const [isOpen, setIsOpen] = useState(false);
 	const [activeTooltip, setActiveTooltip] = useState(null);
 
+	//Get the global control props to know when a group of controls has a value and show the delete button.
 	const applyGlobalCSSChange = globalControlProps?.applyGlobalCSSChange;
 	const getGlobalCSSValue = globalControlProps?.getGlobalCSSValue;
 	const applyGlobalJSONChange = globalControlProps?.applyGlobalJSONChange;
@@ -19,48 +20,57 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 		'tw-root--modal': 'Modal',
 	}
 
-	// Helper to check if a value is non-empty
+	//check if a value is non-empty
 	const isNonEmpty = (v) => {
 		if (v == null) return false;
 		if (typeof v === 'string') return v.trim() !== '';
 		return Boolean(v);
 	};
 
-	// Compute if any nested control has a value and prepare CSS/JSON batches to clear
+	// Compute if any control has a value and prepare CSS/JSON 
 	const { hasAnyValue, selectorBatches, jsonProps } = useMemo(() => {
+		// Return empty state if no controls are provided
 		if (!Array.isArray(controls) || controls.length === 0) {
 			return { hasAnyValue: false, selectorBatches: new Map(), jsonProps: new Set() };
 		}
 
-		const batches = new Map(); // selector -> { cssKey: '' }
-		const jsonSet = new Set();
-		let any = false;
+		const batches = new Map(); // Map of selector -> { cssKey: '' }
+		const jsonSet = new Set(); // Set of JSON properties 
+		let any = false;  // Flag to track if any control has a value
 
+		// Function to ensure a batch exists for a selector
 		const ensureBatchFor = (selector) => {
 			if (!batches.has(selector)) batches.set(selector, {});
 			return batches.get(selector);
 		};
 
+		//check if a css property has a value
 		const hasCSS = (prop, selector) => {
 			if (!getGlobalCSSValue || !prop) return false;
 			const v = getGlobalCSSValue(prop, selector);
 			return isNonEmpty(v);
 		};
 
+		//check if a group of css properties has a value
 		const checkGroup = (group, selector) => {
 			if (!group) return false;
-			// group itself or any side
+			// use the hasCSS function to check if the group has a value
 			if (hasCSS(group, selector)) return true;
+			// check if any side of the group has a value
 			return ['top','right','bottom','left'].some(side => hasCSS(`${group}-${side}`, selector));
 		};
 
+		//add a group of css properties to the batch
 		const addGroupToBatch = (batch, group) => {
+			//add the group to the batch
 			batch[group] = '';
+			//add each side of the group to the batch
 			['top','right','bottom','left'].forEach(side => {
 				batch[`${group}-${side}`] = '';
 			});
 		};
 
+		//list of border related css properties
 		const borderKeys = [
 			'border-width',
 			'border-top-width',
@@ -76,11 +86,12 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 			'border-bottom-left-radius'
 		];
 
+		//iterate through the controls
 		for (const ctrl of controls) {
 			const selector = ctrl?.selector;
 			const batch = ensureBatchFor(selector);
 
-			// JSON
+			// JSON properties
 			if (ctrl?.JSONProperty) {
 				jsonSet.add(ctrl.JSONProperty);
 				if (getGlobalJSONValue) {

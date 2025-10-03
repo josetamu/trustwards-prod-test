@@ -154,34 +154,46 @@ const convertJSONtoCSS = (json) => {
   const toKebab = (prop) => String(prop).replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
 
   const rules = new Map(); // selector -> { prop: value }
+  //Ensure that the selector is in the rules map
   const ensure = (sel) => { const bag = rules.get(sel) || {}; rules.set(sel, bag); return bag; };
 
+  // Iterate through each CSS item to process
   for (const it of items) {
+    //skip invalid items
     if (!it || typeof it !== 'object') continue;
 
+    //determine the base selector(ID or Class)
     let baseSel = null;
     if (it.id) baseSel = '#' + cssEscape(it.id);
     else if (it.class) baseSel = '.' + cssEscape(it.class);
     else if (it.className) baseSel = '.' + cssEscape(it.className);
     if (!baseSel) continue;
 
+    //Process the properties for the selector
     const baseProps = (it.properties && typeof it.properties === 'object') ? it.properties : {};
     const bag = ensure(baseSel);
+     // Add each property to the CSS rules (convert camelCase to kebab-case)
     Object.entries(baseProps).forEach(([k, v]) => { if (v != null) bag[toKebab(k)] = String(v); });
 
+    //Process the nested selectors
     if (it.nested && typeof it.nested === 'object') {
       Object.entries(it.nested).forEach(([sel, node]) => {
+        //If the nested selector has a &, replace it with the base selector. Otherwise, add the base selector and the nested selector.
         const outSel = sel.includes('&') ? sel.split('&').join(baseSel) : `${baseSel} ${sel.trim()}`;
         const nBag = ensure(outSel);
+        //get nested properties
         const nProps = (node.properties && typeof node.properties === 'object') ? node.properties : {};
+        // Add nested properties to CSS rules
         Object.entries(nProps).forEach(([k, v]) => { if (v != null) nBag[toKebab(k)] = String(v); });
       });
     }
   }
-
+// Generate the final CSS string
   let css = '';
   for (const [selector, props] of rules) {
+    // Convert properties to CSS declarations
     const body = Object.entries(props).map(([k, v]) => `  ${k}: ${v};`).join('\n');
+    // Add complete CSS rule with selector and properties
     css += `${selector} {\n${body}\n}\n`;
   }
   return css.trim();

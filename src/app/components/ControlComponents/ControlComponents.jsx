@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '@animations/animations';
 
 
-//Apply the control on enter
+//Apply the control on enter(applying the blur function)
 const applyOnEnter = (e,f) => {
     if(e.key === 'Enter') {
         e.preventDefault();
@@ -2465,6 +2465,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         return () => window.removeEventListener('tw-pen-open', onPenOpen);
     }, []);
 
+    //Close the border control when clicking outside
     useEffect(() => {
         if (!open) return;
         
@@ -2478,6 +2479,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [open]);
 
+    //Close the border control when pressing the escape key
     useEffect(() => {
         if (!open) return;
         
@@ -2523,6 +2525,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
             }
         }
     };
+    //Function to link the border radius. If value is false, unlink the border radius and work with individual sides. If value is true, link the border radius and give each side the same value by using border-radius.
     const handleRadiusLinkToggle = (value) => {
         setIsRadiusLinked(value);
         if(!value){
@@ -2971,7 +2974,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
     const instanceId = useRef(Symbol('pen'));    
     const containerRef = useRef(null);
     
-    // Estado local para mantener los valores que el usuario escribe
+    //Local state to keep the values that the user writes
     const [localValues, setLocalValues] = useState({
         x: '',
         y: '',
@@ -3011,7 +3014,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     //Function to compose the box-shadow string from the parts
     const composeBoxShadow = useCallback((parts) => {
-        // Verificar si TODOS los campos están vacíos (sin contar inset)
+        // Check if ALL fields are empty (except inset)
         const allEmpty = 
             (!parts.x || parts.x.trim() === '') &&
             (!parts.y || parts.y.trim() === '') &&
@@ -3019,7 +3022,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
             (!parts.spread || parts.spread.trim() === '') &&
             (!parts.color || parts.color.trim() === '');
         
-        // Si todos están vacíos, retornar string vacío
+        // If all fields are empty, return empty string
         if (allEmpty) {
             return '';
         }
@@ -3043,7 +3046,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
         if (hasBlur) {
             tokens.push(parts.blur);
         } else if (hasSpread) {
-            // Si hay spread pero no blur, agregamos 0 para blur
+            // If there is spread but no blur, add 0 for blur
             tokens.push('0');
         }
         
@@ -3064,13 +3067,13 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
     //Get the current box-shadow string from the global CSS value
     const currentShadow = getGlobalCSSValue?.('box-shadow') || '';
 
-    // Sincronizar estado local cuando cambia el elemento seleccionado
+    // Synchronize local state when the selected element changes
     useEffect(() => {
         const parsed = parseBoxShadow(currentShadow);
         setInset(!!parsed.inset);
         
-        // Solo actualizar localValues si el currentShadow cambió por selección de elemento
-        // No actualizar si es un string vacío y ya tenemos valores locales
+        // Only update localValues if the currentShadow changed by selection of element
+        // Do not update if it is an empty string and we already have local values
         if (currentShadow || (!currentShadow && !Object.values(localValues).some(v => v))) {
             setLocalValues({
                 x: parsed.x === '0' ? '' : parsed.x,
@@ -3095,13 +3098,13 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     //Function apply the box-shadow string to the CSS and JSON.
 const wrappedApplyCSS = useCallback((prop, val) => {
-    // Si el primer parámetro es un objeto (batch), procesarlo
+    // If the first parameter is an object (batch), process it
     if (typeof prop === 'object' && prop !== null && val === undefined) {
         const batch = prop;
         let nextLocal = { ...localValues };
         let hasBoxShadowChange = false;
         
-        // Procesar cada propiedad del batch
+        // Process each property of the batch
         Object.entries(batch).forEach(([key, value]) => {
             switch (key) {
                 case 'box-shadow-x':
@@ -3125,17 +3128,17 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                     hasBoxShadowChange = true;
                     break;
                 case 'box-shadow':
-                    // Si viene box-shadow directamente, aplicarlo sin más
+                    // If box-shadow is directly coming, apply it without more
                     if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': value });
                     return;
                 default:
-                    // Para otras propiedades, pasarlas al applyGlobalCSSChange original
+                    // For other properties, pass them to the original applyGlobalCSSChange
                     if (applyGlobalCSSChange) applyGlobalCSSChange({ [key]: value });
                     break;
             }
         });
         
-        // Si hubo cambios en box-shadow, actualizar
+        // If there were changes in box-shadow, update
         if (hasBoxShadowChange) {
             setLocalValues(nextLocal);
             const finalStr = composeBoxShadow({ ...nextLocal, inset });
@@ -3144,7 +3147,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
         return;
     }
     
-    // Caso normal: dos parámetros (prop, val)
+   
     let nextLocal = { ...localValues };
     
     //Switch the property to apply the value to the correct part.
@@ -3174,7 +3177,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
     }
     
         
-        // Actualizar estado local
+        // Update local state
         setLocalValues(nextLocal);
         
         //Compose the box-shadow string from the parts and then apply it to the CSS.
@@ -3182,6 +3185,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
         if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', finalStr);
     }, [applyGlobalCSSChange, composeBoxShadow, localValues, inset]);
 
+    //Function to handle the inset checkbox change
     const handleInsetChange = useCallback((e) => {
         const nextInset = e.target.checked;
         setInset(nextInset);
@@ -3213,6 +3217,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
             return () => window.removeEventListener('tw-pen-open', onPenOpen);
         }, []);
 
+        //Close the shadow control when clicking outside
         useEffect(() => {
             if (!open) return;
             
@@ -3226,6 +3231,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
             return () => document.removeEventListener('mousedown', handleClickOutside);
         }, [open]);
 
+        //Close the shadow control when pressing the escape key
         useEffect(() => {
             if (!open) return;
             
@@ -3330,7 +3336,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
     )
 }
 
-const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
+const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
     const [properties, setProperties] = useState([ { property: '', value: '' } ]);
 
     const prevPropsRef = useRef([]);
@@ -3338,26 +3344,31 @@ const EnterAnimationType = ({name, index, applyEnterAnimationChange, selectedEle
 
     //Update the properties when the selected element changes
     useEffect(() => {
+        //Convert the saved props to a list of properties
         const list = Object.entries(savedProps || {}).map(([property, value]) => ({ property, value }));
+        //If there are saved props, set the properties
         if (list.length) {
             setProperties(list);
         } else {
+            //If there are no saved props, set the properties to an empty list
             setProperties([ { property: '', value: '' } ]);
         }
     }, [selectedElementData, savedProps]);
 
-    //Add a new property
+    //Add a new property row to the list
     const handleAddProperty = () => {
         setProperties(prev => [
             ...prev,
-            { property: '', value: '' }
+            { property: '', value: '' } //Add a new empty property row
         ]);
     };
 
-    //Change the property
+    //// Function to update a specific property when user types in the input fields
     const handlePropertyChange = (i, key, val) => {
         setProperties(prev => {
+            // Create a copy of the previous properties array
             const updated = [...prev];
+            // Update the specific property at index i with the new key-value pair
             updated[i] = { ...updated[i], [key]: val };
             return updated;
         });
@@ -3420,20 +3431,22 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     const [selectedElementData, setSelectedElementData] = useState(null);
     const [activeClass, setActiveClass] = useState(null);
 
-    //spreads the properties of the selected element
+    //spreads the properties of the selected element and updates the selectedElementData 
     useEffect(() => {
+        //Return early if required data is not available
         if(!selectedId || !JSONtree || !JSONtree.roots) {
             setSelectedElementData(null);
             return;
         }
-
+        // Find the active root node in the JSON tree
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
+        //Return if the active root node is not found
         if(!activeRootNode) {
             setSelectedElementData(null);
             return;
         }
 
-        // Find the selected element in the JSON tree
+        // Find the selected element in the JSON tree by ID
     const findElement = (node, targetId) => {
         if (!node) return null;
         if (node.id === targetId) return node;
@@ -3445,10 +3458,12 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         }
         return null;
     };
-
+    // Find the selected element in the active root
     const selectedElement = findElement(activeRootNode, selectedId);
 
+    // Get the active breakpoint
     const bp = getActiveBreakpoint?.() || 'desktop';
+    // Get the responsive idsCSSData or base idsCSSData
     const responsiveIdData = bp !== 'desktop'
         ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
         : null;
@@ -3470,16 +3485,18 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         hasChildren: !!(selectedElement.children && selectedElement.children.length > 0),
         className: selectedElement.classList?.[0] || null
     };
-
+    // Update the selected element data state
     setSelectedElementData(elementData);
 }, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
 
 // Apply CSS (writes in the dataset of the active breakpoint if not desktop)
 const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, nestedSelector) => {
     if (!selectedId || !cssPropertyOrObject) return;
+    //Determine the type of selector(class or id)
     const type = activeClass ? 'class' : 'id';
     const selector = activeClass ? activeClass : selectedId;
 
+    //Add the property to the CSS data. The cssProperty can be a string or an object(if need to add multiple properties).
     if (typeof cssPropertyOrObject === 'string') {
         addCSSProperty(type, selector, cssPropertyOrObject, value, nestedSelector);
     } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
@@ -3491,9 +3508,9 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, nestedSele
 const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
     if (!selectedId || !cssPropertyOrObject) return;
 
-    //Get the scope of the root
+    //Get the scope of the root(modal or banner)
     const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
-    //Check if the selected id is the root
+    //Check if the selected id is the root element
     const isRoot = selectedId === activeRoot;
 
     //If the selected id is the root, add the property to the class .tw-modal--open or .tw-banner--open
@@ -3515,33 +3532,41 @@ const getGlobalCSSValue = useCallback((cssProperty, nestedSelector) => {
     if (!selectedId || !cssProperty) return null;
     const bp = getActiveBreakpoint?.() || 'desktop';
   
+    //Read the entry to check possible nested selector, states and breakpoints.
     const readFromEntry = (entry) => {
       if (!entry) return null;
-  
-      if (nestedSelector && nestedSelector.trim()) {
+        //Get the CSS value with state
+      const getCSSValueWithState = (states, properties) => {
+        const stVal = activeState ? states?.[activeState]?.[cssProperty] : undefined;
+        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+        return properties?.[cssProperty] ?? null;
+    };
+
+    //If there is a nested selector, get the node with the nested selector
+    if (nestedSelector && nestedSelector.trim()) {
         const node = entry.nested?.[nestedSelector.trim()];
         if (!node) return null;
-        const stVal = activeState ? node.states?.[activeState]?.[cssProperty] : undefined;
-        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
-        return node.properties?.[cssProperty] ?? null;
-      }
-  
-      const stVal = activeState ? entry.states?.[activeState]?.[cssProperty] : undefined;
-      if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
-      return entry.properties?.[cssProperty] ?? null;
+        return getCSSValueWithState(node.states, node.properties);
+    }
+    //If there is no nested selector, get the node with the states and properties
+    return getCSSValueWithState(entry.states, entry.properties);
     };
   
     if (activeClass) {
+    //If there is a breakpoint, get the classesCSSData with the active class and the breakpoint
       const bpClassData = bp !== 'desktop'
         ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
         : null;
+      //If there is no breakpoint, get the classesCSSData with the active class and the base
       const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
       return readFromEntry(bpClassData) ?? readFromEntry(baseClassData);
     }
   
+    //If there is a breakpoint, get the idsCSSData with the active id and the breakpoint
     const bpIdData = bp !== 'desktop'
       ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
       : null;
+    //If there is no breakpoint, get the idsCSSData with the active id and the base
     const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
     return readFromEntry(bpIdData) ?? readFromEntry(baseIdData);
   }, [JSONtree, selectedId, activeClass, getActiveBreakpoint, activeState]);
