@@ -32,7 +32,7 @@ export function SitesList({ openChangeModal, setIsModalOpen, setModalType, showN
   if(!allUserDataResource) return <SitesSkeleton/>;
 
   const { appearance } = allUserDataResource.read();
-  const view = appearance['View Sites'];
+  const view = appearance['View Sites'] || 'grid'; // Default to grid if not set
 
     return (
         <>
