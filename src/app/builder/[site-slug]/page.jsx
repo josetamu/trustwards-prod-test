@@ -275,12 +275,12 @@ const ProfileStyle = (user) => {
 //Global function to close modals with escape key
 const handleKeyDown = useCallback((e) => {
   if (e.key === 'Escape') {
-    if (isModalOpen) {
+    // Only close the topmost modal (change modal takes priority)
+    if (isChangeModalOpen) {
+      closeChangeModal();
+    } else if (isModalOpen) {
       closeModal();
     }
-     if (isChangeModalOpen) {
-      closeChangeModal();
-    } 
   }
 }, [isModalOpen, isChangeModalOpen]);
     // Add event listener for keyboard events

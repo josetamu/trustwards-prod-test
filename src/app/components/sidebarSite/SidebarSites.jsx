@@ -13,6 +13,8 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     const sidebarSitesId = useId();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
+    const [isAnyChildFocused, setIsAnyChildFocused] = useState(false);
     const { handleCopy} = useDashboard();
     const router = useRouter();
  
@@ -102,11 +104,22 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
     return(
         <Link 
             href={`/${siteData.id}`}
-            className="sidebar-sites__site" 
+            className={`sidebar-sites__site ${isAnyChildFocused ? 'sidebar-sites__site--child-focused' : ''}`}
             id={sidebarSitesId}
             //on mouse enter, set is hovered to true to show the tooltip
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onFocus={() => {
+                setIsFocused(true);
+                setIsAnyChildFocused(true);
+            }}
+            onBlur={(e) => {
+                // Only set focused to false if focus is not moving to a child element
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                    setIsFocused(false);
+                    setIsAnyChildFocused(false);
+                }
+            }}
             onClick={(e) => {
                 setSelectedSite(siteData);
                 setIsSiteOpen(true);
@@ -133,7 +146,7 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                   message={siteData.Name} 
                   id={siteData.id}
                   responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
-                  open={isHovered}
+                  open={isHovered || isFocused || isAnyChildFocused}
                   animationType="SCALE_LEFT"
                 />
             )} 
@@ -144,11 +157,33 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                 onClose={() => setIsDropdownOpen(false)}
                 menu={<SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} toggleSidebar={toggleSidebar} toggleDropdown={toggleDropdown} setIsSidebarOpen={setIsSidebarOpen} modalType={modalType} globalSiteData={globalSiteData} name={name} openChangeModal={openChangeModal} openChangeModalSettings={openChangeModalSettings}/>}
             >
-                <div className="sidebar-sites__edit" onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsDropdownOpen(v => !v);
-                }}>
+                <div 
+                    className="sidebar-sites__edit" 
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsDropdownOpen(v => !v);
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsDropdownOpen(v => !v);
+                        }
+                    }}
+                    onFocus={() => setIsAnyChildFocused(true)}
+                    onBlur={(e) => {
+                        // Only set to false if focus is not moving to another child element
+                        if (!e.currentTarget.parentElement.contains(e.relatedTarget)) {
+                            setIsAnyChildFocused(false);
+                        }
+                    }}
+                    tabIndex={(isHovered || isFocused || isAnyChildFocused) ? 0 : -1}
+                    role="button"
+                    aria-label={`Open menu for ${siteData.Name}`}
+                    aria-expanded={isDropdownOpen}
+                    aria-haspopup="menu"
+                >
                     <svg width="9" height="2" viewBox="0 0 9 2" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4.49563 1H4.50437M1 1H1.00874M7.99126 1H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>

@@ -218,8 +218,6 @@
   gap: 2px;
   width: 100%;
   height: 100%;
-
-  overflow: auto;
 }
 .sidebar__sites-display::-webkit-scrollbar {
   width: 4px;

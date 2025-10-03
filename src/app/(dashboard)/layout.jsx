@@ -365,11 +365,11 @@ const SiteStyle = (site) => {
 //Global function to close modals with escape key
 const handleKeyDown = useCallback((e) => {
   if (e.key === 'Escape') {
-    if (isModalOpen) {
-      closeModal();
-    }
+    // Only close the topmost modal (change modal takes priority)
     if (isChangeModalOpen) {
       closeChangeModal();
+    } else if (isModalOpen) {
+      closeModal();
     }
   }
 }, [isModalOpen, isChangeModalOpen]);

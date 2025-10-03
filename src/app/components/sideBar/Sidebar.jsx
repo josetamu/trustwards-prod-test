@@ -365,6 +365,15 @@ export function Sidebar({
                         ref={sidebarActionRef}
                         className="sidebar__action" 
                         onClick={handleToggleSidebar}
+                        aria-label="Toggle sidebar"
+                        tabIndex={0}
+                        role="button"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleToggleSidebar();
+                            }
+                        }}
                     >
                         <svg className="sidebar__desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
@@ -446,9 +455,21 @@ export function Sidebar({
                                         <span className='sidebar__sites-title'>SITES</span>
                                         <div className={`sidebar__sites-searcher ${isSearchOpen ? 'sidebar__sites-searcher--open' : ''}`} ref={searchContainerRef}>
                                             {/* here is the sidebars' search */}
-                                            <span className='sidebar__sites-search' onClick={() => {
-                                                setIsSearchOpen(!isSearchOpen);
-                                            }}>
+                                            <span 
+                                                className='sidebar__sites-search' 
+                                                onClick={() => {
+                                                    setIsSearchOpen(!isSearchOpen);
+                                                }}
+                                                aria-label="Search sites"
+                                                tabIndex={0}
+                                                role="button"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        setIsSearchOpen(!isSearchOpen);
+                                                    }
+                                                }}
+                                            >
                                                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M8.99912 8.99912L7.07031 7.07031" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
                                                     <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
@@ -460,19 +481,36 @@ export function Sidebar({
                                                 placeholder='Search sites...'
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                                tabIndex={isSearchOpen ? 0 : -1}
                                             />
                                         </div>
                                         {/* this is the + to add a newsite */}
-                                        <span className='sidebar__sites-add' onClick={() => {
-                                            if(user.Plan === 'Free' && webs.length >= 3) {
-                                                showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
-                                                setIsModalOpen(true);
-                                                setModalType('Plan');
-                                            } else {
-                                                openChangeModal('newsite');
-                                            }
-                                        }} 
-                                            
+                                        <span 
+                                            className='sidebar__sites-add' 
+                                            onClick={() => {
+                                                if(user.Plan === 'Free' && webs.length >= 3) {
+                                                    showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
+                                                    setIsModalOpen(true);
+                                                    setModalType('Plan');
+                                                } else {
+                                                    openChangeModal('newsite');
+                                                }
+                                            }}
+                                            aria-label="Add new site"
+                                            tabIndex={0}
+                                            role="button"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    if(user.Plan === 'Free' && webs.length >= 3) {
+                                                        showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
+                                                        setIsModalOpen(true);
+                                                        setModalType('Plan');
+                                                    } else {
+                                                        openChangeModal('newsite');
+                                                    }
+                                                }
+                                            }}
                                         >
                                                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="currentColor"/>
