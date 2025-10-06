@@ -52,7 +52,7 @@ export const Image = (node, nodeProps = {}) => {
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' },
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color' },
                 ]
             },
             {

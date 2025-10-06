@@ -11,19 +11,15 @@ import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ANIM_TYPES } from '@animations/animations';
 
-
 //Apply the control on enter(applying the blur function)
 const applyOnEnter = (e,f) => {
     if(e.key === 'Enter') {
         e.preventDefault();
-        e.currentTarget.blur();
-        
+        e.currentTarget.blur(); 
     }
 }
 
-
 //Define each type of control.
-
 const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
@@ -93,6 +89,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         </div>
     )
 }
+
 const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder}) => {
     //At this point we have three superselects. One is for the block with the tags, the other is for the display with the display properties, and the third is for the position with the position properties.
     const [blockSelectValue, setBlockSelectValue] = useState(() => {
@@ -871,6 +868,7 @@ useEffect(() => {
         </React.Fragment>
     )
 }
+
 const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
@@ -903,52 +901,22 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     }, [selectedElementData, getGlobalCSSValue, cssProperty]);
 
   
-        //handlers for each side. HandleChange alows to modify the value and Blurs set the style in the jsonTree and aplied it to the element
-        const handleTopChange = (e) => {
+        // Combine handlers for each side into two generic functions
+        const handleSideChange = (side) => (e) => {
             const newValue = e.target.value;
-            setTopValue(newValue);
-
-        };
-        const handleTopBlur = (e) => {
-            const inputValue = e.target.value;
-            if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(`${cssProperty}-top`, inputValue);
+            switch (side) {
+                case 'top': setTopValue(newValue); break;
+                case 'right': setRightValue(newValue); break;
+                case 'bottom': setBottomValue(newValue); break;
+                case 'left': setLeftValue(newValue); break;
+                default: break;
             }
         };
-    
-        const handleRightChange = (e) => {
-            const newValue = e.target.value;
-            setRightValue(newValue);
 
-        };
-        const handleRightBlur = (e) => {
+        const handleSideBlur = (side) => (e) => {
             const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(`${cssProperty}-right`, inputValue);
-            }
-        };
-    
-        const handleBottomChange = (e) => {
-            const newValue = e.target.value;
-            setBottomValue(newValue);
-
-        };
-        const handleBottomBlur = (e) => {
-            const inputValue = e.target.value;
-            if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(`${cssProperty}-bottom`, inputValue);
-            }
-        };
-    
-        const handleLeftChange = (e) => {
-            const newValue = e.target.value;
-            setLeftValue(newValue);
-
-        };
-        const handleLeftBlur = (e) => {
-            const inputValue = e.target.value;
-            if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(`${cssProperty}-left`, inputValue);
+                applyGlobalCSSChange(`${cssProperty}-${side}`, inputValue);
             }
         };
         
@@ -959,16 +927,17 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur} onKeyDown={(e) => applyOnEnter(e, handleLeftBlur)}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleSideChange('left')} onBlur={handleSideBlur('left')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('left'))}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur} onKeyDown={(e) => applyOnEnter(e, handleTopBlur)}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur} onKeyDown={(e) => applyOnEnter(e, handleBottomBlur)}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleSideChange('top')} onBlur={handleSideBlur('top')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('top'))}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleSideChange('bottom')} onBlur={handleSideBlur('bottom')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('bottom'))}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur} onKeyDown={(e) => applyOnEnter(e, handleRightBlur)}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleSideChange('right')} onBlur={handleSideBlur('right')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('right'))}/>
         </div>
     </div>
     )
 }
+
 const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
 
     const colorInputRef = useRef(null);
@@ -1173,6 +1142,7 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
     </div>
     )
 }
+
 const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange}) => {
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState('');
@@ -1323,6 +1293,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
         </>
     )
 }
+
 const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
 
     const [selectedChoose, setSelectedChoose] = useState(getGlobalCSSValue?.(cssProperty) || '');
@@ -1880,6 +1851,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
     }
 }
+
 const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value}) => {
     //Initial state with jsonTree
     const [textareaValue, setTextareaValue] = useState(() => {
@@ -1955,6 +1927,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
         </div>
     )
 }
+
 const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange}) =>{
     
     const [fontOptions, setFontOptions] = useState([]);
@@ -2304,7 +2277,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             // If there are no dynamic (for example, system fonts or not found in fontOptions)
             return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
           }
-        return options || [];
+          return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
     })();
 
     // Filter options based on search
@@ -2967,6 +2940,7 @@ const parseRadius = useCallback((radiusStr) => {
         </div>
     )
 }
+
 const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
 
     const [open, setOpen] = useState(false);
@@ -3421,7 +3395,7 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
                 </div>
             </div>
         </div>
-    )};
+)};
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
