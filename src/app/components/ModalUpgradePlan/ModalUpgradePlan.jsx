@@ -39,6 +39,13 @@ const ModalUpgradePlan = ({ userPlan }) => {
                                     type="checkbox" 
                                     checked={yearly}
                                     onChange={(e) => setYearly(e.target.checked)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            setYearly(!yearly);
+                                        }
+                                    }}
+                                    aria-label="Toggle yearly billing"
                                 />
                                 <span className="modal-upgrade-plan__slider"></span>
                             </label>
@@ -58,7 +65,7 @@ const ModalUpgradePlan = ({ userPlan }) => {
                     <span className="modal-upgrade-plan__plan-price">{yearly ? '5' : '6'}<span className="modal-upgrade-plan__plan-currency">$</span></span>
                     <span className="modal-upgrade-plan__plan-nsites">1 pro site</span>
                     <span className="modal-upgrade-plan__plan-description">Per month, billed {yearly ? 'yearly' : 'monthly'}</span>
-                    <div className="modal-upgrade-plan__subscribe">
+                    <div className="modal-upgrade-plan__subscribe" tabIndex={0} role="button" aria-label="Subscribe to plan" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); /* Add subscription logic here */ } }}>
                         <span className="modal-upgrade-plan__subscribe-title">Subscribe</span>
                     </div>
                 </div>
@@ -67,7 +74,7 @@ const ModalUpgradePlan = ({ userPlan }) => {
                     <span className="modal-upgrade-plan__plan-price">{yearly ? '15' : '18'}<span className="modal-upgrade-plan__plan-currency">$</span></span>
                     <span className="modal-upgrade-plan__plan-nsites">5 pro sites</span>
                     <span className="modal-upgrade-plan__plan-description">Per month, billed {yearly ? 'yearly' : 'monthly'}</span>
-                    <div className="modal-upgrade-plan__subscribe">
+                    <div className="modal-upgrade-plan__subscribe" tabIndex={0} role="button" aria-label="Subscribe to plan" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); /* Add subscription logic here */ } }}>
                         <span className="modal-upgrade-plan__subscribe-title">Subscribe</span>
                     </div>
                 </div>
@@ -76,7 +83,7 @@ const ModalUpgradePlan = ({ userPlan }) => {
                     <span className="modal-upgrade-plan__plan-price">{yearly ? '29' : '35'}<span className="modal-upgrade-plan__plan-currency">$</span></span>
                     <span className="modal-upgrade-plan__plan-nsites"><span className="modal-upgrade-plan__plan-nsites--unlimited">Unlimited</span> pro sites</span>
                     <span className="modal-upgrade-plan__plan-description">Per month, billed {yearly ? 'yearly' : 'monthly'}</span>
-                    <div className="modal-upgrade-plan__subscribe modal-upgrade-plan__subscribe--popular">
+                    <div className="modal-upgrade-plan__subscribe modal-upgrade-plan__subscribe--popular" tabIndex={0} role="button" aria-label="Subscribe to popular plan" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); /* Add subscription logic here */ } }}>
                         <span className="modal-upgrade-plan__subscribe-title modal-upgrade-plan__subscribe-title--popular">Subscribe</span>
                     </div>
                 </div>

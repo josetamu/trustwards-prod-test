@@ -80,3 +80,99 @@ html[data-color] .modalAppearance__accentColor__button {
       width: 100%;
     }
 }
+
+/* =======================
+   DASHBOARD FOCUS STYLES - OPTIMIZED
+   ======================= */
+
+/* Base focus style for all focusable elements */
+*:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
+}
+
+/* Focus styles for specific element types */
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+label:focus-within,
+button:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
+}
+
+/* Sidebar specific elements */
+.sidebar__action:focus-visible,
+.sidebar__sites-add:focus-visible,
+.sidebar__sites-edit:focus-visible,
+.sidebar__sites-delete:focus-visible,
+.dropdown__item:focus-visible,
+.sidebar-header:focus-visible,
+.sidebar__link:focus-visible,
+.sidebar-sites__site:focus-visible,
+.context-menu__item:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
+}
+
+/* Exception: Search input should not have focus styles */
+.sidebar__sites-input:focus {
+  outline: none !important;
+}
+
+/* =======================
+   BLUE BUTTONS - SOLID FOCUS
+   ======================= */
+
+/* Solid focus for accent color buttons and important actions */
+[style*="background-color: var(--accent-bg-color)"]:focus-visible,
+.sites__new-button:focus-visible,
+.newSite__button:focus-visible,
+.new-site__button:focus-visible,
+.modalAppearance__accentColor__button:focus-visible,
+.modal-change__button:focus-visible,
+.modal-support__button:focus-visible,
+.modal-welcome__button:focus-visible,
+.builder-save:focus-visible,
+button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
+button[class*="accent"]:focus-visible,
+[class*="accent"]:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: 2px;
+}
+
+/* Specific important elements */
+.modal-appearance__accent-color-choice:focus-visible,
+.modal-upgrade-plan__subscribe--popular:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: 2px;
+}
+
+/* =======================
+   MODAL FOCUS STYLES
+   ======================= */
+
+/* Modal container should not have focus */
+.modal:focus,
+.modal:focus-visible {
+  outline: none !important;
+}
+
+/* Modal focusable elements inherit base styles */
+.modal *:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
+}
+
+/* Modal accent buttons get solid focus */
+.modal [style*="background-color: var(--accent-bg-color)"]:focus-visible,
+.modal button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
+.modal .modal-change__button:focus-visible,
+.modal .modal-support__button:focus-visible,
+.modal .modal-welcome__button:focus-visible,
+.modal .modal-appearance__accent-color-choice:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: 2px;
+}

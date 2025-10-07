@@ -41,6 +41,7 @@ const MAX_SCAN_TIME_MS = 60000;  // Maximum 60 seconds total scan time
  *   - scriptsScanned: Array of detected cookies with their sources and methods
  *   - iframesScanned: Array of detected iframes
  */
+
 export async function POST(req) {
   let browser;
   

@@ -227,4 +227,44 @@
 .tw-builder__settings-classes-item:has(.tw-builder__settings-classes-item-name) + .tw-builder__settings-classes-item--empty{
     display: none;
 }
+.tw-builder__settings-classes .dropdown__menu{
+    right: 0;
+    background-color: #2B2B2B;
+}
 
+.tw-builder__settings-states{
+    background-color: var(--tab-hover-background);
+    border-radius: 5px;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--tab-active-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tw-builder__settings-states--active{
+    background-color: var(--accent-bg-color);
+    color: var(--accent-color);
+}
+.tw-builder__settings-states-dropdown{
+    position: relative;
+}
+.tw-builder__settings-states-menu{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    
+    
+}
+.tw-builder__settings-states-item{
+    padding: 5px;
+    cursor: pointer;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    color:#F5F5F5;
+    border-radius: 3px;
+}
+.tw-builder__settings-states-item:hover{
+    background-color: var(--accent-bg-color);
+}

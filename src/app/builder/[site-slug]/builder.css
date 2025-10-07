@@ -4,7 +4,7 @@ html.trustwards-builder{
 }
 .tw-builder{
     background-color: var(--builder-background);
-
+    
     display: grid;
     grid-template-columns: var(--panels-width) 1fr var(--panels-width);
     gap: 10px;

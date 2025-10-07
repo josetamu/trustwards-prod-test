@@ -21,6 +21,7 @@ import Loader from '@components/Loader/Loader';
 import MobileWarning from '@components/MobileWarning/MobileWarning';
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes';
 import { ModalBuilderSettings } from '@components/ModalBuilderSetting/ModalBuilderSettings';
+import BuilderSave from '@components/BuilderSave/BuilderSave';
 
 function Builder() {
   const params = useParams();
@@ -73,9 +74,12 @@ function Builder() {
 
   //Loader state
   const [loaderCompleted, setLoaderCompleted] = useState(false);
+  const [screenshotUrl, setScreenshotUrl] = useState(null);
+  const [isScreenshotLoading, setIsScreenshotLoading] = useState(false);
 
   //Context menu state
   const [clipboard, setClipboard] = useState(null);
+
 
   // Set userSettings based on modalType
   useEffect(() => {
@@ -145,6 +149,30 @@ function Builder() {
       setUser(userData);
       setSite(siteData);
       setAppearanceSettings(appearanceData);
+
+    // Handle loading if liveWebsite is enabled
+    if(siteData?.JSON?.liveWebsite === true){
+      setIsScreenshotLoading(true);
+      const url = `/api/screenshot?domain=${encodeURIComponent(siteData.Domain)}`;
+      
+      // Preload the image to detect when it's ready
+      const img = new Image();
+      img.onload = () => {
+          setScreenshotUrl(url);
+          setIsScreenshotLoading(false);
+        
+      };
+      img.onerror = () => {
+          setScreenshotUrl(null);
+          setIsScreenshotLoading(false);
+     
+      };
+      img.src = url;
+    } else {
+      setScreenshotUrl(null);
+      setIsScreenshotLoading(false);
+    }
+      
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -204,16 +232,17 @@ function Builder() {
       backgroundColor: '#0099FE',
       color: '#FFFFFF',
     },
+    purple: {
+      backgroundColor: '#9D4EDD',
+      color: '#FFFFFF',
+    },
+    orange: {
+      backgroundColor: '#FF6B35',
+      color: '#000000',
+    },
   };
-    // Function to check if the site picture is null, undefined or empty, to know if we should show the avatar color or the avatar image
-    const checkSitePicture = (site) => {
-        const sitePicture = site?.["Avatar URL"];
-        if(sitePicture === null || sitePicture === undefined || sitePicture === ''){
-        return '';
-        } else {
-        return sitePicture;
-        }
-  }
+
+
   // Function to set the style of the site picture
   const SiteStyle = (site) => {
     const color = avatarColors[site?.["Avatar Color"]]?.color || '#FFFFFF';
@@ -247,12 +276,12 @@ const ProfileStyle = (user) => {
 //Global function to close modals with escape key
 const handleKeyDown = useCallback((e) => {
   if (e.key === 'Escape') {
-    if (isModalOpen) {
+    // Only close the topmost modal (change modal takes priority)
+    if (isChangeModalOpen) {
+      closeChangeModal();
+    } else if (isModalOpen) {
       closeModal();
     }
-     if (isChangeModalOpen) {
-      closeChangeModal();
-    } 
   }
 }, [isModalOpen, isChangeModalOpen]);
     // Add event listener for keyboard events
@@ -408,7 +437,9 @@ const renderModal = () => {
     case 'Builder':
       return (
         <ModalBuilderSettings
-
+          onClose={() => setIsModalOpen(false)}
+          showNotification={showNotification}
+         
         />
       )
     
@@ -455,11 +486,10 @@ const renderModal = () => {
   const isMobile = useMediaQuery('(max-width: 820px)');
 
   return (
-    <>
-    <Loader isVisible={isLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted}/>
+  <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
+ <Loader isVisible={isLoading || isScreenshotLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading}/>
     {isMobile && <MobileWarning/>}
-    {!isMobile && !isLoading && (
-    <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
+    {!isMobile && !isLoading && ( 
     <div className="tw-builder">
       <BuilderThemes isFirstTime={isFirstTime} setIsFirstTime={setIsFirstTime} isManualThemesOpen={isManualThemesOpen} setIsManualThemesOpen={setIsManualThemesOpen} showNotification={showNotification} siteSlug={siteSlug}/>
 
@@ -477,9 +507,11 @@ const renderModal = () => {
         clipboard={clipboard}
         setClipboard={setClipboard}
       />
-      <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
+      <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} /* checkSitePicture={checkSitePicture} */ SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings} screenshotUrl={screenshotUrl} setScreenshotUrl={setScreenshotUrl}/>
       
       <BuilderRightPanel user={user} site={site} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isRightPanelOpen}/>
+   
+      
       
       <ModalContainer 
         isOpen={isModalOpen} 
@@ -528,10 +560,11 @@ const renderModal = () => {
                       clipboard={clipboard}
                       setClipboard={setClipboard}
                     />
+                 
       </div>
-    </CanvasProvider>
     )}
-    </>
+    </CanvasProvider>
+
   );
 }
 

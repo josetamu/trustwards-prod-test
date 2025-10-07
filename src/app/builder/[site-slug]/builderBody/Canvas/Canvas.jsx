@@ -1,7 +1,7 @@
 import "./Canvas.css";
 
 import { useCanvas } from '@contexts/CanvasContext';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 /*Elements*/
 import { Banner } from '@builderElements/Banner/Banner';
@@ -15,10 +15,38 @@ import { Categories } from '@builderElements/Categories/Categories';
 import { Checkbox } from '@builderElements/Checkbox/Checkbox';
 import { Icon } from '@builderElements/Icon/Icon';
 
-export const Canvas = () => {
+export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
     const { JSONtree, activeRoot, selectedId, setSelectedId, moveElement, createElement, CallContextMenu, setSelectedItem,
         runElementScript, notifyElementCreatedFromToolbar, setJSONtree, deepCopy} = useCanvas();
 
+        //state to handle the loading of the live website screenshot
+        const [isLoadingScreenshot, setIsLoadingScreenshot] = useState(false);
+
+        const [enterReady, setEnterReady] = useState(false);
+
+        //Effect to handle the enter animation. Change the enterReady state to true when the active root changes. Used by renderNode()
+        useEffect(() => {
+            setEnterReady(false);
+            const id = requestAnimationFrame(() => {
+              requestAnimationFrame(() => setEnterReady(true));
+            });
+            return () => cancelAnimationFrame(id);
+          }, [activeRoot]);
+    
+
+    
+        // Effect to handle live website screenshot. This is local because the screenshot is generated in the builder page
+        useEffect(() => {
+            if (JSONtree?.liveWebsite && site?.Domain) {
+                setIsLoadingScreenshot(true);
+                //set the url of the live website screenshot
+                const url = `/api/screenshot?domain=${encodeURIComponent(site.Domain)}`;
+                setScreenshotUrl(url);                
+            } else {
+                setScreenshotUrl(null);
+                setIsLoadingScreenshot(false);
+            }
+        }, [JSONtree?.liveWebsite, site?.Domain]);
     /*
     * Custom hook to track elements after they are created and run their scripts
     * Used by trackElement() inside renderNode()
@@ -86,6 +114,8 @@ export const Canvas = () => {
                 ...(node.classList.includes('tw-block') && node.children.length === 0 ? ['tw-block--empty'] : []), // Add the class tw-block--empty if the node has the class tw-block and no children
                 ...(isSelected ? ['tw-builder__active'] : []), // Add the class tw-builder__active to the classList of the selected element
                 ...(isActiveRoot ? ['tw-active-root'] : []), // Add the class tw-active-root to the classList of the active root element
+                ...(isActiveRoot && enterReady && node.id === 'tw-root--modal' ? ['tw-modal--open'] : []), // Add the class tw-modal--open to the classList of the active root element if the active root is modal and the enter animation is ready
+                ...(isActiveRoot && enterReady && node.id === 'tw-root--banner' ? ['tw-banner--open'] : []), // Add the class tw-banner--open to the classList of the active root element if the active root is banner and the enter animation is ready
             ].join(' '),
 
             ...(!isRoot ? { //Make all nodes draggable except banner and modal
@@ -146,6 +176,7 @@ export const Canvas = () => {
             !e.target.closest('.tw-builder__settings-classes-item') &&
             !e.target.closest('.tw-builder__settings-option') &&
             !e.target.closest('.tw-builder__settings-pen-controls')&&
+            !e.target.closest('.tw-builder__header-breakpoint') &&
             !e.target.closest('.tw-builder__settings-class')) {
                 setSelectedId(null);
                 setSelectedItem(null);
@@ -394,6 +425,116 @@ export const Canvas = () => {
         };
     }, [dropIndicator]);
 
+    /*
+    * Load Google Fonts
+    */
+
+    // Helper to extract and load Google Fonts variants in use
+const extractPrimaryFamily = (cssFontFamily) => {
+    if (!cssFontFamily) return '';
+    //Take the first item of the css font family
+    const first = cssFontFamily.split(',')[0].trim();
+    return first.replace(/^["']|["']$/g, '');
+};
+
+//This function injects the Google Fonts stylesheet into the head
+const ensureGoogleFontLoaded = (family, weights = new Set(['400']), includeItalic = false) => {
+    if (!family) return;
+
+    //If the family is a generic/system keyword, skip it
+    const lower = family.toLowerCase();
+    const skip = new Set(['serif','sans-serif','monospace','cursive','fantasy','system-ui','inherit','initial','unset','revert']);
+    if (skip.has(lower)) return;
+
+    //Replace the spaces with + (Open Sans -> Open+Sans) and create the id for the link
+    const famParam = family.trim().replace(/\s+/g, '+');
+    const id = `tw-gf-${famParam}`;
+
+    // Preconnect once for the Google Fonts API and the Google Fonts static API to have less latency
+    const head = document.head;
+    //Check if the preconnect link exists
+    if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+        //If the preconnect link doesn't exist, create it
+        const pc1 = document.createElement('link');
+        pc1.rel = 'preconnect';
+        pc1.href = 'https://fonts.googleapis.com';//CSS font
+        pc1.setAttribute('data-tw-preconnect', 'gfonts-apis'); 
+        head.appendChild(pc1);
+
+        //Create the preconnect link for the static Google Fonts API
+        const pc2 = document.createElement('link');
+        pc2.rel = 'preconnect';
+        pc2.href = 'https://fonts.gstatic.com'; //Binary font files
+        pc2.crossOrigin = '';
+        pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
+        head.appendChild(pc2);
+    }
+    //Sort the weights
+    const sortNums = (arr) => Array.from(arr).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n)).sort((a,b)=>a-b).join(';');
+    const w = sortNums(weights.size ? weights : new Set(['400']));
+    //Build the href
+    let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+    //If the family has italic, add the italic row
+    if (includeItalic) {
+        // request normal and italic rows
+        href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@0,${w};1,${w}&display=swap`;
+    //If the family has weights, add the weights row
+    } else if (w) {
+        href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${w}&display=swap`;
+    }
+
+    //Check if the link exists
+    let link = head.querySelector(`link#${id}`);
+    //If the link doesn't exist, create it
+    if (!link) {
+        link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = href;
+        //Append the link to the head
+        head.appendChild(link);
+    } else if (link.href !== href) {
+        //If the link already exists and the href is different, update the href
+        link.href = href;
+    }
+};
+
+// Scan JSONtree CSS to load all used font families/weights
+useEffect(() => {
+    const famMap = new Map(); // family -> { weights: Set, italic: bool }
+
+    //Function to collect the font families and weights from the idsCSSData and classesCSSData mapping them
+    const collectFromProps = (props) => {
+        if (!props) return;
+        const fam = extractPrimaryFamily(props['font-family']);
+        if (!fam) return;
+        const weight = props['font-weight'];
+        const italic = (props['font-style'] || '').toLowerCase() === 'italic';
+
+        if (!famMap.has(fam)) famMap.set(fam, { weights: new Set(), italic: false });
+        const entry = famMap.get(fam);
+        if (weight && /^\d{3}$/.test(weight)) entry.weights.add(weight);
+        if (italic) entry.italic = true;
+    };
+
+    //Use prev function 
+    JSONtree?.idsCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.classesCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.responsive?.tablet?.idsCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.responsive?.tablet?.classesCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.responsive?.mobile?.idsCSSData?.forEach(({ properties }) => collectFromProps(properties));
+    JSONtree?.responsive?.mobile?.classesCSSData?.forEach(({ properties }) => collectFromProps(properties));
+
+    // If nothing specified, try defaults on common classes to avoid missing regular
+    if (famMap.size === 0) return;
+
+    famMap.forEach(({ weights, italic }, fam) => {
+        if (!weights.size) weights.add('400'); // ensure regular
+        //Inject the Google Fonts stylesheet into the head
+        ensureGoogleFontLoaded(fam, weights, italic);
+    });
+}, [JSONtree?.idsCSSData, JSONtree?.classesCSSData]);
+
     //Create a stylesheet for the properties every time the idsData or classesData changes
     //For each id, add its CSS selector and properties
     //For each class, add its CSS selector and properties
@@ -403,7 +544,7 @@ export const Canvas = () => {
         //valid units. If user types for example 100 or 100a it will add px to the value
         const validUnits = ['px','%', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', 'deg', 'rad', 'grad', 'turn', 's', 'ms', 'hz', 'khz'];
         //properties that need units. opacity is not in the list because it doesn't need units
-        const unitsProperties = ['width','max-width', 'height', 'max-height', 'font-size', 'line-height', 'border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-radius','border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'gap', 'grid-gap', 'grid-column-gap', 'grid-row-gap', 'column-gap', 'row-gap','flex-basis'];
+        const unitsProperties = ['width','max-width', 'height', 'max-height', 'font-size', 'line-height', 'border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-radius','border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'gap', 'grid-gap', 'grid-column-gap', 'grid-row-gap', 'column-gap', 'row-gap','flex-basis', 'top', 'right', 'bottom', 'left'];
         
         // Build the CSS content
         let cssContent = '';
@@ -460,64 +601,205 @@ export const Canvas = () => {
             }
             return value;
         };
-
-        //For each id, add its CSS selector and properties (if id is empty, it won't be added)
-        JSONtree.idsCSSData.forEach(({ id, properties }) => {
-            const propertyEntries = Object.entries(properties);
-            if (propertyEntries.length > 0) {
-                //use :where has specificity 0, so classes with the same name will override the id
-                cssContent += `#${id} {\n`;
-                propertyEntries.forEach(([prop, value]) => {
-                    //add units to the value if needed
-                    const validatedValue = addUnits(prop, value);
-                    cssContent += `${prop}: ${validatedValue};\n`;
+        //build the CSS for the ids and classes. prefix is used to add the prefix to the CSS selector. Example: if prefix is .tw-builder__canvas, the CSS selector will be .tw-builder__canvas#id or .tw-builder__canvas.class
+        const writeBlock = (idsArr = [], classesArr = [], prefix = '') => {
+            let out = '';
+          //Build the normal CSS for the id or class. Could add states. Use out to build the CSS. First add the selector and then the properties with the addUnits function. Then add the states if they exist.
+            const emitBase = (baseSel, properties, states) => {
+              const entries = Object.entries(properties || {});
+              if (entries.length > 0) {
+                out += `${baseSel} {\n`;
+                entries.forEach(([prop, value]) => {
+                  out += `${prop}: ${addUnits(prop, String(value))};\n`;
                 });
-                cssContent += `}\n`;
-            }
-        });
-
-        //For each class, add its CSS selector and properties (if class is empty, it won't be added)
-        JSONtree.classesCSSData.forEach(({ className, properties }) => {
-            const propertyEntries = Object.entries(properties);
-            if (propertyEntries.length > 0) {
-                cssContent += `.${className} {\n`;
-                propertyEntries.forEach(([prop, value]) => {
-                    //add units to the value if needed
-                    const validatedValue = addUnits(prop, value);
-                    cssContent += `${prop}: ${validatedValue};\n`;
+                out += `}\n`;
+              }
+              if (states && typeof states === 'object') {
+                Object.entries(states).forEach(([pseudo, props]) => {
+                  const stEntries = Object.entries(props || {});
+                  if (stEntries.length > 0) {
+                    out += `${baseSel}${pseudo} {\n`;
+                    stEntries.forEach(([prop, value]) => {
+                      out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                    });
+                    out += `}\n`;
+                  }
                 });
-                cssContent += `}\n`;
-            }
-        });
+              }
+            };
+          
+            //Build the CSS for the nested selectors. If the nested selector has a &, replace it with the base selector. Otherwise, add the base selector and the nested selector.
+            const emitNested = (baseSel, nested) => {
+              if (!nested || typeof nested !== 'object') return;
+              Object.entries(nested).forEach(([sel, node]) => {
+                const targetSel = sel.includes('&') ? sel.split('&').join(baseSel) : `${baseSel} ${sel.trim()}`;
+                emitBase(targetSel, node.properties, node.states);
+              });
+            };
+          
+            //Build the CSS for the ids.
+            idsArr?.forEach(({ id, properties, states, nested }) => {
+              if (!id) return;
+              const baseSel = `${prefix}#${id}`;
+              emitBase(baseSel, properties, states);
+              emitNested(baseSel, nested);
+            });
+          
+            //Build the CSS for the classes.
+            classesArr?.forEach(({ className, properties, states, nested }) => {
+              if (!className) return;
+              const baseSel = `${prefix}.${className}`;
+              emitBase(baseSel, properties, states);
+              emitNested(baseSel, nested);
+            });
+          
+            return out;
+          };
+    
+        // Desktop (base). Build the CSS for the ids and classes
+        cssContent += writeBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData);
+    
+        // Tablet. Build the CSS for the ids and classes
+        const tabletMax = JSONtree?.breakpoints?.tablet || '1024px';
+        const tabletBlock = writeBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData);
+        //if the tablet block has properties, add the media query 
+        if (tabletBlock && tabletBlock.trim().length) {
+            cssContent += `@media (max-width: ${tabletMax}) {\n${tabletBlock}}\n`;
+        }
+    
+        // Mobile. Build the CSS for the ids and classes
+        const mobileMax = JSONtree?.breakpoints?.mobile || '767px';
+        const mobileBlock = writeBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData);
+        //if the mobile block has properties, add the media query
+        if (mobileBlock && mobileBlock.trim().length) {
+            cssContent += `@media (max-width: ${mobileMax}) {\n${mobileBlock}}\n`;
+        }
 
-        // Check if style element exists and if content has changed
+        //Emulate breakpoints in canvas using data-bp attribute
+        const tbScoped = writeBlock(
+            JSONtree?.responsive?.tablet?.idsCSSData,
+            JSONtree?.responsive?.tablet?.classesCSSData,
+            '.tw-builder__canvas[data-bp="tablet"] '
+        );
+        if (tbScoped.trim()) cssContent += `${tbScoped}`;
+        const moScoped = writeBlock(
+            JSONtree?.responsive?.mobile?.idsCSSData,
+            JSONtree?.responsive?.mobile?.classesCSSData,
+            '.tw-builder__canvas[data-bp="mobile"] '
+        );
+        if (moScoped.trim()) cssContent += `${moScoped}`;
+        
+        // Build the CSS for the enter animation. Using tw-modal--open and tw-banner--open classes next to the id or class
+        const writeEnterBlock = (idsArr = [], classesArr = [], scope, prefix = '') => {
+            //Declare the class depending the active root
+            const openClass = scope === 'modal' ? '.tw-modal--open' : '.tw-banner--open';
+            //out is the CSS content to return. Starts empty
+            let out = '';
+
+            idsArr?.forEach(({ id, enter }) => {
+                //props is the properties of the id
+                const props = enter?.[scope];
+                if (!id || !props || Object.keys(props).length === 0) return;
+                //baseSel is the CSS selector for the id. Example: .tw-builder__canvas.tw-modal--open#id(if has prefix) or .tw-modal--open#id(if no prefix)
+                const baseSel = `${prefix}${openClass} #${id}`;
+                //add the CSS selector and the properties to the out
+                out += `${baseSel} {\n`;
+                Object.entries(props).forEach(([prop, value]) => {
+                    //add the property and the value to the out
+                    out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                });
+                out += `}\n`;
+            });
+
+            classesArr?.forEach(({ className, enter }) => {
+                //props is the properties of the class
+                const props = enter?.[scope];
+                if (!className || !props || Object.keys(props).length === 0) return;
+                //isOpenClass is true if the class is tw-modal--open or tw-banner--open
+                const isOpenClass = (scope === 'modal' && className === 'tw-modal--open') || (scope === 'banner' && className === 'tw-banner--open');
+                //baseSel is the CSS selector for the class. Example: .tw-builder__canvas.tw-modal--open.class(if has prefix) or .tw-modal--open.class(if no prefix)
+                const baseSel = isOpenClass ? `${prefix}.${className}` : `${prefix}${openClass} .${className}`;
+                out += `${baseSel} {\n`;
+                Object.entries(props).forEach(([prop, value]) => {
+                    //add the property and the value to the out
+                    out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                });
+                out += `}\n`;
+            });
+
+            return out;
+        };
+
+        // Build the CSS for the enter animation for banner and modal
+        cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'banner');
+        cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'modal');
+
+        // Build the CSS for the enter animation for banner and modal for tablet and mobile
+        const tabletEnter = 
+            writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner') +
+            writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal');
+        if (tabletEnter.trim()) cssContent += `@media (max-width: ${tabletMax}) {\n${tabletEnter}}\n`;
+
+        const mobileEnter = 
+            writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner') +
+            writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal');
+        if (mobileEnter.trim()) cssContent += `@media (max-width: ${mobileMax}) {\n${mobileEnter}}\n`;
+
+        // Build the CSS for the enter animation for banner and modal for tablet and mobile for canvas-scoped
+        cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="tablet"] ');
+        cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="tablet"] ');
+        cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="mobile"] ');
+        cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="mobile"] ');
+    
+        //Check if the style exists. If it does, update the content. If it doesn't, create a new style
         let existingStyle = document.getElementById(styleId);
-        if (existingStyle) { // Change current style element content if CSS properties have changed
+        if (existingStyle) {
             if(existingStyle.textContent !== cssContent) {
                 existingStyle.textContent = cssContent;
             }
-        } else { // Create new style element if it doesn't exist
+        } else {
+            //If the style doesn't exist, create a new style
             const css = document.createElement('style');
             css.id = styleId;
             css.textContent = cssContent;
             document.head.appendChild(css);
         }
     }
+    //Create the CSS for the ids and classes every time the JSONtree changes
     useEffect(() => {
         createCSS(JSONtree);
     }, [JSONtree]);
 
+    //Get the builder breakpoint to set the data-bp attribute
+    const getBuilderBP = () => {
+        const canvasW = parseInt(JSONtree?.canvasMaxWidth || '99999', 10);
+        const tablet = parseInt(JSONtree?.breakpoints?.tablet || '1024', 10);
+        const mobile = parseInt(JSONtree?.breakpoints?.mobile || '767', 10);
+        if (canvasW > tablet) return 'desktop';
+        if (canvasW > mobile) return 'tablet';
+        return 'mobile';
+      };
     return (
         <div className="tw-builder__handlebars-canvas-wrapper">
             <div className="tw-builder__handlebar tw-builder__handlebar--left"></div>
-            <div className="tw-builder__canvas"
-            
-            onDragOver={handleDragOver} /*Handle where the element is being dragged over and will be dropped (using drop indicator)*/
-            onDrop={handleDrop} /*Create element on drop (resposability transfered from toolbar)*/
-            onMouseLeave={handleMouseLeave} /*Remove drop indicator instantly as soon as the mouse leaves the canvas*/
-            onDragLeave={handleDragLeave} /*Remove drop indicator when drag leaves the canvas*/
+            <div 
+                className="tw-builder__canvas"
+                data-bp={getBuilderBP()}
+                style={{
+                    //set the background color or live website screenshot
+                    backgroundColor: JSONtree?.liveWebsite ? '' : (JSONtree?.canvasColor || '#FFFFFF'),
+                    backgroundImage: JSONtree?.liveWebsite && screenshotUrl ? `url(${screenshotUrl})` : 'none',
+                    backgroundSize: JSONtree?.liveWebsite ? 'cover' : 'initial',
+                    backgroundPosition: JSONtree?.liveWebsite ? 'center' : 'initial',
+                    backgroundRepeat: JSONtree?.liveWebsite ? 'no-repeat' : 'initial',
+                    position: 'relative'
+                }}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onMouseLeave={handleMouseLeave}
+                onDragLeave={handleDragLeave}
             >
-                {JSONtree && JSONtree.roots.map(root => renderNode(root, selectedId))} {/* Renders both root nodes */}
+                {JSONtree && JSONtree?.roots?.map(root => renderNode(root, selectedId))}
             </div>
             <div className="tw-builder__handlebar tw-builder__handlebar--right"></div>
         </div>

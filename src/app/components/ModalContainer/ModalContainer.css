@@ -32,6 +32,26 @@
     height: 100%;
     max-height: fit-content;
     will-change: opacity, transform;
+    
+    /* Accessibility improvements */
+    outline: none;
+}
+
+/* Focus styles for modal container (for focus trapping) */
+.modal:focus {
+    outline: none; /* No outline for the modal container itself */
+}
+
+/* Focus styles for focusable elements within the modal */
+.modal button:focus-visible,
+.modal input:focus-visible,
+.modal select:focus-visible,
+.modal textarea:focus-visible,
+.modal a:focus-visible,
+.modal [tabindex]:focus-visible,
+.modal label:focus-within {
+    outline: var(--focus-outline-dashed);
+    outline-offset: 2px;
 }
 
 /* Remove gap for edit actions */

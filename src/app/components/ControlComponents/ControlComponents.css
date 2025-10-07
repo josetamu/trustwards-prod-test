@@ -333,7 +333,7 @@
     top: calc(100% + 6px);
     right: 5%;
     width: fit-content;
-    background: #111;
+    background: #2B2B2B;
     color: white;
     border-radius: 5px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -341,6 +341,13 @@
     margin: 0;
     padding: 4px 5px;
     z-index: 20;
+    max-height: 330px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    
+  }
+  .tw-builder__settings-options:has(.tw-builder__settings-search){
+    min-width: 177px;
   }
 
   .tw-builder__settings-option {
@@ -355,19 +362,46 @@
     white-space: nowrap;
     font-weight: var(--font-weight-medium);
   }
+  .tw-builder__settings-option--font {
+    padding: 8px 1px;
+    font-size: var(--font-size-extreme-mini);
+    margin-left: 5px;
+  }
   
   .tw-builder__settings-option:hover {
     background: var(--accent-bg-color); 
     border-radius: 3px;
   }
-
-
   .tw-builder__settings-check {
     display: flex;
     align-items: center;
     position: absolute;
     left: 2px;
-
+  }
+  .tw-builder__settings-check--font{
+    left: -7.5px;
+  }
+  .tw-builder__settings-search{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border: none;
+    padding: 5px 0;
+  }
+  .tw-builder__settings-search-input{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border: none;
+    padding: 5px 10px;
+    background-color: transparent;
+    color: #FFFFFF;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+  }
+  .tw-builder__settings-search-input:focus{
+    outline: none;
   }
   .tw-builder__settings-divider {
     height: 1px;
@@ -447,7 +481,12 @@
     background-color: #404040;
     color: #F5F5F5;
     width: 54px;
-
+}
+.tw-builder__settings-pen-body .tw-builder__settings-input--abled{
+    background-color: #666666;
+}
+.tw-builder__settings-pen-body .tw-builder__settings-input--disabled{
+    background-color: #404040;
 }
 .tw-builder__settings-pen-body .tw-builder__settings-background{
     background-color: #404040;
@@ -670,3 +709,79 @@
 .tw-builder__settings-actions:has(.tw-builder__settings-action--active) .tw-builder__settings-slider {
     display: block;
 }
+
+.tw-builder__settings-animation{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tw-builder__settings-animation .tw-builder__settings-input{
+    width: 100px;
+}
+.tw-builder__settings-animation-container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.tw-builder__settings-properties{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    
+}
+.tw-builder__settings-properties-pair{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 47%
+}
+
+.tw-builder__settings-properties .tw-builder__settings-setting{
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+}
+.tw-builder__settings-add-property{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    width: 100%;
+    border: 2px dotted var(--shadow-color);
+    border-radius: 5px;
+    padding: 5px 20px;
+    cursor: pointer;
+}
+.tw-builder__settings-add-property-label{
+    color: var(--shadow-color);
+    font-size: 11px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__settings-properties-span{
+    color: var(--subtitle-color);
+    font-size: 11px;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+}
+.tw-builder__settings-properties-input{
+    
+    height: 22px;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    background-color: var(--builder-background);
+    color: var(--builder-text-color);
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing-negative);
+    cursor: text;
+    &::placeholder{
+        color: var(--shadow-color);
+    }
+    &:focus{
+        outline: none;
+    }
+}
+

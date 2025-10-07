@@ -360,6 +360,7 @@ html[data-theme="dark"] {
 
   /*Sites List*/
   --site-background: #363636;
+  --site-footer-background: #404040;
   --site-pro-toggle-background: #454545;
   --site-pro-toggle-text-color: #9B9B9B;
   --view-toggle-color: #666666;

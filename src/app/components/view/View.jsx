@@ -9,7 +9,7 @@ export const View = ({ isGridView, onViewChange }) => {
   const {allUserDataResource, setAppearanceSettings} = useDashboard();
   if(!allUserDataResource) return <PlanSkeleton/>;
   const {appearance, user} = allUserDataResource.read();
-  const userView = appearance['View Sites'];
+  const userView = appearance['View Sites'] || 'grid'; // Default to grid if not set
   
   // Function to update appearance settings in database
   const updateAppearanceSettings = async (settings) => {

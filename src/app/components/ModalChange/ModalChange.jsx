@@ -2,8 +2,9 @@ import './ModalChange.css';
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@supabase/supabaseClient';
+import { ModalContainer } from '../ModalContainer/ModalContainer';
 
-export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, createNewSite, setWebs, allUserDataResource }) {
+export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, createNewSite, setWebs, allUserDataResource, useOwnContainer = false }) {
 
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
@@ -76,7 +77,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             </div>
                         </div>
                         <div className='modal-change__actions'>
-                            <a href="#" className='modal-change__forgot'>Forgot password?</a>
+                            <a href="#" className='modal-change__forgot' tabIndex={0} role="button" aria-label="Forgot password">Forgot password?</a>
                             <button className='modal-change__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
@@ -128,7 +129,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             </div>
                         </div>
                         <div className='modal-change__actions'>
-                            <a href="#" className='modal-change__forgot'>Forgot password?</a>
+                            <a href="#" className='modal-change__forgot' tabIndex={0} role="button" aria-label="Forgot password">Forgot password?</a>
                             <button className='modal-change__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
@@ -458,37 +459,25 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
         }
     }
 
-    // Handle ESC key to close this modal specifically(it is independent of the modalUser)
-    useEffect(() => {
-        const handleEsc = (e) => {
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                e.stopPropagation();
-                onClose();
-            }
-        };
 
-        document.addEventListener('keydown', handleEsc, { capture: true });
-        return () => document.removeEventListener('keydown', handleEsc, { capture: true });
-    }, [onClose]);
-
-    // Handle click outside to close modal
-    const handleBackdropClick = (e) => {
-        if (e.target.className === 'modal-change') {
-            onClose();
-        }
-    };
-
-    return (
-        <div className='modal-change' onClick={handleBackdropClick}>
-            <div className='modal-change__content' onClick={(e) => e.stopPropagation()}>
-                <div className='modal-change__header'>
-                    <h2 className='modal-change__title'>{`${changeType === 'newsite' ? 'Create new site' : `Change ${changeType}`}`}</h2>
-                </div>
-                <div className='modal-change__divider'></div>
-                {renderContent()}
+    const modalContent = (
+        <div className='modal-change__content'>
+            <div className='modal-change__header'>
+                <h2 className='modal-change__title'>{`${changeType === 'newsite' ? 'Create new site' : `Change ${changeType}`}`}</h2>
             </div>
+            <div className='modal-change__divider'></div>
+            {renderContent()}
         </div>
-    )
+    );
+
+    if (useOwnContainer) {
+        return (
+            <ModalContainer isOpen={true} onClose={onClose} modalType="Change">
+                {modalContent}
+            </ModalContainer>
+        );
+    }
+
+    return modalContent;
 }
     

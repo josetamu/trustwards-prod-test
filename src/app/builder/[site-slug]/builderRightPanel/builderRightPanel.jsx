@@ -1,3 +1,4 @@
+'use client'
 import './builderRightPanel.css'
 import BuilderUser from '@components/BuilderUser/BuilderUser';
 import NoSelectedItem from '@components/NoSelectedItem/NoSelectedItem';
@@ -16,6 +17,7 @@ import { Checkbox } from '@builderElements/Checkbox/Checkbox';
 import { Icon } from '@builderElements/Icon/Icon';
 import { Banner } from '@builderElements/Banner/Banner';
 import { Modal } from '@builderElements/Modal/Modal';
+import { useEffect} from 'react';
 
 
 
@@ -97,6 +99,9 @@ function BuilderRightPanel({user, site, checkProfilePicture, profileStyle, setMo
     //Store the controls for the selected element to use in ControlComponent react element
     // First try to get controls by elementType, then by label for modal/banner
     const currentControls = getControls(selectedType);
+
+
+
 
     return (
         <div className={`tw-builder__right-panel ${!isPanelOpen ? 'tw-builder__right-panel--closed' : ''}`}>

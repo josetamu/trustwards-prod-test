@@ -11,15 +11,33 @@ export function NewSite({openChangeModal, showNotification, setIsModalOpen, setM
     
 
     return (
-        <div className="new-site__button" onClick={() => {
-            if(user.Plan === 'Free' && webs.length >= 3) {
-                showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
-                setIsModalOpen(true);
-                setModalType('Plan');
-            } else {
-                openChangeModal('newsite');
-            }
-        }}>
+        <div 
+            className="new-site__button" 
+            onClick={() => {
+                if(user.Plan === 'Free' && webs.length >= 3) {
+                    showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
+                    setIsModalOpen(true);
+                    setModalType('Plan');
+                } else {
+                    openChangeModal('newsite');
+                }
+            }}
+            aria-label="Create new site"
+            tabIndex={0}
+            role="button"
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if(user.Plan === 'Free' && webs.length >= 3) {
+                        showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
+                        setIsModalOpen(true);
+                        setModalType('Plan');
+                    } else {
+                        openChangeModal('newsite');
+                    }
+                }
+            }}
+        >
             New
         </div>
     )

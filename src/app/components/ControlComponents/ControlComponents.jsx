@@ -8,9 +8,18 @@ import BuilderClasses from '@components/BuilderClasses/BuilderClasses';
 import { supabase } from '@supabase/supabaseClient';
 import './ControlComponents.css';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ANIM_TYPES } from '@animations/animations';
 
 
-
+//Apply the control on enter(applying the blur function)
+const applyOnEnter = (e,f) => {
+    if(e.key === 'Enter') {
+        e.preventDefault();
+        e.currentTarget.blur();
+        
+    }
+}
 
 
 //Define each type of control.
@@ -79,12 +88,13 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             placeholder={placeholder} 
             onChange={handleChange}
             onBlur={handleBlur}
+            onKeyDown={(e) => applyOnEnter(e, handleBlur)}
             />
         </div>
     )
 }
 const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder}) => {
-    //At this point we have two superselects. One is for the block with the tags, and the other is for the display with the display properties.
+    //At this point we have three superselects. One is for the block with the tags, the other is for the display with the display properties, and the third is for the position with the position properties.
     const [blockSelectValue, setBlockSelectValue] = useState(() => {
         if (category === 'block') {
             const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -100,11 +110,18 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
         }
         return '';
     });
-    
+    const [positionSelectValue, setPositionSelectValue] = useState(() => {
+        if (category === 'position') {
+            const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+            return savedCSSValue || '';
+        }
+        return '';
+    });
     //function to get the correct value depending on the category
     const getCurrentSelectValue = () => {
         if (category === 'block') return blockSelectValue;
         if (category === 'display') return displaySelectValue;
+        if (category === 'position') return positionSelectValue;
         return '';
     };
     
@@ -112,12 +129,8 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     const setCurrentSelectValue = (value) => {
         if (category === 'block') setBlockSelectValue(value);
         if (category === 'display') setDisplaySelectValue(value);
+        if (category === 'position') setPositionSelectValue(value);
     };
-    const measureRef = useRef(null);
-    const wrapMeasureRef = useRef(null);
-    const flowMeasureRef = useRef(null);
-
-
 
     const [selectedWrap, setSelectedWrap] = useState(() =>{
         return getGlobalCSSValue?.('flex-wrap') || 'wrap';
@@ -187,16 +200,18 @@ useEffect(() => {
     //Handle the chooseType controls
 
     const handleDirectionChange = (direction) => {
-        setSelectedDirection(direction);
+        const newDirection = selectedDirection === direction ? '' : direction;
+        setSelectedDirection(newDirection);
         if (applyGlobalCSSChange) {
-            const finalDirection = isReverse ? `${direction}-reverse` : direction;
+            const finalDirection = isReverse ? `${newDirection}-reverse` : newDirection;
             applyGlobalCSSChange('flex-direction', finalDirection);
         }
     };
     const handleJustifyChange = (justify) => {
-        setSelectedJustify(justify);
+        const newJustify = selectedJustify === justify ? '' : justify;
+        setSelectedJustify(newJustify);
         if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('justify-content', justify);
+            applyGlobalCSSChange('justify-content', newJustify);
         }
     };
 
@@ -213,9 +228,10 @@ useEffect(() => {
     
 
     const handleAlignChange = (align) => {
-        setSelectedAlign(align);
+        const newAlign = selectedAlign === align ? '' : align;
+        setSelectedAlign(newAlign);
         if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('align-items', align);
+            applyGlobalCSSChange('align-items', newAlign);
         }
     };
 
@@ -261,14 +277,14 @@ useEffect(() => {
         options={['div','a','section','article','aside','nav']}
         />
        )}
-       {category === 'display' && (
+             {category === 'display' && (
         <SelectType
         name={name}
         value={getCurrentSelectValue()}
         placeholder={placeholder}
-        cssProperty={cssProperty}  // Añadir esta línea
-        applyGlobalCSSChange={applyGlobalCSSChange}  // Añadir esta línea
-        getGlobalCSSValue={getGlobalCSSValue}  // Añadir esta línea
+        cssProperty={cssProperty}  
+        applyGlobalCSSChange={applyGlobalCSSChange}  
+        getGlobalCSSValue={getGlobalCSSValue}  
         JSONProperty={JSONProperty}
         applyGlobalJSONChange={applyGlobalJSONChange}
         getGlobalJSONValue={getGlobalJSONValue}
@@ -278,8 +294,63 @@ useEffect(() => {
         onChange={handleSuperSelectChange}
         defaultValue={placeholder}
         />
-       )}
-
+      )}
+      {category === 'position' && (
+        <SelectType
+        name={name}
+        value={getCurrentSelectValue()}
+        placeholder={placeholder}
+        cssProperty={cssProperty}
+        applyGlobalCSSChange={applyGlobalCSSChange}
+        getGlobalCSSValue={getGlobalCSSValue}
+        selectedId={selectedId}
+        index={index}
+        options={['static','relative','absolute','fixed','sticky']}
+        onChange={handleSuperSelectChange}
+        defaultValue={placeholder}
+        />
+      )}
+               
+        {(category === 'position' && (getCurrentSelectValue() === 'absolute' || getCurrentSelectValue() === 'relative' || getCurrentSelectValue() === 'fixed')) && (
+            <>
+                <TextType
+                    name="Top"
+                    placeholder="0"
+                    cssProperty="top"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={`${index}-top`}
+                />
+                <TextType
+                    name="Right"
+                    placeholder="0"
+                    cssProperty="right"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={`${index}-right`}
+                />
+                <TextType
+                    name="Bottom"
+                    placeholder="0"
+                    cssProperty="bottom"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={`${index}-bottom`}
+                />
+                <TextType
+                    name="Left"
+                    placeholder="0"
+                    cssProperty="left"
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={`${index}-left`}
+                />
+            </>
+        )}
         {getCurrentSelectValue() === 'a' && (
            <TextType
            name="Link to"
@@ -888,12 +959,12 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur} onKeyDown={(e) => applyOnEnter(e, handleLeftBlur)}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur} onKeyDown={(e) => applyOnEnter(e, handleTopBlur)}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur} onKeyDown={(e) => applyOnEnter(e, handleBottomBlur)}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur} onKeyDown={(e) => applyOnEnter(e, handleRightBlur)}/>
         </div>
     </div>
     )
@@ -1093,10 +1164,10 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
                         backgroundColor: finalColor, 
                     }}>
                 </div>
-                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} placeholder="Hex here..."/>
+                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} onKeyDown={(e) => applyOnEnter(e, handleHexBlur)} placeholder="Hex here..."/>
             </div>
             <div className="tw-builder__settings-percentages">
-                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} />
+                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} onKeyDown={(e) => applyOnEnter(e, handlePercentageChange)} />
             </div>
         </div>
     </div>
@@ -1224,7 +1295,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             value={imageUrl}
             onChange={handleUrlChange}
             onBlur={handleUrlSubmit}
-            onKeyDown={handleUrlSubmit}
+            onKeyDown={(e) => applyOnEnter(e, handleUrlSubmit)}
             />
         </div>
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -1282,17 +1353,19 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 
     //Function to apply the correct css
     const handleChooseChange = useCallback((choose) => {
-        setSelectedChoose(choose);
+
+        const newValue = selectedChoose === choose ? '' : choose;
+        setSelectedChoose(newValue);
         if (cssProperty && applyGlobalCSSChange) {
-            let finalValue = choose;
+            let finalValue = newValue;
             //If reverse is active row === row-reverse, and column === column-reverse
             if(category === 'flex-direction' && isReverse) {
-                finalValue = choose === 'row'? 'row-reverse' : 'column-reverse';
+                finalValue = newValue === 'row'? 'row-reverse' : 'column-reverse';
             }
             //Global function to apply and saved css
             applyGlobalCSSChange(cssProperty, finalValue);
         }
-    }, [cssProperty, applyGlobalCSSChange, category, isReverse]);
+    }, [cssProperty, applyGlobalCSSChange, category, isReverse, selectedChoose]);
 
     //Handle the reverse choose
     const handleReverseToggle = useCallback(() => {
@@ -1812,11 +1885,6 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     const [textareaValue, setTextareaValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         
-        //Treat New Text 2(Default text) like empty string
-/*         if (savedJSONValue === "New Text 2") {
-            return '';
-        }
-         */
         if (!savedJSONValue && value) {
             setTimeout(() => {
                 if (JSONProperty && applyGlobalJSONChange) {
@@ -1881,6 +1949,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
                 value={textareaValue}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                onKeyDown={(e) => applyOnEnter(e, handleBlur)}
                 className="tw-builder__settings-textarea"
             />
         </div>
@@ -1888,6 +1957,102 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
 }
 const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange}) =>{
     
+    const [fontOptions, setFontOptions] = useState([]);
+    const [fontVariants, setFontVariants] = useState([]);
+    const [weightOptions, setWeightOptions] = useState([]);
+    const systemFontOptions = ['Arial', 'Courier New', 'Georgia', 'Helvetica', 'Verdana', 'Tahoma', 'Times','Times New Roman', 'Sans-serif'];
+    const [searchFilter, setSearchFilter] = useState('');
+    const [italicWeightOptions, setItalicWeightOptions] = useState([]);
+
+    //Fetch the font options(families and variants) from the API
+    useEffect(() => {
+        if (name !== 'Font' && name !== 'Weight') return;
+        fetch('/api/fonts')
+            .then(r => r.json())
+            .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
+            .catch(() => setFontOptions([]));
+    }, [name]);
+
+    //Extract the first family from the css font family
+    const extractPrimaryFamily = (cssFontFamily) => {
+        if (!cssFontFamily) return '';
+        const first = cssFontFamily.split(',')[0].trim();
+        return first.replace(/^["']|["']$/g, '');
+    };
+
+    const ensureFontLoaded = (family) => {
+        if (!family) return;
+        //Create the id for the link taking off the spaces and replacing them with +
+        const famParam = family.trim().replace(/\s+/g, '+');
+        const id = `tw-gf-${famParam}`;
+    
+        //Get the head of the iframe
+        const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
+        //Check if the preconnect link exists
+        if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+            //Create the preconnect link for the Google Fonts API. Reduce latency
+            const pc1 = document.createElement('link');
+            pc1.rel = 'preconnect';
+            pc1.href = 'https://fonts.googleapis.com';
+            pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
+            head.appendChild(pc1);
+    
+            //Create the preconnect link for the Google Fonts static API. Reduce latency
+            const pc2 = document.createElement('link');
+            pc2.rel = 'preconnect';
+            pc2.href = 'https://fonts.gstatic.com';
+            pc2.crossOrigin = '';
+            pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
+            head.appendChild(pc2);
+        }
+    
+        // Build the href with all the variants
+        const entry = fontOptions.find(f => f.family === family);
+        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+    
+        if (entry && Array.isArray(entry.variants)) {
+            //Create the sets for the normal and italic weights
+            const normal = new Set();
+            const italic = new Set();
+    
+            //map the variants to the normal and italic sets
+            entry.variants.forEach(v => {
+                if (v === 'regular') { normal.add(400); return; }
+                if (v === 'italic')  { italic.add(400); return; }
+                const m = v.match(/^(\d{3})(italic)?$/);
+                if (m) {
+                    const n = parseInt(m[1], 10);
+                    if (m[2]) italic.add(n); else normal.add(n);
+                }
+            });
+            //Sort the weights
+            const sortNums = arr => Array.from(arr).sort((a,b) => a - b).join(';');
+    
+            //Build the href with the normal or italic weights
+            if (italic.size) {
+                const parts = [];
+                const nList = sortNums(normal);
+                const iList = sortNums(italic);
+                if (nList) parts.push(`0,${nList}`);
+                if (iList) parts.push(`1,${iList}`);
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
+            } else if (normal.size) {
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
+            }
+        }
+        //Check if the link exists and append it to the head
+        let link = head.querySelector(`link#${id}`);
+        if (!link) {
+            //If the link doesn't exist, create it
+            link = document.createElement('link');
+            link.id = id;
+            link.rel = 'stylesheet';
+            link.href = href;
+            //Append the link to the head
+            head.appendChild(link);
+        }
+    };
+
     //Object to map the font weight to the css value
     const fontWeightMap = {
         'Thin': '100',
@@ -1905,29 +2070,94 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         Object.fromEntries(
             Object.entries(fontWeightMap).map(([key, value]) => [value, key])
         )
+
+        const weightNameOrder = ['Thin','Extra Light','Light','Normal','Medium','Semi Bold','Bold','Extra Bold','Black'];
+        const reverseMap = fontWeightMapReverse();
+    
+        const computeWeightOptionsForFamily = (family) => {
+            if (!family) {
+                // fallback complete (system fonts)
+                return {
+                    weights: weightNameOrder,
+                    italics: weightNameOrder.map(w => `${w} Italic`)
+                };
+            }
+            //Find the family in the font options
+            const entry = fontOptions.find(f => f.family === family);
+            //If the family is not found or the variants are not found, return the default weights and italics
+            if (!entry || !entry.variants?.length) {
+                return {
+                    weights: weightNameOrder,
+                    italics: weightNameOrder.map(w => `${w} Italic`)
+                };
+            }
+            //Create the sets for the normal and italic weights
+            const weightsSet = new Set();
+            const italicsSet = new Set();
+    
+            entry.variants.forEach(v => {
+                //If the variant is regular, add the Normal weight
+                if (v === 'regular') {
+                    weightsSet.add('Normal');
+                    return;
+                }
+                //If the variant is italic, add the Normal Italic weight
+                if (v === 'italic') {
+                    italicsSet.add('Normal Italic');
+                    return;
+                }
+                //If the variant is a number, add the weight
+                const m = v.match(/^(\d{3})(italic)?$/);
+                if (m) {
+                    const num = m[1];
+                    const label = reverseMap[num] || num;
+                    //If the variant is italic, add the Italic weight
+                    if (m[2]) italicsSet.add(`${label} Italic`);
+                    else weightsSet.add(label);
+                }
+            });
+    
+            const sortByOrder = (a, b) => weightNameOrder.indexOf(a) - weightNameOrder.indexOf(b);
+            const weights = Array.from(weightsSet).sort(sortByOrder);
+            const italics = Array.from(italicsSet).sort((a, b) =>
+                sortByOrder(a.replace(' Italic',''), b.replace(' Italic',''))
+            );
+    
+           //return the weights and italics arrays
+            return {
+                weights: weights.length ? weights : weightNameOrder,
+                italics: italics
+            };
+        };
+    
+        useEffect(() => {
+            if (name !== 'Weight') return; // Only run for Weight 
+            const cssFamily = getGlobalCSSValue?.('font-family'); // Read the current global font-family from CSS
+            const currentFamily = extractPrimaryFamily(cssFamily); // Extract the primary family 
+            const { weights, italics } = computeWeightOptionsForFamily(currentFamily); // Compute available options from Google Fonts variants
+            setWeightOptions(weights); // Set normal weight options for the dropdown
+            setItalicWeightOptions(italics); // Set italic weight options for the dropdown
+        }, [name, getGlobalCSSValue, selectedId, fontOptions]); 
+
     //State to store the selected value
     const [selected, setSelected] = useState(() => {
-        if(JSONProperty && getGlobalJSONValue) {
+        if (JSONProperty && getGlobalJSONValue) {
             return getGlobalJSONValue(JSONProperty) || value || '';
-        } 
-        //If the name is Weight, get the css value and the font style
+        }
         if (name === 'Weight' && getGlobalCSSValue && cssProperty) {
             const cssValue = getGlobalCSSValue(cssProperty);
             const fontStyle = getGlobalCSSValue('font-style');
-
-            //If the font style is italic, get the weight name and the italic option
             if (fontStyle === 'italic') {
                 const weightName = fontWeightMapReverse()[cssValue];
                 const italicOption = `${weightName} Italic`;
-                //If the italic option exists in options2, return it
-                if (options2 && options2.includes(italicOption)) {
-                    return italicOption;
-                }
+                if (options2 && options2.includes(italicOption)) return italicOption;
             }
-
             return fontWeightMapReverse()[cssValue] || cssValue || value || '';
         }
-        return getGlobalCSSValue?.(cssProperty) || value || '';
+        const cssVal = getGlobalCSSValue?.(cssProperty);
+        return name === 'Font'
+            ? (extractPrimaryFamily(cssVal) || value || '')
+            : (cssVal || value || '');
     });
 
     const [open, setOpen] = useState(false);
@@ -1949,39 +2179,61 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     // Update when selected element or layer values change
     useEffect(() => {
         if (!selectedId) return;
-
+    
+        // If the control uses JSON, respect that flow
         if (JSONProperty && getGlobalJSONValue) {
-            const savedValue = getGlobalJSONValue(JSONProperty);
-            const next = savedValue ?? '';
+            const next = getGlobalJSONValue(JSONProperty) ?? '';
             if (next !== selected) setSelected(next);
             return;
         }
-
+        
         if (getGlobalCSSValue && cssProperty) {
+            //If the name is Weight, apply the font weight and the font style
             if (name === 'Weight') {
                 const cssValue = getGlobalCSSValue(cssProperty);
                 const fontStyle = getGlobalCSSValue('font-style');
                 let nextLabel = fontWeightMapReverse()[cssValue] || cssValue || '';
-
+                //If the font style is italic, apply the italic weight
                 if (fontStyle === 'italic' && nextLabel) {
                     const italicOption = `${nextLabel} Italic`;
                     if (options2 && options2.includes(italicOption)) {
                         nextLabel = italicOption;
                     }
                 }
-
                 if ((nextLabel || '') !== selected) setSelected(nextLabel || '');
             } else {
-                const savedValue = getGlobalCSSValue(cssProperty);
-                const next = savedValue ?? '';
+                
+                const cssValue = getGlobalCSSValue(cssProperty);
+                const next = name === 'Font' ? extractPrimaryFamily(cssValue) : (cssValue ?? '');
+                if (name === 'Font' && next) ensureFontLoaded(next); // load the saved font
                 if (next !== selected) setSelected(next);
             }
         }
     }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue, options2]);
+    
+    useEffect(() => {
+        //Reinject the current family with all the weights when fontOptions arrive
+        const cssVal = getGlobalCSSValue?.(cssProperty || 'font-family');
+        const fam = extractPrimaryFamily(cssVal) || (name === 'Font' ? selected : '');
+        if (fam) ensureFontLoaded(fam);
+    }, [fontOptions]);
+    
     // Handle select change with global CSS or JSON application
     const handleSelectChange = (e) => {
         const newValue = e;
         setSelected(newValue);
+
+        if (name === 'Font') {
+            ensureFontLoaded(newValue);
+            if (applyGlobalCSSChange) {
+                applyGlobalCSSChange({
+                    [cssProperty || 'font-family']: `"${newValue}"`,
+                    'font-weight': '' // reset when changing family
+                });
+            }
+            onChange && onChange(newValue);
+            return;
+        }
         //If the name is Weight, apply the font weight and the font style
         if(name === 'Weight') {
             let fontWeight;
@@ -2003,6 +2255,9 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                         "font-style": "normal"
                       });
                 }
+                const fam = extractPrimaryFamily(getGlobalCSSValue?.('font-family'));
+                if (fam) ensureFontLoaded(fam);
+                return;
             }
             return;
         }
@@ -2022,10 +2277,49 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         }
     };
 
-    // Combine options for Weight
-    const allOptions = name === 'Weight' && options2 ? 
-        [...options, '---', ...options2] : 
-        options;
+    // Combine options for Font and Weight, with system fonts and Google fonts separated by '---'
+    const allOptions = (() => {
+        if (name === 'Font') {
+            // Show system fonts first, then separator, then Google fonts
+            const googleFonts = fontOptions?.length ? fontOptions : [];
+            if (systemFontOptions?.length && googleFonts.length) {
+                return [...systemFontOptions, '---', ...googleFonts];
+            }
+            if (systemFontOptions?.length) {
+                return systemFontOptions;
+            }
+            if (googleFonts.length) {
+                return googleFonts;
+            }
+            return options || [];
+        }
+        //Show the weights and if there are italic weights, show them separated by '---'
+        if (name === 'Weight') {
+            const hasDynamic = (weightOptions?.length || italicWeightOptions?.length);
+            if (hasDynamic) {
+              return italicWeightOptions?.length
+                ? [...(weightOptions || []), '---', ...italicWeightOptions]
+                : (weightOptions || []);
+            }
+            // If there are no dynamic (for example, system fonts or not found in fontOptions)
+            return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
+          }
+        return options || [];
+    })();
+
+    // Filter options based on search
+    const filteredOptions = (() => {
+        if (name !== 'Font' || !searchFilter) {
+            return allOptions;
+        }
+        
+        const filterLower = searchFilter.toLowerCase();
+        return allOptions.filter(opt => {
+            if (opt === '---') return true; // Always show separator
+            const displayValue = typeof opt === 'object' ? opt.family : opt;
+            return displayValue.toLowerCase().includes(filterLower);
+        });
+    })();
 
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -2040,7 +2334,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     applyGlobalJSONChange={applyGlobalJSONChange}
                     cssDeleteBatch={name === 'Weight' ? { [cssProperty]: '', 'font-style': '' } : undefined}
                     onDelete={() => {
-                        setSelected(''); // Dejar vacío para mostrar placeholder
+                        setSelected(''); // Leave empty to show placeholder
                         if (onChange) {
                             onChange(''); // Notificar al SuperSelectType
                         }
@@ -2049,7 +2343,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             
             </span>
             <div className="tw-builder__settings-select-container" ref={containerRef}>
-            {/* Botón principal */}
+            {/* Main button */}
             <button
                 onClick={() => setOpen(!open)}
                 className="tw-builder__settings-select"
@@ -2071,38 +2365,64 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     </svg>
                 </span>
         
-            {/* Lista desplegable */}
+            {/* Dropdown list */}
+            <AnimatePresence>
             {open && (
-                <ul className="tw-builder__settings-options">
-                {allOptions.map((opt) => (
-                    <li
-                    key={opt}
-                    onClick={() => {
-                        if (opt === '---') return;
-                        handleSelectChange(opt);
-                        setOpen(false);
-                    }}
-                    className={`tw-builder__settings-option ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
-                    >
-                    {opt === selected ? 
-                        <span className="tw-builder__settings-check"> 
-                            <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
-                            </svg>
-                        </span>
-                    : null}
-                    {opt === '---' ? '' : opt}
-
-                    </li>
-                ))}
-                </ul>
+                <motion.ul className="tw-builder__settings-options" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
+                    {/* Search for Font - inside the options container */}
+                    {name === 'Font' && (
+                        <>
+                        <li className="tw-builder__settings-search">
+                            <input
+                                type="text"
+                                placeholder="Search font..."
+                                value={searchFilter}
+                                onChange={(e) => setSearchFilter(e.target.value)}
+                                className="tw-builder__settings-search-input"
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => e.stopPropagation()}
+                                
+                            />
+                        </li>
+                        <div className="tw-builder__settings-divider"></div>
+                        </>
+                    )}
+                {filteredOptions.map((opt, index) => {
+                    const displayValue = typeof opt === 'object' ? opt.family : opt;
+                    const optionValue = typeof opt === 'object' ? opt.family : opt;
+                    
+                    return (
+                        <li
+                            key={typeof opt === 'object' ? opt.family : `${opt}-${index}`}
+                            onClick={() => {
+                                if (opt === '---') return;
+                                handleSelectChange(optionValue);
+                                setOpen(false);
+                                setSearchFilter('');
+                            }}
+                            className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
+                        >
+                            {optionValue === selected ? 
+                                <span className={`tw-builder__settings-check ${name === 'Font' ? 'tw-builder__settings-check--font' : ''}`}> 
+                                    <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
+                                    </svg>
+                                </span>
+                            : null}
+                            {opt === '---' ? '' : displayValue}
+                        </li>
+                    );
+                })}
+                </motion.ul>
             )}
+            </AnimatePresence>
             </div>
         </div>
 
       );
 
 }
+
 const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [open, setOpen] = useState(false);
     const [inset, setInset] = useState(false);
@@ -2145,6 +2465,34 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         return () => window.removeEventListener('tw-pen-open', onPenOpen);
     }, []);
 
+    //Close the border control when clicking outside
+    useEffect(() => {
+        if (!open) return;
+        
+        const handleClickOutside = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [open]);
+
+    //Close the border control when pressing the escape key
+    useEffect(() => {
+        if (!open) return;
+        
+        const handleEscKey = (e) => {
+            if (e.key === 'Escape') {
+                setOpen(false);
+            }
+        };
+        
+        document.addEventListener('keydown', handleEscKey);
+        return () => document.removeEventListener('keydown', handleEscKey);
+    }, [open]);
+
     //Handle the mouse enter and leave of the tooltip
     const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
     const handleMouseLeave = () => setActiveTooltip(null);
@@ -2177,6 +2525,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
             }
         }
     };
+    //Function to link the border radius. If value is false, unlink the border radius and work with individual sides. If value is true, link the border radius and give each side the same value by using border-radius.
     const handleRadiusLinkToggle = (value) => {
         setIsRadiusLinked(value);
         if(!value){
@@ -2297,15 +2646,15 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
                 applyGlobalCSSChange('border-width', bwLinked);
             }
         } else {
-            // Individual modification: side = side ('t','r','b','l'), applies to a single side
-            const sideMap = { t: 'top', r: 'right', b: 'bottom', l: 'left' };
-
-                const property = `border-${sideMap[side]}-width`;
-                if (applyGlobalCSSChange) {
-                    applyGlobalCSSChange(property, bw[side] || '0');
-                    console.log('Applied individual property:', property, bw[side] || '0');
-                }
-    
+            // Apply all individual sides at once on any small input blur
+            if (applyGlobalCSSChange) {
+                applyGlobalCSSChange({
+                    'border-top-width': bw.t || '0',
+                    'border-right-width': bw.r || '0',
+                    'border-bottom-width': bw.b || '0',
+                    'border-left-width': bw.l || '0'
+                });
+            }
         }
     };
     
@@ -2381,8 +2730,6 @@ const parseRadius = useCallback((radiusStr) => {
         }else{
             const value = sideOrValue || '';
             setBrLinked(value);
-            const newBr = { tl: value, tr: value, br: value, bl: value };
-            setBr(newBr);
         }
     
 
@@ -2396,8 +2743,8 @@ const parseRadius = useCallback((radiusStr) => {
             const sideMap = { tl: 'top-left', tr: 'top-right', br: 'bottom-right', bl: 'bottom-left' };
             const property = `border-${sideMap[side]}-radius`;
             if (applyGlobalCSSChange) {
-                applyGlobalCSSChange(property, br[side] || '0');
-                console.log('Applied individual property:', property, br[side] || '0');
+                applyGlobalCSSChange(property, br[side] || '');
+                console.log('Applied individual property:', property, br[side] || '');
             }
         }
     };
@@ -2433,8 +2780,9 @@ const parseRadius = useCallback((radiusStr) => {
                         <path d="M8.3834 0.493193C8.31065 0.486644 8.23748 0.486644 8.16473 0.493193C7.90803 0.516317 7.70106 0.63382 7.51408 0.780856C7.33869 0.918791 7.14488 1.1126 6.92009 1.33743L6.3125 1.94503L9.05366 4.6862L9.66125 4.07864C9.88609 3.85382 10.0799 3.66003 10.2179 3.48462C10.3649 3.29763 10.4824 3.09068 10.5055 2.83398C10.512 2.76124 10.512 2.68805 10.5055 2.61531C10.4824 2.35861 10.3649 2.15166 10.2179 1.96468C10.0799 1.78927 9.88609 1.59547 9.66125 1.37066C9.43645 1.14583 9.20944 0.918797 9.034 0.780856C8.84701 0.63382 8.6401 0.516317 8.3834 0.493193Z" fill="white"/>
                     </svg>
                 </span>
+                <AnimatePresence>
                 {open && (
-                    <div className="tw-builder__settings-pen-controls">
+                    <motion.div className="tw-builder__settings-pen-controls" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
                             <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
@@ -2451,15 +2799,33 @@ const parseRadius = useCallback((radiusStr) => {
                                     applyGlobalCSSChange={applyGlobalCSSChange}
                                     getGlobalCSSValue={getGlobalCSSValue}
                                     selectedElementData={selectedElementData}
+                                    name={'Border Color'}
                                 />
-                               <div className="tw-builder__settings-setting">
-                                    <span className="tw-builder__settings-subtitle">Width</span>
+                            
+                            <div className="tw-builder__settings-setting">
+                                    <span className="tw-builder__settings-subtitle">Width
+                                        <StylesDeleter 
+                                            value={currentBorderWidth || currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth}
+                                            cssDeleteBatch={{
+                                                'border-width': '',
+                                                'border-top-width': '',
+                                                'border-right-width': '',
+                                                'border-bottom-width': '',
+                                                'border-left-width': ''
+                                            }}
+                                            getGlobalCSSValue={getGlobalCSSValue} 
+                                            applyGlobalCSSChange={applyGlobalCSSChange}
+                                        />
+                                    </span>
                                     <div className="tw-builder__settings-width">
-                                        <input type="text" className="tw-builder__settings-input" 
+                                        <input 
+                                            type="text" 
+                                            className={`tw-builder__settings-input ${isWidthLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`}
                                             value={isWidthLinked ? bwLinked : ''}
                                             onChange={(e) => handleBorderWidthChange(e.target.value)}
                                             onBlur={handleBorderWidthBlur}
-                   
+                                            onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur)}
+                                            disabled={!isWidthLinked}    
                                         />
                                         <div className="tw-builder__settings-actions">
                                             <button className={`tw-builder__settings-action ${isWidthLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleWidthLinkToggle(true)} onMouseEnter={() => handleMouseEnter('link')} onMouseLeave={handleMouseLeave}>
@@ -2489,15 +2855,16 @@ const parseRadius = useCallback((radiusStr) => {
                                             </button> 
                                         </div>
                                     </div>
+                                    
                                     <div className="tw-builder__settings-units">
-                                        <div className="tw-builder__settings-units-label">
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit"value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')}/>
+                                        <div className={`tw-builder__settings-units-label ${isWidthLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={isWidthLinked ? '' : bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('t'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('r'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('b'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('l'))} disabled={isWidthLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">T</span>
@@ -2506,10 +2873,11 @@ const parseRadius = useCallback((radiusStr) => {
                                             <span className="tw-builder__settings-units-direction">L</span>
                                         </div>
                                     </div>
+                                    
                                 </div>
                                 <SelectType
                                     name={'Style'}
-                                    value={'None'}
+                                    placeholder={'None'}
                                     options={['None', 'Solid', 'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset','Hidden']}
                                     index={'border-style'}
                                     cssProperty={'border-style'}
@@ -2518,12 +2886,29 @@ const parseRadius = useCallback((radiusStr) => {
                                     selectedElementData={selectedElementData}
                                 />
                                 <div className="tw-builder__settings-setting">
-                                    <span className="tw-builder__settings-subtitle">Radius</span>
+                                    <span className="tw-builder__settings-subtitle">Radius
+                                        <StylesDeleter 
+                                            value={currentRadius || currentBorderTopLeftRadius || currentBorderTopRightRadius || currentBorderBottomRightRadius || currentBorderBottomLeftRadius}
+                                            cssDeleteBatch={{
+                                                'border-radius': '',
+                                                'border-top-left-radius': '',
+                                                'border-top-right-radius': '',
+                                                'border-bottom-right-radius': '',
+                                                'border-bottom-left-radius': ''
+                                            }}
+                                            getGlobalCSSValue={getGlobalCSSValue} 
+                                            applyGlobalCSSChange={applyGlobalCSSChange}
+                                        />
+                                    </span>
                                     <div className="tw-builder__settings-width">
-                                        <input type="text" className="tw-builder__settings-input" 
+                                        <input 
+                                            type="text" 
+                                            className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`} 
                                             value={isRadiusLinked ? brLinked : ''}
                                             onChange={(e) => handleRadiusChange(e.target.value)}
                                             onBlur={handleRadiusBlur}
+                                            onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur)}
+                                            disabled={!isRadiusLinked}
                                         />
                                         <div className="tw-builder__settings-actions">
                                             <button className={`tw-builder__settings-action ${isRadiusLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleRadiusLinkToggle(true)} onMouseEnter={() => handleMouseEnter('rlink')} onMouseLeave={handleMouseLeave}>
@@ -2553,15 +2938,16 @@ const parseRadius = useCallback((radiusStr) => {
                                             </button> 
                                         </div>
                                     </div>
+                                    
                                     <div className="tw-builder__settings-units">
-                                        <div className="tw-builder__settings-units-label">
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')}/>
+                                        <div className={`tw-builder__settings-units-label ${isRadiusLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
+                                                <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('tl'))} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} onBlur={() => handleRadiusBlur('tr')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} onBlur={() => handleRadiusBlur('tr')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('tr'))} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} onBlur={() => handleRadiusBlur('br')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} onBlur={() => handleRadiusBlur('br')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('br'))} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} onBlur={() => handleRadiusBlur('bl')}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} onBlur={() => handleRadiusBlur('bl')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('bl'))} disabled={isRadiusLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">TL</span>
@@ -2570,12 +2956,13 @@ const parseRadius = useCallback((radiusStr) => {
                                             <span className="tw-builder__settings-units-direction">BL</span>
                                         </div>
                                     </div>
-
+                                   
                                 </div>
-                              
+
                         </div>
-                    </div>
+                    </motion.div>
                 )}
+                </AnimatePresence>
             </div>
         </div>
     )
@@ -2584,14 +2971,23 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     const [open, setOpen] = useState(false);
     const [inset, setInset] = useState(false);
-    const instanceId = useRef(Symbol('pen'));    const [activeTooltip, setActiveTooltip] = useState(null);
+    const instanceId = useRef(Symbol('pen'));    
     const containerRef = useRef(null);
+    
+    //Local state to keep the values that the user writes
+    const [localValues, setLocalValues] = useState({
+        x: '',
+        y: '',
+        blur: '',
+        spread: '',
+        color: ''
+    });
 
     //Function to parse the box-shadow string in parts
     const parseBoxShadow = useCallback((shadowStr) => {
         //If the shadowStr is not a string, return the default values
         if (!shadowStr || typeof shadowStr !== 'string') {
-            return { inset: false, x: '0', y: '0', blur: '0', spread: '0', color: '' };
+            return { inset: false, x: '', y: '', blur: '', spread: '', color: '' };
         }
         //Check if the shadowStr has inset
         const hasInset = /\binset\b/i.test(shadowStr);
@@ -2608,99 +3004,194 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
         //Return the parsed shadowStr
         return {
             inset: hasInset,
-            x: parts[0],
-            y: parts[1],
-            blur: parts[2],
-            spread: parts[3],
+            x: parts[0] || '',
+            y: parts[1] || '',
+            blur: parts[2] || '',
+            spread: parts[3] || '',
             color
         };
     }, []);
 
     //Function to compose the box-shadow string from the parts
     const composeBoxShadow = useCallback((parts) => {
+        // Check if ALL fields are empty (except inset)
+        const allEmpty = 
+            (!parts.x || parts.x.trim() === '') &&
+            (!parts.y || parts.y.trim() === '') &&
+            (!parts.blur || parts.blur.trim() === '') &&
+            (!parts.spread || parts.spread.trim() === '') &&
+            (!parts.color || parts.color.trim() === '');
+        
+        // If all fields are empty, return empty string
+        if (allEmpty) {
+            return '';
+        }
 
         //Create an array to store the parts
         const tokens = [];
+        
         //Add the inset part if it is true
         if (parts.inset) tokens.push('inset');
-        //Add the x part
-        tokens.push(parts.x);
-        //Add the y part
-        tokens.push(parts.y);
-        //Add the blur part if it is not 0 and not null
-        if (parts.blur && parts.blur !== '0') tokens.push(parts.blur);
-        else tokens.push(parts.blur); 
-        //Add the spread part if it is not 0 and not null
-        if (parts.spread && parts.spread !== '0') tokens.push(parts.spread);
-        else tokens.push(parts.spread);
-        //Add the color part if it is not null and not empty
-        if (parts.color && parts.color !== '') tokens.push(parts.color);
+        
+        //Add X (required by CSS, use 0 if empty but other values exist)
+        tokens.push((parts.x && parts.x.trim() !== '') ? parts.x : '0');
+        
+        //Add Y (required by CSS, use 0 if empty but other values exist)
+        tokens.push((parts.y && parts.y.trim() !== '') ? parts.y : '0');
+        
+        //Add blur if it exists OR if spread exists (because spread needs blur before it)
+        const hasBlur = parts.blur && parts.blur.trim() !== '';
+        const hasSpread = parts.spread && parts.spread.trim() !== '';
+        
+        if (hasBlur) {
+            tokens.push(parts.blur);
+        } else if (hasSpread) {
+            // If there is spread but no blur, add 0 for blur
+            tokens.push('0');
+        }
+        
+        //Add spread if it exists
+        if (hasSpread) {
+            tokens.push(parts.spread);
+        }
+        
+        //Add color if it exists
+        if (parts.color && parts.color.trim() !== '') {
+            tokens.push(parts.color);
+        }
+        
         //Join the parts and return the string
         return tokens.join(' ').trim();
     }, []);
 
     //Get the current box-shadow string from the global CSS value
     const currentShadow = getGlobalCSSValue?.('box-shadow') || '';
-    //Parse the box-shadow string in parts. Create an object with the parts. Example: { inset: false, x: '1', y: '1', blur: '10', spread: '1', color: '#ff0000' }
-    const parsed = parseBoxShadow(currentShadow);
 
+    // Synchronize local state when the selected element changes
     useEffect(() => {
-        //Set the inset part if it is true
+        const parsed = parseBoxShadow(currentShadow);
         setInset(!!parsed.inset);
-    }, [selectedElementData, currentShadow]);
+        
+        // Only update localValues if the currentShadow changed by selection of element
+        // Do not update if it is an empty string and we already have local values
+        if (currentShadow || (!currentShadow && !Object.values(localValues).some(v => v))) {
+            setLocalValues({
+                x: parsed.x === '0' ? '' : parsed.x,
+                y: parsed.y === '0' ? '' : parsed.y,
+                blur: parsed.blur === '0' ? '' : parsed.blur,
+                spread: parsed.spread === '0' ? '' : parsed.spread,
+                color: parsed.color
+            });
+        }
+    }, [selectedElementData?.id]);
 
-    //Function get the box-shadow string from JSONtree and parse it in parts. Get each part to use it in the controls.
+    //Function get the box-shadow values from local state
     const wrappedGetCSS = useCallback((prop) => {
-        if (prop === 'box-shadow-x') return parsed.x || '0';
-        if (prop === 'box-shadow-y') return parsed.y || '0';
-        if (prop === 'box-shadow-blur') return parsed.blur || '0';
-        if (prop === 'box-shadow-spread') return parsed.spread || '0';
-        if (prop === 'box-shadow-color') return parsed.color || '';
+        if (prop === 'box-shadow-x') return localValues.x;
+        if (prop === 'box-shadow-y') return localValues.y;
+        if (prop === 'box-shadow-blur') return localValues.blur;
+        if (prop === 'box-shadow-spread') return localValues.spread;
+        if (prop === 'box-shadow-color') return localValues.color;
         
         return getGlobalCSSValue?.(prop);
-    }, [getGlobalCSSValue, parsed.x, parsed.y, parsed.blur, parsed.spread, parsed.color]);
+    }, [localValues, getGlobalCSSValue]);
 
     //Function apply the box-shadow string to the CSS and JSON.
-    const wrappedApplyCSS = useCallback((prop, val) => {
-        let next = { ...parsed, inset };
-        //Switch the property to apply the value to the correct part.
-        switch (prop) {
-            case 'box-shadow-x':
-                next.x = (val ?? '').toString().trim();
-                break;
-            case 'box-shadow-y':
-                next.y = (val ?? '').toString().trim();
-                break;
-            case 'box-shadow-blur':
-                next.blur = (val ?? '').toString().trim();
-                break;
-            case 'box-shadow-spread':
-                next.spread = (val ?? '').toString().trim();
-                break;
-            case 'box-shadow-color':
-                next.color = (val ?? '').toString().trim();
-                break;
-            
-            case 'box-shadow':
-                
-                if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
-                return;
-            default:
-                if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
-                return;
+const wrappedApplyCSS = useCallback((prop, val) => {
+    // If the first parameter is an object (batch), process it
+    if (typeof prop === 'object' && prop !== null && val === undefined) {
+        const batch = prop;
+        let nextLocal = { ...localValues };
+        let hasBoxShadowChange = false;
+        
+        // Process each property of the batch
+        Object.entries(batch).forEach(([key, value]) => {
+            switch (key) {
+                case 'box-shadow-x':
+                    nextLocal.x = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-y':
+                    nextLocal.y = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-blur':
+                    nextLocal.blur = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-spread':
+                    nextLocal.spread = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-color':
+                    nextLocal.color = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow':
+                    // If box-shadow is directly coming, apply it without more
+                    if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': value });
+                    return;
+                default:
+                    // For other properties, pass them to the original applyGlobalCSSChange
+                    if (applyGlobalCSSChange) applyGlobalCSSChange({ [key]: value });
+                    break;
+            }
+        });
+        
+        // If there were changes in box-shadow, update
+        if (hasBoxShadowChange) {
+            setLocalValues(nextLocal);
+            const finalStr = composeBoxShadow({ ...nextLocal, inset });
+            if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': finalStr });
         }
+        return;
+    }
+    
+   
+    let nextLocal = { ...localValues };
+    
+    //Switch the property to apply the value to the correct part.
+    switch (prop) {
+        case 'box-shadow-x':
+            nextLocal.x = val != null ? val.toString().trim() : '';
+            break;
+        case 'box-shadow-y':
+            nextLocal.y = val != null ? val.toString().trim() : '';
+            break;
+        case 'box-shadow-blur':
+            nextLocal.blur = val != null ? val.toString().trim() : '';
+            break;
+        case 'box-shadow-spread':
+            nextLocal.spread = val != null ? val.toString().trim() : '';
+            break;
+        case 'box-shadow-color':
+            nextLocal.color = val != null ? val.toString().trim() : '';
+            break;
+        
+        case 'box-shadow':
+            if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
+            return;
+        default:
+            if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
+            return;
+    }
+    
+        
+        // Update local state
+        setLocalValues(nextLocal);
+        
         //Compose the box-shadow string from the parts and then apply it to the CSS.
-        const finalStr = composeBoxShadow(next);
+        const finalStr = composeBoxShadow({ ...nextLocal, inset });
         if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', finalStr);
-    }, [applyGlobalCSSChange, composeBoxShadow, parsed, inset]);
+    }, [applyGlobalCSSChange, composeBoxShadow, localValues, inset]);
 
+    //Function to handle the inset checkbox change
     const handleInsetChange = useCallback((e) => {
         const nextInset = e.target.checked;
         setInset(nextInset);
-        const next = { ...parsed, inset: nextInset };
-        const finalStr = composeBoxShadow(next);
+        const finalStr = composeBoxShadow({ ...localValues, inset: nextInset });
         applyGlobalCSSChange?.('box-shadow', finalStr);
-    }, [parsed, composeBoxShadow, applyGlobalCSSChange]);
+    }, [localValues, composeBoxShadow, applyGlobalCSSChange]);
 
         //Function to open and close the border/shadow controls.
         const toggleOpen = () => {
@@ -2725,6 +3216,34 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
             window.addEventListener('tw-pen-open', onPenOpen);
             return () => window.removeEventListener('tw-pen-open', onPenOpen);
         }, []);
+
+        //Close the shadow control when clicking outside
+        useEffect(() => {
+            if (!open) return;
+            
+            const handleClickOutside = (e) => {
+                if (containerRef.current && !containerRef.current.contains(e.target)) {
+                    setOpen(false);
+                }
+            };
+            
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }, [open]);
+
+        //Close the shadow control when pressing the escape key
+        useEffect(() => {
+            if (!open) return;
+            
+            const handleEscKey = (e) => {
+                if (e.key === 'Escape') {
+                    setOpen(false);
+                }
+            };
+            
+            document.addEventListener('keydown', handleEscKey);
+            return () => document.removeEventListener('keydown', handleEscKey);
+        }, [open]);
     
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -2739,8 +3258,9 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                         <path d="M8.3834 0.493193C8.31065 0.486644 8.23748 0.486644 8.16473 0.493193C7.90803 0.516317 7.70106 0.63382 7.51408 0.780856C7.33869 0.918791 7.14488 1.1126 6.92009 1.33743L6.3125 1.94503L9.05366 4.6862L9.66125 4.07864C9.88609 3.85382 10.0799 3.66003 10.2179 3.48462C10.3649 3.29763 10.4824 3.09068 10.5055 2.83398C10.512 2.76124 10.512 2.68805 10.5055 2.61531C10.4824 2.35861 10.3649 2.15166 10.2179 1.96468C10.0799 1.78927 9.88609 1.59547 9.66125 1.37066C9.43645 1.14583 9.20944 0.918797 9.034 0.780856C8.84701 0.63382 8.6401 0.516317 8.3834 0.493193Z" fill="white"/>
                     </svg>
                 </span>
+                <AnimatePresence>
                 {open && (
-                    <div className="tw-builder__settings-pen-controls">
+                    <motion.div className="tw-builder__settings-pen-controls" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
                             <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
@@ -2752,6 +3272,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                         <div className="tw-builder__settings-pen-divider"></div>
                         <div className="tw-builder__settings-pen-body">
                                 <ColorType
+                                    name={'Box Shadow Color'}
                                     index={'box-shadow'}
                                     cssProperty={'box-shadow-color'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -2760,7 +3281,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'X'}
-                                    value={parsed.x}
+                                    value={localValues.x}
                                     index={'box-shadow-x'}
                                     cssProperty={'box-shadow-x'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -2769,7 +3290,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Y'}
-                                    value={parsed.y}
+                                    value={localValues.y}
                                     index={'box-shadow-y'}
                                     cssProperty={'box-shadow-y'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -2778,7 +3299,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Blur'}
-                                    value={parsed.blur}
+                                    value={localValues.blur}
                                     index={'box-shadow-blur'}
                                     cssProperty={'box-shadow-blur'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -2787,7 +3308,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                 />
                                 <TextType
                                     name={'Spread'}
-                                    value={parsed.spread}
+                                    value={localValues.spread}
                                     index={'box-shadow-spread'}
                                     cssProperty={'box-shadow-spread'}
                                     applyGlobalCSSChange={wrappedApplyCSS}
@@ -2807,110 +3328,277 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                                     </label>
                                 </div>
                         </div>
-                    </div>
+                    </motion.div>
                 )}
+                </AnimatePresence>
             </div>
         </div>
     )
 }
 
+const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
+    const [properties, setProperties] = useState([ { property: '', value: '' } ]);
+
+    const prevPropsRef = useRef([]);
+    
+
+    //Update the properties when the selected element changes
+    useEffect(() => {
+        //Convert the saved props to a list of properties
+        const list = Object.entries(savedProps || {}).map(([property, value]) => ({ property, value }));
+        //If there are saved props, set the properties
+        if (list.length) {
+            setProperties(list);
+        } else {
+            //If there are no saved props, set the properties to an empty list
+            setProperties([ { property: '', value: '' } ]);
+        }
+    }, [selectedElementData, savedProps]);
+
+    //Add a new property row to the list
+    const handleAddProperty = () => {
+        setProperties(prev => [
+            ...prev,
+            { property: '', value: '' } //Add a new empty property row
+        ]);
+    };
+
+    //// Function to update a specific property when user types in the input fields
+    const handlePropertyChange = (i, key, val) => {
+        setProperties(prev => {
+            // Create a copy of the previous properties array
+            const updated = [...prev];
+            // Update the specific property at index i with the new key-value pair
+            updated[i] = { ...updated[i], [key]: val };
+            return updated;
+        });
+    };
+
+    return (
+        <div className="tw-builder__settings-animation" key={index}>
+            <div className="tw-builder__settings-animation-container">
+            {properties.map((prop, i) => (
+                <div className="tw-builder__settings-properties" key={`prop-${i}`}>
+                        <div className="tw-builder__settings-properties-pair">
+                            <span className="tw-builder__settings-properties-span">Property</span>
+                            <input
+                            className="tw-builder__settings-properties-input"
+                            value={prop.property}
+                            onFocus={() => { prevPropsRef.current[i] = prop.property; }}
+                            onChange={(e)=>handlePropertyChange(i, 'property', e.target.value)}
+                            onBlur={() => {
+                                const prev = prevPropsRef.current[i];
+                                const now = (properties[i]?.property || '').trim();
+                                const val = (properties[i]?.value ?? '').trim();
+                                //If the property is empty, remove it
+                                if (prev && !now) {
+                                  applyEnterAnimationChange(prev, "");
+                                  setProperties(prevList => prevList.filter((_, idx) => idx !== i));
+                                  return;
+                                }
+                                //If the property is not empty, apply the value
+                                if (now && val) {
+                                  applyEnterAnimationChange(now, val);
+                                }
+                              }}
+                              onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
+                            />
+                        </div>
+                        <div className="tw-builder__settings-properties-pair">
+                            <span className="tw-builder__settings-properties-span">Value</span>
+
+                            <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px"
+                                value={prop.value}
+                                onChange={(e)=>handlePropertyChange(i, 'value', e.target.value)}
+                                onBlur={()=> { if (prop.property) applyEnterAnimationChange(prop.property, prop.value || ''); }}
+                                onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'value', e.target.value))}
+                            />
+                        </div>
+                </div>
+            ))}
+                <div className="tw-builder__settings-add-property" onClick={handleAddProperty}>
+                    <span className="tw-builder__settings-add-property-label">Add Property</span>
+                </div>
+            </div>
+        </div>
+    )};
+
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
     const [activeClass, setActiveClass] = useState(null);
 
-    //spreads the properties of the selected element
+    //spreads the properties of the selected element and updates the selectedElementData 
     useEffect(() => {
+        //Return early if required data is not available
         if(!selectedId || !JSONtree || !JSONtree.roots) {
             setSelectedElementData(null);
             return;
         }
-
-        const findElement = (node, targetId) => {
-            if(!node) return null;
-            if(node.id === targetId) return node;
-            if(node.children) {
-                for(const child of node.children) {
-                    const result = findElement(child, targetId);
-                    if(result) return result;
-                }
-            }
-            return null;
-        }
-
+        // Find the active root node in the JSON tree
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
+        //Return if the active root node is not found
         if(!activeRootNode) {
             setSelectedElementData(null);
             return;
         }
 
-        const selectedElement = findElement(activeRootNode, selectedId);
-        if(!selectedElement) {
-            setSelectedElementData(null);
-            return;
+        // Find the selected element in the JSON tree by ID
+    const findElement = (node, targetId) => {
+        if (!node) return null;
+        if (node.id === targetId) return node;
+        if (node.children) {
+            for (const child of node.children) {
+                const result = findElement(child, targetId);
+                if (result) return result;
+            }
         }
-        //find the css data for the selected element
-        const elementCssData = JSONtree.idsCSSData?.find(item => item.id === selectedId);
+        return null;
+    };
+    // Find the selected element in the active root
+    const selectedElement = findElement(activeRootNode, selectedId);
 
-        const elementData = {
-            id: selectedElement.id,
-            elementType: selectedElement.elementType,
-            tagName: selectedElement.tagName,
-            classList: selectedElement.classList,
-            children: selectedElement.children,
-            nestable: selectedElement.nestable,
-            icon: selectedElement.icon,
-            label: selectedElement.label,
-            href: selectedElement.href,
-            innerText: selectedElement.innerText,
-            properties: elementCssData?.properties || {},
+    // Get the active breakpoint
+    const bp = getActiveBreakpoint?.() || 'desktop';
+    // Get the responsive idsCSSData or base idsCSSData
+    const responsiveIdData = bp !== 'desktop'
+        ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
+        : null;
+    const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
+    const elementCssData = responsiveIdData || baseIdData;
 
-            hasChildren: selectedElement.children && selectedElement.children.length > 0,
-            className: selectedElement.classList?.[0] || null,
-        }
-        setSelectedElementData(elementData);
+    const elementData = {
+        id: selectedElement.id,
+        elementType: selectedElement.elementType,
+        tagName: selectedElement.tagName,
+        classList: selectedElement.classList,
+        children: selectedElement.children,
+        nestable: selectedElement.nestable,
+        icon: selectedElement.icon,
+        label: selectedElement.label,
+        href: selectedElement.href,
+        innerText: selectedElement.innerText,
+        properties: elementCssData?.properties || {},
+        hasChildren: !!(selectedElement.children && selectedElement.children.length > 0),
+        className: selectedElement.classList?.[0] || null
+    };
+    // Update the selected element data state
+    setSelectedElementData(elementData);
+}, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
+
+// Apply CSS (writes in the dataset of the active breakpoint if not desktop)
+const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, nestedSelector) => {
+    if (!selectedId || !cssPropertyOrObject) return;
+    //Determine the type of selector(class or id)
+    const type = activeClass ? 'class' : 'id';
+    const selector = activeClass ? activeClass : selectedId;
+
+    //Add the property to the CSS data. The cssProperty can be a string or an object(if need to add multiple properties).
+    if (typeof cssPropertyOrObject === 'string') {
+        addCSSProperty(type, selector, cssPropertyOrObject, value, nestedSelector);
+    } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
+        addCSSProperty(type, selector, cssPropertyOrObject, undefined, nestedSelector);
+    }
+}, [selectedId, addCSSProperty, JSONtree, activeClass]);
+
+// Enter Animation: saves in ids/classes CSSData with the scope of the root and the correct selector
+const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
+    if (!selectedId || !cssPropertyOrObject) return;
+
+    //Get the scope of the root(modal or banner)
+    const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    //Check if the selected id is the root element
+    const isRoot = selectedId === activeRoot;
+
+    //If the selected id is the root, add the property to the class .tw-modal--open or .tw-banner--open
+    if (isRoot) {
+        const selector = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        addEnterAnimationProperty('class', selector, cssPropertyOrObject, value, scope);
+        return;
+    }
+    //If the selected id is not the root, add the property to the class or id
+    if (activeClass) {
+        addEnterAnimationProperty('class', activeClass, cssPropertyOrObject, value, scope);
+    } else {
+        addEnterAnimationProperty('id', selectedId, cssPropertyOrObject, value, scope);
+    }
+}, [selectedId, activeClass, activeRoot, addEnterAnimationProperty]);
+
+/// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
+const getGlobalCSSValue = useCallback((cssProperty, nestedSelector) => {
+    if (!selectedId || !cssProperty) return null;
+    const bp = getActiveBreakpoint?.() || 'desktop';
+  
+    //Read the entry to check possible nested selector, states and breakpoints.
+    const readFromEntry = (entry) => {
+      if (!entry) return null;
+        //Get the CSS value with state
+      const getCSSValueWithState = (states, properties) => {
+        const stVal = activeState ? states?.[activeState]?.[cssProperty] : undefined;
+        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+        return properties?.[cssProperty] ?? null;
+    };
+
+    //If there is a nested selector, get the node with the nested selector
+    if (nestedSelector && nestedSelector.trim()) {
+        const node = entry.nested?.[nestedSelector.trim()];
+        if (!node) return null;
+        return getCSSValueWithState(node.states, node.properties);
+    }
+    //If there is no nested selector, get the node with the states and properties
+    return getCSSValueWithState(entry.states, entry.properties);
+    };
+  
+    if (activeClass) {
+    //If there is a breakpoint, get the classesCSSData with the active class and the breakpoint
+      const bpClassData = bp !== 'desktop'
+        ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
+        : null;
+      //If there is no breakpoint, get the classesCSSData with the active class and the base
+      const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
+      return readFromEntry(bpClassData) ?? readFromEntry(baseClassData);
+    }
+  
+    //If there is a breakpoint, get the idsCSSData with the active id and the breakpoint
+    const bpIdData = bp !== 'desktop'
+      ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
+      : null;
+    //If there is no breakpoint, get the idsCSSData with the active id and the base
+    const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
+    return readFromEntry(bpIdData) ?? readFromEntry(baseIdData);
+  }, [JSONtree, selectedId, activeClass, getActiveBreakpoint, activeState]);
 
 
-     }, [selectedId, JSONtree, activeRoot]);
+const getEnterAnimationProps = useCallback(() => {
+    //Check if the selected id is not null
+    if (!selectedId) return {};
 
+    const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    //Get the breakpoint
+    const bp = getActiveBreakpoint?.() || 'desktop';
+    const isResponsive = bp !== 'desktop'; //Check if breakpoint 
 
-     //Function to apply the css to the element and save it in jsonTree
-     const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value) => {
-        if (!selectedId || !cssPropertyOrObject) return;
+    const idsArr = isResponsive ? (JSONtree?.responsive?.[bp]?.idsCSSData || []) : (JSONtree?.idsCSSData || []); //Get the idsCSSData
+    const classesArr = isResponsive ? (JSONtree?.responsive?.[bp]?.classesCSSData || []) : (JSONtree?.classesCSSData || []); //Get the classesCSSData
 
-        //We differentiate between class and id
-        const type = activeClass ? 'class' : 'id';
-        const selector = activeClass ? activeClass : selectedId;
+    let entry = null; 
 
-        if (typeof cssPropertyOrObject === "string") {
+    // If it is the root, the props are saved in the class .tw-*-–open
+    if (selectedId === activeRoot) {
+        const openClass = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open'; 
+        entry = classesArr.find(e => e.className === openClass);
+    } else if (activeClass) {
+        entry = classesArr.find(e => e.className === activeClass); 
+    } else {
+        entry = idsArr.find(e => e.id === selectedId); 
+    }
 
-            addCSSProperty(type, selector, cssPropertyOrObject, value);
-        } else if (
-            //Accepts an object with multiple css properties
-            typeof cssPropertyOrObject === "object" &&
-            cssPropertyOrObject !== null
-        ) {
+    return entry?.enter?.[scope] || {};
+}, [JSONtree, activeRoot, selectedId, activeClass, getActiveBreakpoint]);
 
-            addCSSProperty(type, selector, cssPropertyOrObject);
-        }
-    }, [selectedId, addCSSProperty, JSONtree, activeClass]);
-    
-
-    //Function to get the css value from the jsonTree
-    const getGlobalCSSValue = useCallback((cssProperty) => {
-        if(!selectedId || !cssProperty) return null;
-    
-        if(activeClass) {
-            const classData = JSONtree.classesCSSData.find(item => item.className === activeClass);
-            return classData?.properties?.[cssProperty] ?? null;
-        }
-    
-        const idData = JSONtree.idsCSSData.find(item => item.id === selectedId);
-        return idData?.properties?.[cssProperty] ?? null;
-    }, [JSONtree, selectedId, activeClass]);
 
     //Function to apply the json to the element and save it in jsonTree
     const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
@@ -2924,7 +3612,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
      const getGlobalJSONValue = useCallback((JSONProperty)=>{
         if(!selectedId || !JSONProperty || !JSONtree?.roots) return null;
 
-        // Buscar el elemento en el árbol JSON
+        // Find the element in the JSON tree
         const findElement = (node, targetId) => {
             if(!node) return null;
             if(node.id === targetId) return node;
@@ -2955,37 +3643,48 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
         selectedId,
      };
 
-    const whatType = (item, index) => {
+     const whatType = (item, index) => {
+        // If the control defines a selector, override helpers to use it
+        const overrideProps = item.selector ? {
+            applyGlobalCSSChange: (propOrObj, val) => applyGlobalCSSChange(propOrObj, val, item.selector),
+            getGlobalCSSValue: (prop) => getGlobalCSSValue(prop, item.selector),
+          } : {};
 
         const enhancedItem = {
             ...item,
             elementId: selectedId,
             ...globalControlProps,
+            
         };
-           
+
+        
+
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
+                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
             case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
+                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
             case 'panel':
-                return <PanelType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty}/>;
+                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty}/>;
             case 'color':
-                return <ColorType key={index} {...enhancedItem} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
+                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
             case 'image':
-                return <ImageType key={index} {...enhancedItem} name={item.name} index={index} user={user} site={site}/>;
+                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site}/>;
             case 'choose':
-                return <ChooseType key={index} {...enhancedItem} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
+                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
             case 'textarea':
-                return <TextAreaType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
+                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
             case 'select':
-                return <SelectType key={index} {...enhancedItem} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
+                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
             case 'border':
-                return <BorderType key={index} {...enhancedItem} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
             case 'box-shadow':
-                return <BoxShadowType key={index} {...enhancedItem} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+            case 'enter-animation':
+                return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
         }
     }
+
     return (
         <div className="tw-builder__settings">
             <span className="tw-builder__settings-label">{selectedLabel}</span>
@@ -3004,6 +3703,7 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
                     globalControlProps={globalControlProps}
                     />
                 ))}
+               <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} />
             </div>
         </div>
     )

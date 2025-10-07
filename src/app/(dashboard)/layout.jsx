@@ -189,6 +189,14 @@ const avatarColors = {
     backgroundColor: '#0099FE',
     color: '#FFFFFF',
   },
+  purple: {
+    backgroundColor: '#9D4EDD',
+    color: '#FFFFFF',
+  },
+  orange: {
+    backgroundColor: '#FF6B35',
+    color: '#000000',
+  },
 };
 
 // Function to check if the profile picture is null, undefined or empty, to know if we should show the avatar color or the avatar image
@@ -211,15 +219,7 @@ const ProfileStyle = (user) => {
   }
 }
 
-// Function to check if the site picture is null, undefined or empty, to know if we should show the avatar color or the avatar image
-const checkSitePicture = (site) => {
-  const sitePicture = site?.["Avatar URL"];
-  if(sitePicture === null || sitePicture === undefined || sitePicture === ''){
-    return '';
-  } else {
-    return sitePicture;
-  }
-}
+
 
 
 const SiteStyle = (site) => {
@@ -365,11 +365,11 @@ const SiteStyle = (site) => {
 //Global function to close modals with escape key
 const handleKeyDown = useCallback((e) => {
   if (e.key === 'Escape') {
-    if (isModalOpen) {
-      closeModal();
-    }
+    // Only close the topmost modal (change modal takes priority)
     if (isChangeModalOpen) {
       closeChangeModal();
+    } else if (isModalOpen) {
+      closeModal();
     }
   }
 }, [isModalOpen, isChangeModalOpen]);
@@ -422,16 +422,40 @@ const handleBackdropClick = useCallback((e) => {
         setChangeType('');
       };
 
-    //UseEffect to open the ModalWelcome modal
-    useEffect(() => {
-      if (allUserDataResource && !user?.Name) {
-        setIsWelcomeModalOpen(true);
-      }
-    }, [user?.Name]);
-    //Function to close the ModalWelcome modal
-    const closeWelcomeModal = () => {
-      setIsWelcomeModalOpen(false);
-    };
+  //UseEffect to open the ModalWelcome modal
+  useEffect(() => {
+    if (allUserDataResource && !user?.Name) {
+      setIsWelcomeModalOpen(true);
+    }
+  }, [user?.Name]);
+  //Function to close the ModalWelcome modal
+  const closeWelcomeModal = () => {
+    setIsWelcomeModalOpen(false);
+  };
+
+  // Ensure a default avatar color for the user if missing
+  useEffect(() => {
+    if (!user?.id) return;
+    if (!user?.["Avatar Color"]) {
+      const colorKeys = Object.keys(avatarColors);
+      const randomColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+
+      (async () => {
+        const { error } = await supabase
+          .from('User')
+          .update({ 'Avatar Color': randomColorKey })
+          .eq('id', user.id);
+
+        if (!error) {
+          setUser(prev => ({ ...prev, 'Avatar Color': randomColorKey }));
+          if (allUserDataResource) {
+            const currentData = allUserDataResource.read();
+            currentData.user = { ...currentData.user, 'Avatar Color': randomColorKey };
+          }
+        }
+      })();
+    }
+  }, [user?.id, user?.["Avatar Color"]]);
 
     //Function to show the notification
     const showNotification = (message, position = 'top', contentCenter = false) => {
@@ -666,7 +690,6 @@ useEffect(() => {
         setSiteData,
         siteData,
         setIsDropdownOpen,
-        checkSitePicture,
         SiteStyle,
         showNotification,
         supabase,
@@ -713,7 +736,6 @@ useEffect(() => {
                     setUserSettings={setUserSettings}
                     checkProfilePicture={checkProfilePicture}
                     profileStyle={ProfileStyle}
-                    checkSitePicture={checkSitePicture}
                     SiteStyle={SiteStyle}
                     openChangeModal={openChangeModal}
                     openChangeModalSettings={openChangeModalSettings}

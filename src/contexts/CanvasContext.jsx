@@ -79,7 +79,17 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         isFirstTime: true, //stored if it is the first time on the builder to open the builder themes
         blockEvents: false, //to block user events until a decision is made
         blockScroll: false, //to block scroll until a decision is made
+        liveWebsite: false, //to set a screenshot of the domain in the builder canvas
+        canvasColor: '#FFFFFF', //to set the color of the builder canvas
         canvasMaxWidth: null, //stored the max width of the canvas by root
+        breakpoints: { 
+            tablet: '1024px',
+            mobile: '767px'
+        },//stored the breakpoints 
+        responsive: {
+            tablet: { idsCSSData: [], classesCSSData: [] },
+            mobile: { idsCSSData: [], classesCSSData: [] }
+        },//stored the responsive CSS for each breakpoint
         roots: [
             {
                 id: "tw-root--banner", //banner root
@@ -117,9 +127,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     useEffect(() => {
         if (siteData) {
             const userJSON = siteData.JSON;
+            // Merge userJSON with defaultTree to ensure all properties exist
+            const mergedTree = userJSON ? { ...defaultTree, ...userJSON } : defaultTree;
+
             const initialState = {
                 past: [],
-                present: userJSON ? userJSON : defaultTree,
+                present: mergedTree,
                 future: []
             };
             dispatch({ type: 'INIT', payload: initialState.present });
@@ -145,6 +158,24 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const [isCreatingElementFromToolbar, setIsCreatingElementFromToolbar] = React.useState(false);
     const [previousTreeStateBeforeCreation, setPreviousTreeStateBeforeCreation] = React.useState(null);
 
+    //Active pseudo state for styles (hover, active, focus)
+    const [activeState, setActiveState] = React.useState(null);
+
+    //Compute current breakpoint from canvas width and configured breakpoints
+    const getActiveBreakpoint = () => {
+        try {
+            //get the canvas width and the breakpoints
+            const canvasWidth = parseInt(JSONtree?.canvasMaxWidth || '99999', 10);
+            const tablet = parseInt(JSONtree?.breakpoints?.tablet || '1024', 10);
+            const mobile = parseInt(JSONtree?.breakpoints?.mobile || '767', 10);
+            //compare the canvas width with the breakpoints to know in which breakpoint the canvas is
+            if (canvasWidth > tablet) return 'desktop';
+            if (canvasWidth > mobile) return 'tablet';
+            return 'mobile';
+        } catch {
+            return 'desktop';
+        }
+    };
     //this happens when changing the tab: changes active root, nothing is selected, sets the active tab and updates the real JSONtree
     const updateActiveRoot = (newActiveRoot) => {
         setActiveRoot(newActiveRoot);
@@ -203,6 +234,35 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 		return () => window.removeEventListener('beforeunload', handler);
 	}, [isUnsaved]);
 
+    //Block the back button when there are unsaved changes
+    useEffect(() => {
+        if (!isUnsaved) return;
+    
+        // Push a sentinel entry so the first "Back" hits here
+        const sentinel = { __tw_blocker: true, t: Date.now() };
+        try {
+            history.pushState(sentinel, '');
+        } catch {}
+    
+        const onPopState = (e) => {
+            // Show confirm when user presses Back
+            const leave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+            if (!leave) {
+                // Cancel: restore the sentinel to keep user on the page
+                try { history.pushState(sentinel, ''); } catch {}
+            } else {
+                // Allow: remove listener and go back one more
+                window.removeEventListener('popstate', onPopState);
+                history.back();
+            }
+        };
+    
+        window.addEventListener('popstate', onPopState);
+        return () => {
+            window.removeEventListener('popstate', onPopState);
+        };
+    }, [isUnsaved]);
+
     //Undo and Redo JSONtree (Ctrl+Z / Ctrl+Y) or (Cmd+Z / Cmd+Y)
     const undo = useCallback(() => {
         dispatch({ type: 'UNDO' });
@@ -210,10 +270,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const redo = useCallback(() => {
         dispatch({ type: 'REDO' });
     }, []);
+    //check if there is something to undo or redo(used in the builder header)
     const canUndo = state.past.length > 0;
     const canRedo = state.future.length > 0;
-    console.log('past.length', state.past.length);
-    console.log('future.length', state.future.length);
+  
    
     
     useEffect(() => {
@@ -242,9 +302,28 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * property - the CSS property: color, background-color, padding, margin, etc...
     * value - the value of the property (if empty string "", the property will be removed)
     */
-    const addCSSProperty = (type, selector, propertyOrObject, value) => {
-        let updatedIdsCSSData = JSONtree.idsCSSData;
-        let updatedClassesCSSData = JSONtree.classesCSSData;
+    const addCSSProperty = (type, selector, propertyOrObject, value, nestedSelector = null) => {
+       
+        const bp = getActiveBreakpoint();
+        //Responsive is true if the breakpoint is not desktop
+        const isResponsive = bp !== 'desktop';
+
+        const getIdsArr = () => {
+            //if the breakpoint is not desktop, return the responsive idsCSSData, otherwise return the idsCSSData
+            if(isResponsive) return JSONtree.responsive?.[bp]?.idsCSSData || [];
+            return JSONtree.idsCSSData || [];
+        };
+        const getClassesArr = () => {
+            //if the breakpoint is not desktop, return the responsive classesCSSData, otherwise return the classesCSSData
+            if(isResponsive) return JSONtree.responsive?.[bp]?.classesCSSData || [];
+            return JSONtree.classesCSSData || [];
+        };
+
+        //get the current idsCSSData and classesCSSData
+        let currentIds = getIdsArr();
+        let currentClasses = getClassesArr();
+        let updatedIdsCSSData = currentIds;
+        let updatedClassesCSSData = currentClasses;
     
         // Normalize to object
         const propertiesToAdd =
@@ -264,63 +343,239 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             });
             return updated;
         };
-    
+
+        const applyToEntry = (entry) => {
+            //Check if there is a nested selector
+            const hasNested = typeof nestedSelector === 'string' && nestedSelector.trim() !== '';
+            if (hasNested) {
+                //Get the selector(trimmed string)
+                const key = nestedSelector.trim();
+                //Get the nested object with properties
+                const nest = { ...(entry.nested || {}) };
+                //Get the node
+                const node = { ...(nest[key] || {}) };
+                
+                //Check if there is a state and get the current state and properties
+                if (activeState) {
+                    const st = { ...(node.states || {}) };
+                    const cur = { ...(st[activeState] || {}) };
+                    const next = cleanProperties(cur, propertiesToAdd);
+                     // If no properties remain after cleaning, remove the state
+                    if (Object.keys(next).length === 0) {
+                        delete st[activeState];
+                    } else {
+                    // Update the state with cleaned properties
+                    st[activeState] = next;
+                }
+                node.states = st;
+                } else {
+                    // Apply properties directly to the node 
+                    node.properties = cleanProperties(node.properties || {}, propertiesToAdd);
+                }
+                // Check if the node is empty after property updates
+                const emptyProps = !node.properties || Object.keys(node.properties).length === 0;
+                const emptyStates = !node.states || Object.keys(node.states).length === 0;
+                // If node has no properties or states, remove it from nested structure
+                if (emptyProps && emptyStates) {
+                    // If the node is empty, remove the nested selector
+                    delete nest[key];
+                } else {
+                    // Otherwise, set the nested selector with the new node
+                    nest[key] = node;
+                } 
+                 // Update entry's nested property (remove if empty)
+                entry.nested = Object.keys(nest).length ? nest : undefined;
+                return entry;
+            }
+            //Handle state-specific properties for non-nested entries
+            if (activeState) {
+                //Get the states object
+                const st = { ...(entry.states || {}) };
+                //Get the current state
+                const cur = { ...(st[activeState] || {}) };
+                // Merge current properties with new properties to add
+                const next = cleanProperties(cur, propertiesToAdd);
+                // If no properties remain after cleaning, remove the state
+                if (Object.keys(next).length === 0) {
+                    delete st[activeState];
+                } else {
+                    //set the state with the new properties
+                    st[activeState] = next;
+                }
+                entry.states = st;
+            } else {
+                //Apply properties directly to the entry
+                entry.properties = cleanProperties(entry.properties || {}, propertiesToAdd);
+            }
+            return entry;
+        };
+    // Switch statement to handle different selector types (ID vs Class)
         switch (type) {
             case "id": {
-                const existingIdIndex = JSONtree.idsCSSData.findIndex(
+                // Find existing ID entry in the current IDs array
+                const existingIdIndex = currentIds.findIndex(
                     (item) => item.id === selector
                 );
     
                 if (existingIdIndex !== -1) {
-                    const updatedProperties = cleanProperties(
-                        JSONtree.idsCSSData[existingIdIndex].properties,
-                        propertiesToAdd
-                    );
-                    updatedIdsCSSData = [...JSONtree.idsCSSData];
-                    updatedIdsCSSData[existingIdIndex] = {
-                        ...JSONtree.idsCSSData[existingIdIndex],
-                        properties: updatedProperties,
-                    };
+                    // Update existing ID entry with new properties
+                    const updatedEntry = applyToEntry({ ...currentIds[existingIdIndex] });
+                    updatedIdsCSSData = [...currentIds];
+                    updatedIdsCSSData[existingIdIndex] = updatedEntry;
                 } else {
+                     // Create new ID entry if it doesn't exist
+                    const newEntry = applyToEntry({ id: selector, properties: {} });
                     updatedIdsCSSData = [
-                        ...JSONtree.idsCSSData,
-                        { id: selector, properties: propertiesToAdd },
+                        ...currentIds,
+                        newEntry,
                     ];
                 }
                 break;
             }
     
             case "class": {
-                const existingClassIndex = JSONtree.classesCSSData.findIndex(
+                // Find existing Class entry in the current Classes array
+                const existingClassIndex = currentClasses.findIndex(
                     (item) => item.className === selector
                 );
     
                 if (existingClassIndex !== -1) {
-                    const updatedProperties = cleanProperties(
-                        JSONtree.classesCSSData[existingClassIndex].properties,
-                        propertiesToAdd
-                    );
-                    updatedClassesCSSData = [...JSONtree.classesCSSData];
-                    updatedClassesCSSData[existingClassIndex] = {
-                        ...JSONtree.classesCSSData[existingClassIndex],
-                        properties: updatedProperties,
-                    };
+                    // Update existing Class entry with new properties
+                    const updatedEntry = applyToEntry({ ...currentClasses[existingClassIndex] });
+                    updatedClassesCSSData = [...currentClasses];
+                    updatedClassesCSSData[existingClassIndex] = updatedEntry;
                 } else {
+                    // Create new Class entry if it doesn't exist
+                    const newEntry = applyToEntry({ className: selector, properties: {} });
                     updatedClassesCSSData = [
-                        ...JSONtree.classesCSSData,
-                        { className: selector, properties: propertiesToAdd },
+                        ...currentClasses,
+                        newEntry,
                     ];
                 }
                 break;
             }
         }
     
+        // Create a deep copy of the JSONtree
         const updated = deepCopy(JSONtree);
-        updated.idsCSSData = updatedIdsCSSData;
-        updated.classesCSSData = updatedClassesCSSData;
+        // If the breakpoint is responsive, update the responsive IDs and Classes arrays
+        if(isResponsive) {
+            if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
+            if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+            updated.responsive[bp].idsCSSData = updatedIdsCSSData;
+            updated.responsive[bp].classesCSSData = updatedClassesCSSData;
+        } else {
+            // If the breakpoint is not responsive, update the IDs and Classes arrays
+            updated.idsCSSData = updatedIdsCSSData;
+            updated.classesCSSData = updatedClassesCSSData;
+        }
+        //updated JSONtree with new data
         setJSONtree(updated);
     };
-    
+
+
+
+/*
+* Enter Animation - Store properties in idsCSSData/classesCSSData with scope by root
+* type - 'id' | 'class'
+* selector - id or className; if it is root, it will be 'tw-modal--open' or 'tw-banner--open' (type 'class')
+* propertyOrObject - string property or object {prop: val}
+* value - value when propertyOrObject is string
+* scope - 'modal' | 'banner'
+*/
+const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scope) => { // Add/update "enter" animation props for an id/class, scoped to 'modal' or 'banner'
+	if (!scope || (scope !== 'modal' && scope !== 'banner')) return; // Only proceed for valid scopes
+
+	const bp = getActiveBreakpoint(); // Current breakpoint ('desktop' | 'tablet' | 'mobile')
+	const isResponsive = bp !== 'desktop'; // Whether we’re editing a responsive layer
+
+	const toObj = (k, v) =>
+		typeof k === 'object' && k !== null ? k : { [k]: v }; // Normalize (key,value) into an object, or pass through if already an object
+
+	const mergeEnter = (entry, props) => { // Merge new enter properties for the current scope into an entry
+		const prev = entry.enter || {}; // Existing enter object: { banner?: {...}, modal?: {...} }
+		const nextScopeProps = { ...(prev[scope] || {}) }; // Start from existing props for this scope
+		Object.entries(props).forEach(([prop, val]) => { // Apply each incoming prop
+			if (val === "") {
+				delete nextScopeProps[prop]; // Empty string removes the property
+			} else {
+				nextScopeProps[prop] = val; // Otherwise set/update the property
+			}
+		});
+		const cleaned = nextScopeProps; // Post-mutation scope props
+		const nextEnter = { ...prev }; // Clone the enter object
+		if (Object.keys(cleaned).length === 0) {
+			delete nextEnter[scope]; // If scope has no props left, remove the scope key
+		} else {
+			nextEnter[scope] = cleaned; // Otherwise write back cleaned scope props
+		}
+		if (Object.keys(nextEnter).length === 0) {
+			const { enter, ...rest } = entry; // If no scopes left at all, drop the enter field entirely
+			return rest;
+		}
+		return { ...entry, enter: nextEnter }; // Return entry with updated enter
+	};
+
+	const updated = deepCopy(JSONtree); // Work on a cloned tree
+	const getIdsArr = () => isResponsive ? (updated.responsive?.[bp]?.idsCSSData || []) : (updated.idsCSSData || []); // Pick ids array for active layer
+	const getClassesArr = () => isResponsive ? (updated.responsive?.[bp]?.classesCSSData || []) : (updated.classesCSSData || []); // Pick classes array for active layer
+
+	if (type === 'id') { // Targeting an element by id
+		const arr = getIdsArr();
+		const idx = arr.findIndex(e => e.id === selector); // Find existing entry for this id
+		if (idx !== -1) { // Update existing
+			const cur = arr[idx];
+			const next = mergeEnter(cur, toObj(propertyOrObject, value)); // Merge new enter props
+			const nextArr = [...arr];
+			nextArr[idx] = next;
+			if (isResponsive) {
+				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } }; // Ensure responsive container
+				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] }; // Ensure bp container
+				updated.responsive[bp].idsCSSData = nextArr; // Save into responsive layer
+			} else {
+				updated.idsCSSData = nextArr; // Save into base layer
+			}
+		} else { // Create new entry for this id
+			const entry = mergeEnter({ id: selector, properties: {} }, toObj(propertyOrObject, value));
+			const nextArr = [...arr, entry];
+			if (isResponsive) {
+				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+				updated.responsive[bp].idsCSSData = nextArr;
+			} else {
+				updated.idsCSSData = nextArr;
+			}
+		}
+	} else if (type === 'class') { // Targeting a class selector
+		const arr = getClassesArr();
+		const idx = arr.findIndex(e => e.className === selector); // Find existing entry for this class
+		if (idx !== -1) { // Update existing
+			const cur = arr[idx];
+			const next = mergeEnter(cur, toObj(propertyOrObject, value));
+			const nextArr = [...arr];
+			nextArr[idx] = next;
+			if (isResponsive) {
+				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+				updated.responsive[bp].classesCSSData = nextArr; // Save class entry into responsive layer
+			} else {
+				updated.classesCSSData = nextArr; // Save class entry into base layer
+			}
+		} else { // Create new entry for this class
+			const entry = mergeEnter({ className: selector, properties: {} }, toObj(propertyOrObject, value));
+			const nextArr = [...arr, entry];
+			if (isResponsive) {
+				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
+				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
+				updated.responsive[bp].classesCSSData = nextArr;
+			} else {
+				updated.classesCSSData = nextArr;
+			}
+		}
+	}
+
+	setJSONtree(updated); // Commit changes to the builder state
+};
 
     /*
     * Add a JSON property (for HTML and Javascript (attr) controls)
@@ -371,19 +626,37 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * insertIndex - The index where the element will be added (optional - used by drag & drop)
     */
     const addElement = (properties, parentId, insertIndex = null) => {
+        
+        //Create a map to store the original id and the new id
+        const idMap = new Map();
+
         const add = (node, parent) => {
             const currentSelectedId = parentId || selectedId || activeRoot; //Put it inside the parentId directly if given, otherwise use the selected element, otherwise fallback to the root
 
             if (node.id === currentSelectedId) {
                 const newNode = { ...properties, id: generateUniqueId(JSONtree) }; //Creates a new node with the properties given and a unique id
+                
+                //Check if the properties has an original id and map it to the new id, then delete the original id to avoid persisting it in the JSONtree
+                if(properties && properties.__originalId) {
+                    idMap.set(properties.__originalId, newNode.id);
+                    delete newNode.__originalId;
+                }
+                
                 addDefaultCSSProperties(newNode); //Add default CSS properties to the new node
 
                 // Assign unique IDs to all children recursively
                 const assignIdsRecursively = (children) => {
                     return children.map(child => {
+                        const originalChildId = child.id;
                         const newChild = { ...child, id: generateUniqueId(JSONtree) };
+                        //Map child original id to new id (only if original existed)
+                        if(originalChildId) {
+                            idMap.set(originalChildId, newChild.id);
+                        }
+
                         addDefaultCSSProperties(newChild); //Add default CSS properties to the new child
 
+                        
                         if (newChild.children) {
                             newChild.children = assignIdsRecursively(newChild.children);
                         }
@@ -421,12 +694,69 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addElement
         add(activeRoot === 'tw-root--banner' ? updated.roots[0] : updated.roots[1], null); //Add the element in the current JSONtree, in the activeRoot
 
-        //Update the idsCSSData with the default CSS on idsCSSDataToMerge
-        //update the updated JSONtree with the new idsCSSData
-        const finalIdsCSSData = [...JSONtree.idsCSSData, ...idsCSSDataToMerge];
-        updated.idsCSSData = finalIdsCSSData;
+        /* Clone CSS entries for remapped ids created during paste operations.
+        For each mapping in idMap (oldId -> newId), look up the source entry by oldId,
+        deep-copy it, swap its id to newId, and collect it so the new node
+         inherits the same CSS rules as the original. */
+        const cloneEntriesForIds = (sourceArr = []) =>{
+            const cloned = [];
+            idMap.forEach((newId, oldId) =>{
+                const entry = sourceArr.find(e => e.id === oldId);
+                if(entry) {
+                    const next = deepCopy(entry);
+                    next.id = newId;
+                    cloned.push(next);
+                }
+            })
+            return cloned;
+        };
 
-        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+        const mergeById = (arr) => { // Merge an array of entries by id, deduplicating and combining fields
+            const map = new Map(); // Accumulator keyed by entry.id
+            for (const e of arr) { // Iterate over all entries to merge
+                if (!e || !e.id) continue; // Skip invalid entries or those without an id
+                const prev = map.get(e.id); // Retrieve any previously merged entry for this id
+                if (prev) { // If an entry with this id already exists, merge them
+                    const merged = { ...prev, ...e }; // Shallow-merge top-level fields; later entry overrides
+                    if (prev.properties || e.properties) {
+                        merged.properties = { ...(prev?.properties || {}), ...(e?.properties || {}) }; // Combine CSS properties
+                    }
+                    if (prev.states || e.states) {
+                        merged.states = { ...(prev?.states || {}), ...(e?.states || {}) }; // Combine pseudo-state rules (e.g., :hover)
+                    }
+                    if (prev.enter || e.enter) {
+                        merged.enter = { ...(prev?.enter || {}), ...(e?.enter || {}) }; // Combine enter animation rules
+                    }
+                    map.set(e.id, merged); // Save the merged result back under this id
+                } else {
+                    map.set(e.id, deepCopy(e)); // First encounter of this id: store a cloned copy
+                }
+            }
+            return Array.from(map.values()); // Convert the map back to an array of merged entries
+        };
+        
+        // Desktop. 
+        // Declare the base array
+        const baseSrc = JSONtree.idsCSSData || [];
+        // Clone the base array
+        const clonedBase = cloneEntriesForIds(baseSrc);
+        // Merge the base array with any incoming entries and with the cloned entries
+        updated.idsCSSData = mergeById([...baseSrc, ...idsCSSDataToMerge, ...clonedBase]);
+        
+        // Responsive
+        ['tablet', 'mobile'].forEach(bp => { // Iterate over all breakpoints
+            // Declare the base array
+            const baseArr = JSONtree.responsive?.[bp]?.idsCSSData || [];
+            // Clone the base array
+            const cloned = cloneEntriesForIds(baseArr);
+            // Ensure the responsive object exists
+            if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
+            if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+            //merge the base array with the cloned entries
+            updated.responsive[bp].idsCSSData = mergeById([...baseArr, ...cloned]);
+        });
+        // Commit the merged result into the JSON tree used by the builder runtime.
+        setJSONtree(updated);
     };    
 
     /*
@@ -457,6 +787,15 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         //update the updated JSONtree with the new idsCSSData
         const finalIdsCSSData = JSONtree.idsCSSData.filter(item => !idsDataToRemove.includes(item.id));
         updated.idsCSSData = finalIdsCSSData;
+
+        //Also clean responsive datasets
+        ['tablet', 'mobile'].forEach(bp => {
+           const idsArr = JSONtree.responsive?.[bp]?.idsCSSData || [];
+           const filtered = idsArr.filter(item => !idsDataToRemove.includes(item.id));
+           if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
+           if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+           updated.responsive[bp].idsCSSData = filtered;
+        });
 
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
 
@@ -1010,7 +1349,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo}}>
+            addCSSProperty,addEnterAnimationProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState}}>
             {children}
         </CanvasContext.Provider>
     );

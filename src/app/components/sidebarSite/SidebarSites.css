@@ -31,7 +31,9 @@
     width: 100%;
 }
 
-.sidebar-sites__site:hover{
+.sidebar-sites__site:hover,
+.sidebar-sites__site:focus,
+.sidebar-sites__site--child-focused{
     background-color: var(--hover-fresco-color);
 }
 
@@ -56,12 +58,16 @@
     color: var(--icons-fresco-color);
 }   
 
-.sidebar--open .sidebar-sites__site:hover .sidebar-sites__edit{
+.sidebar--open .sidebar-sites__site:hover .sidebar-sites__edit,
+.sidebar--open .sidebar-sites__site:focus .sidebar-sites__edit,
+.sidebar--open .sidebar-sites__site--child-focused .sidebar-sites__edit{
     opacity: 1;
     height: 15px;
 }
 
-.sidebar--menu .sidebar-sites__site:hover .sidebar-sites__edit{
+.sidebar--menu .sidebar-sites__site:hover .sidebar-sites__edit,
+.sidebar--menu .sidebar-sites__site:focus .sidebar-sites__edit,
+.sidebar--menu .sidebar-sites__site--child-focused .sidebar-sites__edit{
     opacity: 1;
     height: 15px;
 }

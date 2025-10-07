@@ -12,9 +12,19 @@
 }
 #tw-root--banner:not(.tw-active-root),
 #tw-root--modal:not(.tw-active-root){
-    display: none;
+   visibility: hidden;
+   pointer-events: none;
+   position: absolute;
+    inset: 0;
 }
 
+#tw-root--banner:not(.tw-active-root),
+#tw-root--banner:not(.tw-active-root) *,
+#tw-root--modal:not(.tw-active-root),
+#tw-root--modal:not(.tw-active-root) * {
+    transition: none !important;
+    animation: none !important;
+}
 /*Drop indicator*/
 .tw-builder__canvas .tw-builder__drop-indicator {
     background-color: var(--drop-indicator-color);

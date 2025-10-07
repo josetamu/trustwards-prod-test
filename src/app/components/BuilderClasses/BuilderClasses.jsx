@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./BuilderClasses.css";
 import { useCanvas } from "@contexts/CanvasContext";
+import {Dropdown} from "@components/dropdown/Dropdown";
 
 
 
@@ -10,8 +11,10 @@ export default function BuilderClasses({selectedId,showNotification,externalActi
     const [newClass, setNewClass] = useState("");
     const [search, setSearch] = useState("");
     const [activeClass, setActiveClass] = useState(null);
-    const {addClass,JSONtree,activeRoot,removeClass} = useCanvas();
+    const {addClass,JSONtree,activeRoot,removeClass,activeState,setActiveState} = useCanvas();
     const poolRef = useRef(null);
+    const [isStatesOpen, setIsStatesOpen] = useState(false);
+
 
     //If the externalActiveClass(given by the control component) is set, set the active class to it
     useEffect(() => {
@@ -132,20 +135,49 @@ useEffect(() => {
     
 
         return (
-            <div className="tw-builder__settings-classes">
-                <span className={`tw-builder__settings-id`} onClick={() => {
-                    if (activeClass) {
-                        setActiveClass(null);
-                    } else {
-                        setIsOpen(!isOpen);
-                    }
-                }}>
-                    {activeClass ? (
-                        `.${activeClass}`
-                    ) : (
-                        `#${selectedId}`
-                    )}
-                </span>
+			<div className="tw-builder__settings-classes">
+				<span className={`tw-builder__settings-id`} onClick={() => {
+					if (activeClass) {
+						setActiveClass(null);
+					} else {
+						setIsOpen(!isOpen);
+					}
+				}}>
+                    {/*take the id or the class. Also if state is active, show it*/}
+					{activeClass ? (
+						`.${activeClass}${activeState ? `:${activeState}` : ''}`
+					) : (
+						`#${selectedId}${activeState ? `:${activeState}` : ''}`
+					)}
+                    {/*Dropdown to select the state*/}
+					<Dropdown
+						open={isStatesOpen}
+						onClose={() => setIsStatesOpen(false)}
+						className="tw-builder__states-dropdown"
+						menu={
+							<div className="tw-builder__settings-states-menu">
+								<span className="tw-builder__settings-states-item" onClick={(e) => { e.stopPropagation(); setActiveState(':hover'); setIsStatesOpen(false); }}>:hover</span>
+								<span className="tw-builder__settings-states-item" onClick={(e) => { e.stopPropagation(); setActiveState(':active'); setIsStatesOpen(false); }}>:active</span>
+								<span className="tw-builder__settings-states-item" onClick={(e) => { e.stopPropagation(); setActiveState(':focus'); setIsStatesOpen(false); }}>:focus</span>
+							</div>
+						}
+					>
+						<span
+							className={`tw-builder__settings-states ${activeState ? `tw-builder__settings-states--active` : ''}`}
+							onClick={(e) => { 
+                                e.stopPropagation(); 
+                                //if the state is active, set it to null and close the dropdown
+                                if(activeState) {setActiveState(null); setIsStatesOpen(false);}
+                                //if the state is not active, open the dropdown
+                                else {setIsStatesOpen(v => !v);}
+                                }}
+						>
+							<svg width="9" height="11" viewBox="0 0 9 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M1.57766 0.574219L8.05143 6.32286L5.21041 6.93272L6.42513 9.53129L4.60353 10.4284L3.32487 7.72532L0.947266 9.28255L1.57766 0.574219Z" fill="currentColor"/>
+							</svg>
+						</span>
+					</Dropdown>
+				</span>
                 <div className="tw-builder__settings-classes-selected">
                     {activeClass && (
                         <div
@@ -157,7 +189,7 @@ useEffect(() => {
                             <span className="tw-builder__settings-class-name">#{selectedId}</span>
                         </div>
                     )}
-    
+                    {/*List of classes selected*/}
                     {filteredClasses
                         .filter((className) => className !== activeClass)
                         .map((className, index) => (
@@ -175,6 +207,7 @@ useEffect(() => {
                             </div>
                         ))}
                 </div>
+                {/*Pool of classes*/}
                 {isOpen && (
                     <div className="tw-builder__settings-classes-pool" ref={poolRef}>
                         <div className="tw-builder__settings-classes-adder">

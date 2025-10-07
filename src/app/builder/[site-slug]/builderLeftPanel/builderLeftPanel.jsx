@@ -9,7 +9,7 @@ import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
 
 function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModalOpen, openChangeModal, isRightPanelOpen, setIsRightPanelOpen, showNotification, CallContextMenu, setIsManualThemesOpen, clipboard, setClipboard }) {
     const router = useRouter()
-    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, createElement, moveElement, deepCopy, handleToolbarDragStart, handleToolbarDragEnd, isToolbarDragActive, notifyElementCreatedFromToolbar } = useCanvas();
+    const { JSONtree, activeRoot, updateActiveRoot, activeTab, selectedId, setSelectedId, selectedItem, setSelectedItem, removeElement, addElement, createElement, moveElement, deepCopy, handleToolbarDragStart, handleToolbarDragEnd, isToolbarDragActive, notifyElementCreatedFromToolbar, isUnsaved } = useCanvas();
     
     // State management for dropdown visibility
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -69,9 +69,10 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         setIsDropdownOpen(false)
         
         switch (action) {
-            case 'home':
+            case 'home': {
                 router.push('/')
                 break
+            }    
             case 'settings':
                 openChangeModal('settings')
                 break
@@ -502,12 +503,14 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             if (currentRoot) {
                 // Create a deep copy of the clipboard item without the id (addElement will generate new IDs)
                 const copiedItem = deepCopy(clipboard);
+                // Preserve original root id for CSS cloning
+                copiedItem.__originalId = clipboard.id;
                 delete copiedItem.id; // Remove the original ID so addElement can generate new ones
                 
                 // Add to the end of the root tree (last position)
                 addElement(copiedItem, currentRoot.id);
                 
-
+                
             }
             return;
         }
@@ -538,6 +541,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
         if (targetElement) {
             // Create a deep copy of the clipboard item without the id (addElement will generate new IDs)
             const copiedItem = deepCopy(clipboard);
+            copiedItem.__originalId = clipboard.id;
             delete copiedItem.id; // Remove the original ID so addElement can generate new ones
             
             // GLOBAL NESTING DETECTION: Use the global function for ANY element
@@ -751,8 +755,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
             }
             
             // Check both banner and modal trees
-            if (JSONtree.roots[0]) autoExpandBlocks([JSONtree.roots[0]])
-            if (JSONtree.roots[1]) autoExpandBlocks([JSONtree.roots[1]])
+            if (JSONtree?.roots?.[0]) autoExpandBlocks([JSONtree.roots[0]])
+            if (JSONtree?.roots?.[1]) autoExpandBlocks([JSONtree.roots[1]])
         }
     },[JSONtree]);
 
@@ -1055,8 +1059,22 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     // Dropdown menu items
     const dropdownMenu = (
         <>
-            <Link href="/" className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home" onClick={() => handleDropdownAction('home')}>
-                <span>Back to Dashboard</span>
+            <Link
+            href="/"
+            className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home"
+            onClick={(e) => {
+                //alert the user if there are unsaved changes
+                if (isUnsaved) {
+                const leave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+                if (!leave) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                }
+            }}
+            >
+            <span>Back to Dashboard</span>
             </Link>
             <div className="dropdown__divider"></div>
             <button className="dropdown__item tw-builder__dropdown-item" onClick={() => handleDropdownAction('settings')}>
@@ -1158,8 +1176,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                         }}
                     >
 
-                        {activeTab === 'tw-root--banner' && JSONtree.roots[0] && [JSONtree.roots[0]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
-                        {activeTab === 'tw-root--modal' && JSONtree.roots[1] && [JSONtree.roots[1]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
+                        {activeTab === 'tw-root--banner' && JSONtree?.roots?.[0] && [JSONtree.roots[0]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
+                        {activeTab === 'tw-root--modal' && JSONtree?.roots?.[1] && [JSONtree.roots[1]].map((item, index) => renderTreeItem(item, 0, null, index === 0))}
                     </div>
                 </div>
             </div>
