@@ -4,7 +4,7 @@
     justify-content: space-between;
     gap: 10px;
     width: 100%;
-    background-color: var(--view-toggle-background);
+    background-color: var(--script-copy-background);
     border-radius: 10px;
     padding: 10px;
 }
@@ -12,7 +12,7 @@
 .script-copy__script {
     font-size: var(--font-size-small);
     font-weight: 500;
-    color: var(--body-fresco-color);
+    color: var(--script-copy-color);
     letter-spacing: var(--letter-spacing-negative);
     max-width: 540px;
     overflow: hidden;
@@ -21,6 +21,9 @@
 }
 .script-copy__copy {
     cursor: pointer;
+}
+.script-copy__copy path {
+    stroke: var(--script-copy-color);
 }
 
 @media (max-width: 767px) {

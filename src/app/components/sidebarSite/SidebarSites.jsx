@@ -117,12 +117,10 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             
         >
             <div className="sidebar-sites__header">
-                <span className="sidebar-sites__avatar">
-                    <span className={`sidebar-sites__color ${checkSitePicture(siteData) === '' ? '' : 'sidebar-sites__color--null'}`} 
-                        style={SiteStyle(siteData)}>
+                <span className="sidebar-sites__avatar" style={SiteStyle(siteData)}>
+                    <span className={`sidebar-sites__color ${checkSitePicture(siteData) === '' ? '' : 'sidebar-sites__color--null'}`}>
                           {siteData.Name.charAt(0)}
                     </span> 
-                    <img className={`sidebar-sites__img ${checkSitePicture(siteData) === '' ? 'sidebar-sites__img--null' : ''}`} src={siteData["Avatar URL"]}/>
                 </span>
                 <span className="sidebar-sites__name">
                       {siteData.Name}

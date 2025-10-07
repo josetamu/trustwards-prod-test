@@ -150,7 +150,7 @@
     background: none;
     border-radius: 6px;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--tab-color);
     cursor: pointer;
@@ -534,7 +534,7 @@
 .tw-builder__tree-item-label {
     font-size: var(--font-size-mini);
     color: var(--subtitle-color);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     flex: 1;
     overflow: hidden;

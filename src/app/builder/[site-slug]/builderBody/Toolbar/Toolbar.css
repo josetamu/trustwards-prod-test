@@ -104,7 +104,7 @@
 }
 .tw-builder__toolbar-dropdown-item-title{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--toolbar-items-text-color);
 }
 .tw-builder__toolbar-dropdown-item-icon{
@@ -122,7 +122,7 @@
 }
 .tw-builder__toolbar-dropdown-column-title{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--toolbar-items-text-color);
 
     margin: 2px 0;

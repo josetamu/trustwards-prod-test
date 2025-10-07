@@ -3,13 +3,6 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  padding: 15px;
-}
-
-/* Reduce modal width for delete dialog */
-.modal:has(.modal-delete__content){
-  max-width: 220px;
 }
 
 /* Top wrapper */
@@ -18,29 +11,41 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding: 15px;
 }
 
 .modal-delete__title {
   letter-spacing: var(--letter-spacing-negative);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight);
-  color: var(--body-strong-color);
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-medium);
+  color: var(--body-semistrong-color);
   text-align: left;
 }
 
 .modal-delete__divider {
   height: 1px;
-  background: var(--border-strong-color);
+  background: var(--border-fresco-color);
   width: 100%;
   border: none;
 }
 
+/* Middle wrapper */
+.modal-delete__middle-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  padding-right: 50px;
+}
+
 .modal-delete__paragraph {
   letter-spacing: var(--letter-spacing-negative);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-small);
   color: var(--body-fresco-color);
   text-align: left;
+  max-width: 175px;
 }
 
 /* Actions */
@@ -50,16 +55,21 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
+  padding: 15px;
+  padding-top: 0;
 }
 
 .modal-delete__cancel {
   letter-spacing: var(--letter-spacing-negative);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-small);
-  color: var(--body-fresco-color);
-  border: 1px solid var(--border-strong-color);
+  color: var(--body-semistrong-color);
+  border: 1px solid var(--border-fresco-color);
   border-radius: 8px;
-  padding: 10px 25px;
+
+  height: 30px;
+  width: 100%;
+
   cursor: pointer;
   background: transparent;
 }
@@ -67,12 +77,15 @@
 .modal-delete__confirm {
   letter-spacing: var(--letter-spacing-negative);
   font-size: var(--font-size-small);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   background: var(--accent-bg-color);
   color: var(--accent-color);
   border: none;
   border-radius: 8px;
-  padding: 10px 25px;
+
+  height: 30px;
+  width: 100%;
+
   cursor: pointer;
   box-shadow: var(--blue-button-shadow);
 }

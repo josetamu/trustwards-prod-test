@@ -24,7 +24,7 @@
     display: none;
     cursor: pointer;
     font-size: 8px;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: #000;
 }

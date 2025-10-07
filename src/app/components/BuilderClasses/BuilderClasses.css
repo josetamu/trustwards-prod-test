@@ -8,7 +8,7 @@
     display: flex;
     justify-content: space-between;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--shadow-color);
     background-color: var(--builder-background);
@@ -20,7 +20,7 @@
 .tw-builder__settings-class-unactive{
     cursor: pointer;
     font-size: 10px;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: #FFFFFF;
 }
@@ -49,7 +49,7 @@
 
 .tw-builder__settings-class-name{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     
 }
@@ -60,7 +60,7 @@
     cursor: pointer;
     opacity: 0;
     font-size: 7px;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--panels-background);
     background-color: rgba(255, 0, 0, 0.749);
@@ -111,7 +111,7 @@
     background-color: transparent;
     color: #FFFFFF;
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-classes-add{
@@ -129,7 +129,7 @@
 .tw-builder__settings-classes-add-span{
     color: #FFFFFF;
     font-size: 11px;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-classes-add-input::placeholder {
@@ -160,7 +160,7 @@
     background-color: transparent;
     color: #FFFFFF;
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-classes-search:focus {
@@ -206,7 +206,7 @@
 .tw-builder__settings-classes-item-name{
     color: #999999;
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -220,7 +220,7 @@
 .tw-builder__settings-classes-item--empty .tw-builder__settings-classes-item-name{
     color: #0099FE;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 

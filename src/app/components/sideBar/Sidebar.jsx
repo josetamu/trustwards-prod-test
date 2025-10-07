@@ -165,8 +165,6 @@ export function Sidebar({
     }) {
     const { 'site-slug': siteSlug } = useParams();
     const pathname = usePathname();
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
     const [isActive, setIsActive] = useState('');
     const [hasSitesOverflow, setHasSitesOverflow] = useState(false);
     const [windowResizedWidth, setWindowResizedWidth] = useState(0);
@@ -174,7 +172,6 @@ export function Sidebar({
     //const to check if you are clicking outside the sidebar and the action button
     const sidebarContainerRef = useRef(null);
     const sidebarActionRef = useRef(null);
-    const searchContainerRef = useRef(null);
     const sitesDisplayRef = useRef(null);
     // if siteSlug the sidebar content change to the site menu
 
@@ -191,20 +188,13 @@ export function Sidebar({
         const routeMap = {
           [`/${siteSlug}`]: 'Home',
           [`/${siteSlug}/scanner`]: 'Scanner',
-          [`/${siteSlug}/comply-map`]: 'Comply Map',
           [`/${siteSlug}/integrations`]: 'Integrations',
+          [`/${siteSlug}/usage`]: 'Usage',
+          [`/${siteSlug}/proof-of-consent`]: 'Proof of Consent',
         };
       
         setIsActive(routeMap[pathname] || '');
       }, [pathname, siteSlug]);
-      
-
-    // Clear search query when search is closed
-    useEffect(() => {
-        if (!isSearchOpen) {
-            setSearchQuery('');
-        }
-    }, [isSearchOpen]);
 
     // function to close the sidebar when clicking outside in mobile 
     useEffect(() => {
@@ -225,14 +215,6 @@ export function Sidebar({
                     setBlockContent(!isContentBlocked);
                 }
             }
-
-            // Close search when clicking outside
-            if (isSearchOpen) {
-                const isOutsideSearch = searchContainerRef.current && !searchContainerRef.current.contains(event.target);
-                if (isOutsideSearch) {
-                    setIsSearchOpen(false);
-                }
-            }
         };
         const handleEscape = (event) => {
             // Only handle clicks outside on mobile devices
@@ -244,7 +226,6 @@ export function Sidebar({
                 
                 setIsSidebarMenu(false);
                 setBlockContent(!isContentBlocked);
-                setIsSearchOpen(false);
             }
         };
 
@@ -258,7 +239,7 @@ export function Sidebar({
             document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('keydown', handleEscape);
         };
-    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSearchOpen, isSidebarMenu]);
+    }, [isSidebarOpen, setIsSidebarOpen, toggleSidebar, isModalOpen, isSidebarMenu]);
 
     // Define overviewPages inside the component to access siteData
     const overviewPages = [
@@ -270,6 +251,17 @@ export function Sidebar({
             </svg> 
         },
         {
+            href: `/${siteSlug}/usage`,
+            name:'Usage',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path opacity="0.3" d="M7.03809 0.166992C8.49856 0.166986 9.64569 0.166979 10.5413 0.287386C11.459 0.410779 12.1872 0.668799 12.7594 1.24093C13.3315 1.81307 13.5895 2.54124 13.7129 3.45901C13.8333 4.35462 13.8333 5.50173 13.8333 6.96219V7.03846C13.8333 8.49893 13.8333 9.64606 13.7129 10.5417C13.5895 11.4594 13.3315 12.1876 12.7594 12.7597C12.1872 13.3319 11.459 13.5899 10.5413 13.7133C9.64569 13.8337 8.49856 13.8337 7.03809 13.8337H6.96183C5.50136 13.8337 4.35425 13.8337 3.45864 13.7133C2.54087 13.5899 1.8127 13.3319 1.24057 12.7597C0.668433 12.1876 0.410413 11.4594 0.287019 10.5417C0.166613 9.64606 0.166619 8.49893 0.166626 7.03846V6.96219C0.166619 5.50174 0.166613 4.35462 0.287019 3.45901C0.410413 2.54124 0.668433 1.81307 1.24057 1.24093C1.8127 0.668799 2.54087 0.410779 3.45864 0.287386C4.35425 0.166979 5.50137 0.166986 6.96183 0.166992H7.03809Z" fill="currentColor"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M3.66663 7.16699C3.94277 7.16699 4.16663 7.39086 4.16663 7.66699V10.3337C4.16663 10.6098 3.94277 10.8337 3.66663 10.8337C3.39049 10.8337 3.16663 10.6098 3.16663 10.3337V7.66699C3.16663 7.39086 3.39049 7.16699 3.66663 7.16699Z" fill="currentColor"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M7 3.16699C7.27613 3.16699 7.5 3.39085 7.5 3.66699V10.3337C7.5 10.6098 7.27613 10.8337 7 10.8337C6.72387 10.8337 6.5 10.6098 6.5 10.3337V3.66699C6.5 3.39085 6.72387 3.16699 7 3.16699Z" fill="currentColor"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M10.3334 5.83301C10.6095 5.83301 10.8334 6.05687 10.8334 6.33301V10.333C10.8334 10.6091 10.6095 10.833 10.3334 10.833C10.0572 10.833 9.83337 10.6091 9.83337 10.333V6.33301C9.83337 6.05687 10.0572 5.83301 10.3334 5.83301Z" fill="currentColor"/>
+            </svg>
+            
+        },
+        {
             href: `/${siteSlug}/scanner`,
             name:'Scanner',
             icon: <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -278,19 +270,14 @@ export function Sidebar({
             
         },
         {
-            href: `/${siteSlug}/comply-map`,
-            name:'Comply Map',
-            icon: <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clipPath="url(#clip0_391_681)">
-            <path d="M6.01865 1.85738C6.32717 1.79475 6.52656 1.49384 6.46391 1.18529C6.40126 0.876743 6.10037 0.677389 5.79182 0.740021C2.90301 1.32642 0.728516 3.87954 0.728516 6.94179C0.728516 10.4369 3.56182 13.2702 7.05687 13.2702C10.1191 13.2702 12.6723 11.0957 13.2587 8.20686C13.3213 7.89834 13.122 7.59745 12.8134 7.5348C12.5048 7.47215 12.204 7.67154 12.1413 7.98006C11.9959 8.6964 11.7028 9.35906 11.2952 9.93505C11.2763 9.96182 11.2502 9.98259 11.2195 9.99408C11.1368 10.0252 11.0495 10.0509 10.9577 10.071C10.4277 10.1737 9.87512 10.0847 9.68589 10.0323C9.39586 9.96497 9.04737 9.84825 8.72164 9.70556C8.27918 9.53855 7.61902 9.11208 7.33477 8.91001L7.33173 8.90785C7.2132 8.82514 6.95274 8.63135 6.95006 8.62937C6.83094 8.54059 6.7071 8.44836 6.58641 8.36349C6.03936 7.96297 5.33055 7.61145 5.04431 7.48475C4.60132 7.29838 4.19919 7.1932 3.82994 7.15015C3.51156 7.08902 3.17317 7.12087 2.89965 7.17209C2.61656 7.22511 2.36331 7.3066 2.20633 7.37048C2.17956 7.3811 2.15142 7.3927 2.12237 7.40501C2.01187 7.45203 1.88562 7.38121 1.87834 7.2614C1.87191 7.1557 1.86866 7.04912 1.86866 6.94179C1.86866 4.43245 3.65071 2.33804 6.01865 1.85738Z" fill="currentColor"/>
-            <path fillRule="evenodd" clipRule="evenodd" d="M9.6247 0.728516C8.20114 0.728516 6.83474 1.55454 6.2598 2.87416C5.72223 4.10811 6.01883 5.16316 6.61406 6.04649C7.09543 6.76084 7.79759 7.39813 8.41347 7.95708C8.5299 8.06272 8.64325 8.16557 8.7514 8.26561L8.75233 8.26654C8.9898 8.48483 9.30288 8.60353 9.6247 8.60353C9.94647 8.60353 10.2596 8.48482 10.4971 8.26648C10.5995 8.17233 10.7064 8.07562 10.8162 7.97633C11.4384 7.41365 12.1501 6.77017 12.6365 6.04678C13.2309 5.16262 13.5265 4.10659 12.9895 2.87416C12.4147 1.55454 11.0483 0.728516 9.6247 0.728516ZM9.62435 2.91602C10.3492 2.91602 10.9369 3.50364 10.9369 4.22852C10.9369 4.95339 10.3492 5.54102 9.62435 5.54102C8.8995 5.54102 8.31185 4.95339 8.31185 4.22852C8.31185 3.50364 8.8995 2.91602 9.62435 2.91602Z" fill="currentColor"/>
-            </g>
-            <defs>
-            <clipPath id="clip0_391_681">
-            <rect width="24" height="12" fill="white"/>
-            </clipPath>
-            </defs>
-            </svg>
+            href: `/${siteSlug}/proof-of-consent`,
+            name:'Proof of Consent',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 12 16" fill="none">
+            <path opacity="0.4" d="M6.75831 15.0548C6.44138 15.1672 6.10504 15.1668 5.72504 15.1663C4.70791 15.1663 3.76948 15.1662 3.11698 15.0896C2.44185 15.0104 1.86338 14.8418 1.37337 14.4446C1.19349 14.2988 1.02965 14.1341 0.884622 13.9533C0.489535 13.4608 0.321735 12.8793 0.242915 12.2006C0.166728 11.5448 0.166735 10.7204 0.166748 9.69797V6.64892C0.166735 5.46094 0.166722 4.50336 0.267448 3.75025C0.372028 2.96834 0.595762 2.31 1.11593 1.78712C1.6361 1.26425 2.29104 1.03936 3.0689 0.934228C3.81811 0.832975 4.86551 0.832988 6.04738 0.833008C7.22924 0.832988 8.18184 0.832975 8.93111 0.934228C9.70898 1.03936 10.3639 1.26425 10.884 1.78712C11.4042 2.31 11.628 2.96834 11.7325 3.75025C11.8332 4.50337 11.8332 5.46094 11.8332 6.64894L11.8333 8.9651C11.834 9.40737 11.8346 9.79984 11.6852 10.1624C11.5358 10.5249 11.2593 10.802 10.9478 11.1142L7.75918 14.3193C7.49091 14.5898 7.25338 14.8291 6.95018 14.9749C6.88764 15.005 6.82364 15.0316 6.75831 15.0548Z" fill="currentColor"/>
+            <path d="M6.75831 15.0551C6.82357 15.0319 6.88764 15.0053 6.95011 14.9753C7.25337 14.8295 7.49084 14.5901 7.75917 14.3197L10.9477 11.1145C11.2593 10.8023 11.5358 10.5252 11.6852 10.1627C11.751 10.0029 11.7878 9.83726 11.8082 9.66406H10.4876C9.57591 9.66406 9.14351 9.6646 8.56557 9.74226C7.96551 9.823 7.46024 9.9956 7.05897 10.3969C6.65771 10.7981 6.48511 11.3034 6.40437 11.9035C6.32684 12.4803 6.32684 12.9176 6.32691 13.8255V15.1475C6.47577 15.1322 6.61891 15.1046 6.75831 15.0551Z" fill="currentColor"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M9.16673 4.66699C9.16673 4.94313 8.94287 5.16699 8.66673 5.16699H3.33337C3.05723 5.16699 2.83337 4.94314 2.83337 4.66699C2.83337 4.39085 3.05723 4.16699 3.33337 4.16699H8.66673C8.94287 4.16699 9.16673 4.39085 9.16673 4.66699Z" fill="currentColor"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M6.50007 7.33301C6.50007 7.60914 6.2762 7.83301 6.00007 7.83301H3.33337C3.05723 7.83301 2.83337 7.60914 2.83337 7.33301C2.83337 7.05681 3.05723 6.83301 3.33337 6.83301H6.00007C6.2762 6.83301 6.50007 7.05681 6.50007 7.33301Z" fill="currentColor"/>
+            </svg> 
         },
         {
             href: `/${siteSlug}/integrations`,
@@ -301,15 +288,13 @@ export function Sidebar({
             <path d="M12.25 10.209C12.25 11.1755 11.4665 11.959 10.5 11.959C9.53347 11.959 8.75 11.1755 8.75 10.209C8.75 9.24246 9.53347 8.45898 10.5 8.45898C11.4665 8.45898 12.25 9.24246 12.25 10.209Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
             <path d="M4.95898 6.12471L8.75065 4.375M4.95898 7.58333L8.75065 9.33304" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
             </svg>
-            
-            
         },
 
     ];
 
-    //const to know if there are no web. Also when using searching function
+    //const to know if there are no web
     const filteredWebs = webs.filter(web => {
-        return web.userid === user?.id && web.Name.toLowerCase().includes(searchQuery.toLowerCase());
+        return web.userid === user?.id;
     }).sort((a, b) => new Date(a.Date) - new Date(b.Date)); 
     
 
@@ -321,10 +306,8 @@ export function Sidebar({
         if(window.innerWidth <= 767){
             setIsSidebarMenu(!isSidebarMenu);
             setBlockContent(!isContentBlocked);
-            setIsSearchOpen(false);
         }else{
             toggleSidebar();
-            setIsSearchOpen(false);
         }
     };
 
@@ -366,13 +349,7 @@ export function Sidebar({
                         className="sidebar__action" 
                         onClick={handleToggleSidebar}
                     >
-                        <svg className="sidebar__desk" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1.5 9C1.5 6.1877 1.5 4.78155 2.21618 3.7958C2.44748 3.47745 2.72745 3.19748 3.0458 2.96618C4.03155 2.25 5.4377 2.25 8.25 2.25H9.75C12.5623 2.25 13.9685 2.25 14.9542 2.96618C15.2725 3.19748 15.5525 3.47745 15.7838 3.7958C16.5 4.78155 16.5 6.1877 16.5 9C16.5 11.8123 16.5 13.2185 15.7838 14.2042C15.5525 14.5225 15.2725 14.8025 14.9542 15.0338C13.9685 15.75 12.5623 15.75 9.75 15.75H8.25C5.4377 15.75 4.03155 15.75 3.0458 15.0338C2.72745 14.8025 2.44748 14.5225 2.21618 14.2042C1.5 13.2185 1.5 11.8123 1.5 9Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                            <path d="M7.125 2.625V15.375" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                            <path d="M3.75 5.25C3.75 5.25 4.43566 5.25 4.875 5.25" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M3.75 8.25H4.875" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M12.75 7.5L11.8301 8.2929C11.4434 8.6262 11.25 8.79292 11.25 9C11.25 9.20708 11.4434 9.3738 11.8301 9.7071L12.75 10.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
+                        <div className='sidebar__desk'></div>
 
                         <svg className={`sidebar__burger ${isSidebarMenu ? 'sidebar__burger--closed' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
                             <path fillRule="evenodd" clipRule="evenodd" d="M3 5C3 4.44772 3.44772 4 4 4L20 4C20.5523 4 21 4.44772 21 5C21 5.55229 20.5523 6 20 6L4 6C3.44772 6 3 5.55228 3 5Z" fill="currentColor"></path>
@@ -443,41 +420,7 @@ export function Sidebar({
                                     
                                 ) : (
                                     <>
-                                        <span className='sidebar__sites-title'>SITES</span>
-                                        <div className={`sidebar__sites-searcher ${isSearchOpen ? 'sidebar__sites-searcher--open' : ''}`} ref={searchContainerRef}>
-                                            {/* here is the sidebars' search */}
-                                            <span className='sidebar__sites-search' onClick={() => {
-                                                setIsSearchOpen(!isSearchOpen);
-                                            }}>
-                                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M8.99912 8.99912L7.07031 7.07031" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
-                                                    <path d="M4.55541 8.11083C6.51902 8.11083 8.11083 6.51902 8.11083 4.55541C8.11083 2.59181 6.51902 1 4.55541 1C2.59181 1 1 2.59181 1 4.55541C1 6.51902 2.59181 8.11083 4.55541 8.11083Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}/>
-                                                </svg>
-                                            </span>
-                                            <input 
-                                                className={`sidebar__sites-input ${isSearchOpen ? 'sidebar__sites-input--open' : ''}`} 
-                                                type="text" 
-                                                placeholder='Search sites...'
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                            />
-                                        </div>
-                                        {/* this is the + to add a newsite */}
-                                        <span className='sidebar__sites-add' onClick={() => {
-                                            if(user.Plan === 'Free' && webs.length >= 3) {
-                                                showNotification('You have reached the maximum number of sites for your plan.', 'top', false);
-                                                setIsModalOpen(true);
-                                                setModalType('Plan');
-                                            } else {
-                                                openChangeModal('newsite');
-                                            }
-                                        }} 
-                                            
-                                        >
-                                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M8 4.57143H4.57143V8H3.42857V4.57143H0V3.42857H3.42857V0H4.57143V3.42857H8V4.57143Z" fill="currentColor"/>
-                                                </svg>
-                                        </span>
+                                        <span className='sidebar__sites-title'>Sites</span>
                                     </>
                                 )}
                             </div>
@@ -493,32 +436,20 @@ export function Sidebar({
                                                 onMouseEnter={() => setHoveredOverviewLink(page.name)}
                                                 onMouseLeave={() => setHoveredOverviewLink(null)}
                                             >
-                                                {page.name === 'Comply Map' ? (
-                                                    <div
-                                                        className={`sidebar__site-link sidebar__site-link--coming-soon ${isActive === page.name ? 'sidebar__site-link--active' : ''}`}
-                                                    >
-                                                        <span className='sidebar__site-link-icon'>{page.icon}</span>
-                                                        <span className='sidebar__site-link-text'>{page.name}</span>
-                                                        {isSidebarOpen && (
-                                                            <span className="sidebar__site-link-badge">Soon</span>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <Link
-                                                        href={page.href}
-                                                        className={`sidebar__site-link ${isActive === page.name ? 'sidebar__site-link--active' : ''}`}
-                                                        onClick={() => {
-                                                            if(typeof window !== 'undefined' && window.innerWidth < 767) {
-                                                                setIsSidebarMenu(false);
-                                                                toggleSidebar();
-                                                            }
-                                                        }}
-                                                    >
-                                                        <span className='sidebar__site-link-icon'>{page.icon}</span>
-                                                        <span className='sidebar__site-link-text'>{page.name}</span>
-                                                    </Link>
-                                                )}
-                                                {!isSidebarOpen && !isSidebarMenu && page.name !== 'Comply Map' && (
+                                                <Link
+                                                    href={page.href}
+                                                    className={`sidebar__site-link ${isActive === page.name ? 'sidebar__site-link--active' : ''}`}
+                                                    onClick={() => {
+                                                        if(typeof window !== 'undefined' && window.innerWidth < 767) {
+                                                            setIsSidebarMenu(false);
+                                                            toggleSidebar();
+                                                        }
+                                                    }}
+                                                >
+                                                    <span className='sidebar__site-link-icon'>{page.icon}</span>
+                                                    <span className='sidebar__site-link-text'>{page.name}</span>
+                                                </Link>
+                                                {!isSidebarOpen && !isSidebarMenu && (
                                                     <Tooltip 
                                                         message={page.name} 
                                                         responsivePosition={{ desktop: 'sidebar', mobile: 'top' }}
@@ -533,12 +464,11 @@ export function Sidebar({
                                 ) : (
                                     
                                     // if we are not inside a site, show the list of sites
-                                    //Also if there are no sites, show the add a new site button or if you are searching for a site that doesn't exist show a message
+                                    // Also if there are no sites, show the add a new site button
                                     <div className={`sidebar__sites-display ${hasSitesOverflow ? 'sidebar__sites-display--overflow' : ''}`} ref={sitesDisplayRef}>
                                         <div className="sidebar__sites-overflow-padding">
                                             <Suspense fallback={<SidebarSiteSkeleton isSidebarOpen={isSidebarOpen}/>}>
                                                 <SidebarSitesList
-                                                    searchQuery={searchQuery}
                                                     setIsModalOpen={setIsModalOpen}
                                                     setModalType={setModalType}
                                                     showNotification={showNotification}

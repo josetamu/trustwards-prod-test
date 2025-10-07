@@ -71,7 +71,7 @@
     align-items: center;
     justify-content: center;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--avatar-color);
     background-color: var(--avatar-background);
     text-transform: uppercase;
@@ -83,7 +83,7 @@
   /* User name */
   .user__name{
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
     display: block;
@@ -96,7 +96,7 @@
 
   .sidebar--open .user__name{
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
     display: block;
@@ -108,7 +108,7 @@
 
   .sidebar--menu .user__name{
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
     display: block;

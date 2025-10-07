@@ -46,6 +46,8 @@ html[data-color] .modalAppearance__accentColor__button {
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
+
+    box-shadow: var(--fancy-shadow);
   }
 
   /* we use this class in the elements we need to readjust when sidebar is open. with only this class we not need modifyers in every element we wanna change*/

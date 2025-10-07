@@ -12,7 +12,7 @@
     box-shadow: var(--blue-button-shadow);
 
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
   }

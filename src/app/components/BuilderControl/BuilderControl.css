@@ -20,7 +20,7 @@
 }
 .tw-builder__control-label{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--label-color);
     letter-spacing: var(--letter-spacing-negative);
 }

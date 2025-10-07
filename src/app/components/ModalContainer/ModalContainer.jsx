@@ -21,7 +21,8 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, mod
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div 
+        <motion.div
+          {...ANIM_TYPES.find(anim => anim.name === 'OVERLAY_FADE')} 
           className="modal__backdrop" 
           onClick={modalType !== 'Welcome' ? handleBackdropClick : undefined}
         >

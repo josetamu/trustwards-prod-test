@@ -11,7 +11,7 @@
 }
 
 .modal-change__content {
-  box-shadow: 0 4px 20px var(--shadow-strong-color);
+  box-shadow: var(--fancy-shadow);
   background-color: var(--modal-background);
   border-radius: 16px;
 
@@ -34,19 +34,19 @@
   font-size: var(--font-size-small);
   color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing-negative);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
 }
 
 .modal-change__divider {
   height: 1px;
-  background: var(--border-strong-color);
+  background: var(--border-fresco-color);
   margin: 4px 0;
   width: 100%;
   border: none;
 }
 
 .modal-change__body {
-  padding: 5px 15px 15px 15px;
+  padding: 5px 15px 5px 15px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -69,7 +69,7 @@
 }
 
 .modal-change__input {
-  border: 1px solid var(--border-strong-color);
+  border: 1px solid var(--border-fresco-color);
   background: transparent;
   height: 34px;
   border-radius: 8px;
@@ -77,7 +77,7 @@
   font-size: var(--font-size-small);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--body-fresco-color);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   width: 100%;
 }
 .modal-change__input:focus {
@@ -101,7 +101,7 @@
 /* link of forgot password? */
 .modal-change__forgot {
   font-size: var(--font-size-small);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--accent-bg-color);
   text-decoration: none;
@@ -109,26 +109,26 @@
 
 /* Save button */
 .modal-change__button {
-    width: 43px;
-    height: 26px;
     background: var(--accent-bg-color);
     border: none;
     border-radius: 8px;
     letter-spacing: var(--letter-spacing-negative);
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--accent-color);
     cursor: pointer;
     box-shadow: var(--blue-button-shadow);
     display: flex;
     align-items: center;
     justify-content: center;
+
+    padding: 6px 10px;
 }
 
 .modal-change__advice {
   font-size: var(--font-size-mini);
   color: var(--body-fresco-color);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-negative);
   margin-bottom: 5px;
 }

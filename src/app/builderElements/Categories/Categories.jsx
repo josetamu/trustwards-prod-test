@@ -24,7 +24,7 @@ export const Categories = (node, nodeProps = {}, children) => {
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel'},
+                    { name: 'Padding 4578643', type: 'panel' },
                     { name: 'Margin', type: 'panel'},
                 ]
             },
@@ -40,7 +40,7 @@ export const Categories = (node, nodeProps = {}, children) => {
             {
                 label: 'Background',
                 controls: [
-                    { name: '', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' },
+                    { name: '', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' }, 
                 ]
             },
             {

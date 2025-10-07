@@ -147,7 +147,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                                         if (errors.createSiteName) setErrors(prev => ({ ...prev, createSiteName: undefined }));
                                     }}
                                     onKeyDown={handleKeyDown}
-                                    placeholder="New site name"
+                                    placeholder="Name"
                                 />
                             </div>
                             <div className='modal-change__input-wrapper'>
