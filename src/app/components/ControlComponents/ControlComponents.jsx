@@ -3435,6 +3435,11 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     // Find the selected element in the active root
     const selectedElement = findElement(activeRootNode, selectedId);
 
+    if (!selectedElement) {
+        setSelectedElementData(null);
+        return;
+    }
+
     // Get the active breakpoint
     const bp = getActiveBreakpoint?.() || 'desktop';
     // Get the responsive idsCSSData or base idsCSSData
@@ -3446,132 +3451,161 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 
     const elementData = {
         id: selectedElement.id,
-        elementType: selectedElement.elementType,
-        tagName: selectedElement.tagName,
-        classList: selectedElement.classList,
-        children: selectedElement.children,
-        nestable: selectedElement.nestable,
-        icon: selectedElement.icon,
-        label: selectedElement.label,
-        href: selectedElement.href,
-        innerText: selectedElement.innerText,
-        properties: elementCssData?.properties || {},
-        hasChildren: !!(selectedElement.children && selectedElement.children.length > 0),
-        className: selectedElement.classList?.[0] || null
+
     };
     // Update the selected element data state
     setSelectedElementData(elementData);
 }, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
 
 // Apply CSS (writes in the dataset of the active breakpoint if not desktop)
-const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, nestedSelector) => {
+const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = {}) => {
     if (!selectedId || !cssPropertyOrObject) return;
-    //Determine the type of selector(class or id)
-    const type = activeClass ? 'class' : 'id';
-    const selector = activeClass ? activeClass : selectedId;
-
-    //Add the property to the CSS data. The cssProperty can be a string or an object(if need to add multiple properties).
-    if (typeof cssPropertyOrObject === 'string') {
-        addCSSProperty(type, selector, cssPropertyOrObject, value, nestedSelector);
-    } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
-        addCSSProperty(type, selector, cssPropertyOrObject, undefined, nestedSelector);
+    
+    // Support legacy API: if options is a string, treat it as nestedSelector
+    const normalizedOptions = typeof options === 'string' 
+        ? { nestedSelector: options } 
+        : options;
+    
+    const { nestedSelector = null, enterScope = null } = normalizedOptions;
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    // Special handling for enter animations on root elements
+    if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+        const isRoot = selectedId === activeRoot;
+        
+        if (isRoot) {
+            type = 'class';
+            selector = enterScope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        }
     }
-}, [selectedId, addCSSProperty, JSONtree, activeClass]);
+    
+    // Build options
+    const cssOptions = {};
+    if (nestedSelector) cssOptions.nestedSelector = nestedSelector;
+    if (enterScope) cssOptions.enterScope = enterScope;
+    
+    // Apply
+    if (typeof cssPropertyOrObject === 'string') {
+        addCSSProperty(type, selector, cssPropertyOrObject, value, cssOptions);
+    } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
+        addCSSProperty(type, selector, cssPropertyOrObject, undefined, cssOptions);
+    }
+}, [selectedId, activeClass, activeRoot, addCSSProperty]);
 
 // Enter Animation: saves in ids/classes CSSData with the scope of the root and the correct selector
 const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
-    if (!selectedId || !cssPropertyOrObject) return;
-
-    //Get the scope of the root(modal or banner)
     const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
-    //Check if the selected id is the root element
-    const isRoot = selectedId === activeRoot;
-
-    //If the selected id is the root, add the property to the class .tw-modal--open or .tw-banner--open
-    if (isRoot) {
-        const selector = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
-        addEnterAnimationProperty('class', selector, cssPropertyOrObject, value, scope);
-        return;
-    }
-    //If the selected id is not the root, add the property to the class or id
-    if (activeClass) {
-        addEnterAnimationProperty('class', activeClass, cssPropertyOrObject, value, scope);
-    } else {
-        addEnterAnimationProperty('id', selectedId, cssPropertyOrObject, value, scope);
-    }
-}, [selectedId, activeClass, activeRoot, addEnterAnimationProperty]);
+    applyGlobalCSSChange(cssPropertyOrObject, value, { enterScope: scope });
+}, [activeRoot, applyGlobalCSSChange]);
 
 /// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
-const getGlobalCSSValue = useCallback((cssProperty, nestedSelector) => {
-    if (!selectedId || !cssProperty) return null;
+const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
+    if (!selectedId) return null;
+    
+    // Support legacy API: if options is a string, treat it as nestedSelector
+    const normalizedOptions = typeof options === 'string' 
+        ? { nestedSelector: options } 
+        : options;
+    
+    const { nestedSelector = null, enterScope = null, returnAll = false } = normalizedOptions;
+    
+    // For returnAll mode, cssProperty can be null
+    if (!returnAll && !cssProperty) return null;
+    
     const bp = getActiveBreakpoint?.() || 'desktop';
-  
-    //Read the entry to check possible nested selector, states and breakpoints.
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    // Special handling for enter animations on root elements
+    if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+        const isRoot = selectedId === activeRoot;
+        
+        if (isRoot) {
+            type = 'class';
+            selector = enterScope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        }
+    }
+    
+    // Get the appropriate data arrays
+    const getEntry = (breakpoint) => {
+        const isResponsive = breakpoint !== 'desktop';
+        
+        if (type === 'class') {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.classesCSSData || []
+                : JSONtree?.classesCSSData || [];
+            return arr.find(item => item.className === selector);
+        } else {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.idsCSSData || []
+                : JSONtree?.idsCSSData || [];
+            return arr.find(item => item.id === selector);
+        }
+    };
+    
+    // Read from entry with support for all modes
     const readFromEntry = (entry) => {
-      if (!entry) return null;
-        //Get the CSS value with state
-      const getCSSValueWithState = (states, properties) => {
-        const stVal = activeState ? states?.[activeState]?.[cssProperty] : undefined;
-        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
-        return properties?.[cssProperty] ?? null;
-    };
+        if (!entry) return returnAll ? {} : null;
+        
+        // ENTER ANIMATION SCOPE
+        if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+            const enterData = entry.enter?.[enterScope];
+            if (returnAll) return enterData || {};
+            return cssProperty ? (enterData?.[cssProperty] ?? null) : null;
+        }
+        
+        // Helper to get CSS value with state support
+        const getCSSValueWithState = (states, properties) => {
+            if (returnAll) {
+                const stateProps = activeState ? (states?.[activeState] || {}) : {};
+                return { ...(properties || {}), ...stateProps };
+            }
+            
+            if (!cssProperty) return null;
+            const stVal = activeState ? states?.[activeState]?.[cssProperty] : undefined;
+            if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+            return properties?.[cssProperty] ?? null;
+        };
 
-    //If there is a nested selector, get the node with the nested selector
-    if (nestedSelector && nestedSelector.trim()) {
-        const node = entry.nested?.[nestedSelector.trim()];
-        if (!node) return null;
-        return getCSSValueWithState(node.states, node.properties);
-    }
-    //If there is no nested selector, get the node with the states and properties
-    return getCSSValueWithState(entry.states, entry.properties);
+        // NESTED SELECTOR
+        if (nestedSelector && nestedSelector.trim()) {
+            const node = entry.nested?.[nestedSelector.trim()];
+            if (!node) return returnAll ? {} : null;
+            return getCSSValueWithState(node.states, node.properties);
+        }
+        
+        // NORMAL (with optional state)
+        return getCSSValueWithState(entry.states, entry.properties);
     };
-  
-    if (activeClass) {
-    //If there is a breakpoint, get the classesCSSData with the active class and the breakpoint
-      const bpClassData = bp !== 'desktop'
-        ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
-        : null;
-      //If there is no breakpoint, get the classesCSSData with the active class and the base
-      const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
-      return readFromEntry(bpClassData) ?? readFromEntry(baseClassData);
+    
+    // Try breakpoint first, then fallback to desktop
+    const bpEntry = getEntry(bp);
+    const result = readFromEntry(bpEntry);
+    
+    if (result !== null && (returnAll ? Object.keys(result).length > 0 : true)) {
+        return result;
     }
-  
-    //If there is a breakpoint, get the idsCSSData with the active id and the breakpoint
-    const bpIdData = bp !== 'desktop'
-      ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
-      : null;
-    //If there is no breakpoint, get the idsCSSData with the active id and the base
-    const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
-    return readFromEntry(bpIdData) ?? readFromEntry(baseIdData);
-  }, [JSONtree, selectedId, activeClass, getActiveBreakpoint, activeState]);
+    
+    // Fallback to desktop if not found in breakpoint
+    if (bp !== 'desktop') {
+        const desktopEntry = getEntry('desktop');
+        return readFromEntry(desktopEntry);
+    }
+    
+    return returnAll ? {} : null;
+}, [JSONtree, selectedId, activeClass, activeRoot, getActiveBreakpoint, activeState]);
 
 
 const getEnterAnimationProps = useCallback(() => {
-    //Check if the selected id is not null
     if (!selectedId) return {};
-
     const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
-    //Get the breakpoint
-    const bp = getActiveBreakpoint?.() || 'desktop';
-    const isResponsive = bp !== 'desktop'; //Check if breakpoint 
-
-    const idsArr = isResponsive ? (JSONtree?.responsive?.[bp]?.idsCSSData || []) : (JSONtree?.idsCSSData || []); //Get the idsCSSData
-    const classesArr = isResponsive ? (JSONtree?.responsive?.[bp]?.classesCSSData || []) : (JSONtree?.classesCSSData || []); //Get the classesCSSData
-
-    let entry = null; 
-
-    // If it is the root, the props are saved in the class .tw-*-–open
-    if (selectedId === activeRoot) {
-        const openClass = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open'; 
-        entry = classesArr.find(e => e.className === openClass);
-    } else if (activeClass) {
-        entry = classesArr.find(e => e.className === activeClass); 
-    } else {
-        entry = idsArr.find(e => e.id === selectedId); 
-    }
-
-    return entry?.enter?.[scope] || {};
-}, [JSONtree, activeRoot, selectedId, activeClass, getActiveBreakpoint]);
+    return getGlobalCSSValue(null, { enterScope: scope, returnAll: true });
+}, [selectedId, activeRoot, getGlobalCSSValue]);
 
 
     //Function to apply the json to the element and save it in jsonTree
