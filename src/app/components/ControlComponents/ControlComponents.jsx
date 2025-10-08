@@ -91,149 +91,17 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
 }
 
 const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder}) => {
-    //At this point we have three superselects. One is for the block with the tags, the other is for the display with the display properties, and the third is for the position with the position properties.
-    const [blockSelectValue, setBlockSelectValue] = useState(() => {
+    //function to get the correct value depending on the category
+    const getCurrentSelectValue = () => {
         if (category === 'block') {
             const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
             return savedJSONValue || '';
         }
-        return '';
-    });
-    
-    const [displaySelectValue, setDisplaySelectValue] = useState(() => {
-        if (category === 'display') {
-            const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-            return savedCSSValue || '';
-        }
-        return '';
-    });
-    const [positionSelectValue, setPositionSelectValue] = useState(() => {
-        if (category === 'position') {
-            const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-            return savedCSSValue || '';
-        }
-        return '';
-    });
-    //function to get the correct value depending on the category
-    const getCurrentSelectValue = () => {
-        if (category === 'block') return blockSelectValue;
-        if (category === 'display') return displaySelectValue;
-        if (category === 'position') return positionSelectValue;
-        return '';
-    };
-    
-    //function to set the correct value depending on the category
-    const setCurrentSelectValue = (value) => {
-        if (category === 'block') setBlockSelectValue(value);
-        if (category === 'display') setDisplaySelectValue(value);
-        if (category === 'position') setPositionSelectValue(value);
-    };
-
-    const [selectedWrap, setSelectedWrap] = useState(() =>{
-        return getGlobalCSSValue?.('flex-wrap') || 'wrap';
-    });
-    const [selectedDirection, setSelectedDirection] = useState(() => {
-        return getGlobalCSSValue?.('flex-direction') || 'column';
-    });
-    const [selectedAlign, setSelectedAlign] = useState(() => {
-        return getGlobalCSSValue?.('align-items') || 'flex-start';
-    });
-    const [selectedJustify, setSelectedJustify] = useState(() => {
-        return getGlobalCSSValue?.('justify-content') || 'flex-start';
-    });
-    const [isReverse, setIsReverse] = useState(() => {
-        const flexDirection = getGlobalCSSValue?.('flex-direction') || '';
-        return flexDirection.includes('-reverse');
-    });
-    const [selectedFlow, setSelectedFlow] = useState(() => {
-        return getGlobalCSSValue?.('grid-auto-flow') || 'row';
-    });
-
-    const [activeTooltip, setActiveTooltip] = useState(null);
-    const hoverTimeoutRef = useRef(null);
-
-// Update every state when selected element changes
-useEffect(() => {
-    if(!selectedElementData) return;
-
-    let savedValue = null;
-    if(JSONProperty && getGlobalJSONValue) {
-        savedValue = getGlobalJSONValue(JSONProperty);
-    } else if (cssProperty && getGlobalCSSValue) {
-        savedValue = getGlobalCSSValue(cssProperty);
-    }
-    setCurrentSelectValue(savedValue || '');
-
-    const flexDirection = getGlobalCSSValue?.('flex-direction') || '';
-    const isCurrentlyReverse = flexDirection.includes('-reverse');
-    const baseDirection = isCurrentlyReverse 
-        ? flexDirection.replace('-reverse', '') 
-        : flexDirection;
-    
-    setIsReverse(isCurrentlyReverse);
-    setSelectedDirection(baseDirection);
-
-    setSelectedWrap(getGlobalCSSValue?.('flex-wrap') || '');
-    setSelectedAlign(getGlobalCSSValue?.('align-items') || '');
-    setSelectedJustify(getGlobalCSSValue?.('justify-content') || '');
-    setSelectedFlow(getGlobalCSSValue?.('grid-auto-flow') || '');
-}, [selectedId,selectedElementData, getGlobalCSSValue, cssProperty, value, getGlobalJSONValue, JSONProperty]);
-
-
-    //Active and desactive tooltip with hover. Also have a .5'' delay
-    const handleMouseEnter = (tooltipId) => {
-        hoverTimeoutRef.current = setTimeout(() => {
-            setActiveTooltip(tooltipId);
-        }, 500); 
-    };
-
-    const handleMouseLeave = () => {
-        clearTimeout(hoverTimeoutRef.current);
-        setActiveTooltip(null);
-    };
-
-
-
-    //Handle the chooseType controls
-
-    const handleDirectionChange = (direction) => {
-        const newDirection = selectedDirection === direction ? '' : direction;
-        setSelectedDirection(newDirection);
-        if (applyGlobalCSSChange) {
-            const finalDirection = isReverse ? `${newDirection}-reverse` : newDirection;
-            applyGlobalCSSChange('flex-direction', finalDirection);
-        }
-    };
-    const handleJustifyChange = (justify) => {
-        const newJustify = selectedJustify === justify ? '' : justify;
-        setSelectedJustify(newJustify);
-        if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('justify-content', newJustify);
-        }
-    };
-
-    const handleReverseChange = () => {
-        const newReverse = !isReverse;
-        setIsReverse(newReverse);
-    
-        if (applyGlobalCSSChange) {
-
-            const finalDirection = newReverse ? `${selectedDirection}-reverse` : selectedDirection;
-            applyGlobalCSSChange('flex-direction', finalDirection);
-        }
-    };
-    
-
-    const handleAlignChange = (align) => {
-        const newAlign = selectedAlign === align ? '' : align;
-        setSelectedAlign(newAlign);
-        if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('align-items', newAlign);
-        }
+        const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+        return savedCSSValue || '';
     };
 
     const handleSuperSelectChange = (newValue) => {
-        setCurrentSelectValue(newValue);
         if(JSONProperty && applyGlobalJSONChange){
             applyGlobalJSONChange(JSONProperty,newValue);
         }else if (cssProperty && applyGlobalCSSChange) {
@@ -241,23 +109,6 @@ useEffect(() => {
         }
     };
 
-
-//This is the % that the transform will take to move the slider in the choose
-    const getSliderPosition = (selectedValue, options) => {
-        const index = options.indexOf(selectedValue);
-        return index >= 0 ? `${index * 100}%` : '0%';
-    };
-    //As chooseType have different number of selections, the slider width changes
-    const getSliderWidth = (options) => {
-        return `calc(${100 / options.length}% - ${100 / options.length / 100 * 6}px)`;
-    };
-
-    //Declare the options
-    const directionOptions = ['column','row','']
-    const superJustifyOptions = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'];
-    const superAlignOptions = ['flex-start', 'center', 'flex-end', 'stretch'];
-
-   
     return (
         <React.Fragment key={index}>
        {category === 'block' && (
@@ -265,7 +116,7 @@ useEffect(() => {
         name={name}
         value={getCurrentSelectValue()}
         placeholder={placeholder}
-
+        onChange={handleSuperSelectChange}
         JSONProperty={JSONProperty}
         applyGlobalJSONChange={applyGlobalJSONChange}
         getGlobalJSONValue={getGlobalJSONValue}
@@ -274,7 +125,7 @@ useEffect(() => {
         options={['div','a','section','article','aside','nav']}
         />
        )}
-             {category === 'display' && (
+        {category === 'display' && (
         <SelectType
         name={name}
         value={getCurrentSelectValue()}
@@ -364,7 +215,7 @@ useEffect(() => {
                     <>
                     <SelectType
                     name='Wrap'
-                    value={selectedWrap}
+                   /*  value={selectedWrap} */
                     placeholder='nowrap'
                     cssProperty='flex-wrap'
                     applyGlobalCSSChange={applyGlobalCSSChange}
@@ -513,7 +364,7 @@ useEffect(() => {
         />
             <SelectType
             name='Auto flow'
-            value={selectedFlow}
+            /* value={selectedFlow} */
             placeholder='row'
             cssProperty='grid-auto-flow'
             selectedId={selectedId}
@@ -1654,103 +1505,24 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
 
 const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange}) =>{
     
+    // ========================================
+    // General states (for all types)
+    // ========================================
+    const [selected, setSelected] = useState(''); // Se inicializa después
+    const [open, setOpen] = useState(false);
+    const containerRef = useRef(null);
+    const [searchFilter, setSearchFilter] = useState('');
+    
+    // ========================================
+    // Specific states and constants for font/weight
+    // ========================================
     const [fontOptions, setFontOptions] = useState([]);
     const [fontVariants, setFontVariants] = useState([]);
     const [weightOptions, setWeightOptions] = useState([]);
-    const systemFontOptions = ['Arial', 'Courier New', 'Georgia', 'Helvetica', 'Verdana', 'Tahoma', 'Times','Times New Roman', 'Sans-serif'];
-    const [searchFilter, setSearchFilter] = useState('');
     const [italicWeightOptions, setItalicWeightOptions] = useState([]);
-
-    //Fetch the font options(families and variants) from the API
-    useEffect(() => {
-        if (name !== 'Font' && name !== 'Weight') return;
-        fetch('/api/fonts')
-            .then(r => r.json())
-            .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
-            .catch(() => setFontOptions([]));
-    }, [name]);
-
-    //Extract the first family from the css font family
-    const extractPrimaryFamily = (cssFontFamily) => {
-        if (!cssFontFamily) return '';
-        const first = cssFontFamily.split(',')[0].trim();
-        return first.replace(/^["']|["']$/g, '');
-    };
-
-    const ensureFontLoaded = (family) => {
-        if (!family) return;
-        //Create the id for the link taking off the spaces and replacing them with +
-        const famParam = family.trim().replace(/\s+/g, '+');
-        const id = `tw-gf-${famParam}`;
     
-        //Get the head of the iframe
-        const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
-        //Check if the preconnect link exists
-        if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
-            //Create the preconnect link for the Google Fonts API. Reduce latency
-            const pc1 = document.createElement('link');
-            pc1.rel = 'preconnect';
-            pc1.href = 'https://fonts.googleapis.com';
-            pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
-            head.appendChild(pc1);
+    const systemFontOptions = ['Arial', 'Courier New', 'Georgia', 'Helvetica', 'Verdana', 'Tahoma', 'Times','Times New Roman', 'Sans-serif'];
     
-            //Create the preconnect link for the Google Fonts static API. Reduce latency
-            const pc2 = document.createElement('link');
-            pc2.rel = 'preconnect';
-            pc2.href = 'https://fonts.gstatic.com';
-            pc2.crossOrigin = '';
-            pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
-            head.appendChild(pc2);
-        }
-    
-        // Build the href with all the variants
-        const entry = fontOptions.find(f => f.family === family);
-        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
-    
-        if (entry && Array.isArray(entry.variants)) {
-            //Create the sets for the normal and italic weights
-            const normal = new Set();
-            const italic = new Set();
-    
-            //map the variants to the normal and italic sets
-            entry.variants.forEach(v => {
-                if (v === 'regular') { normal.add(400); return; }
-                if (v === 'italic')  { italic.add(400); return; }
-                const m = v.match(/^(\d{3})(italic)?$/);
-                if (m) {
-                    const n = parseInt(m[1], 10);
-                    if (m[2]) italic.add(n); else normal.add(n);
-                }
-            });
-            //Sort the weights
-            const sortNums = arr => Array.from(arr).sort((a,b) => a - b).join(';');
-    
-            //Build the href with the normal or italic weights
-            if (italic.size) {
-                const parts = [];
-                const nList = sortNums(normal);
-                const iList = sortNums(italic);
-                if (nList) parts.push(`0,${nList}`);
-                if (iList) parts.push(`1,${iList}`);
-                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
-            } else if (normal.size) {
-                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
-            }
-        }
-        //Check if the link exists and append it to the head
-        let link = head.querySelector(`link#${id}`);
-        if (!link) {
-            //If the link doesn't exist, create it
-            link = document.createElement('link');
-            link.id = id;
-            link.rel = 'stylesheet';
-            link.href = href;
-            //Append the link to the head
-            head.appendChild(link);
-        }
-    };
-
-    //Object to map the font weight to the css value
     const fontWeightMap = {
         'Thin': '100',
         'Extra Light': '200', 
@@ -1762,105 +1534,211 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         'Extra Bold': '800',
         'Black': '900'
     };
-    //Object to map the css value to the font weight
+    
     const fontWeightMapReverse = () => 
         Object.fromEntries(
             Object.entries(fontWeightMap).map(([key, value]) => [value, key])
-        )
-
-        const weightNameOrder = ['Thin','Extra Light','Light','Normal','Medium','Semi Bold','Bold','Extra Bold','Black'];
-        const reverseMap = fontWeightMapReverse();
+        );
     
-        const computeWeightOptionsForFamily = (family) => {
-            if (!family) {
-                // fallback complete (system fonts)
-                return {
-                    weights: weightNameOrder,
-                    italics: weightNameOrder.map(w => `${w} Italic`)
-                };
-            }
-            //Find the family in the font options
-            const entry = fontOptions.find(f => f.family === family);
-            //If the family is not found or the variants are not found, return the default weights and italics
-            if (!entry || !entry.variants?.length) {
-                return {
-                    weights: weightNameOrder,
-                    italics: weightNameOrder.map(w => `${w} Italic`)
-                };
-            }
-            //Create the sets for the normal and italic weights
-            const weightsSet = new Set();
-            const italicsSet = new Set();
+    const weightNameOrder = ['Thin','Extra Light','Light','Normal','Medium','Semi Bold','Bold','Extra Bold','Black'];
+    const reverseMap = fontWeightMapReverse();
+    
+    // ========================================
+    // General helper functions
+    // ========================================
+    
+    // Función general para extraer la primera familia de fuentes
+    const extractPrimaryFamily = (cssFontFamily) => {
+        if (!cssFontFamily) return '';
+        const first = cssFontFamily.split(',')[0].trim();
+        return first.replace(/^["']|["']$/g, '');
+    };
+    
+    // ========================================
+    // Specific functions for font/weight
+    // ========================================
+    
+    // Función para cargar fuentes de Google Fonts en el iframe
+    const ensureFontLoaded = (family) => {
+        if (!family) return;
+        const famParam = family.trim().replace(/\s+/g, '+');
+        const id = `tw-gf-${famParam}`;
+    
+        const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
+        
+        if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+            const pc1 = document.createElement('link');
+            pc1.rel = 'preconnect';
+            pc1.href = 'https://fonts.googleapis.com';
+            pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
+            head.appendChild(pc1);
+    
+            const pc2 = document.createElement('link');
+            pc2.rel = 'preconnect';
+            pc2.href = 'https://fonts.gstatic.com';
+            pc2.crossOrigin = '';
+            pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
+            head.appendChild(pc2);
+        }
+    
+        const entry = fontOptions.find(f => f.family === family);
+        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+    
+        if (entry && Array.isArray(entry.variants)) {
+            const normal = new Set();
+            const italic = new Set();
     
             entry.variants.forEach(v => {
-                //If the variant is regular, add the Normal weight
-                if (v === 'regular') {
-                    weightsSet.add('Normal');
-                    return;
-                }
-                //If the variant is italic, add the Normal Italic weight
-                if (v === 'italic') {
-                    italicsSet.add('Normal Italic');
-                    return;
-                }
-                //If the variant is a number, add the weight
+                if (v === 'regular') { normal.add(400); return; }
+                if (v === 'italic')  { italic.add(400); return; }
                 const m = v.match(/^(\d{3})(italic)?$/);
                 if (m) {
-                    const num = m[1];
-                    const label = reverseMap[num] || num;
-                    //If the variant is italic, add the Italic weight
-                    if (m[2]) italicsSet.add(`${label} Italic`);
-                    else weightsSet.add(label);
+                    const n = parseInt(m[1], 10);
+                    if (m[2]) italic.add(n); else normal.add(n);
                 }
             });
+            
+            const sortNums = arr => Array.from(arr).sort((a,b) => a - b).join(';');
     
-            const sortByOrder = (a, b) => weightNameOrder.indexOf(a) - weightNameOrder.indexOf(b);
-            const weights = Array.from(weightsSet).sort(sortByOrder);
-            const italics = Array.from(italicsSet).sort((a, b) =>
-                sortByOrder(a.replace(' Italic',''), b.replace(' Italic',''))
-            );
-    
-           //return the weights and italics arrays
-            return {
-                weights: weights.length ? weights : weightNameOrder,
-                italics: italics
-            };
-        };
-    
-        useEffect(() => {
-            if (name !== 'Weight') return; // Only run for Weight 
-            const cssFamily = getGlobalCSSValue?.('font-family'); // Read the current global font-family from CSS
-            const currentFamily = extractPrimaryFamily(cssFamily); // Extract the primary family 
-            const { weights, italics } = computeWeightOptionsForFamily(currentFamily); // Compute available options from Google Fonts variants
-            setWeightOptions(weights); // Set normal weight options for the dropdown
-            setItalicWeightOptions(italics); // Set italic weight options for the dropdown
-        }, [name, getGlobalCSSValue, selectedId, fontOptions]); 
-
-    //State to store the selected value
-    const [selected, setSelected] = useState(() => {
-        if (JSONProperty && getGlobalJSONValue) {
-            return getGlobalJSONValue(JSONProperty) || value || '';
+            if (italic.size) {
+                const parts = [];
+                const nList = sortNums(normal);
+                const iList = sortNums(italic);
+                if (nList) parts.push(`0,${nList}`);
+                if (iList) parts.push(`1,${iList}`);
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
+            } else if (normal.size) {
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
+            }
         }
+        
+        let link = head.querySelector(`link#${id}`);
+        if (!link) {
+            link = document.createElement('link');
+            link.id = id;
+            link.rel = 'stylesheet';
+            link.href = href;
+            head.appendChild(link);
+        }
+    };
+    
+    // Función para calcular las opciones de peso disponibles según la familia
+    const computeWeightOptionsForFamily = (family) => {
+        if (!family) {
+            return {
+                weights: weightNameOrder,
+                italics: weightNameOrder.map(w => `${w} Italic`)
+            };
+        }
+        
+        const entry = fontOptions.find(f => f.family === family);
+        if (!entry || !entry.variants?.length) {
+            return {
+                weights: weightNameOrder,
+                italics: weightNameOrder.map(w => `${w} Italic`)
+            };
+        }
+        
+        const weightsSet = new Set();
+        const italicsSet = new Set();
+
+        entry.variants.forEach(v => {
+            if (v === 'regular') {
+                weightsSet.add('Normal');
+                return;
+            }
+            if (v === 'italic') {
+                italicsSet.add('Normal Italic');
+                return;
+            }
+            const m = v.match(/^(\d{3})(italic)?$/);
+            if (m) {
+                const num = m[1];
+                const label = reverseMap[num] || num;
+                if (m[2]) italicsSet.add(`${label} Italic`);
+                else weightsSet.add(label);
+            }
+        });
+
+        const sortByOrder = (a, b) => weightNameOrder.indexOf(a) - weightNameOrder.indexOf(b);
+        const weights = Array.from(weightsSet).sort(sortByOrder);
+        const italics = Array.from(italicsSet).sort((a, b) =>
+            sortByOrder(a.replace(' Italic',''), b.replace(' Italic',''))
+        );
+
+        return {
+            weights: weights.length ? weights : weightNameOrder,
+            italics: italics
+        };
+    };
+    
+    // ========================================
+    // Initialization of the selected state
+    // ========================================
+    
+    // Inicializar el estado después de definir las funciones auxiliares
+    useEffect(() => {
+        if (JSONProperty && getGlobalJSONValue) {
+            setSelected(getGlobalJSONValue(JSONProperty) || value || '');
+            return;
+        }
+        
         if (name === 'Weight' && getGlobalCSSValue && cssProperty) {
             const cssValue = getGlobalCSSValue(cssProperty);
             const fontStyle = getGlobalCSSValue('font-style');
-            if (fontStyle === 'italic') {
-                const weightName = fontWeightMapReverse()[cssValue];
-                const italicOption = `${weightName} Italic`;
-                if (options2 && options2.includes(italicOption)) return italicOption;
+            const weightName = fontWeightMapReverse()[cssValue] || cssValue || value || '';
+            
+            if (fontStyle === 'italic' && weightName) {
+                setSelected(`${weightName} Italic`);
+            } else {
+                setSelected(weightName);
             }
-            return fontWeightMapReverse()[cssValue] || cssValue || value || '';
+            return;
         }
+        
         const cssVal = getGlobalCSSValue?.(cssProperty);
-        return name === 'Font'
+        const initialValue = name === 'Font'
             ? (extractPrimaryFamily(cssVal) || value || '')
             : (cssVal || value || '');
-    });
-
-    const [open, setOpen] = useState(false);
-    const containerRef = useRef(null);
+        setSelected(initialValue);
+    }, []); // Solo al montar
     
-    //Close the select when clicking outside
+    // ========================================
+    // Effects - specific for font/weight
+    // ========================================
+    
+    // Fetch font options desde la API (solo para Font y Weight)
+    useEffect(() => {
+        if (name !== 'Font' && name !== 'Weight') return;
+        fetch('/api/fonts')
+            .then(r => r.json())
+            .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
+            .catch(() => setFontOptions([]));
+    }, [name]);
+    
+    // Actualizar opciones de peso cuando cambia la familia seleccionada (solo para Weight)
+    useEffect(() => {
+        if (name !== 'Weight') return;
+        const cssFamily = getGlobalCSSValue?.('font-family');
+        const currentFamily = extractPrimaryFamily(cssFamily);
+        const { weights, italics } = computeWeightOptionsForFamily(currentFamily);
+        setWeightOptions(weights);
+        setItalicWeightOptions(italics);
+    }, [name, fontOptions, selectedId, getGlobalCSSValue]);
+    
+    // Reinyectar la fuente actual con todos los pesos cuando fontOptions llega
+    useEffect(() => {
+        if (name !== 'Font' && name !== 'Weight') return;
+        const cssVal = getGlobalCSSValue?.(cssProperty || 'font-family');
+        const fam = extractPrimaryFamily(cssVal) || (name === 'Font' ? selected : '');
+        if (fam) ensureFontLoaded(fam);
+    }, [fontOptions, name, selected]);
+    
+    // ========================================
+    // Effects - general
+    // ========================================
+    
+    // Cerrar el select al hacer clic fuera
     useEffect(() => {
         if (!open) return;
         const handleClickOutside = (e) => {
@@ -1871,13 +1749,12 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [open]);
-
-    // Update when selected element changes
-    // Update when selected element or layer values change
+    
+    // Actualizar cuando cambia el elemento seleccionado
     useEffect(() => {
         if (!selectedId) return;
     
-        // If the control uses JSON, respect that flow
+        // Si usa JSON, respeta ese flujo
         if (JSONProperty && getGlobalJSONValue) {
             const next = getGlobalJSONValue(JSONProperty) ?? '';
             if (next !== selected) setSelected(next);
@@ -1885,12 +1762,12 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         }
         
         if (getGlobalCSSValue && cssProperty) {
-            //If the name is Weight, apply the font weight and the font style
+            // Caso especial: Weight
             if (name === 'Weight') {
                 const cssValue = getGlobalCSSValue(cssProperty);
                 const fontStyle = getGlobalCSSValue('font-style');
                 let nextLabel = fontWeightMapReverse()[cssValue] || cssValue || '';
-                //If the font style is italic, apply the italic weight
+                
                 if (fontStyle === 'italic' && nextLabel) {
                     const italicOption = `${nextLabel} Italic`;
                     if (options2 && options2.includes(italicOption)) {
@@ -1898,113 +1775,108 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     }
                 }
                 if ((nextLabel || '') !== selected) setSelected(nextLabel || '');
-            } else {
-                
+            } 
+            // Caso especial: Font
+            else if (name === 'Font') {
                 const cssValue = getGlobalCSSValue(cssProperty);
-                const next = name === 'Font' ? extractPrimaryFamily(cssValue) : (cssValue ?? '');
-                if (name === 'Font' && next) ensureFontLoaded(next); // load the saved font
+                const next = extractPrimaryFamily(cssValue) || '';
+                if (next) ensureFontLoaded(next);
+                if (next !== selected) setSelected(next);
+            }
+            // Caso general
+            else {
+                const cssValue = getGlobalCSSValue(cssProperty);
+                const next = cssValue ?? '';
                 if (next !== selected) setSelected(next);
             }
         }
-    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue, options2]);
+    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue]);
     
-    useEffect(() => {
-        //Reinject the current family with all the weights when fontOptions arrive
-        const cssVal = getGlobalCSSValue?.(cssProperty || 'font-family');
-        const fam = extractPrimaryFamily(cssVal) || (name === 'Font' ? selected : '');
-        if (fam) ensureFontLoaded(fam);
-    }, [fontOptions]);
+    // ========================================
+    // Handlers - general
+    // ========================================
     
-    // Handle select change with global CSS or JSON application
-    const handleSelectChange = (e) => {
-        const newValue = e;
+    // Manejar cambios en el select
+    const handleSelectChange = (newValue) => {
         setSelected(newValue);
-
+        
+        // Caso especial: Font
         if (name === 'Font') {
+            const prev = extractPrimaryFamily(getGlobalCSSValue?.('font-family')) || '';
             ensureFontLoaded(newValue);
+        
             if (applyGlobalCSSChange) {
+                const stack = prev && prev !== newValue
+                    ? `"${newValue}","${prev}",system-ui,sans-serif`
+                    : `"${newValue}",system-ui,sans-serif`;
+        
                 applyGlobalCSSChange({
-                    [cssProperty || 'font-family']: `"${newValue}"`,
-                    'font-weight': '' // reset when changing family
+                    [cssProperty || 'font-family']: stack,
+                    'font-weight': ''
                 });
             }
             onChange && onChange(newValue);
             return;
         }
-        //If the name is Weight, apply the font weight and the font style
-        if(name === 'Weight') {
-            let fontWeight;
-            if (newValue.includes('Italic')) {
-                fontWeight = fontWeightMap[newValue.replace(' Italic', '')];
-            } else {
-                fontWeight = fontWeightMap[newValue];
-            }
-            if(applyGlobalCSSChange) {         
-               if (newValue.includes('Italic')) {
+        
+        // Caso especial: Weight
+        if (name === 'Weight') {
+            const isItalic = newValue.includes('Italic');
+            const weightName = isItalic ? newValue.replace(' Italic', '') : newValue;
+            const fontWeight = fontWeightMap[weightName];
+            
+            if (applyGlobalCSSChange) {
                 applyGlobalCSSChange({
                     [cssProperty]: fontWeight,
-                    "font-style": "italic"
-                  });
-                    
-                } else {
-                    applyGlobalCSSChange({
-                        [cssProperty]: fontWeight,
-                        "font-style": "normal"
-                      });
-                }
+                    "font-style": isItalic ? "italic" : "normal"
+                });
+                
                 const fam = extractPrimaryFamily(getGlobalCSSValue?.('font-family'));
                 if (fam) ensureFontLoaded(fam);
-                return;
             }
             return;
         }
         
-        //This is for normal selects
-        // Apply to global JSON system if JSONProperty is provided
+        // Caso general: otros selects
         if (JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
-        }
-        // Apply to global CSS system if cssProperty is provided
-        else if (cssProperty && applyGlobalCSSChange) {
+        } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
         }
-        //If onChange is provided, call it
-        if(onChange) {
+        
+        if (onChange) {
             onChange(newValue);
         }
     };
-
-    // Combine options for Font and Weight, with system fonts and Google fonts separated by '---'
+    
+    // ========================================
+    // 9️⃣ COMPUTED VALUES
+    // ========================================
+    
+    // Combinar opciones para Font y Weight
     const allOptions = (() => {
         if (name === 'Font') {
-            // Show system fonts first, then separator, then Google fonts
             const googleFonts = fontOptions?.length ? fontOptions : [];
             if (systemFontOptions?.length && googleFonts.length) {
                 return [...systemFontOptions, '---', ...googleFonts];
             }
-            if (systemFontOptions?.length) {
-                return systemFontOptions;
-            }
-            if (googleFonts.length) {
-                return googleFonts;
-            }
-            return options || [];
+            return systemFontOptions?.length ? systemFontOptions : (googleFonts.length ? googleFonts : options || []);
         }
-        //Show the weights and if there are italic weights, show them separated by '---'
+        
         if (name === 'Weight') {
             const hasDynamic = (weightOptions?.length || italicWeightOptions?.length);
             if (hasDynamic) {
-              return italicWeightOptions?.length
-                ? [...(weightOptions || []), '---', ...italicWeightOptions]
-                : (weightOptions || []);
+                return italicWeightOptions?.length
+                    ? [...(weightOptions || []), '---', ...italicWeightOptions]
+                    : (weightOptions || []);
             }
-            // If there are no dynamic (for example, system fonts or not found in fontOptions)
             return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
-          }
-          return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
+        }
+        
+        return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
     })();
-
-    // Filter options based on search
+    
+    // Filtrar opciones basado en búsqueda (solo para Font)
     const filteredOptions = (() => {
         if (name !== 'Font' || !searchFilter) {
             return allOptions;
@@ -2012,11 +1884,15 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         
         const filterLower = searchFilter.toLowerCase();
         return allOptions.filter(opt => {
-            if (opt === '---') return true; // Always show separator
+            if (opt === '---') return true;
             const displayValue = typeof opt === 'object' ? opt.family : opt;
             return displayValue.toLowerCase().includes(filterLower);
         });
     })();
+    
+    // ========================================
+    // 🔟 RENDER
+    // ========================================
 
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -2031,98 +1907,94 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     applyGlobalJSONChange={applyGlobalJSONChange}
                     cssDeleteBatch={name === 'Weight' ? { [cssProperty]: '', 'font-style': '' } : undefined}
                     onDelete={() => {
-                        setSelected(''); // Leave empty to show placeholder
-                        if (onChange) {
-                            onChange(''); // Notificar al SuperSelectType
-                        }
+                        setSelected('');
+                        if (onChange) onChange('');
                     }}
                 />
-            
             </span>
+            
             <div className="tw-builder__settings-select-container" ref={containerRef}>
-            {/* Main button */}
-            <button
-                onClick={() => setOpen(!open)}
-                className="tw-builder__settings-select"
-            >
-                {selected ? 
-                <span className="tw-builder__settings-select-value">
-                {selected}
-                </span>
-                :
-                <span className="tw-builder__settings-select-placeholder">
-                {placeholder}
-                </span>
-                }
-            </button>
-            <span className="tw-builder__settings-arrow">
+                {/* Main button */}
+                <button
+                    onClick={() => setOpen(!open)}
+                    className="tw-builder__settings-select"
+                >
+                    {selected ? 
+                        <span className="tw-builder__settings-select-value">
+                            {selected}
+                        </span>
+                        :
+                        <span className="tw-builder__settings-select-placeholder">
+                            {placeholder}
+                        </span>
+                    }
+                </button>
+                
+                <span className="tw-builder__settings-arrow">
                     <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
                         <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
                     </svg>
                 </span>
         
-            {/* Dropdown list */}
-            <AnimatePresence>
-            {open && (
-                <motion.ul className="tw-builder__settings-options" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
-                    {/* Search for Font - inside the options container */}
-                    {name === 'Font' && (
-                        <>
-                        <li className="tw-builder__settings-search">
-                            <input
-                                type="text"
-                                placeholder="Search font..."
-                                value={searchFilter}
-                                onChange={(e) => setSearchFilter(e.target.value)}
-                                className="tw-builder__settings-search-input"
-                                onClick={(e) => e.stopPropagation()}
-                                onKeyDown={(e) => e.stopPropagation()}
+                {/* Dropdown list */}
+                <AnimatePresence>
+                    {open && (
+                        <motion.ul className="tw-builder__settings-options" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
+                            {/* Search for Font */}
+                            {name === 'Font' && (
+                                <>
+                                    <li className="tw-builder__settings-search">
+                                        <input
+                                            type="text"
+                                            placeholder="Search font..."
+                                            value={searchFilter}
+                                            onChange={(e) => setSearchFilter(e.target.value)}
+                                            className="tw-builder__settings-search-input"
+                                            onClick={(e) => e.stopPropagation()}
+                                            onKeyDown={(e) => e.stopPropagation()}
+                                        />
+                                    </li>
+                                    <div className="tw-builder__settings-divider"></div>
+                                </>
+                            )}
+                            
+                            {filteredOptions.map((opt, index) => {
+                                const displayValue = typeof opt === 'object' ? opt.family : opt;
+                                const optionValue = typeof opt === 'object' ? opt.family : opt;
                                 
-                            />
-                        </li>
-                        <div className="tw-builder__settings-divider"></div>
-                        </>
+                                return (
+                                    <li
+                                        key={typeof opt === 'object' ? opt.family : `${opt}-${index}`}
+                                        onClick={() => {
+                                            if (opt === '---') return;
+                                            handleSelectChange(optionValue);
+                                            setOpen(false);
+                                            setSearchFilter('');
+                                        }}
+                                        className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
+                                    >
+                                        {optionValue === selected ? 
+                                            <span className={`tw-builder__settings-check ${name === 'Font' ? 'tw-builder__settings-check--font' : ''}`}> 
+                                                <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
+                                                </svg>
+                                            </span>
+                                        : null}
+                                        {opt === '---' ? '' : displayValue}
+                                    </li>
+                                );
+                            })}
+                        </motion.ul>
                     )}
-                {filteredOptions.map((opt, index) => {
-                    const displayValue = typeof opt === 'object' ? opt.family : opt;
-                    const optionValue = typeof opt === 'object' ? opt.family : opt;
-                    
-                    return (
-                        <li
-                            key={typeof opt === 'object' ? opt.family : `${opt}-${index}`}
-                            onClick={() => {
-                                if (opt === '---') return;
-                                handleSelectChange(optionValue);
-                                setOpen(false);
-                                setSearchFilter('');
-                            }}
-                            className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
-                        >
-                            {optionValue === selected ? 
-                                <span className={`tw-builder__settings-check ${name === 'Font' ? 'tw-builder__settings-check--font' : ''}`}> 
-                                    <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
-                                    </svg>
-                                </span>
-                            : null}
-                            {opt === '---' ? '' : displayValue}
-                        </li>
-                    );
-                })}
-                </motion.ul>
-            )}
-            </AnimatePresence>
+                </AnimatePresence>
             </div>
         </div>
-
-      );
-
+    );
 }
 
 const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     const [open, setOpen] = useState(false);
-    const [inset, setInset] = useState(false);
     const instanceId = useRef(Symbol('pen'));
     const [activeTooltip, setActiveTooltip] = useState(null);
     const containerRef = useRef(null);
