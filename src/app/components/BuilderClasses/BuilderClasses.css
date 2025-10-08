@@ -10,8 +10,8 @@
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--shadow-color);
-    background-color: var(--builder-background);
+    color: var(--body-fresco-color);
+    background-color: var(--classes-background);
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
@@ -39,12 +39,12 @@
     flex-direction: row;
     gap: 5px;
     align-items: center;
-    background-color: var(--builder-background);
+    background-color: var(--classes-background);
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
     position: relative;
-    color: var(--shadow-color);
+    color: var(--body-fresco-color);
 }
 
 .tw-builder__settings-class-name{
@@ -83,14 +83,12 @@
     left: 0;
     width: 100%;
     height: auto;
-    background-color: #2B2B2B;
+    background-color: var(--right-panel-dropdown-background);
     z-index: 2;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
-
 }
 .tw-builder__settings-classes-adder {
     width: 100%;
@@ -229,15 +227,18 @@
 }
 .tw-builder__settings-classes .dropdown__menu{
     right: 0;
-    background-color: #2B2B2B;
+    background-color: var(--right-panel-dropdown-background);
+    border-radius: 5px;
+    border: unset;
+    box-shadow: unset;
 }
 
 .tw-builder__settings-states{
-    background-color: var(--tab-hover-background);
+    background-color: var(--states-background);
     border-radius: 5px;
     padding: 4px;
     cursor: pointer;
-    color: var(--tab-active-color);
+    color: var(--states-active-color);
     display: flex;
     align-items: center;
     justify-content: center;

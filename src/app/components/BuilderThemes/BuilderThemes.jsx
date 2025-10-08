@@ -128,13 +128,16 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
         <AnimatePresence>
         {(isFirstTime || isManualThemesOpen) && (
             <div className="tw-builder-themes">
-                <div className="tw-builder-themes__backdrop-click" onClick={() => {
-                    if (isFirstTime) {
-                        showNotification('Please select a theme', 'top', false);
-                    } else {
-                        setIsManualThemesOpen(false);
-                    }
-                }}></div>
+                <motion.div
+                    {...ANIM_TYPES.find(anim => anim.name === 'OVERLAY_FADE')} 
+                    className="tw-builder-themes__backdrop-click" onClick={() => {
+                        if (isFirstTime) {
+                            showNotification('Please select a theme', 'top', false);
+                        } else {
+                            setIsManualThemesOpen(false);
+                        }
+                    }}
+                ></motion.div>
                 <motion.div
                     {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
                     className={`tw-builder-themes__modal`}

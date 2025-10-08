@@ -87,7 +87,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --content-background: #FFFFFF;
 
   /*General*/
-  --body-light-color: #A0A0A0;
+  --body-light-color: #999999;
   --body-fresco-color: #5E5E5E;
   --body-semistrong-color: #333333;
   --body-strong-color: #000000;
@@ -98,7 +98,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --hover-light-color: #FFFFFF;
   --hover-fresco-color: #E9E9E9;
   --hover-strong-color: #E3E3E3;
-  --fancy-shadow: 0px 4px 8px 0px rgba(0, 17, 119, 0.025);
+  --fancy-shadow: 0px 4px 8px 0px rgba(0, 17, 119, 0.025), 0px 8px 20px 0px rgba(0, 17, 119, 0.025);
 
   --warning-color: #D00606;
   --hover-warning-color: rgba(248, 218, 218, 1);
@@ -208,13 +208,13 @@ System selected: will fallback to root or html[data-theme="dark"]
   --handlebars-color-active: #AAAAAA;
 
   --header-plan-background: #E3E3E3;
+  --undo-redo-background: #E3E3E3;
   --builder-background: #F5F5F5;
   --builder-text-color: #333333;
   --panels-background: #FFFFFF;
   --canvas-background: #FFFFFF;
 
-  --border-light-color: #E6E6E6;
-  --shadow-light-color: #00000010;
+  --border-light-color: #E1E6F9;
 
   --shadow-color: #999999;
   --subtitle-color: #666666;
@@ -267,6 +267,16 @@ System selected: will fallback to root or html[data-theme="dark"]
   /*Builder - Drop Indicator*/
   --drop-indicator-color: #0099FE;
   --drop-indicator-background: #0099FE15;
+
+  /*Builder - Right Panel*/
+  --no-selected-item-background: #F5F5F5;
+  --no-selected-item-text-color: #999999;
+  --control-background: #F5F5F5;
+  --control-context-background: #FFFFFF;
+  --classes-background: #F5F5F5;
+  --right-panel-dropdown-background: #000000;
+  --states-background: #ddd;
+  --states-active-color: #333;
 }
 
 .sidebar__logo-img{
@@ -428,48 +438,47 @@ html[data-theme="dark"] {
   /*Integrations*/
   --integrations-card-background: #363636;
 
-    /* 
+  /* 
    =======================
           BUILDER
    =======================
-   */
+  */
   /*Builder - General*/
-  --handlebars-color: #444444;
+  --handlebars-color: #555555;
   --handlebars-color-active: #666666;
 
-  --header-plan-background: #2B2B2B;
+  --header-plan-background: #363636;
+  --undo-redo-background: #363636;
   --builder-background: #202020;
   --builder-text-color: #F5F5F5;
-  --panels-background: #191919;
+  --panels-background: #282828;
   --canvas-background: #FFFFFF;
 
-  --border-light-color: #2A2A2A;
-  --shadow-light-color: #00000010;
+  --border-light-color: #363636;
 
-  --shadow-color: #999999;
   --subtitle-color: #AAAAAA;
   --label-color: #F5F5F5;
   --icons-color: #999999;
 
   /* Builder - User Tooltip*/
-  --user-tooltip-background: #2B2B2B;
+  --user-tooltip-background: #363636;
   --user-tooltip-color: #F5F5F5;
 
   /*Builder - Themes Modal*/
-  --themes-modal-background: #191919;
-  --free-badge-background: #2B2B2B;
+  --themes-modal-background: #282828;
+  --free-badge-background: #363636;
 
   /*Builder - Toolbar*/
-  --toolbar-items-background: #2B2B2B;
-  --toolbar-items-background-hover: #3E3E3E;
+  --toolbar-items-background: #363636;
+  --toolbar-items-background-hover: #404040;
   --toolbar-items-text-color: #999999;
   --toolbar-items-icon-color: #FFFFFF;
   --toolbar-items-icon-background: #666;
 
   /*Builder - Left Panel*/
-  --logo-background: #2B2B2B;
+  --logo-background: #363636;
   --toggle-color: #999999;
-  --tab-container-background: #2B2B2B;
+  --tab-container-background: #363636;
   --tab-slider-background: #555555;
   --tab-color: #999999;
   --tab-active-color: #F5F5F5;
@@ -497,6 +506,16 @@ html[data-theme="dark"] {
   /*Builder - Drop Indicator*/
   --drop-indicator-color: #0099FE;
   --drop-indicator-background: #0099FE15;
+
+  /*Builder - Right Panel*/
+  --no-selected-item-background: #363636;
+  --no-selected-item-text-color: #999999;
+  --control-background: #363636;
+  --control-context-background: #282828;
+  --classes-background: #363636;
+  --right-panel-dropdown-background: #000000;
+  --states-background: #505050;
+  --states-active-color: #FFFFFF;
 }
 
 html[data-theme="dark"] .sidebar__logo-img{
