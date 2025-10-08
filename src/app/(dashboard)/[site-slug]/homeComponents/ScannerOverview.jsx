@@ -26,7 +26,7 @@ export const ScannerOverview = ({ isScanning, MAX_SCANS, setIsScanning, setScanD
 
 
     return (
-        <div className="home__mid-card">
+        <div className="home__mid-card" tabIndex={-1}>
                         <div className="home__mid-card-header">
                             <span className="home__mid-card-title">Scanner Overview</span>
                             {isInstalled && (
@@ -68,7 +68,7 @@ export const ScannerOverview = ({ isScanning, MAX_SCANS, setIsScanning, setScanD
                                             </div>
                                         </div>
                                         <div className="home__full-view">
-                                            <span className="home__full-view-text">To have a full view go to the <Link href={`/${siteSlug}/scanner`} className="home__full-view-link">scanner.</Link></span>
+                                            <span className="home__full-view-text">To have a full view go to the <Link href={`/${siteSlug}/scanner`} className="home__full-view-link" tabIndex={-1}>scanner.</Link></span>
                                         </div>
                                     </>
                                 )}

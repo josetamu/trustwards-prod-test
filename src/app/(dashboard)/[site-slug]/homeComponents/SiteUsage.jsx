@@ -42,19 +42,45 @@ const usages = [
         <div className="home__info-card">
         <div className="home__info-card-header">
             <span className="home__info-card-title">Site Usage</span>
-            <span className="home__info-card-plan" onClick={() => {
-                setModalType('Plan');
-                setIsModalOpen(true);
-            }}>{site?.Plan || 'Free'}</span>
+            <span 
+                className="home__info-card-plan" 
+                onClick={() => {
+                    setModalType('Plan');
+                    setIsModalOpen(true);
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setModalType('Plan');
+                        setIsModalOpen(true);
+                    }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Current plan: ${site?.Plan || 'Free'}. Click to change plan`}
+            >{site?.Plan || 'Free'}</span>
         </div>
         {noInstalled()}
         <div className="home__info-card-content">
             {(site?.Plan === 'Free' || !site?.Plan) && (
             <div className="home__info-card-upgrade">
-                <span className="home__info-card-enjoy">Enjoy unlimited usage. <span className="home__info-card-enjoy--upgrade" onClick={() => {
-                    setModalType('Plan');
-                    setIsModalOpen(true);
-                }}>Upgrade</span> this site to pro</span>
+                <span className="home__info-card-enjoy">Enjoy unlimited usage. <span 
+                    className="home__info-card-enjoy--upgrade" 
+                    onClick={() => {
+                        setModalType('Plan');
+                        setIsModalOpen(true);
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setModalType('Plan');
+                            setIsModalOpen(true);
+                        }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label="Upgrade this site to pro plan"
+                >Upgrade</span> this site to pro</span>
             </div>
             )}
             <div className="home__usages">
@@ -90,11 +116,24 @@ const usages = [
                 </div>
             </div>
             {(site?.Plan === 'Free' || !site?.Plan) && (
-                <div className="home__button-upgrade">
-                    <span className="home__button-upgrade-text" onClick={() => {
+                <div 
+                    className="home__button-upgrade"
+                    onClick={() => {
                         setModalType('Plan');
                         setIsModalOpen(true);
-                    }}>Upgrade</span>
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setModalType('Plan');
+                            setIsModalOpen(true);
+                        }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label="Upgrade to pro plan"
+                >
+                    <span className="home__button-upgrade-text">Upgrade</span>
                 </div>
             )}
         </div>

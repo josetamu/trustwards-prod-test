@@ -10,10 +10,23 @@ export const DashboardHeaderPlan = ({siteSlug, setModalType, setIsModalOpen}) =>
     const site = webs.find(web => web.id === siteSlug);
 
     return (
-        <span className={`dashboard-header__plan ${site?.Plan === 'Pro' ? 'dashboard-header__plan--pro' : ''}`} onClick={() => {
-            setModalType('Plan');
-            setIsModalOpen(true);
-        }}>
+        <span 
+            className={`dashboard-header__plan ${site?.Plan === 'Pro' ? 'dashboard-header__plan--pro' : ''}`} 
+            onClick={() => {
+                setModalType('Plan');
+                setIsModalOpen(true);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setModalType('Plan');
+                    setIsModalOpen(true);
+                }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label={`Current plan: ${site?.Plan || 'Free'}. Click to change plan`}
+        >
             {site?.Plan || 'Free'}
         </span>
     );

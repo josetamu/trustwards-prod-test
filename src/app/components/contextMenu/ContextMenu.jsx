@@ -92,14 +92,82 @@ export function ContextMenu({
         };
     }, [open, onClose]);
 
-    // Close context menu when pressing Escape
+    // Handle Tab navigation into the menu when it opens and focus restoration on close
     useEffect(() => {
         if (!open) return;
+        
+        // Store the element that opened the context menu
+        const triggeringElement = document.activeElement;
+        
         const handleKeyDown = (event) => {
             if (event.key === 'Escape') {
+                // ESC: Return to the element that opened the menu
+                if (triggeringElement && typeof triggeringElement.focus === 'function') {
+                    triggeringElement.focus();
+                }
                 onClose && onClose();
             }
         };
+        
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [open, onClose]);
+
+    // Handle Tab navigation within the menu and to next tree item
+    useEffect(() => {
+        if (!open) return;
+        
+        // Store the element that opened the context menu
+        const triggeringElement = document.activeElement;
+        
+        const handleKeyDown = (event) => {
+            // When Tab is pressed and focus is on the triggering element, move focus to menu
+            if (event.key === 'Tab' && !event.shiftKey) {
+                const focusable = menuRef.current?.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+                if (focusable) {
+                    // Check if focus is on the triggering element (tree item or canvas element)
+                    const activeElement = document.activeElement;
+                    const isTriggeringElement = activeElement?.closest('.tw-builder__tree-item-header') || 
+                                               activeElement?.closest('.tw-builder__active');
+                    
+                    if (isTriggeringElement) {
+                        event.preventDefault();
+                        focusable.focus();
+                    }
+                }
+            }
+            
+            // When Tab is pressed on the last menu item, go to next tree item
+            if (event.key === 'Tab' && !event.shiftKey) {
+                const menuItems = menuRef.current?.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
+                const lastMenuItem = menuItems?.[menuItems.length - 1];
+                const activeElement = document.activeElement;
+                
+                if (lastMenuItem && activeElement === lastMenuItem) {
+                    event.preventDefault();
+                    
+                    // Find all tree items in the left panel
+                    const treeItems = document.querySelectorAll('.tw-builder__tree-item-header[tabindex="0"]');
+                    const treeItemsArray = Array.from(treeItems);
+                    const triggeringIndex = treeItemsArray.indexOf(triggeringElement);
+                    
+                    if (triggeringIndex !== -1 && triggeringIndex < treeItemsArray.length - 1) {
+                        // Focus the next tree item
+                        const nextTreeItem = treeItemsArray[triggeringIndex + 1];
+                        if (nextTreeItem && typeof nextTreeItem.focus === 'function') {
+                            nextTreeItem.focus();
+                        }
+                    } else if (triggeringElement && typeof triggeringElement.focus === 'function') {
+                        // Fallback to the triggering element if no next tree item
+                        triggeringElement.focus();
+                    }
+                    
+                    // Close the menu when focus leaves it
+                    onClose && onClose();
+                }
+            }
+        };
+        
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [open, onClose]);
@@ -335,6 +403,8 @@ export function ContextMenu({
                     <div
                         className="tw-context-menu__menu"
                         ref={menuRef}
+                        role="menu"
+                        aria-label="Context menu"
                     >
                         <TreeContextMenu />
                     </div>

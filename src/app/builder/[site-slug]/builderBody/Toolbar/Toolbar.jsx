@@ -1,25 +1,76 @@
 import "./Toolbar.css";
-
+import { useEffect, useRef, useState } from "react";
 import { useCanvas } from "@contexts/CanvasContext";
 
 export const Toolbar = () => {
     const { createElement } = useCanvas();
+    const toolbarRef = useRef(null);
+    const [openDropdown, setOpenDropdown] = useState(null);
+
+    // Handle ESC key to close any open dropdowns
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                if (openDropdown) {
+                    // Close dropdown and return focus to the current button
+                    setOpenDropdown(null);
+                    const activeElement = document.activeElement;
+                    if (toolbarRef.current && toolbarRef.current.contains(activeElement)) {
+                        // Find the parent button of the focused element
+                        const parentButton = activeElement.closest('[data-dropdown]');
+                        if (parentButton) {
+                            parentButton.focus();
+                        }
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [openDropdown]);
 
     return (
-        <div className="tw-builder__toolbar">
-            <div className="tw-builder__toolbar-icon tw-builder__toolbar-icon--layout">
+        <div ref={toolbarRef} className="tw-builder__toolbar" role="toolbar" aria-label="Element toolbar">
+            <div 
+                className="tw-builder__toolbar-icon tw-builder__toolbar-icon--layout"
+                tabIndex={0}
+                role="button"
+                aria-label="Layout elements"
+                aria-expanded={openDropdown === 'layout'}
+                data-dropdown="layout"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (openDropdown === 'layout') {
+                            setOpenDropdown(null);
+                        } else {
+                            setOpenDropdown('layout');
+                        }
+                    }
+                }}
+            >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
                     <path d="M15.8753 6.5H5.74815L5.72168 15.875H12.8753C14.5321 15.875 15.8753 14.5318 15.8753 12.875V6.5Z" fill="var(--icons-color)"/>
                     <path d="M4.97243 15.875L4.22142 15.8729L4.24788 6.5H0.125V12.875C0.125 14.5318 1.46814 15.875 3.125 15.875H4.97243Z" fill="var(--icons-color)"/>
                     <path d="M3.125 0.125C1.46814 0.125 0.125 1.46814 0.125 3.125V5H15.875V3.125C15.875 1.46814 14.5318 0.125 12.875 0.125H3.125Z" fill="var(--icons-color)"/>
                 </svg>
 
-                <div className="tw-builder__toolbar-dropdown">
+                {openDropdown === 'layout' && (
+                    <div className="tw-builder__toolbar-dropdown" role="menu" aria-label="Layout elements menu">
                     <div className="tw-builder__toolbar-dropdown-column">
 
                         <div
                         onClick={() => createElement("block")} /*Create block on click*/
-
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                createElement("block");
+                            }
+                        }}
+                        tabIndex={0}
+                        role="menuitem"
+                        aria-label="Add block element"
                         draggable
                         onDragStart={(e) => {
                             e.dataTransfer.setData("elementType", "block"); /*Create block on drag (resposability transfered to canvas)*/
@@ -33,7 +84,15 @@ export const Toolbar = () => {
                         </div>
                         <div 
                         onClick={() => createElement("image")} /*Create image on click*/
-
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                createElement("image");
+                            }
+                        }}
+                        tabIndex={0}
+                        role="menuitem"
+                        aria-label="Add image element"
                         draggable
                         onDragStart={(e) => {
                             e.dataTransfer.setData("elementType", "image"); /*Create image on drag (resposability transfered to canvas)*/
@@ -51,7 +110,15 @@ export const Toolbar = () => {
                         </div>
                         <div
                         onClick={() => createElement("divider")} /*Create divider on click*/
-
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                createElement("divider");
+                            }
+                        }}
+                        tabIndex={0}
+                        role="menuitem"
+                        aria-label="Add divider element"
                         draggable
                         onDragStart={(e) => {
                             e.dataTransfer.setData("elementType", "divider"); /*Create divider on drag (resposability transfered to canvas)*/
@@ -66,19 +133,46 @@ export const Toolbar = () => {
 
                     </div>
                 </div>
+                )}
             </div>
 
-            <div className="tw-builder__toolbar-icon tw-builder__toolbar-icon--texts">
+            <div 
+                className="tw-builder__toolbar-icon tw-builder__toolbar-icon--texts"
+                tabIndex={0}
+                role="button"
+                aria-label="Text elements"
+                aria-expanded={openDropdown === 'texts'}
+                data-dropdown="texts"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (openDropdown === 'texts') {
+                            setOpenDropdown(null);
+                        } else {
+                            setOpenDropdown('texts');
+                        }
+                    }
+                }}
+            >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" fill="none">
                     <path d="M1 3.4375V1H14V3.4375M7.5 1V14M5.0625 14H9.9375" stroke="var(--icons-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
 
-                <div className="tw-builder__toolbar-dropdown">
+                {openDropdown === 'texts' && (
+                    <div className="tw-builder__toolbar-dropdown" role="menu" aria-label="Text elements menu">
                     <div className="tw-builder__toolbar-dropdown-column">
 
                         <div
                         onClick={() => createElement("text")} /*Create text on click*/
-
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                createElement("text");
+                            }
+                        }}
+                        tabIndex={0}
+                        role="menuitem"
+                        aria-label="Add text element"
                         draggable
                         onDragStart={(e) => {
                             e.dataTransfer.setData("elementType", "text"); /*Create text on drag (resposability transfered to canvas)*/
@@ -97,22 +191,49 @@ export const Toolbar = () => {
 
                     </div>
                 </div>
+                )}
             </div>
 
             <div className="tw-builder__toolbar-divider"></div>
 
-            <div className="tw-builder__toolbar-icon tw-builder__toolbar-icon--cookies">
+            <div 
+                className="tw-builder__toolbar-icon tw-builder__toolbar-icon--cookies"
+                tabIndex={0}
+                role="button"
+                aria-label="Cookie elements"
+                aria-expanded={openDropdown === 'cookies'}
+                data-dropdown="cookies"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (openDropdown === 'cookies') {
+                            setOpenDropdown(null);
+                        } else {
+                            setOpenDropdown('cookies');
+                        }
+                    }
+                }}
+            >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" fill="none">
                     <path d="M6.99998 14C6.03165 14 5.12165 13.8164 4.26999 13.4491C3.41832 13.0818 2.67749 12.5838 2.04749 11.9551C1.4175 11.3263 0.918864 10.5864 0.551598 9.73533C0.184333 8.88426 0.000466665 7.9754 0 7.00874C0 6.13483 0.169166 5.2784 0.507498 4.43945C0.84583 3.6005 1.31833 2.85174 1.92499 2.19316C2.53166 1.53458 3.26082 1.00441 4.11249 0.602647C4.96415 0.200882 5.89748 0 6.91248 0C7.15747 0 7.40831 0.0116522 7.66497 0.0349564C7.92164 0.0582606 8.18414 0.0990429 8.45247 0.157303C8.34747 0.681648 8.38247 1.17686 8.55747 1.64295C8.73247 2.10903 8.99497 2.49635 9.34497 2.80489C9.69497 3.11344 10.1122 3.32621 10.5966 3.4432C11.081 3.56018 11.5796 3.53105 12.0925 3.35581C11.7891 4.04328 11.833 4.70162 12.2241 5.33084C12.6151 5.96005 13.1954 6.28631 13.965 6.30961C13.9766 6.43779 13.9855 6.5571 13.9916 6.66757C13.9976 6.77803 14.0004 6.89758 14 7.02622C14 7.98169 13.8161 8.8817 13.4484 9.72624C13.0806 10.5708 12.582 11.3107 11.9525 11.946C11.3229 12.5812 10.5821 13.0823 9.72997 13.4491C8.87784 13.8159 7.96784 13.9995 6.99998 14ZM5.94998 5.61049C6.24164 5.61049 6.48968 5.50865 6.69408 5.30497C6.89848 5.10129 7.00044 4.85357 6.99998 4.5618C6.99951 4.27003 6.89754 4.02254 6.69408 3.81933C6.49061 3.61611 6.24258 3.51404 5.94998 3.51311C5.65738 3.51218 5.40958 3.61425 5.20658 3.81933C5.00358 4.0244 4.90138 4.27189 4.89998 4.5618C4.89858 4.8517 5.00078 5.09943 5.20658 5.30497C5.41238 5.51051 5.66018 5.61235 5.94998 5.61049ZM4.54998 9.10612C4.84165 9.10612 5.08968 9.00428 5.29408 8.8006C5.49848 8.59692 5.60045 8.3492 5.59998 8.05743C5.59951 7.76566 5.49755 7.51817 5.29408 7.31496C5.09062 7.11174 4.84258 7.00967 4.54998 7.00874C4.25739 7.00781 4.00959 7.10988 3.80659 7.31496C3.60359 7.52003 3.50139 7.76752 3.49999 8.05743C3.49859 8.34733 3.60079 8.59506 3.80659 8.8006C4.01239 9.00614 4.26019 9.10798 4.54998 9.10612ZM9.09997 9.80524C9.2983 9.80524 9.46467 9.73813 9.59907 9.6039C9.73347 9.46966 9.80043 9.30374 9.79997 9.10612C9.7995 8.9085 9.7323 8.74257 9.59837 8.60834C9.46443 8.47411 9.2983 8.40699 9.09997 8.40699C8.90164 8.40699 8.7355 8.47411 8.60157 8.60834C8.46764 8.74257 8.40044 8.9085 8.39997 9.10612C8.3995 9.30374 8.4667 9.4699 8.60157 9.60459C8.73644 9.73929 8.90257 9.80618 9.09997 9.80524Z" fill="var(--icons-color)"/>
                 </svg>
 
-                <div className="tw-builder__toolbar-dropdown">
+                {openDropdown === 'cookies' && (
+                    <div className="tw-builder__toolbar-dropdown" role="menu" aria-label="Cookie elements menu">
                     <div className="tw-builder__toolbar-dropdown-column">
                         <span className="tw-builder__toolbar-dropdown-column-title">Cookies</span>
 
                         <div
                         onClick={() => createElement("accept-all")} /*Create accept all on click*/
-
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                createElement("accept-all");
+                            }
+                        }}
+                        tabIndex={0}
+                        role="menuitem"
+                        aria-label="Add accept all element"
                         draggable
                         onDragStart={(e) => {
                             e.dataTransfer.setData("elementType", "accept-all"); /*Create accept all on drag (resposability transfered to canvas)*/
@@ -127,7 +248,15 @@ export const Toolbar = () => {
 
                         <div
                         onClick={() => createElement("reject-all")} /*Create reject all on click*/
-
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                createElement("reject-all");
+                            }
+                        }}
+                        tabIndex={0}
+                        role="menuitem"
+                        aria-label="Add reject all element"
                         draggable
                         onDragStart={(e) => {
                             e.dataTransfer.setData("elementType", "reject-all"); /*Create reject all on drag (resposability transfered to canvas)*/
@@ -149,7 +278,15 @@ export const Toolbar = () => {
                         <div className="tw-builder__toolbar-dropdown-grid">
                             <div
                             onClick={() => createElement("open-modal")} /*Create open modal on click*/
-
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    createElement("open-modal");
+                                }
+                            }}
+                            tabIndex={0}
+                            role="menuitem"
+                            aria-label="Add open modal element"
                             draggable
                             onDragStart={(e) => {
                                 e.dataTransfer.setData("elementType", "open-modal"); /*Create open modal on drag (resposability transfered to canvas)*/
@@ -164,7 +301,15 @@ export const Toolbar = () => {
 
                             <div
                             onClick={() => createElement("save-categories")} /*Create save categories on click*/
-
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    createElement("save-categories");
+                                }
+                            }}
+                            tabIndex={0}
+                            role="menuitem"
+                            aria-label="Add save categories element"
                             draggable
                             onDragStart={(e) => {
                                 e.dataTransfer.setData("elementType", "save-categories"); /*Create save categories on drag (resposability transfered to canvas)*/
@@ -179,7 +324,15 @@ export const Toolbar = () => {
 
                             <div
                             onClick={() => createElement("categories")} /*Create categories on click*/
-
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    createElement("categories");
+                                }
+                            }}
+                            tabIndex={0}
+                            role="menuitem"
+                            aria-label="Add categories element"
                             draggable
                             onDragStart={(e) => {
                                 e.dataTransfer.setData("elementType", "categories"); /*Create categories on drag (resposability transfered to canvas)*/
@@ -281,7 +434,15 @@ export const Toolbar = () => {
 
                             <div
                             onClick={() => createElement("enable-categories")} /*Create enable categories on click*/
-
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    createElement("enable-categories");
+                                }
+                            }}
+                            tabIndex={0}
+                            role="menuitem"
+                            aria-label="Add enable categories element"
                             draggable
                             onDragStart={(e) => {
                                 e.dataTransfer.setData("elementType", "enable-categories"); /*Create enable categories on drag (resposability transfered to canvas)*/
@@ -296,7 +457,15 @@ export const Toolbar = () => {
 
                             <div
                             onClick={() => createElement("disable-categories")} /*Create disable categories on click*/
-
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    createElement("disable-categories");
+                                }
+                            }}
+                            tabIndex={0}
+                            role="menuitem"
+                            aria-label="Add disable categories element"
                             draggable
                             onDragStart={(e) => {
                                 e.dataTransfer.setData("elementType", "disable-categories"); /*Create disable categories on drag (resposability transfered to canvas)*/
@@ -311,6 +480,7 @@ export const Toolbar = () => {
                         </div>
                     </div>
                 </div>
+                )}
             </div>
         </div>
     );

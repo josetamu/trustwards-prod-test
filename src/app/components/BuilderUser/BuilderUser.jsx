@@ -15,11 +15,26 @@ export default function BuilderUser({user, checkProfilePicture, profileStyle, se
     };
     return (
 
-        <div className="builder-user" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={() => {
-            // Open the account modal
-            setModalType('Account');
-            setIsModalOpen(true);
-        }}>
+        <div 
+            className="builder-user" 
+            onMouseEnter={handleMouseEnter} 
+            onMouseLeave={handleMouseLeave} 
+            onClick={() => {
+                // Open the account modal
+                setModalType('Account');
+                setIsModalOpen(true);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setModalType('Account');
+                    setIsModalOpen(true);
+                }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label={`User account: ${user?.Name || 'User'}. Click to open account settings`}
+        >
             {/*If the user has no profile picture, show the user color */}
         <span className={`builder-user__color ${checkProfilePicture(user) === '' ? '' : 'builder-user__color--null'}`} 
         style={profileStyle(user)}>

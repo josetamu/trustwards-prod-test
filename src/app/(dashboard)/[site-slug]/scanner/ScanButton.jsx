@@ -61,7 +61,7 @@ export const ScanButton = ({isScanning, MAX_SCANS, setScanDone, setIsScanning, s
     };
 
     return (
-        <button className={`scanner__scan ${currentScanCount >= MAX_SCANS ? 'scanner__scan--disabled' : ''}`} onClick={startScan} disabled={isScanning || currentScanCount >= MAX_SCANS || !isInstalled}>
+        <button className={`scanner__scan ${currentScanCount >= MAX_SCANS ? 'scanner__scan--disabled' : ''}`} onClick={startScan} disabled={isScanning || currentScanCount >= MAX_SCANS || !isInstalled} tabIndex={-1}>
             {isScanning ? (
                 <Scan isScanning={isScanning} onlyBar onFinish={handleScanFinish} />
             ) : 'Scan'}
