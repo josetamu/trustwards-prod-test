@@ -21,7 +21,7 @@
     position: relative;
     color: var(--user-tooltip-color);
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .builder-user .tooltip__mask::before {
@@ -61,7 +61,7 @@
     align-items: center;
     justify-content: center;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--avatar-color);
     background-color: var(--avatar-background);
     text-transform: uppercase;

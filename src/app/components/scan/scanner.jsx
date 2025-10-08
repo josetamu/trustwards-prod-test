@@ -7,10 +7,8 @@ import { createCDN } from '@contexts/CDNsContext';
 import cookieDatabase from './cookie-database.json';
 import iframeDatabase from './iframe-database.json';
 
-export default function Scanner({ domain, siteId, urlPath = '/' }) {
+export default function Scanner({ domain, siteId, urlPath = '/', scriptsScanned, iframesScanned, setScriptsScanned, setIframesScanned, setIsScanning, setScanDone, scanCount, setScanCount }) {
   const [status, setStatus] = useState('idle');
-  const [scriptsScanned, setScriptsScanned] = useState(null);
-  const [iframesScanned, setIframeScanned] = useState(null);
 
   async function runScan() {
     setStatus('scanning ' + domain); //Display scanning
@@ -22,13 +20,18 @@ export default function Scanner({ domain, siteId, urlPath = '/' }) {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Error de escaneo');
-      setScriptsScanned(json.scriptsScanned);
-      setIframeScanned(json.iframesScanned);
       setStatus('done'); //Display done
 
       await updateScriptsScannedAttribute(json.scriptsScanned); //Update the scriptsScanned attribute
       await updateIframeScannedAttribute(json.iframesScanned); //Update the iframesScanned attribute
       updateScriptCDN(siteId); //Update the script CDN
+
+      setIsScanning(false);
+      setScanDone(true);
+
+      // Increment current scan count by 1
+      setScanCount(scanCount + 1);
+      await supabase.from('Site').update({ "Scans": scanCount + 1 }).eq('id', siteId);
     } catch (e) {
       console.error('Error scanning', e);
       setStatus(e); //Display error
@@ -42,8 +45,8 @@ export default function Scanner({ domain, siteId, urlPath = '/' }) {
       var enriched = Array.isArray(scriptsScanned)
         ? scriptsScanned.map((item) => {
             // If item already has a customCategory, use it directly and skip DB matching
-            let derivedName = 'Untracked';
-            let derivedCategory = 'Untracked';
+            let derivedName = 'Unknown';
+            let derivedCategory = 'Other';
             if (item && item.customCategory) {
               derivedCategory = item.customCategory;
               derivedName = item.name || 'Custom';
@@ -71,17 +74,17 @@ export default function Scanner({ domain, siteId, urlPath = '/' }) {
       // Persist enriched array
       await supabase.from('Site').update({ "scriptsScanned": enriched }).eq('id', siteId);
 
-      // Keep local state in sync for the preview panel
-      setScriptsScanned((prev) => (prev && prev.scriptsScanned ? { ...prev, scriptsScanned: enriched } : prev));
+      // Set scriptsScanned for scanner results in the preview panel
+      setScriptsScanned(enriched);
     } catch (err) {
       console.error('Error enriching scriptsScanned with categories', err);
       // Fallback to saving raw scriptsScanned if enrichment fails
       const sanitized = Array.isArray(scriptsScanned)
         ? scriptsScanned.map((item) => ({
-            name: item?.name ?? 'Untracked',
+            name: item?.name ?? 'Unknown',
             cookieName: item?.cookieName ?? null,
             src: item?.src ?? null,
-            category: item?.category ?? 'Untracked',
+            category: item?.category ?? 'Other',
           }))
         : scriptsScanned;
       await supabase.from('Site').update({ "scriptsScanned": sanitized }).eq('id', siteId);
@@ -95,8 +98,8 @@ export default function Scanner({ domain, siteId, urlPath = '/' }) {
       var enriched = Array.isArray(iframesScanned)
         ? iframesScanned.map((item) => {
             // If item already has a customCategory, use it directly and skip DB matching
-            let derivedName = 'Untracked';
-            let derivedCategory = 'Untracked';
+            let derivedName = 'Unknown';
+            let derivedCategory = 'Other';
             if (item && item.customCategory) {
               derivedCategory = item.customCategory;
               derivedName = item.name || 'Custom';
@@ -132,17 +135,17 @@ export default function Scanner({ domain, siteId, urlPath = '/' }) {
       // Persist enriched array
       await supabase.from('Site').update({ "iframesScanned": enriched }).eq('id', siteId);
 
-      // Keep local state in sync for the preview panel
-      setIframeScanned((prev) => (prev && prev.iframesScanned ? { ...prev, iframesScanned: enriched } : prev));
+      // Set iframesScanned for scanner results in the preview panel
+      setIframesScanned(enriched);
     } catch (err) {
       console.error('Error enriching iframesScanned with categories', err);
       // Fallback to saving raw scriptsScanned if enrichment fails
       const sanitized = Array.isArray(iframesScanned)
         ? iframesScanned.map((item) => ({
-            name: item?.name ?? 'Untracked',
+            name: item?.name ?? 'Unknown',
             cookieName: item?.cookieName ?? null,
             src: (item?.src ?? item?.url) ?? null,
-            category: item?.category ?? 'Untracked',
+            category: item?.category ?? 'Other',
           }))
         : iframesScanned;
       await supabase.from('Site').update({ "iframesScanned": sanitized }).eq('id', siteId);
@@ -157,27 +160,10 @@ export default function Scanner({ domain, siteId, urlPath = '/' }) {
     if (domain) runScan();
   }, [domain, siteId, urlPath]);
 
-  //UTILIZADO PARA SCANNER TEST - DEJAR COMENTADO O MOVER CUANDO SE IMPLEMENTE EN SCAN.JSX
   return (
-    <section style={{ padding: 16 }}>
-      <h1>Scanner</h1>
-      <p>Estado: {status}</p>
-      {scriptsScanned && (
-        <>
-          <div style={{ marginTop: 8 }}>Total scripts detectados: {Array.isArray(scriptsScanned) ? scriptsScanned.length : 0}</div>
-          <pre style={{ maxHeight: 360, overflow: 'auto', background: '#111', color: '#eee', padding: 12 }}>
-            {JSON.stringify(scriptsScanned, null, 2)}
-          </pre>
-        </>
-      )}
-      {iframesScanned && (
-        <>
-          <div style={{ marginTop: 8 }}>Total iframes detectados: {Array.isArray(iframesScanned) ? iframesScanned.length : 0}</div>
-          <pre style={{ maxHeight: 360, overflow: 'auto', background: '#111', color: '#eee', padding: 12 }}>
-            {JSON.stringify(iframesScanned, null, 2)}
-          </pre>
-        </>
-      )}
-    </section>
+    <>
+      <span className="scanner__main-box-text">Scanning</span>
+      <div className="scanner__side-to-side-spinner"></div>
+    </>
   );
 }

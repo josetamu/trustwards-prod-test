@@ -19,6 +19,7 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
+      "@/*": ["src/*"],
       "@api/*": ["src/app/api/*"],
       "@app/*": ["src/app/*"],
       "@dashboard/*": ["src/app/(dashboard)/*"],
@@ -27,7 +28,7 @@
       "@builderElements/*": ["src/app/builderElements/*"],
       "@animations/*": ["src/animations/*"],
       "@contexts/*": ["src/contexts/*"],
-      "@supabase/*": ["src/supabase/*"],
+      "@supabase/*": ["src/supabase/*"]
     },
     "plugins": [
       {

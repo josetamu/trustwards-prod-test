@@ -34,7 +34,7 @@
   width: 50px;
   height: 50px;
   border-radius: 100%;
-  border: 1px solid var(--border-strong-color);
+  border: 1px solid var(--border-fresco-color);
 }
 .modal-account__avatar--null{
   display: none;
@@ -45,7 +45,7 @@
   width: 50px;
   height: 50px;
   border-radius: 100%;
-  border: 1px solid var(--border-strong-color);
+  border: 1px solid var(--border-fresco-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,14 +100,14 @@
 .modal-account__title{
   font-size: var(--font-size-small);
   color: var(--body-fresco-color);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal-account__field{
   font-size: var(--font-size-small);
   color: var(--body-fresco-color);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-negative);
   text-overflow: ellipsis;
   overflow: hidden;
@@ -118,7 +118,7 @@
 .modal-account__change{
   font-size: var(--font-size-small);
   color: var(--accent-bg-color);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -128,7 +128,7 @@
 
 .modal-account__divider{
   height: 1px;
-  background: var(--border-strong-color);
+  background: var(--border-fresco-color);
   margin: 4px 0;
   width: 100%;
   border: none;

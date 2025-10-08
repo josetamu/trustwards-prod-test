@@ -130,9 +130,8 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
             
         >
             <div className="sidebar-sites__header">
-                <span className="sidebar-sites__avatar">
-                  <span className={`sidebar-sites__color`} 
-                        style={SiteStyle(siteData)}>
+                <span className="sidebar-sites__avatar" style={SiteStyle(siteData)}>
+                    <span className={`sidebar-sites__color`}>
                           {siteData.Name.charAt(0)}
                     </span> 
                 </span>

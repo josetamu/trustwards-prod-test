@@ -55,7 +55,7 @@
 
 .modal-support__description {
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -70,7 +70,7 @@
 
 .modal-support__choice {
     background-color: var(--support-choice-background);
-    border: 1.5px solid var(--border-strong-color);
+    border: 1.5px solid var(--border-fresco-color);
     border-radius: 8px;
     padding: 10px;
     display: flex;
@@ -89,14 +89,13 @@
 
 .modal-support__choice-text {
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 
 .modal-support__choice--active {
-    color: var(--accent-bg-color);
-    border: 1.5px solid var(--accent-bg-color);
+    background: var(--accent-bg-color);
 }
 
 .modal-support__choice--active .modal-support__choice-icon {
@@ -108,7 +107,7 @@
 }
 
 .modal-support__choice--active .modal-support__choice-text {
-    color: var(--accent-bg-color);
+    color: #FFFFFF;
 }
 
 .modal-support__mid {
@@ -132,7 +131,7 @@
 
 .modal-support__input-title {
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
@@ -140,11 +139,11 @@
 .modal-support__input-field {
     width: 100%;
     height: 34px;
-    border: 1px solid var(--border-strong-color);
+    border: 1px solid var(--border-fresco-color);
     border-radius: 8px;
     padding: 10px;
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
     background: transparent;
@@ -166,7 +165,7 @@
     gap: 5px;
     width: 100%;
     min-height: 69px;
-    border: 2px dashed var(--border-strong-color);
+    border: 2px dashed var(--border-fresco-color);
     border-radius: 8px;
     padding: 10px;
     flex-direction: column;
@@ -177,7 +176,7 @@
 
 .modal-support__bottom-span {
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -198,7 +197,7 @@
     justify-content: start;
     flex-wrap: wrap;
     scrollbar-width: thin;
-    scrollbar-color: var(--border-strong-color) transparent;
+    scrollbar-color: var(--border-fresco-color) transparent;
 }
 
 .modal-support__files {
@@ -218,7 +217,7 @@
     align-items: center;
     gap: 5px;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
     max-width: 80px;
@@ -226,7 +225,7 @@
     width: 100%;
     padding: 5px;
     border-radius: 8px;
-    border: 1px solid var(--border-strong-color);
+    border: 1px solid var(--border-fresco-color);
 }
 
 .modal-support__file-name {
@@ -259,7 +258,7 @@
     border-radius: 8px;
     background-color: var(--accent-bg-color);
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
     cursor: pointer;

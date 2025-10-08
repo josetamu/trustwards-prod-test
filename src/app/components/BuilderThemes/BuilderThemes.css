@@ -51,7 +51,7 @@
     font-size: var(--font-size-medium);
     color: var(--builder-text-color);
     letter-spacing: var(--letter-spacing-negative);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
 }
 .tw-builder-themes__save-button{
     width: 49px;
@@ -60,7 +60,7 @@
     font-size: var(--font-size-medium);
     color: #fff;
     letter-spacing: var(--letter-spacing-negative);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
 
     border-radius: 8px;
     cursor: pointer;
@@ -127,7 +127,7 @@
     font-size: var(--font-size-medium);
     color: var(--builder-text-color);
     letter-spacing: var(--letter-spacing-negative);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
 }
 .tw-builder-themes__theme-info-free{
     font-size: var(--font-size-extreme-mini);

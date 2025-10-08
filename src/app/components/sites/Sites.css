@@ -13,7 +13,7 @@
 
 .sites__welcome {
   font-size: 20px;
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-negative);
   color: var(--body-strong-color);
 }
@@ -21,11 +21,10 @@
 .sites__top-card {
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 2px 8px var(--shadow-fresco-color);
+  box-shadow: var(--fancy-shadow);
   display: flex;
   flex-direction: column;
   min-height: 160px;
-  box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
   overflow: hidden;
 }
 
@@ -243,7 +242,7 @@
 .sites__top-card-title {
   color: var(--dashboard-hello-grid-heading-color);
   letter-spacing: var(--letter-spacing-negative);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-big);
 }
 
@@ -285,7 +284,7 @@
 
 .sites__title {
   font-size: var(--font-heading);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   color: var(--body-strong-color);
 }
 
@@ -346,7 +345,7 @@
 .sites__add-site-heading {
   font-size: var(--font-size-big);
   letter-spacing: var(--letter-spacing-negative);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   color: var(--body-strong-color);
   text-align: center;
 }

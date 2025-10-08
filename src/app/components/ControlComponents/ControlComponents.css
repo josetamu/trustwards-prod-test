@@ -16,7 +16,7 @@
 
 .tw-builder__settings-label{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--label-color);
 }
@@ -35,7 +35,7 @@
 
 .tw-builder__settings-subtitle{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--subtitle-color);
     display: flex;
@@ -58,7 +58,7 @@
     border: none;
     color: var(--builder-text-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     appearance: none;
     cursor: pointer;
@@ -96,7 +96,7 @@
     background-color: var(--builder-background);
     color: var(--builder-text-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     cursor: text;
     &::placeholder{
@@ -233,7 +233,7 @@
     border:none;
     background: none;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-hex:focus{
@@ -257,7 +257,7 @@
     background: none;
     text-align: center;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-percentage:focus{
@@ -280,7 +280,7 @@
     position: relative;
     color: #222222;
     font-size: var(--font-size-extreme-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
  .tw-builder__settings-action .tooltip__mask::before {
@@ -360,7 +360,7 @@
     font-size: var(--font-size-mini);
     position: relative;
     white-space: nowrap;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
   }
   .tw-builder__settings-option--font {
     padding: 8px 1px;
@@ -449,7 +449,7 @@
 }
 .tw-builder__settings-pen-name {
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: #F5F5F5;
 }
@@ -680,7 +680,7 @@
 .tw-builder__settings-image-span{
     color: var(--label-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-image-input{
@@ -689,7 +689,7 @@
 .tw-builder__settings-select-placeholder{
     color: var(--shadow-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 

@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 *{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   line-height: normal;
+  -webkit-font-smoothing: antialiased;
 }
 *:not(.tw-builder__canvas *) {
   font-family: 'Inter', sans-serif;
@@ -20,73 +25,32 @@ System selected: will fallback to root or html[data-theme="dark"]
 */
 
 :root {
-  /* 
-   =======================
-          WEBSITE
-   =======================
-   */
-  
-  /* Website - General*/
-  --website-background: #F5F5F5;
-  --website-strong-background: #000000;
-  --website-accent-color: #11A8FF;
-  --website-accent-hover: #0d8ce6;
-  --website-accent-background: #0099FE;
-  --website-border-strong-color: #E0E0E0;
-  --website-text-light-color: #333333;
-  --website-text-fresco-color: #5E5E5E;
-  --website-text-semi-strong-color: #222222;
-  --website-text-strong-color: #000000;
-  --website-brand-gradient: linear-gradient(93deg, #FFF -6.78%, #0099FE 106.78%);
-  --website-span-gradient: linear-gradient(90deg, #11A8FF 0%, #FFF 45.19%);
-  --website-banner-gradient: linear-gradient(90deg, #232323 8.71%, #333 52.64%, #232323 96.57%);
-  --website-banner-text-gradient: linear-gradient(92deg, #F0F0F0 66.96%, #B8E3FF 82.41%, #D28A9A 92.98%);
-
-  /* Website - Header*/
-  --website-header-item-color: #F5F5F5;
-  --website-header-cta-color: #B7B7B7;
-  --website-cta-background: #292929;
-
-  /* Website - Cards */
-  --website-card-background: #202020;
-  --website-card-hover: #292929;
-
-  /* Website - Form */
-  --website-form-background: #EEEEEE;
-  --website-form-text-color: #979797;
-
-  /* Website - Menu */
-  --website-menu-border-strong-color: #303030;
-  --website-menu-text-strong-color: #020202;
-  --website-menu-icon-strong-color: #000000;
-  --website-menu-icon-background: #555555;
-  --website-menu-icon-background-hover: #FFFFFF59;
-
-  
-  /* Website - Font Sizes */
-  --website-font-size-mini: 12px;
-  --website-font-size-medium: 14px;
-  --website-font-size-big: 16px;
-  --website-font-size-large: 18px;
-  --website-span-font-size: 23px;
-  --website-heading-font-size-small: 42px;
-  --website-heading-font-size-medium: 56px;
-  --website-heading-font-size-big: 64px;
-  
-  /* Website - Font Weights */
-  --website-font-weight-normal: 400;
-  --website-font-weight-medium: 500;
-  --website-font-weight-semibold: 600;
-  --website-font-weight-bold: 700;
-  
-  /* Website - Letter Spacing */
-  --website-letter-spacing-wide: -0.03em;
-  --website-letter-spacing-normal: -0.04em;
-  --website-letter-spacing-tight: -0.05em;
-
-  /* Website - Focus */
-  --focus-outline-dashed: 1px dashed #0099FE;
-  --focus-outline-solid: 2px solid #ff2676;
+  /* Shadcn/UI Variables */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --accent: 0 0% 96.1%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 0 0% 3.9%;
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+  --radius: 0.5rem;
 
   /* 
    =======================
@@ -107,7 +71,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   --font-size-big: 16px;
   --heading-font-size: 18px;
   --font-heading: 20px;
-  --font-weight: 500;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
   --letter-spacing-negative: -0.03em;
   --letter-spacing-positive: 0.03em;
 
@@ -116,7 +83,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --skeleton-color: gainsboro;
 
   /*App*/
-  --sidebar-background: #F5F5F5;
+  --sidebar-background: #F9F9F9;
   --content-background: #FFFFFF;
 
   /*General*/
@@ -124,15 +91,15 @@ System selected: will fallback to root or html[data-theme="dark"]
   --body-fresco-color: #5E5E5E;
   --body-semistrong-color: #333333;
   --body-strong-color: #000000;
-  --border-fresco-color: #E6E6E6;
-  --border-strong-color: #E0E0E0;
+  --border-fresco-color: #E1E6F9;
+  --border-strong-color: #E1E6F9;
   --icons-fresco-color: #5E5E5E;
   --icons-strong-color: #000000;
   --hover-light-color: #FFFFFF;
-  --hover-fresco-color: #EBEBEB;
+  --hover-fresco-color: #E9E9E9;
   --hover-strong-color: #E3E3E3;
-  --shadow-fresco-color: rgba(0, 0, 0, 0.05);
-  --shadow-strong-color: rgba(0, 0, 0, 0.1);
+  --fancy-shadow: 0px 4px 8px 0px rgba(0, 17, 119, 0.025);
+
   --warning-color: #D00606;
   --hover-warning-color: rgba(248, 218, 218, 1);
   --wrappers-fresco-color: #F2F2F2;
@@ -157,14 +124,16 @@ System selected: will fallback to root or html[data-theme="dark"]
 
   /*Buttons*/
   --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
-  --secondary-button-border-color: #E0E0E0;
+  --secondary-button-border-color: #E1E6F9;
 
   /*Dropdown*/
   --dropdown-background: #FFFFFF;
 
-  /*Sidebar Tooltip*/
+  /*Sidebar*/
+  --sidebar-item-active-color: #333333;
   --sidebar-tooltip-background: #FFFFFF;
   --sidebar-tooltip-color: #000000;
+  --sidebar-dividers-shadow: 0px 1px 0px 0px #FFFFFF;
 
   /*Tooltip*/
   --tooltip-background: #494E58;
@@ -208,6 +177,20 @@ System selected: will fallback to root or html[data-theme="dark"]
   --home-chart-color: #666666;
   --home-chart-icon-color: #F3F3F3;
 
+  /*Installation*/
+  --installation-background: #FFFFFF;
+  --script-copy-background: #F2F2F2;
+  --script-copy-color: #5E5E5E;
+
+  /*Scanner*/
+  --scanner-card-background: #FFFFFF;
+  --scanner-progress-bar-background: #E3E3E3;
+  --scanner-badge-color: #AAAAAA;
+  --scanner-badge-background: #EEEEEE;
+  --scanner-progress-color: #AAAAAA;
+
+  /*Integrations*/
+  --integrations-card-background: #FFFFFF;
 
     /* 
    =======================
@@ -255,7 +238,6 @@ System selected: will fallback to root or html[data-theme="dark"]
 
   /*Builder - Left Panel*/
   --logo-background: #FFFFFF;
-  --dropdown-background: #FFFFFF;
   --toggle-color: #999999;
   --tab-container-background: #F5F5F5;
   --tab-slider-background: #FFFFFF;
@@ -296,6 +278,12 @@ System selected: will fallback to root or html[data-theme="dark"]
 .sidebar--open .sidebar__logo-img{
   margin-left: 0px;
 }
+.sidebar__desk{
+  background: url('/assets/sidebar-light.svg');
+  background-size: cover;
+  width: 18px;
+  height: 18px;
+}
 .tw-builder__logo{
   background: url('/assets/logo-light-mode.svg');
   background-size: cover;
@@ -307,53 +295,31 @@ System selected: will fallback to root or html[data-theme="dark"]
 }
 
 html[data-theme="dark"] {
-  /* 
-   =======================
-          WEBSITE
-   =======================
-   */
-  
-  /*Website - General*/
-  --website-background: #191919;
-  --website-strong-background: #FFFFFF;
-  --website-accent-color: #11A8FF;
-  --website-accent-hover: #0d8ce6;
-  --website-accent-background: #0099FE;
-  --website-border-strong-color: #292929;
-  --website-text-light-color: #CCCCCC;
-  --website-text-fresco-color: #999999;
-  --website-text-semi-strong-color: #F5F5F5;
-  --website-text-strong-color: #FFFFFF;
-  --website-brand-gradient: linear-gradient(93deg, #FFF -6.78%, #0099FE 106.78%);
-  --website-span-gradient: linear-gradient(90deg, #11A8FF 0%, #FFF 45.19%);
-  --website-banner-gradient: linear-gradient(90deg, #232323 8.71%, #333 52.64%, #232323 96.57%);
-  --website-banner-text-gradient: linear-gradient(92deg, #F0F0F0 66.96%, #B8E3FF 82.41%, #D28A9A 92.98%);
-
-  /* Website - Header*/
-  --website-header-item-color: #F5F5F5;
-  --website-header-cta-color: #B7B7B7;
-  --website-cta-background: #292929;
-  --website-banner-cta-background: #555555;
-
-  /* Website - Shimmer */
-  /**/
-
-  /* Website - Cards */
-  --website-card-background: #202020;
-  --website-card-hover: #292929;
-
-  /* Website - Form */
-  --website-form-background: #EEEEEE;
-  --website-form-text-color: #979797;
-
-  /* Website - Menu */
-  --website-menu-border-strong-color: #303030;
-  --website-menu-text-strong-color: #F0F0F0;
-  --website-menu-icon-strong-color: #FFFFFF;
-  --website-menu-icon-background: #555555;
-  --website-menu-icon-background-hover: #FFFFFF59;
-  --website-menu-background: rgba(41, 41, 41, 0.80);
-
+  /* Shadcn/UI Variables - Dark Mode */
+  --background: 0 0% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 0 0% 83.1%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
 
   /* 
    =======================
@@ -363,28 +329,27 @@ html[data-theme="dark"] {
   --sidebar-menu-backdrop-color: rgba(0, 0, 0, 0.5);
 
   /*App*/
-  --sidebar-background: #202020;
-  --content-background: #191919;
+  --sidebar-background: #282828;
+  --content-background: #282828;
 
   /*General*/
   --body-light-color: #666666;
   --body-fresco-color: #9B9B9B;
   --body-semistrong-color: #9B9B9B;
   --body-strong-color: #FFFFFF;
-  --border-fresco-color: #252525;
-  --border-strong-color: #333333;
+  --border-fresco-color: #363636;
+  --border-strong-color: #454545;
 
   --icons-fresco-color: #9B9B9B;
   --icons-strong-color: #FFFFFF;
   --hover-light-color: #2B2B2B;
-  --hover-fresco-color: #2B2B2B;
+  --hover-fresco-color: #333333;
   --hover-strong-color: #333333;
-  --shadow-fresco-color: rgba(0, 0, 0, 0.05);
-  --shadow-strong-color: rgba(0, 0, 0, 0.15);
+  --fancy-shadow: unset;
   --warning-color: #EB5757;
   --hover-warning-color: #EB575710;
-  --wrappers-fresco-color: #202020;
-  --wrappers-strong-color: #2B2B2B;
+  --wrappers-fresco-color: #363636;
+  --wrappers-strong-color: #363636;
   --logo-background: #404040;
   --skeleton-color: gray;
 
@@ -394,32 +359,34 @@ html[data-theme="dark"] {
   --dashboard-hello-grid-text-strong-color: #FFFFFFB2;
 
   /*Sites List*/
-  --site-background: #202020;
-  --site-footer-background: #252525;
-  --site-pro-toggle-background: #2B2B2B;
+  --site-background: #363636;
+  --site-footer-background: #404040;
+  --site-pro-toggle-background: #454545;
   --site-pro-toggle-text-color: #9B9B9B;
   --view-toggle-color: #666666;
-  --view-toggle-background: #333333;
+  --view-toggle-background: #363636;
 
   /*Buttons*/
   --blue-button-shadow: 0px -4px 4px 0px #048DE8 inset, 0px 0px 0px 1px #1D78EB, 0px 0px 0px 1px #57A6FE inset;
   --secondary-button-border-color: #373737;
 
   /*Dropdown*/
-  --dropdown-background: #2B2B2B;
+  --dropdown-background: #363636;
 
-  /*Sidebar Tooltip*/
+  /*Sidebar*/
+  --sidebar-item-active-color: #EEE;
   --sidebar-tooltip-background: #2B2B2B;
   --sidebar-tooltip-color: #9B9B9B;
+  --sidebar-dividers-shadow: 0px 1px 0px 0px #232323;
 
   /*Tooltip*/
-  --tooltip-background: #333333;
+  --tooltip-background: #494E58;
   --tooltip-color: #FFFFFF;
 
   /*Notification*/
 
   /*Modal*/
-  --modal-background: #202020;
+  --modal-background: #282828;
   --modal-sidebar-background: #272727;
   --modal-backdrop-color: rgba(0, 0, 0, 0.5);
 
@@ -430,7 +397,7 @@ html[data-theme="dark"] {
   --appearance-dark-theme-border: rgba(85, 85, 85, 1);
 
   /*Modal - Support*/
-  --support-header-background: #272727;
+  --support-header-background: #363636;
   --support-choice-background: #333333;
   --support-dropzone-background: rgba(0, 153, 254, 0.1);
 
@@ -446,6 +413,20 @@ html[data-theme="dark"] {
   --home-chart-color: #FFFFFF;
   --home-chart-icon-color: #272727;
 
+  /*Installation*/
+  --installation-background: #363636;
+  --script-copy-background: #444444;
+  --script-copy-color: #FFFFFF;
+
+  /*Scanner*/
+  --scanner-card-background: #363636;
+  --scanner-progress-bar-background: #666;
+  --scanner-badge-color: #CCCCCC;
+  --scanner-badge-background: #666666;
+  --scanner-progress-color: #CCCCCC;
+
+  /*Integrations*/
+  --integrations-card-background: #363636;
 
     /* 
    =======================
@@ -461,7 +442,6 @@ html[data-theme="dark"] {
   --builder-text-color: #F5F5F5;
   --panels-background: #191919;
   --canvas-background: #FFFFFF;
-  --tooltip-background: #2B2B2B;
 
   --border-light-color: #2A2A2A;
   --shadow-light-color: #00000010;
@@ -488,7 +468,6 @@ html[data-theme="dark"] {
 
   /*Builder - Left Panel*/
   --logo-background: #2B2B2B;
-  --dropdown-background: #2B2B2B;
   --toggle-color: #999999;
   --tab-container-background: #2B2B2B;
   --tab-slider-background: #555555;
@@ -524,6 +503,12 @@ html[data-theme="dark"] .sidebar__logo-img{
   background: url('/assets/logo-dark-mode.svg');
   background-size: cover;
   width: 25px;
+  height: 18px;
+}
+html[data-theme="dark"] .sidebar__desk{
+  background: url('/assets/sidebar-dark.svg');
+  background-size: cover;
+  width: 18px;
   height: 18px;
 }
 html[data-theme="dark"] .tw-builder__logo{
