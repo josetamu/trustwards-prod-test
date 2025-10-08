@@ -563,8 +563,6 @@ html[data-color="red"] {
   outline-offset: 2px;
 }
 
-/* Focus styles for specific element types - inherit from *:focus-visible base rule */
-
 /* Sidebar specific elements (Dashboard) - use inner outline to avoid overflow issues */
 /* Main containers - inner outline */
 .sidebar-sites__site:focus-visible,
@@ -627,11 +625,6 @@ html[data-color="red"] {
 .tw-builder__panel-toggle-btn:focus-visible svg {
   outline: var(--focus-outline-dashed);
   outline-offset: 2px;
-}
-
-/* Exception: Search input should not have focus styles */
-.sidebar__sites-input:focus {
-  outline: none !important;
 }
 
 /* =======================
@@ -701,8 +694,6 @@ button[class*="accent"]:focus-visible,
   border-radius: 4px;
 }
 
-/* .builder-save:focus-visible - inherits from solid focus rule above */
-
 /* =======================
    MODAL FOCUS STYLES
    ======================= */
@@ -718,5 +709,3 @@ button[class*="accent"]:focus-visible,
   outline: var(--focus-outline-dashed);
   outline-offset: 2px;
 }
-
-/* Modal accent buttons get solid focus - inherit from main solid focus rule above */
