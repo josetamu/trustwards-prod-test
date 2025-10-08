@@ -52,6 +52,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   --chart-5: 27 87% 67%;
   --radius: 0.5rem;
 
+  /* Focus styles for accessibility */
+  --focus-outline-dashed: 1px dashed #0099FE;
+  --focus-outline-solid: 2px solid #ff2676;
+
   /* 
    =======================
           DASHBOARD
@@ -321,6 +325,10 @@ html[data-theme="dark"] {
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
 
+  /* Focus styles for accessibility - Dark Mode */
+  --focus-outline-dashed: 1px dashed #0099FE;
+  --focus-outline-solid: 2px solid #ff2676;
+
   /* 
    =======================
           DASHBOARD
@@ -555,23 +563,15 @@ html[data-color="red"] {
   outline-offset: 2px;
 }
 
-/* Focus styles for specific element types */
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-[tabindex]:focus-visible,
-label:focus-within,
-button:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: 2px;
-}
+/* Focus styles for specific element types - inherit from *:focus-visible base rule */
 
 /* Sidebar specific elements (Dashboard) - use inner outline to avoid overflow issues */
 /* Main containers - inner outline */
 .sidebar-sites__site:focus-visible,
 .sidebar-header:focus-visible,
 .sidebar__site-link:focus-visible,
+.sidebar__link:focus-visible,
+.sidebar__sites-add:focus-visible,
 .context-menu__item:focus-visible {
   outline: var(--focus-outline-dashed);
   outline-offset: -2px; /* draw inside element instead of outside */
@@ -580,12 +580,17 @@ button:focus-visible {
 
 /* Small action elements - external outline */
 .sidebar__action:focus-visible,
-.sidebar__sites-add:focus-visible,
 .sidebar__sites-edit:focus-visible,
-.sidebar__sites-delete:focus-visible,
-.dropdown__item:focus-visible {
+.sidebar__sites-delete:focus-visible {
   outline: var(--focus-outline-dashed);
   outline-offset: 2px; /* external outline for small elements */
+  border-radius: 6px;
+}
+
+/* Dropdown items - inner outline */
+.dropdown__item:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: -2px; /* draw inside element instead of outside */
   border-radius: 6px;
 }
 
@@ -643,23 +648,22 @@ button:focus-visible {
 .modal-support__button:focus-visible,
 .modal-welcome__button:focus-visible,
 .builder-save:focus-visible,
+.modal-appearance__accent-color-choice:focus-visible,
+.modal-upgrade-plan__subscribe--popular:focus-visible,
+.dashboard-header__builder:focus-visible,
+.home__button-upgrade:focus-visible,
+.home__button-upgrade-text:focus-visible,
 button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
 button[class*="accent"]:focus-visible,
 [class*="accent"]:focus-visible {
   outline: var(--focus-outline-solid) !important;
   outline-offset: 2px;
+  border-radius: 8px;
 }
 
-/* Specific important elements */
-.modal-appearance__accent-color-choice:focus-visible,
-.modal-upgrade-plan__subscribe--popular:focus-visible,
-.dashboard-header__builder:focus-visible,
-.dashboard-header__builder-text:focus-visible,
-.home__button-upgrade:focus-visible,
-.home__button-upgrade-text:focus-visible {
-  outline: var(--focus-outline-solid) !important;
-  outline-offset: 2px;
-  border-radius: 8px;
+/* Remove outline from builder text */
+.dashboard-header__builder-text:focus-visible {
+  outline: none !important;
 }
 
 /* Tree item selected state - solid outline when selected */
@@ -697,11 +701,7 @@ button[class*="accent"]:focus-visible,
   border-radius: 4px;
 }
 
-.builder-save:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: 2px; /* external outline for save button */
-  border-radius: 4px;
-}
+/* .builder-save:focus-visible - inherits from solid focus rule above */
 
 /* =======================
    MODAL FOCUS STYLES
@@ -719,13 +719,4 @@ button[class*="accent"]:focus-visible,
   outline-offset: 2px;
 }
 
-/* Modal accent buttons get solid focus */
-.modal [style*="background-color: var(--accent-bg-color)"]:focus-visible,
-.modal button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
-.modal .modal-change__button:focus-visible,
-.modal .modal-support__button:focus-visible,
-.modal .modal-welcome__button:focus-visible,
-.modal .modal-appearance__accent-color-choice:focus-visible {
-  outline: var(--focus-outline-solid) !important;
-  outline-offset: 2px;
-}
+/* Modal accent buttons get solid focus - inherit from main solid focus rule above */
