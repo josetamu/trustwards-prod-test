@@ -348,6 +348,15 @@ export function Sidebar({
                         ref={sidebarActionRef}
                         className="sidebar__action" 
                         onClick={handleToggleSidebar}
+                        tabIndex={0}
+                        role="button"
+                        aria-label="Toggle sidebar"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleToggleSidebar();
+                            }
+                        }}
                     >
                         <div className='sidebar__desk'></div>
 

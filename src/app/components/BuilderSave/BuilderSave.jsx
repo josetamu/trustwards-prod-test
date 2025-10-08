@@ -161,6 +161,16 @@ const captureCanvas = useCallback(async () => {
         <div 
             className={`builder-save ${isLoading ? ' builder-save--loading' : ''}`} 
             onClick={!isLoading ? save : undefined}
+            onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && !isLoading) {
+                    e.preventDefault();
+                    save();
+                }
+            }}
+            tabIndex={isLoading ? -1 : 0}
+            role="button"
+            aria-label={isLoading ? "Saving changes..." : "Save changes"}
+            aria-disabled={isLoading}
         >
             {/* If the changes are being saved, show the spinner */}
             {isLoading ? (

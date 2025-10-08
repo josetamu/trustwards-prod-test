@@ -53,9 +53,20 @@ export function SidebarSitesList({ openChangeModal, setIsModalOpen, setModalType
                     </div>
                 </div>
 
-                <div className='sidebar__sites-add' onClick={() => {
-                    openChangeModal('newsite');
-                }} 
+                <div 
+                    className='sidebar__sites-add' 
+                    onClick={() => {
+                        openChangeModal('newsite');
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label="Create new site"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openChangeModal('newsite');
+                        }
+                    }}
                 >
                     <div className='sidebar__sites-add-icon'>
                         <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -101,9 +112,20 @@ export function SidebarSitesList({ openChangeModal, setIsModalOpen, setModalType
 
                 )
             ))}
-            <div className='sidebar__sites-add' onClick={() => {
-                openChangeModal('newsite');
-            }} 
+            <div 
+                className='sidebar__sites-add' 
+                onClick={() => {
+                    openChangeModal('newsite');
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label="Create new site"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openChangeModal('newsite');
+                    }
+                }}
             >
                 <div className='sidebar__sites-add-icon'>
                     <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">

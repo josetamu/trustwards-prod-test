@@ -12,8 +12,14 @@ export const DashboardHeaderBuilder = ({siteSlug}) => {
 
 
     return (
-        <div className="dashboard-header__builder">
-            <Link href={`/builder/${siteSlug}`} className="dashboard-header__builder-text">Builder</Link>
-        </div>
+        <Link 
+            href={`/builder/${siteSlug}`} 
+            className="dashboard-header__builder"
+            tabIndex={0}
+            role="button"
+            aria-label="Open builder"
+        >
+            <span className="dashboard-header__builder-text">Builder</span>
+        </Link>
     );
 }

@@ -19,6 +19,9 @@
 .tw-builder__toolbar-icon:hover{
     background: var(--toolbar-items-background);
 }
+.tw-builder__toolbar-icon:focus-visible{
+    background: var(--toolbar-items-background);
+}
 .tw-builder__toolbar-icon svg{
     width: 100%;
     height: 100%;
@@ -70,7 +73,8 @@
     width: 100%;
     height: var(--hover-padding-area);
 }
-.tw-builder__toolbar-icon:hover > .tw-builder__toolbar-dropdown{
+.tw-builder__toolbar-icon:hover > .tw-builder__toolbar-dropdown,
+.tw-builder__toolbar-icon:focus-within > .tw-builder__toolbar-dropdown{
     transform: translateY(0px) scale(1);
     opacity: 1;
     pointer-events: auto;

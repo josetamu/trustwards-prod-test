@@ -162,6 +162,12 @@
 .modal-builder-settings__content-body-color:focus {
    outline: none;
 }
+.modal-builder-settings__content-body-builder {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .modal-builder-settings__content-body-actions {
     display: flex;
     flex-direction: column;
