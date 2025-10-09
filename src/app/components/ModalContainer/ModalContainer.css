@@ -31,6 +31,8 @@
     overflow: hidden;
     height: 100%;
     max-height: fit-content;
+
+    transition-duration: 0s !important;
     will-change: opacity, transform;
     
     /* Accessibility improvements */

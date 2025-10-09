@@ -5,7 +5,7 @@ import { supabase } from '@supabase/supabaseClient';
 import { createCDN } from '@contexts/CDNsContext';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 
 export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThemesOpen, setIsManualThemesOpen, showNotification, siteSlug}) {
     const { setJSONtree } = useCanvas();
@@ -129,7 +129,7 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
         {(isFirstTime || isManualThemesOpen) && (
             <div className="tw-builder-themes">
                 <motion.div
-                    {...ANIM_TYPES.find(anim => anim.name === 'OVERLAY_FADE')} 
+                    {...getAnimTypes().find(anim => anim.name === 'OVERLAY_FADE')} 
                     className="tw-builder-themes__backdrop-click" onClick={() => {
                         if (isFirstTime) {
                             showNotification('Please select a theme', 'top', false);
@@ -139,7 +139,7 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
                     }}
                 ></motion.div>
                 <motion.div
-                    {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+                    {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}
                     className={`tw-builder-themes__modal`}
                 >
                     <div className="tw-builder-themes__modal-header">

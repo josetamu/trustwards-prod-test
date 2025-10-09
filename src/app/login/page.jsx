@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@supabase/supabaseClient';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 import { ThemeProvider } from 'next-themes';
 
 export default function LoginPage() {
@@ -111,7 +111,7 @@ export default function LoginPage() {
                 <AnimatePresence>
                     {sentEmail && (
                         <motion.div
-                            {...ANIM_TYPES.find(anim => anim.name === 'SCALE_BOTTOM')}
+                            {...getAnimTypes().find(anim => anim.name === 'SCALE_BOTTOM')}
                             className="tw-login__sent-email"
                         >
                             <svg className="tw-login__sent-email-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" color="#fff" fill="none">

@@ -9,7 +9,8 @@ import { supabase } from '@supabase/supabaseClient';
 import './ControlComponents.css';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
+
 
 //Apply the control on enter(applying the blur function)
 const applyOnEnter = (e,f) => {
@@ -1961,57 +1962,57 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     </svg>
                 </span>
         
-                {/* Dropdown list */}
-                <AnimatePresence>
-                    {open && (
-                        <motion.ul className="tw-builder__settings-options" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
-                            {/* Search for Font */}
-                            {name === 'Font' && (
-                                <>
-                                    <li className="tw-builder__settings-search">
-                                        <input
-                                            type="text"
-                                            placeholder="Search font..."
-                                            value={searchFilter}
-                                            onChange={(e) => setSearchFilter(e.target.value)}
-                                            className="tw-builder__settings-search-input"
-                                            onClick={(e) => e.stopPropagation()}
-                                            onKeyDown={(e) => e.stopPropagation()}
-                                        />
-                                    </li>
-                                    <div className="tw-builder__settings-divider"></div>
-                                </>
-                            )}
-                            
-                            {filteredOptions.map((opt, index) => {
-                                const displayValue = typeof opt === 'object' ? opt.family : opt;
-                                const optionValue = typeof opt === 'object' ? opt.family : opt;
+            {/* Dropdown list */}
+            <AnimatePresence>
+            {open && (
+                <motion.ul className="tw-builder__settings-options" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
+                    {/* Search for Font - inside the options container */}
+                    {name === 'Font' && (
+                        <>
+                        <li className="tw-builder__settings-search">
+                            <input
+                                type="text"
+                                placeholder="Search font..."
+                                value={searchFilter}
+                                onChange={(e) => setSearchFilter(e.target.value)}
+                                className="tw-builder__settings-search-input"
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => e.stopPropagation()}
                                 
-                                return (
-                                    <li
-                                        key={typeof opt === 'object' ? opt.family : `${opt}-${index}`}
-                                        onClick={() => {
-                                            if (opt === '---') return;
-                                            handleSelectChange(optionValue);
-                                            setOpen(false);
-                                            setSearchFilter('');
-                                        }}
-                                        className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
-                                    >
-                                        {optionValue === selected ? 
-                                            <span className={`tw-builder__settings-check ${name === 'Font' ? 'tw-builder__settings-check--font' : ''}`}> 
-                                                <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
-                                                </svg>
-                                            </span>
-                                        : null}
-                                        {opt === '---' ? '' : displayValue}
-                                    </li>
-                                );
-                            })}
-                        </motion.ul>
+                            />
+                        </li>
+                        <div className="tw-builder__settings-divider"></div>
+                        </>
                     )}
-                </AnimatePresence>
+                {filteredOptions.map((opt, index) => {
+                    const displayValue = typeof opt === 'object' ? opt.family : opt;
+                    const optionValue = typeof opt === 'object' ? opt.family : opt;
+                    
+                    return (
+                        <li
+                            key={typeof opt === 'object' ? opt.family : `${opt}-${index}`}
+                            onClick={() => {
+                                if (opt === '---') return;
+                                handleSelectChange(optionValue);
+                                setOpen(false);
+                                setSearchFilter('');
+                            }}
+                            className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
+                        >
+                            {optionValue === selected ? 
+                                <span className={`tw-builder__settings-check ${name === 'Font' ? 'tw-builder__settings-check--font' : ''}`}> 
+                                    <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
+                                    </svg>
+                                </span>
+                            : null}
+                            {opt === '---' ? '' : displayValue}
+                        </li>
+                    );
+                })}
+                </motion.ul>
+            )}
+            </AnimatePresence>
             </div>
         </div>
     );
@@ -2376,7 +2377,7 @@ const parseRadius = useCallback((radiusStr) => {
                 </span>
                 <AnimatePresence>
                 {open && (
-                    <motion.div className="tw-builder__settings-pen-controls" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
+                    <motion.div className="tw-builder__settings-pen-controls" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
                             <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
@@ -2854,7 +2855,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                 </span>
                 <AnimatePresence>
                 {open && (
-                    <motion.div className="tw-builder__settings-pen-controls" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
+                    <motion.div className="tw-builder__settings-pen-controls" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
                             <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>

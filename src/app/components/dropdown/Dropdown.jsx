@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 import './Dropdown.css';
 
 // Dropdown component for menus and actions
@@ -98,7 +98,7 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
       <AnimatePresence>
         {open && (
           <motion.div
-            {...ANIM_TYPES.find(anim => anim.name === animationType)}
+            {...getAnimTypes().find(anim => anim.name === animationType)}
             className="dropdown__menu"
             ref={menuRef}
             style={fixedStyle ? fixedStyle : undefined}
