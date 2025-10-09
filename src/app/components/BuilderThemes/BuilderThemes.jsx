@@ -129,7 +129,7 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
         {(isFirstTime || isManualThemesOpen) && (
             <div className="tw-builder-themes">
                 <motion.div
-                    {...ANIM_TYPES.find(anim => anim.name === 'OVERLAY_FADE')} 
+                    {...getAnimTypes().find(anim => anim.name === 'OVERLAY_FADE')} 
                     className="tw-builder-themes__backdrop-click" onClick={() => {
                         if (isFirstTime) {
                             showNotification('Please select a theme', 'top', false);
