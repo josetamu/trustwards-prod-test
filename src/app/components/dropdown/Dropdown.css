@@ -27,7 +27,6 @@
   backdrop-filter: blur(2.5px);
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease;
   margin-top: 4px;
   overflow: hidden;
   padding: 4px;

@@ -14,6 +14,9 @@
 *:not(.tw-builder__canvas *) {
   font-family: 'Inter', sans-serif;
 }
+html[data-reduced-motion="true"] *:not(.tw-builder__canvas *) {
+  transition: none !important;
+}
 a {
   text-decoration: none;
 }
@@ -360,7 +363,7 @@ html[data-theme="dark"] {
 
   /*Sites List*/
   --site-background: #363636;
-  --site-footer-background: #404040;
+  --site-footer-background: #363636;
   --site-pro-toggle-background: #454545;
   --site-pro-toggle-text-color: #9B9B9B;
   --view-toggle-color: #666666;

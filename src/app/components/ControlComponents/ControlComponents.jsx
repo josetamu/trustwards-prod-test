@@ -9,7 +9,7 @@ import { supabase } from '@supabase/supabaseClient';
 import './ControlComponents.css';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 
 
 //Apply the control on enter(applying the blur function)
@@ -2368,7 +2368,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             {/* Dropdown list */}
             <AnimatePresence>
             {open && (
-                <motion.ul className="tw-builder__settings-options" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
+                <motion.ul className="tw-builder__settings-options" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                     {/* Search for Font - inside the options container */}
                     {name === 'Font' && (
                         <>
@@ -2782,7 +2782,7 @@ const parseRadius = useCallback((radiusStr) => {
                 </span>
                 <AnimatePresence>
                 {open && (
-                    <motion.div className="tw-builder__settings-pen-controls" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
+                    <motion.div className="tw-builder__settings-pen-controls" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
                             <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
@@ -3260,7 +3260,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                 </span>
                 <AnimatePresence>
                 {open && (
-                    <motion.div className="tw-builder__settings-pen-controls" {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}>
+                    <motion.div className="tw-builder__settings-pen-controls" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
                             <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>

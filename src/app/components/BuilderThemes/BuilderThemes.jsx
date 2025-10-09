@@ -5,7 +5,7 @@ import { supabase } from '@supabase/supabaseClient';
 import { createCDN } from '@contexts/CDNsContext';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 
 export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThemesOpen, setIsManualThemesOpen, showNotification, siteSlug}) {
     const { setJSONtree } = useCanvas();
@@ -136,7 +136,7 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
                     }
                 }}></div>
                 <motion.div
-                    {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+                    {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}
                     className={`tw-builder-themes__modal`}
                 >
                     <div className="tw-builder-themes__modal-header">

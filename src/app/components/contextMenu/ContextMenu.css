@@ -9,7 +9,6 @@
   z-index: 9999;
 
   transform-origin: top left;
-  transition: transform 0.2s ease;
 }
 
 /* Context menu menu styles */

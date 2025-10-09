@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 import './Tooltip.css';
 import { useId } from 'react';
 
@@ -78,7 +78,7 @@ export function Tooltip({
           id={tooltipId}
           ref={tooltipRef}
           style={finalPosition === 'sidebar' && fixedStyle ? { ...fixedStyle, ...(width ? { '--tooltip-width': width } : {}) } : (width ? { '--tooltip-width': width } : {})}
-          {...ANIM_TYPES.find(anim => anim.name === animationType)}
+          {...getAnimTypes().find(anim => anim.name === animationType)}
         >
           <div className="tooltip__mask">
             <span className="tooltip__message">{message}</span>
