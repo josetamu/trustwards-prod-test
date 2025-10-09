@@ -941,6 +941,22 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 <div 
                     className={headerClasses.join(' ')}
                     onClick={() => handleItemClick(item.id)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (e.shiftKey) {
+                                // Shift+Enter: Open context menu (right click)
+                                handleContextMenu(e, item);
+                            } else {
+                                // Enter: Open item options in right panel (left click)
+                                handleItemClick(item.id);
+                            }
+                        }
+                    }}
+                    tabIndex={0}
+                    role="treeitem"
+                    aria-label={`${item.label}${hasChildren ? (isExpanded ? ', expanded' : ', collapsed') : ''}`}
+                    aria-expanded={hasChildren ? isExpanded : undefined}
                     draggable={!isToolbarDragActive} // Disable internal drag when toolbar drag is active
                     onDragStart={(e) => handleDragStart(e, item)}
                     onDragEnd={handleDragEnd}
@@ -983,6 +999,16 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                                 e.stopPropagation();
                                 toggleExpanded(item.id);
                             }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    toggleExpanded(item.id);
+                                }
+                            }}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={isExpanded ? `Collapse ${item.label}` : `Expand ${item.label}`}
                         >
                             <svg width="5" height="3" viewBox="0 0 5 3" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 4.30088 0H0.693878C0.0741433 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
@@ -1168,6 +1194,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 <div className="tw-builder__tree-content">
                     <div 
                         className="tw-builder__tree-container"
+                        role="tree"
+                        aria-label="Element tree"
                         onDragOver={(e) => {
                             // Toolbar drag detection is now handled by the context
                         }}

@@ -55,6 +55,10 @@ System selected: will fallback to root or html[data-theme="dark"]
   --chart-5: 27 87% 67%;
   --radius: 0.5rem;
 
+  /* Focus styles for accessibility */
+  --focus-outline-dashed: 1px dashed #0099FE;
+  --focus-outline-solid: 2px solid #ff2676;
+
   /* 
    =======================
           DASHBOARD
@@ -90,7 +94,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --content-background: #FFFFFF;
 
   /*General*/
-  --body-light-color: #A0A0A0;
+  --body-light-color: #999999;
   --body-fresco-color: #5E5E5E;
   --body-semistrong-color: #333333;
   --body-strong-color: #000000;
@@ -101,7 +105,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --hover-light-color: #FFFFFF;
   --hover-fresco-color: #E9E9E9;
   --hover-strong-color: #E3E3E3;
-  --fancy-shadow: 0px 4px 8px 0px rgba(0, 17, 119, 0.025);
+  --fancy-shadow: 0px 4px 8px 0px rgba(0, 17, 119, 0.025), 0px 8px 20px 0px rgba(0, 17, 119, 0.025);
 
   --warning-color: #D00606;
   --hover-warning-color: rgba(248, 218, 218, 1);
@@ -211,13 +215,13 @@ System selected: will fallback to root or html[data-theme="dark"]
   --handlebars-color-active: #AAAAAA;
 
   --header-plan-background: #E3E3E3;
+  --undo-redo-background: #E3E3E3;
   --builder-background: #F5F5F5;
   --builder-text-color: #333333;
   --panels-background: #FFFFFF;
   --canvas-background: #FFFFFF;
 
-  --border-light-color: #E6E6E6;
-  --shadow-light-color: #00000010;
+  --border-light-color: #E1E6F9;
 
   --shadow-color: #999999;
   --subtitle-color: #666666;
@@ -270,6 +274,16 @@ System selected: will fallback to root or html[data-theme="dark"]
   /*Builder - Drop Indicator*/
   --drop-indicator-color: #0099FE;
   --drop-indicator-background: #0099FE15;
+
+  /*Builder - Right Panel*/
+  --no-selected-item-background: #F5F5F5;
+  --no-selected-item-text-color: #999999;
+  --control-background: #F5F5F5;
+  --control-context-background: #FFFFFF;
+  --classes-background: #F5F5F5;
+  --right-panel-dropdown-background: #000000;
+  --states-background: #ddd;
+  --states-active-color: #333;
 }
 
 .sidebar__logo-img{
@@ -323,6 +337,10 @@ html[data-theme="dark"] {
   --chart-3: 30 80% 55%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
+
+  /* Focus styles for accessibility - Dark Mode */
+  --focus-outline-dashed: 1px dashed #0099FE;
+  --focus-outline-solid: 2px solid #ff2676;
 
   /* 
    =======================
@@ -431,48 +449,47 @@ html[data-theme="dark"] {
   /*Integrations*/
   --integrations-card-background: #363636;
 
-    /* 
+  /* 
    =======================
           BUILDER
    =======================
-   */
+  */
   /*Builder - General*/
-  --handlebars-color: #444444;
+  --handlebars-color: #555555;
   --handlebars-color-active: #666666;
 
-  --header-plan-background: #2B2B2B;
+  --header-plan-background: #363636;
+  --undo-redo-background: #363636;
   --builder-background: #202020;
   --builder-text-color: #F5F5F5;
-  --panels-background: #191919;
+  --panels-background: #282828;
   --canvas-background: #FFFFFF;
 
-  --border-light-color: #2A2A2A;
-  --shadow-light-color: #00000010;
+  --border-light-color: #363636;
 
-  --shadow-color: #999999;
   --subtitle-color: #AAAAAA;
   --label-color: #F5F5F5;
   --icons-color: #999999;
 
   /* Builder - User Tooltip*/
-  --user-tooltip-background: #2B2B2B;
+  --user-tooltip-background: #363636;
   --user-tooltip-color: #F5F5F5;
 
   /*Builder - Themes Modal*/
-  --themes-modal-background: #191919;
-  --free-badge-background: #2B2B2B;
+  --themes-modal-background: #282828;
+  --free-badge-background: #363636;
 
   /*Builder - Toolbar*/
-  --toolbar-items-background: #2B2B2B;
-  --toolbar-items-background-hover: #3E3E3E;
+  --toolbar-items-background: #363636;
+  --toolbar-items-background-hover: #404040;
   --toolbar-items-text-color: #999999;
   --toolbar-items-icon-color: #FFFFFF;
   --toolbar-items-icon-background: #666;
 
   /*Builder - Left Panel*/
-  --logo-background: #2B2B2B;
+  --logo-background: #363636;
   --toggle-color: #999999;
-  --tab-container-background: #2B2B2B;
+  --tab-container-background: #363636;
   --tab-slider-background: #555555;
   --tab-color: #999999;
   --tab-active-color: #F5F5F5;
@@ -500,6 +517,16 @@ html[data-theme="dark"] {
   /*Builder - Drop Indicator*/
   --drop-indicator-color: #0099FE;
   --drop-indicator-background: #0099FE15;
+
+  /*Builder - Right Panel*/
+  --no-selected-item-background: #363636;
+  --no-selected-item-text-color: #999999;
+  --control-background: #363636;
+  --control-context-background: #282828;
+  --classes-background: #363636;
+  --right-panel-dropdown-background: #000000;
+  --states-background: #505050;
+  --states-active-color: #FFFFFF;
 }
 
 html[data-theme="dark"] .sidebar__logo-img{
@@ -546,4 +573,161 @@ html[data-color="orange"] {
 html[data-color="red"] {
   --blue-button-shadow: 0px -4px 4px 0px #E31B1B inset, 0px 0px 0px 1px #F91212, 0px 0px 0px 1px #F97474 inset;
   --accent-bg-color: #F33D3D;
+}
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Base focus style for all focusable elements */
+*:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
+}
+
+/* Sidebar specific elements (Dashboard) - use inner outline to avoid overflow issues */
+/* Main containers - inner outline */
+.sidebar-sites__site:focus-visible,
+.sidebar-header:focus-visible,
+.sidebar__site-link:focus-visible,
+.sidebar__link:focus-visible,
+.sidebar__sites-add:focus-visible,
+.context-menu__item:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: -2px; /* draw inside element instead of outside */
+  border-radius: 6px;
+}
+
+/* Small action elements - external outline */
+.sidebar__action:focus-visible,
+.sidebar__sites-edit:focus-visible,
+.sidebar__sites-delete:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px; /* external outline for small elements */
+  border-radius: 6px;
+}
+
+/* Dropdown items - inner outline */
+.dropdown__item:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: -2px; /* draw inside element instead of outside */
+  border-radius: 6px;
+}
+
+/* Builder tabs - remove outline from button, apply only to text content */
+.tw-builder__tab:focus-visible {
+  outline: none !important;
+  border: 1px solid transparent !important;
+}
+
+.tw-builder__tab:focus-visible::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
+  pointer-events: none;
+}
+
+/* Builder logo button - keep original border when focused */
+.tw-builder__logo-button:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
+  border: 1px solid var(--border-light-color) !important;
+}
+
+/* Builder panel toggle button - remove outline from button, apply only to SVG */
+.tw-builder__panel-toggle-btn:focus-visible {
+  outline: none !important;
+}
+
+.tw-builder__panel-toggle-btn:focus-visible svg {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
+}
+
+/* =======================
+   BLUE BUTTONS - SOLID FOCUS
+   ======================= */
+
+/* Solid focus for accent color buttons and important actions */
+[style*="background-color: var(--accent-bg-color)"]:focus-visible,
+.sites__new-button:focus-visible,
+.newSite__button:focus-visible,
+.new-site__button:focus-visible,
+.modalAppearance__accentColor__button:focus-visible,
+.modal-change__button:focus-visible,
+.modal-support__button:focus-visible,
+.modal-welcome__button:focus-visible,
+.builder-save:focus-visible,
+.modal-appearance__accent-color-choice:focus-visible,
+.modal-upgrade-plan__subscribe--popular:focus-visible,
+.dashboard-header__builder:focus-visible,
+.home__button-upgrade:focus-visible,
+.home__button-upgrade-text:focus-visible,
+button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
+button[class*="accent"]:focus-visible,
+[class*="accent"]:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Remove outline from builder text */
+.dashboard-header__builder-text:focus-visible {
+  outline: none !important;
+}
+
+/* Tree item selected state - solid outline when selected */
+.tw-builder__tree-item-header--selected:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: -2px; /* inner outline to prevent clipping/overflow */
+  border-radius: 4px;
+}
+
+/* Tree expand button solid outline when parent item is selected */
+.tw-builder__tree-item-header--selected .tw-builder__tree-expand-button:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Builder Left Panel (Tree) - default focus for non-selected items uses inner dashed */
+.tw-builder__tree-item-header:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: -2px; /* inner outline to avoid overflow with container */
+  border-radius: 4px;
+}
+
+/* Tree expand button - external outline */
+.tw-builder__tree-expand-button:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px; /* external outline for the arrow */
+  border-radius: 4px;
+}
+
+/* Builder Right Panel - accessibility for user and save only */
+.builder-user:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: -2px; /* inner outline to avoid overflow */
+  border-radius: 4px;
+}
+
+/* =======================
+   MODAL FOCUS STYLES
+   ======================= */
+
+/* Modal container should not have focus */
+.modal:focus,
+.modal:focus-visible {
+  outline: none !important;
+}
+
+/* Modal focusable elements inherit base styles */
+.modal *:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: 2px;
 }

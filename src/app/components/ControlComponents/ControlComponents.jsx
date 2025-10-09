@@ -16,14 +16,11 @@ import { getAnimTypes } from '@animations/animations';
 const applyOnEnter = (e,f) => {
     if(e.key === 'Enter') {
         e.preventDefault();
-        e.currentTarget.blur();
-        
+        e.currentTarget.blur(); 
     }
 }
 
-
 //Define each type of control.
-
 const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
@@ -93,150 +90,19 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         </div>
     )
 }
+
 const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder}) => {
-    //At this point we have three superselects. One is for the block with the tags, the other is for the display with the display properties, and the third is for the position with the position properties.
-    const [blockSelectValue, setBlockSelectValue] = useState(() => {
+    //function to get the correct value depending on the category
+    const getCurrentSelectValue = () => {
         if (category === 'block') {
             const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
             return savedJSONValue || '';
         }
-        return '';
-    });
-    
-    const [displaySelectValue, setDisplaySelectValue] = useState(() => {
-        if (category === 'display') {
-            const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-            return savedCSSValue || '';
-        }
-        return '';
-    });
-    const [positionSelectValue, setPositionSelectValue] = useState(() => {
-        if (category === 'position') {
-            const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-            return savedCSSValue || '';
-        }
-        return '';
-    });
-    //function to get the correct value depending on the category
-    const getCurrentSelectValue = () => {
-        if (category === 'block') return blockSelectValue;
-        if (category === 'display') return displaySelectValue;
-        if (category === 'position') return positionSelectValue;
-        return '';
-    };
-    
-    //function to set the correct value depending on the category
-    const setCurrentSelectValue = (value) => {
-        if (category === 'block') setBlockSelectValue(value);
-        if (category === 'display') setDisplaySelectValue(value);
-        if (category === 'position') setPositionSelectValue(value);
-    };
-
-    const [selectedWrap, setSelectedWrap] = useState(() =>{
-        return getGlobalCSSValue?.('flex-wrap') || 'wrap';
-    });
-    const [selectedDirection, setSelectedDirection] = useState(() => {
-        return getGlobalCSSValue?.('flex-direction') || 'column';
-    });
-    const [selectedAlign, setSelectedAlign] = useState(() => {
-        return getGlobalCSSValue?.('align-items') || 'flex-start';
-    });
-    const [selectedJustify, setSelectedJustify] = useState(() => {
-        return getGlobalCSSValue?.('justify-content') || 'flex-start';
-    });
-    const [isReverse, setIsReverse] = useState(() => {
-        const flexDirection = getGlobalCSSValue?.('flex-direction') || '';
-        return flexDirection.includes('-reverse');
-    });
-    const [selectedFlow, setSelectedFlow] = useState(() => {
-        return getGlobalCSSValue?.('grid-auto-flow') || 'row';
-    });
-
-    const [activeTooltip, setActiveTooltip] = useState(null);
-    const hoverTimeoutRef = useRef(null);
-
-// Update every state when selected element changes
-useEffect(() => {
-    if(!selectedElementData) return;
-
-    let savedValue = null;
-    if(JSONProperty && getGlobalJSONValue) {
-        savedValue = getGlobalJSONValue(JSONProperty);
-    } else if (cssProperty && getGlobalCSSValue) {
-        savedValue = getGlobalCSSValue(cssProperty);
-    }
-    setCurrentSelectValue(savedValue || '');
-
-    const flexDirection = getGlobalCSSValue?.('flex-direction') || '';
-    const isCurrentlyReverse = flexDirection.includes('-reverse');
-    const baseDirection = isCurrentlyReverse 
-        ? flexDirection.replace('-reverse', '') 
-        : flexDirection;
-    
-    setIsReverse(isCurrentlyReverse);
-    setSelectedDirection(baseDirection);
-
-    setSelectedWrap(getGlobalCSSValue?.('flex-wrap') || '');
-    setSelectedAlign(getGlobalCSSValue?.('align-items') || '');
-    setSelectedJustify(getGlobalCSSValue?.('justify-content') || '');
-    setSelectedFlow(getGlobalCSSValue?.('grid-auto-flow') || '');
-}, [selectedId,selectedElementData, getGlobalCSSValue, cssProperty, value, getGlobalJSONValue, JSONProperty]);
-
-
-    //Active and desactive tooltip with hover. Also have a .5'' delay
-    const handleMouseEnter = (tooltipId) => {
-        hoverTimeoutRef.current = setTimeout(() => {
-            setActiveTooltip(tooltipId);
-        }, 500); 
-    };
-
-    const handleMouseLeave = () => {
-        clearTimeout(hoverTimeoutRef.current);
-        setActiveTooltip(null);
-    };
-
-
-
-    //Handle the chooseType controls
-
-    const handleDirectionChange = (direction) => {
-        const newDirection = selectedDirection === direction ? '' : direction;
-        setSelectedDirection(newDirection);
-        if (applyGlobalCSSChange) {
-            const finalDirection = isReverse ? `${newDirection}-reverse` : newDirection;
-            applyGlobalCSSChange('flex-direction', finalDirection);
-        }
-    };
-    const handleJustifyChange = (justify) => {
-        const newJustify = selectedJustify === justify ? '' : justify;
-        setSelectedJustify(newJustify);
-        if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('justify-content', newJustify);
-        }
-    };
-
-    const handleReverseChange = () => {
-        const newReverse = !isReverse;
-        setIsReverse(newReverse);
-    
-        if (applyGlobalCSSChange) {
-
-            const finalDirection = newReverse ? `${selectedDirection}-reverse` : selectedDirection;
-            applyGlobalCSSChange('flex-direction', finalDirection);
-        }
-    };
-    
-
-    const handleAlignChange = (align) => {
-        const newAlign = selectedAlign === align ? '' : align;
-        setSelectedAlign(newAlign);
-        if (applyGlobalCSSChange) {
-            applyGlobalCSSChange('align-items', newAlign);
-        }
+        const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+        return savedCSSValue || '';
     };
 
     const handleSuperSelectChange = (newValue) => {
-        setCurrentSelectValue(newValue);
         if(JSONProperty && applyGlobalJSONChange){
             applyGlobalJSONChange(JSONProperty,newValue);
         }else if (cssProperty && applyGlobalCSSChange) {
@@ -244,23 +110,6 @@ useEffect(() => {
         }
     };
 
-
-//This is the % that the transform will take to move the slider in the choose
-    const getSliderPosition = (selectedValue, options) => {
-        const index = options.indexOf(selectedValue);
-        return index >= 0 ? `${index * 100}%` : '0%';
-    };
-    //As chooseType have different number of selections, the slider width changes
-    const getSliderWidth = (options) => {
-        return `calc(${100 / options.length}% - ${100 / options.length / 100 * 6}px)`;
-    };
-
-    //Declare the options
-    const directionOptions = ['column','row','']
-    const superJustifyOptions = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'];
-    const superAlignOptions = ['flex-start', 'center', 'flex-end', 'stretch'];
-
-   
     return (
         <React.Fragment key={index}>
        {category === 'block' && (
@@ -268,7 +117,7 @@ useEffect(() => {
         name={name}
         value={getCurrentSelectValue()}
         placeholder={placeholder}
-
+        onChange={handleSuperSelectChange}
         JSONProperty={JSONProperty}
         applyGlobalJSONChange={applyGlobalJSONChange}
         getGlobalJSONValue={getGlobalJSONValue}
@@ -277,7 +126,7 @@ useEffect(() => {
         options={['div','a','section','article','aside','nav']}
         />
        )}
-             {category === 'display' && (
+        {category === 'display' && (
         <SelectType
         name={name}
         value={getCurrentSelectValue()}
@@ -367,7 +216,7 @@ useEffect(() => {
                     <>
                     <SelectType
                     name='Wrap'
-                    value={selectedWrap}
+                   /*  value={selectedWrap} */
                     placeholder='nowrap'
                     cssProperty='flex-wrap'
                     applyGlobalCSSChange={applyGlobalCSSChange}
@@ -376,204 +225,30 @@ useEffect(() => {
                     index={index}
                     options={['nowrap', 'wrap', 'wrap-reverse']}
                     />
-                    <div className="tw-builder__settings-setting">
-                        <span className="tw-builder__settings-subtitle">Direction
-                            <StylesDeleter value={selectedDirection} cssProperty="flex-direction" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
-                        </span>
-                        <div className="tw-builder__settings-actions">
-                        <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedDirection, directionOptions)})`, width: `${getSliderWidth(directionOptions)}` } }
-                        >
-                        </div>
-                            <button className={`tw-builder__settings-action ${selectedDirection === 'column' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleDirectionChange('column')} onMouseEnter={() => handleMouseEnter('column')} onMouseLeave={handleMouseLeave}>
-                                <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.00134172 2C-0.00151758 1.78086 -0.00630757 1.37951 0.0645315 1.1168C0.156314 0.776369 0.384806 0.417969 0.917786 0.185477C1.16804 0.0763693 1.43357 0.0356924 1.70173 0.0173539C1.95531 9.16995e-08 2.26431 0 2.62258 0H8.37743C8.7357 0 9.04469 9.16995e-08 9.29828 0.0173539C9.56645 0.0356924 9.83193 0.0763693 10.0822 0.185477C10.6152 0.417969 10.8437 0.776369 10.9355 1.1168C11.0063 1.37951 11.0016 1.78086 10.9986 2C11.0016 2.21914 11.0063 2.62049 10.9355 2.8832C10.8437 3.22363 10.6152 3.58203 10.0822 3.81452C9.83193 3.92363 9.56645 3.96431 9.29828 3.98265C9.04469 4 8.7357 4 8.37743 4H2.62258C2.26431 4 1.95531 4 1.70173 3.98265C1.43357 3.96431 1.16804 3.92363 0.917786 3.81452C0.384806 3.58203 0.156314 3.22363 0.0645315 2.8832C-0.00630757 2.62049 -0.00151758 2.21914 0.00134172 2Z" fill="currentColor"/>
-                                    <path d="M0.00134172 7C-0.00151758 6.78086 -0.00630757 6.37951 0.0645315 6.1168C0.156314 5.77637 0.384806 5.41797 0.917786 5.18548C1.16804 5.07637 1.43357 5.03569 1.70173 5.01735C1.95531 5 2.26431 5 2.62258 5H8.37743C8.7357 5 9.04469 5 9.29828 5.01735C9.56645 5.03569 9.83193 5.07637 10.0822 5.18548C10.6152 5.41797 10.8437 5.77637 10.9355 6.1168C11.0063 6.37951 11.0016 6.78086 10.9986 7C11.0016 7.21914 11.0063 7.62049 10.9355 7.8832C10.8437 8.22363 10.6152 8.58203 10.0822 8.81452C9.83193 8.92363 9.56645 8.96431 9.29828 8.98265C9.04469 9 8.7357 9 8.37743 9H2.62258C2.26431 9 1.95531 9 1.70173 8.98265C1.43357 8.96431 1.16804 8.92363 0.917786 8.81452C0.384806 8.58203 0.156314 8.22363 0.0645315 7.8832C-0.00630757 7.62049 -0.00151758 7.21914 0.00134172 7Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Column'}
-                                open={activeTooltip === 'column'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${selectedDirection === 'row' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleDirectionChange('row')} onMouseEnter={() => handleMouseEnter('row')} onMouseLeave={handleMouseLeave}>
-                                <svg width="9" height="8" viewBox="0 0 9 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7 0.000975796C7.21914 -0.0011037 7.62049 -0.00458732 7.8832 0.046932C8.22363 0.113683 8.58203 0.279859 8.81452 0.66748C8.92363 0.849487 8.96431 1.0426 8.98265 1.23762C9 1.42205 9 1.64677 9 1.90733V6.09268C9 6.35324 9 6.57795 8.98265 6.76238C8.96431 6.95742 8.92363 7.1505 8.81452 7.3325C8.58203 7.72014 8.22363 7.88632 7.8832 7.95309C7.62049 8.00457 7.21914 8.00113 7 7.999C6.78086 8.00113 6.37951 8.00457 6.1168 7.95309C5.77637 7.88632 5.41797 7.72014 5.18548 7.3325C5.07637 7.1505 5.03569 6.95742 5.01735 6.76238C5 6.57795 5 6.35324 5 6.09268V1.90733C5 1.64677 5 1.42204 5.01735 1.23762C5.03569 1.0426 5.07637 0.849487 5.18548 0.66748C5.41797 0.279859 5.77637 0.113683 6.1168 0.046932C6.37951 -0.00458732 6.78086 -0.0011037 7 0.000975796Z" fill="currentColor"/>
-                                    <path d="M2 0.000975796C2.21914 -0.0011037 2.62049 -0.00458732 2.8832 0.046932C3.22363 0.113683 3.58203 0.279859 3.81452 0.66748C3.92363 0.849487 3.96431 1.0426 3.98265 1.23762C4 1.42205 4 1.64677 4 1.90733V6.09268C4 6.35324 4 6.57795 3.98265 6.76238C3.96431 6.95742 3.92363 7.1505 3.81452 7.3325C3.58203 7.72014 3.22363 7.88632 2.8832 7.95309C2.62049 8.00457 2.21914 8.00113 2 7.999C1.78086 8.00113 1.37951 8.00457 1.1168 7.95309C0.776369 7.88632 0.417969 7.72014 0.185476 7.3325C0.0763686 7.1505 0.0356922 6.95742 0.0173538 6.76238C0 6.57795 0 6.35324 0 6.09268V1.90733C0 1.64677 0 1.42204 0.0173538 1.23762C0.0356922 1.0426 0.0763686 0.849487 0.185476 0.66748C0.417969 0.279859 0.776369 0.113683 1.1168 0.046932C1.37951 -0.00458732 1.78086 -0.0011037 2 0.000975796Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Row'}
-                                open={activeTooltip === 'row'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--reverse' : ''}`} onClick={() => handleReverseChange(!isReverse)} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
-                                <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1 3.5C0.723858 3.5 0.5 3.72386 0.5 4C0.5 4.27614 0.723858 4.5 1 4.5V4V3.5ZM13.1936 4.35355C13.3889 4.15829 13.3889 3.84171 13.1936 3.64645L10.0117 0.464466C9.81641 0.269204 9.49982 0.269204 9.30456 0.464466C9.1093 0.659728 9.1093 0.976311 9.30456 1.17157L12.133 4L9.30456 6.82843C9.1093 7.02369 9.1093 7.34027 9.30456 7.53553C9.49982 7.7308 9.81641 7.7308 10.0117 7.53553L13.1936 4.35355ZM1 4V4.5H12.8401V4V3.5H1V4Z" fill="currentColor"/>
-                                    <path d="M12.8398 11.5C13.116 11.5 13.3398 11.2761 13.3398 11C13.3398 10.7239 13.116 10.5 12.8398 10.5V11V11.5ZM0.646195 10.6464C0.450933 10.8417 0.450933 11.1583 0.646195 11.3536L3.82818 14.5355C4.02344 14.7308 4.34002 14.7308 4.53528 14.5355C4.73054 14.3403 4.73054 14.0237 4.53528 13.8284L1.70686 11L4.53528 8.17157C4.73054 7.97631 4.73054 7.65973 4.53528 7.46447C4.34002 7.2692 4.02344 7.2692 3.82818 7.46447L0.646195 10.6464ZM12.8398 11V10.5L0.999749 10.5V11V11.5L12.8398 11.5V11Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Reverse'}
-                                open={activeTooltip === 'reverse'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                        </div>
-                    </div>
-                    <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
-                        <span className="tw-builder__settings-subtitle">Justify
-                            <StylesDeleter value={selectedJustify} cssProperty="justify-content" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
-                        </span>
-                        <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
-                            <div className="tw-builder__settings-slider"
-                                style={{ transform: `translateX(${getSliderPosition(selectedJustify, superJustifyOptions)})`, width: `${getSliderWidth(superJustifyOptions)}` } }
-                            >
-                            </div>
-                            <button className={`tw-builder__settings-action ${selectedJustify === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('flex-start')} onMouseEnter={() => handleMouseEnter('start')} onMouseLeave={handleMouseLeave}>
-                                <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0C0.22386 0 0 0.244211 0 0.545455V11.4545C0 11.7558 0.22386 12 0.5 12C0.77614 12 1 11.7558 1 11.4545V0.545455C1 0.244211 0.77614 0 0.5 0Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Start'}
-                                open={activeTooltip === 'start'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${selectedJustify === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
-                                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M3.5 0C3.22386 0 3 0.244211 3 0.545455V11.4545C3 11.7558 3.22386 12 3.5 12C3.77614 12 4 11.7558 4 11.4545V0.545455C4 0.244211 3.77614 0 3.5 0Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Center'}
-                                open={activeTooltip === 'center'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${selectedJustify === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('flex-end')} onMouseEnter={() => handleMouseEnter('end')} onMouseLeave={handleMouseLeave}>
-                                <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M8.5 0C8.22386 0 8 0.244211 8 0.545455V11.4545C8 11.7558 8.22386 12 8.5 12C8.77614 12 9 11.7558 9 11.4545V0.545455C9 0.244211 8.77614 0 8.5 0Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'End'}
-                                open={activeTooltip === 'end'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${selectedJustify === 'space-between' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('space-between')} onMouseEnter={() => handleMouseEnter('between')} onMouseLeave={handleMouseLeave}>
-                                <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M3.08581 10.0201C2.86671 10.0246 2.46541 10.0324 2.20217 9.98366C1.86104 9.92057 1.50087 9.75826 1.26422 9.37317C1.15316 9.19234 1.11041 8.99968 1.08998 8.80486C1.07064 8.62064 1.06822 8.39593 1.06542 8.13539L1.0204 3.95028C1.0176 3.68973 1.01518 3.46503 1.03055 3.28042C1.04679 3.0852 1.08539 2.8917 1.19253 2.70853C1.42084 2.31842 1.77743 2.14839 2.11712 2.07796C2.37926 2.02366 2.78063 2.02278 2.99978 2.02255C3.21888 2.01806 3.62018 2.01031 3.88342 2.05896C4.22455 2.12207 4.58472 2.28438 4.82137 2.6695C4.93243 2.85031 4.97518 3.04294 4.99561 3.23777C5.01495 3.422 5.01737 3.64671 5.02017 3.90725L5.06519 8.09236C5.06799 8.3529 5.07041 8.57762 5.05504 8.76221C5.0388 8.95743 5.0002 9.15096 4.89306 9.33413C4.66475 9.72423 4.30816 9.89425 3.96847 9.96466C3.70633 10.019 3.30496 10.0198 3.08581 10.0201Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M0.499971 0.00536387C0.223847 0.00833421 0.00262689 0.254939 0.00586725 0.556165L0.123212 11.4646C0.126453 11.7659 0.352927 12.0076 0.629051 12.0047C0.905175 12.0017 1.12639 11.7551 1.12315 11.4539L1.00581 0.545409C1.00257 0.244182 0.776095 0.00239353 0.499971 0.00536387Z" fill="currentColor"/>
-                                    <path d="M9.00012 2.02154C9.21922 2.01721 9.62052 2.0096 9.88374 2.05842C10.2248 2.12166 10.5849 2.28414 10.8214 2.66935C10.9324 2.85023 10.975 3.04291 10.9954 3.23774C11.0146 3.42197 11.0169 3.64668 11.0196 3.90723L11.0627 8.09236C11.0653 8.3529 11.0677 8.57761 11.0522 8.7622C11.0359 8.95742 10.9972 9.1509 10.8899 9.33402C10.6615 9.72403 10.3048 9.89389 9.96505 9.96415C9.70289 10.0183 9.30152 10.019 9.08237 10.0191C8.86327 10.0235 8.46197 10.0311 8.19875 9.98232C7.85765 9.91905 7.49756 9.75657 7.26109 9.37134C7.15012 9.19047 7.10746 8.99782 7.08711 8.80299C7.06786 8.61874 7.06555 8.39404 7.06287 8.13349L7.01983 3.94836C7.01715 3.68782 7.01484 3.4631 7.03029 3.27852C7.04662 3.08331 7.08531 2.88979 7.19254 2.70668C7.42104 2.31668 7.77771 2.14683 8.11744 2.07658C8.3796 2.02236 8.78097 2.02172 9.00012 2.02154Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M11.6231 12.0059C11.8992 12.003 12.1205 11.7565 12.1174 11.4553L12.0052 0.546793C12.0021 0.245554 11.7758 0.00366949 11.4997 0.00650944C11.2235 0.0093494 11.0022 0.255839 11.0053 0.557077L11.1175 11.4656C11.1206 11.7668 11.3469 12.0087 11.6231 12.0059Z" fill="currentColor"/>
-                                </svg>
-
-                                <Tooltip
-                                message={'Between'}
-                                open={activeTooltip === 'between'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${selectedJustify === 'space-around' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('space-around')} onMouseEnter={() => handleMouseEnter('around')} onMouseLeave={handleMouseLeave}>
-                                <svg width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4 9.99902C3.78086 10.0011 3.37951 10.0046 3.1168 9.95307C2.77637 9.88632 2.41797 9.72014 2.18548 9.33252C2.07637 9.15051 2.03569 8.9574 2.01735 8.76238C2 8.57795 2 8.35323 2 8.09267L2 3.90732C2 3.64676 2 3.42205 2.01735 3.23762C2.03569 3.04258 2.07637 2.8495 2.18548 2.6675C2.41797 2.27986 2.77637 2.11368 3.1168 2.04691C3.37951 1.99543 3.78086 1.99887 4 2.001C4.21914 1.99887 4.62049 1.99543 4.8832 2.04691C5.22363 2.11368 5.58203 2.27986 5.81452 2.6675C5.92363 2.8495 5.96431 3.04258 5.98265 3.23762C6 3.42205 6 3.64676 6 3.90732L6 8.09267C6 8.35323 6 8.57796 5.98265 8.76238C5.96431 8.9574 5.92363 9.15051 5.81452 9.33252C5.58203 9.72014 5.22363 9.88632 4.8832 9.95307C4.62049 10.0046 4.21914 10.0011 4 9.99902Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0.00500488C0.22386 0.00500488 0 0.249216 0 0.550459L0 11.4596C0 11.7608 0.22386 12.005 0.5 12.005C0.77614 12.005 1 11.7608 1 11.4596V0.550459C1 0.249216 0.77614 0.00500488 0.5 0.00500488Z" fill="currentColor"/>
-                                    <path d="M10 9.99902C9.78086 10.0011 9.37951 10.0046 9.1168 9.95307C8.77637 9.88632 8.41797 9.72014 8.18548 9.33252C8.07637 9.15051 8.03569 8.9574 8.01735 8.76238C8 8.57795 8 8.35323 8 8.09267L8 3.90732C8 3.64676 8 3.42204 8.01735 3.23762C8.03569 3.04258 8.07637 2.8495 8.18548 2.6675C8.41797 2.27986 8.77637 2.11368 9.1168 2.04691C9.37951 1.99543 9.78086 1.99887 10 2.001C10.2191 1.99887 10.6205 1.99543 10.8832 2.04691C11.2236 2.11368 11.582 2.27986 11.8145 2.6675C11.9236 2.8495 11.9643 3.04258 11.9826 3.23762C12 3.42204 12 3.64676 12 3.90732V8.09267C12 8.35323 12 8.57796 11.9826 8.76238C11.9643 8.9574 11.9236 9.15051 11.8145 9.33252C11.582 9.72014 11.2236 9.88632 10.8832 9.95307C10.6205 10.0046 10.2191 10.0011 10 9.99902Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M13.5 0.00622559C13.2239 0.00622559 13 0.250436 13 0.55168V11.4608C13 11.762 13.2239 12.0062 13.5 12.0062C13.7761 12.0062 14 11.762 14 11.4608V0.55168C14 0.250436 13.7761 0.00622559 13.5 0.00622559Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Around'}
-                                open={activeTooltip === 'around'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${selectedJustify === 'space-evenly' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('space-evenly')} onMouseEnter={() => handleMouseEnter('evenly')} onMouseLeave={handleMouseLeave}>
-                                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 9.99902C4.78086 10.0011 4.37951 10.0046 4.1168 9.95307C3.77637 9.88632 3.41797 9.72014 3.18548 9.33252C3.07637 9.15051 3.03569 8.9574 3.01735 8.76238C3 8.57795 3 8.35323 3 8.09267L3 3.90732C3 3.64676 3 3.42205 3.01735 3.23762C3.03569 3.04258 3.07637 2.8495 3.18548 2.6675C3.41797 2.27986 3.77637 2.11368 4.1168 2.04691C4.37951 1.99543 4.78086 1.99887 5 2.001C5.21914 1.99887 5.62049 1.99543 5.8832 2.04691C6.22363 2.11368 6.58203 2.27986 6.81452 2.6675C6.92363 2.8495 6.96431 3.04258 6.98265 3.23762C7 3.42205 7 3.64676 7 3.90732L7 8.09267C7 8.35323 7 8.57796 6.98265 8.76238C6.96431 8.9574 6.92363 9.15051 6.81452 9.33252C6.58203 9.72014 6.22363 9.88632 5.8832 9.95307C5.62049 10.0046 5.21914 10.0011 5 9.99902Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0.00500488C0.22386 0.00500488 0 0.249216 0 0.550459L0 11.4596C0 11.7608 0.22386 12.005 0.5 12.005C0.77614 12.005 1 11.7608 1 11.4596V0.550459C1 0.249216 0.77614 0.00500488 0.5 0.00500488Z" fill="currentColor"/>
-                                    <path d="M11 9.99902C10.7809 10.0011 10.3795 10.0046 10.1168 9.95307C9.77637 9.88632 9.41797 9.72014 9.18548 9.33252C9.07637 9.15051 9.03569 8.9574 9.01735 8.76238C9 8.57795 9 8.35323 9 8.09267V3.90732C9 3.64676 9 3.42204 9.01735 3.23762C9.03569 3.04258 9.07637 2.8495 9.18548 2.6675C9.41797 2.27986 9.77637 2.11368 10.1168 2.04691C10.3795 1.99543 10.7809 1.99887 11 2.001C11.2191 1.99887 11.6205 1.99543 11.8832 2.04691C12.2236 2.11368 12.582 2.27986 12.8145 2.6675C12.9236 2.8495 12.9643 3.04258 12.9826 3.23762C13 3.42204 13 3.64676 13 3.90732V8.09267C13 8.35323 13 8.57796 12.9826 8.76238C12.9643 8.9574 12.9236 9.15051 12.8145 9.33252C12.582 9.72014 12.2236 9.88632 11.8832 9.95307C11.6205 10.0046 11.2191 10.0011 11 9.99902Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M15.5 0.00622559C15.2239 0.00622559 15 0.250436 15 0.55168V11.4608C15 11.762 15.2239 12.0062 15.5 12.0062C15.7761 12.0062 16 11.762 16 11.4608V0.55168C16 0.250436 15.7761 0.00622559 15.5 0.00622559Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Evenly'}
-                                open={activeTooltip === 'evenly'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                        </div>
-                    </div>
-                    <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
-                        <span className="tw-builder__settings-subtitle">Align
-                            <StylesDeleter value={selectedAlign} cssProperty="align-items" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
-                        </span>
-                        <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
-                            <div className="tw-builder__settings-slider"
-                                style={{ transform: `translateX(${getSliderPosition(selectedAlign, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
-                            >
-                            </div>
-                            <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')} onMouseEnter={() => handleMouseEnter('Astart')} onMouseLeave={handleMouseLeave}>
-                                <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M12 0.5C12 0.22386 11.7558 0 11.4545 0H0.545454C0.2442 0 0 0.22386 0 0.5C0 0.77614 0.2442 1 0.545454 1H11.4545C11.7558 1 12 0.77614 12 0.5Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Start'}
-                                open={activeTooltip === 'Astart'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${selectedAlign === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('center')} onMouseEnter={() => handleMouseEnter('Acenter')} onMouseLeave={handleMouseLeave}>
-                                <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2.00098 2.5C1.9989 2.22608 1.99541 1.72438 2.04693 1.396C2.11368 0.970462 2.27986 0.522462 2.66748 0.231846C2.84949 0.0954617 3.0426 0.0446155 3.23762 0.0216924C3.42205 1.14624e-07 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 1.14624e-07 8.76238 0.0216924C8.95742 0.0446155 9.1505 0.0954617 9.3325 0.231846C9.72014 0.522462 9.88632 0.970462 9.95309 1.396C10.0046 1.72438 10.0011 2.22608 9.999 2.5C10.0011 2.77392 10.0046 3.27562 9.95309 3.604C9.88632 4.02954 9.72014 4.47754 9.3325 4.76815C9.1505 4.90454 8.95742 4.95538 8.76238 4.97831C8.57795 5 8.35324 5 8.09268 5H3.90733C3.64677 5 3.42204 5 3.23762 4.97831C3.0426 4.95538 2.84949 4.90454 2.66748 4.76815C2.27986 4.47754 2.11368 4.02954 2.04693 3.604C1.99541 3.27562 1.9989 2.77392 2.00098 2.5Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M12 2.5C12 2.22386 11.7558 2 11.4545 2H0.545454C0.2442 2 0 2.22386 0 2.5C0 2.77614 0.2442 3 0.545454 3H11.4545C11.7558 3 12 2.77614 12 2.5Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'Center'}
-                                open={activeTooltip === 'Acenter'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedAlign === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-end')} onMouseEnter={() => handleMouseEnter('Aend')} onMouseLeave={handleMouseLeave}>
-                                <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2.00098 2C1.9989 1.78086 1.99541 1.37951 2.04693 1.1168C2.11368 0.776369 2.27986 0.417969 2.66748 0.185477C2.84949 0.0763693 3.0426 0.0356924 3.23762 0.0173539C3.42205 9.16995e-08 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 9.16995e-08 8.76238 0.0173539C8.95742 0.0356924 9.1505 0.0763693 9.3325 0.185477C9.72014 0.417969 9.88632 0.776369 9.95309 1.1168C10.0046 1.37951 10.0011 1.78086 9.999 2C10.0011 2.21914 10.0046 2.62049 9.95309 2.8832C9.88632 3.22363 9.72014 3.58203 9.3325 3.81452C9.1505 3.92363 8.95742 3.96431 8.76238 3.98265C8.57795 4 8.35324 4 8.09268 4H3.90733C3.64677 4 3.42204 4 3.23762 3.98265C3.0426 3.96431 2.84949 3.92363 2.66748 3.81452C2.27986 3.58203 2.11368 3.22363 2.04693 2.8832C1.99541 2.62049 1.9989 2.21914 2.00098 2Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M12 5.5C12 5.22386 11.7558 5 11.4545 5H0.545454C0.2442 5 0 5.22386 0 5.5C0 5.77614 0.2442 6 0.545454 6H11.4545C11.7558 6 12 5.77614 12 5.5Z" fill="currentColor"/>
-                                </svg>
-                                <Tooltip
-                                message={'End'}
-                                open={activeTooltip === 'Aend'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                            <button className={`tw-builder__settings-action ${selectedAlign === 'stretch' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('stretch')} onMouseEnter={() => handleMouseEnter('stretch')} onMouseLeave={handleMouseLeave}>
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M12 11.5C12 11.2239 11.7558 11 11.4545 11H0.545454C0.2442 11 -3.57628e-07 11.2239 -3.57628e-07 11.5C-3.57628e-07 11.7761 0.2442 12 0.545454 12H11.4545C11.7558 12 12 11.7761 12 11.5Z" fill="currentColor"/>
-                                    <path d="M10.0098 5.95261C10.013 6.3857 10.0187 7.1789 9.96855 7.69823C9.90363 8.37122 9.73938 9.07999 9.35301 9.54052C9.17159 9.75665 8.9787 9.83757 8.78377 9.87434C8.59944 9.90914 8.37472 9.90975 8.11416 9.91046L3.92883 9.92183C3.66827 9.92254 3.44355 9.92315 3.25903 9.88935C3.0639 9.85364 2.8706 9.77377 2.68802 9.55863C2.29913 9.10021 2.13103 8.39234 2.06243 7.71972C2.00953 7.20066 2.01082 6.40744 2.01177 5.97435C2.00846 5.54126 2.00287 4.74806 2.05294 4.22873C2.11788 3.55574 2.28214 2.84697 2.66853 2.38644C2.84994 2.17031 3.0428 2.08939 3.23774 2.05262C3.42207 2.01782 3.64679 2.01721 3.90735 2.0165L8.09268 2.00513C8.35324 2.00442 8.57797 2.00381 8.76248 2.03761C8.9576 2.07332 9.15093 2.15319 9.33352 2.36833C9.72239 2.82675 9.89049 3.53462 9.95907 4.20724C10.012 4.7263 10.0107 5.51952 10.0098 5.95261Z" fill="currentColor"/>
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M0.00157098 0.532595C0.00232137 0.808734 0.24714 1.03193 0.548382 1.03111L11.4574 1.00147C11.7587 1.00065 12.0023 0.776125 12.0015 0.499986C12.0008 0.223847 11.756 0.000651104 11.4547 0.00146974L0.545665 0.0311142C0.244422 0.0319328 0.000820595 0.256456 0.00157098 0.532595Z" fill="currentColor"/>
-                                </svg>
-
-                                <Tooltip
-                                message={'Stretch'}
-                                open={activeTooltip === 'stretch'}
-                                responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                width="auto"
-                                />
-                            </button>
-                        </div>
-                    </div>
+                    <ChooseType
+                        name="Direction"
+                        category="flex-direction"
+                        cssProperty="flex-direction"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        index={`${index}-direction`}
+                    />
+                    <ChooseType
+                        name="Justify"
+                        category="super-justify"
+                        cssProperty="justify-content"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        index={`${index}-justify`}
+                    />
+                    <ChooseType
+                        name="Align"
+                        category="super-align"
+                        cssProperty="align-items"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        index={`${index}-align`}
+                    />
                     <TextType 
                     name="Column Gap"
                     value=""
@@ -690,7 +365,7 @@ useEffect(() => {
         />
             <SelectType
             name='Auto flow'
-            value={selectedFlow}
+            /* value={selectedFlow} */
             placeholder='row'
             cssProperty='grid-auto-flow'
             selectedId={selectedId}
@@ -699,157 +374,22 @@ useEffect(() => {
             getGlobalCSSValue={getGlobalCSSValue}
             options={['row', 'column', 'dense',]}
             />
-            <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
-                <span className="tw-builder__settings-subtitle">Justify
-                    <StylesDeleter value={selectedJustify} cssProperty="justify-content" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
-                </span>
-                <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
-                            <div className="tw-builder__settings-slider"
-                                style={{ transform: `translateX(${getSliderPosition(selectedJustify, superJustifyOptions)})`, width: `${getSliderWidth(superJustifyOptions)}` } }
-                            >
-                            </div>
-                    <button className={`tw-builder__settings-action ${selectedJustify === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('flex-start')} onMouseEnter={() => handleMouseEnter('jstart')} onMouseLeave={handleMouseLeave}>
-                        <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0C0.22386 0 0 0.244211 0 0.545455V11.4545C0 11.7558 0.22386 12 0.5 12C0.77614 12 1 11.7558 1 11.4545V0.545455C1 0.244211 0.77614 0 0.5 0Z" fill="currentColor"/>
-                        </svg>
-                        <Tooltip
-                        message={'Start'}
-                        open={activeTooltip === 'jstart'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                    <button className={`tw-builder__settings-action ${selectedJustify === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('center')} onMouseEnter={() => handleMouseEnter('jcenter')} onMouseLeave={handleMouseLeave}>
-                        <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M3.5 0C3.22386 0 3 0.244211 3 0.545455V11.4545C3 11.7558 3.22386 12 3.5 12C3.77614 12 4 11.7558 4 11.4545V0.545455C4 0.244211 3.77614 0 3.5 0Z" fill="currentColor"/>
-                        </svg>
-                        <Tooltip
-                        message={'Center'}
-                        open={activeTooltip === 'jcenter'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                    <button className={`tw-builder__settings-action ${selectedJustify === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('flex-end')} onMouseEnter={() => handleMouseEnter('jend')} onMouseLeave={handleMouseLeave}>
-                        <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M8.5 0C8.22386 0 8 0.244211 8 0.545455V11.4545C8 11.7558 8.22386 12 8.5 12C8.77614 12 9 11.7558 9 11.4545V0.545455C9 0.244211 8.77614 0 8.5 0Z" fill="currentColor"/>
-                        </svg>
-                        <Tooltip
-                        message={'End'}
-                        open={activeTooltip === 'jend'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                    <button className={`tw-builder__settings-action ${selectedJustify === 'space-between' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('space-between')} onMouseEnter={() => handleMouseEnter('jbetween')} onMouseLeave={handleMouseLeave}>
-                        <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3.08581 10.0201C2.86671 10.0246 2.46541 10.0324 2.20217 9.98366C1.86104 9.92057 1.50087 9.75826 1.26422 9.37317C1.15316 9.19234 1.11041 8.99968 1.08998 8.80486C1.07064 8.62064 1.06822 8.39593 1.06542 8.13539L1.0204 3.95028C1.0176 3.68973 1.01518 3.46503 1.03055 3.28042C1.04679 3.0852 1.08539 2.8917 1.19253 2.70853C1.42084 2.31842 1.77743 2.14839 2.11712 2.07796C2.37926 2.02366 2.78063 2.02278 2.99978 2.02255C3.21888 2.01806 3.62018 2.01031 3.88342 2.05896C4.22455 2.12207 4.58472 2.28438 4.82137 2.6695C4.93243 2.85031 4.97518 3.04294 4.99561 3.23777C5.01495 3.422 5.01737 3.64671 5.02017 3.90725L5.06519 8.09236C5.06799 8.3529 5.07041 8.57762 5.05504 8.76221C5.0388 8.95743 5.0002 9.15096 4.89306 9.33413C4.66475 9.72423 4.30816 9.89425 3.96847 9.96466C3.70633 10.019 3.30496 10.0198 3.08581 10.0201Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M0.499971 0.00536387C0.223847 0.00833421 0.00262689 0.254939 0.00586725 0.556165L0.123212 11.4646C0.126453 11.7659 0.352927 12.0076 0.629051 12.0047C0.905175 12.0017 1.12639 11.7551 1.12315 11.4539L1.00581 0.545409C1.00257 0.244182 0.776095 0.00239353 0.499971 0.00536387Z" fill="currentColor"/>
-                            <path d="M9.00012 2.02154C9.21922 2.01721 9.62052 2.0096 9.88374 2.05842C10.2248 2.12166 10.5849 2.28414 10.8214 2.66935C10.9324 2.85023 10.975 3.04291 10.9954 3.23774C11.0146 3.42197 11.0169 3.64668 11.0196 3.90723L11.0627 8.09236C11.0653 8.3529 11.0677 8.57761 11.0522 8.7622C11.0359 8.95742 10.9972 9.1509 10.8899 9.33402C10.6615 9.72403 10.3048 9.89389 9.96505 9.96415C9.70289 10.0183 9.30152 10.019 9.08237 10.0191C8.86327 10.0235 8.46197 10.0311 8.19875 9.98232C7.85765 9.91905 7.49756 9.75657 7.26109 9.37134C7.15012 9.19047 7.10746 8.99782 7.08711 8.80299C7.06786 8.61874 7.06555 8.39404 7.06287 8.13349L7.01983 3.94836C7.01715 3.68782 7.01484 3.4631 7.03029 3.27852C7.04662 3.08331 7.08531 2.88979 7.19254 2.70668C7.42104 2.31668 7.77771 2.14683 8.11744 2.07658C8.3796 2.02236 8.78097 2.02172 9.00012 2.02154Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M11.6231 12.0059C11.8992 12.003 12.1205 11.7565 12.1174 11.4553L12.0052 0.546793C12.0021 0.245554 11.7758 0.00366949 11.4997 0.00650944C11.2235 0.0093494 11.0022 0.255839 11.0053 0.557077L11.1175 11.4656C11.1206 11.7668 11.3469 12.0087 11.6231 12.0059Z" fill="currentColor"/>
-                        </svg>
-
-                        <Tooltip
-                        message={'Between'}
-                        open={activeTooltip === 'jbetween'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                    <button className={`tw-builder__settings-action ${selectedJustify === 'space-around' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('space-around')} onMouseEnter={() => handleMouseEnter('jaround')} onMouseLeave={handleMouseLeave}>
-                        <svg width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 9.99902C3.78086 10.0011 3.37951 10.0046 3.1168 9.95307C2.77637 9.88632 2.41797 9.72014 2.18548 9.33252C2.07637 9.15051 2.03569 8.9574 2.01735 8.76238C2 8.57795 2 8.35323 2 8.09267L2 3.90732C2 3.64676 2 3.42205 2.01735 3.23762C2.03569 3.04258 2.07637 2.8495 2.18548 2.6675C2.41797 2.27986 2.77637 2.11368 3.1168 2.04691C3.37951 1.99543 3.78086 1.99887 4 2.001C4.21914 1.99887 4.62049 1.99543 4.8832 2.04691C5.22363 2.11368 5.58203 2.27986 5.81452 2.6675C5.92363 2.8495 5.96431 3.04258 5.98265 3.23762C6 3.42205 6 3.64676 6 3.90732L6 8.09267C6 8.35323 6 8.57796 5.98265 8.76238C5.96431 8.9574 5.92363 9.15051 5.81452 9.33252C5.58203 9.72014 5.22363 9.88632 4.8832 9.95307C4.62049 10.0046 4.21914 10.0011 4 9.99902Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0.00500488C0.22386 0.00500488 0 0.249216 0 0.550459L0 11.4596C0 11.7608 0.22386 12.005 0.5 12.005C0.77614 12.005 1 11.7608 1 11.4596V0.550459C1 0.249216 0.77614 0.00500488 0.5 0.00500488Z" fill="currentColor"/>
-                            <path d="M10 9.99902C9.78086 10.0011 9.37951 10.0046 9.1168 9.95307C8.77637 9.88632 8.41797 9.72014 8.18548 9.33252C8.07637 9.15051 8.03569 8.9574 8.01735 8.76238C8 8.57795 8 8.35323 8 8.09267L8 3.90732C8 3.64676 8 3.42204 8.01735 3.23762C8.03569 3.04258 8.07637 2.8495 8.18548 2.6675C8.41797 2.27986 8.77637 2.11368 9.1168 2.04691C9.37951 1.99543 9.78086 1.99887 10 2.001C10.2191 1.99887 10.6205 1.99543 10.8832 2.04691C11.2236 2.11368 11.582 2.27986 11.8145 2.6675C11.9236 2.8495 11.9643 3.04258 11.9826 3.23762C12 3.42204 12 3.64676 12 3.90732V8.09267C12 8.35323 12 8.57796 11.9826 8.76238C11.9643 8.9574 11.9236 9.15051 11.8145 9.33252C11.582 9.72014 11.2236 9.88632 10.8832 9.95307C10.6205 10.0046 10.2191 10.0011 10 9.99902Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M13.5 0.00622559C13.2239 0.00622559 13 0.250436 13 0.55168V11.4608C13 11.762 13.2239 12.0062 13.5 12.0062C13.7761 12.0062 14 11.762 14 11.4608V0.55168C14 0.250436 13.7761 0.00622559 13.5 0.00622559Z" fill="currentColor"/>
-                        </svg>
-                        <Tooltip
-                        message={'Around'}
-                        open={activeTooltip === 'jaround'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                    <button className={`tw-builder__settings-action ${selectedJustify === 'space-evenly' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleJustifyChange('space-evenly')} onMouseEnter={() => handleMouseEnter('jevenly')} onMouseLeave={handleMouseLeave}>
-                        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 9.99902C4.78086 10.0011 4.37951 10.0046 4.1168 9.95307C3.77637 9.88632 3.41797 9.72014 3.18548 9.33252C3.07637 9.15051 3.03569 8.9574 3.01735 8.76238C3 8.57795 3 8.35323 3 8.09267L3 3.90732C3 3.64676 3 3.42205 3.01735 3.23762C3.03569 3.04258 3.07637 2.8495 3.18548 2.6675C3.41797 2.27986 3.77637 2.11368 4.1168 2.04691C4.37951 1.99543 4.78086 1.99887 5 2.001C5.21914 1.99887 5.62049 1.99543 5.8832 2.04691C6.22363 2.11368 6.58203 2.27986 6.81452 2.6675C6.92363 2.8495 6.96431 3.04258 6.98265 3.23762C7 3.42205 7 3.64676 7 3.90732L7 8.09267C7 8.35323 7 8.57796 6.98265 8.76238C6.96431 8.9574 6.92363 9.15051 6.81452 9.33252C6.58203 9.72014 6.22363 9.88632 5.8832 9.95307C5.62049 10.0046 5.21914 10.0011 5 9.99902Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0.00500488C0.22386 0.00500488 0 0.249216 0 0.550459L0 11.4596C0 11.7608 0.22386 12.005 0.5 12.005C0.77614 12.005 1 11.7608 1 11.4596V0.550459C1 0.249216 0.77614 0.00500488 0.5 0.00500488Z" fill="currentColor"/>
-                            <path d="M11 9.99902C10.7809 10.0011 10.3795 10.0046 10.1168 9.95307C9.77637 9.88632 9.41797 9.72014 9.18548 9.33252C9.07637 9.15051 9.03569 8.9574 9.01735 8.76238C9 8.57795 9 8.35323 9 8.09267V3.90732C9 3.64676 9 3.42204 9.01735 3.23762C9.03569 3.04258 9.07637 2.8495 9.18548 2.6675C9.41797 2.27986 9.77637 2.11368 10.1168 2.04691C10.3795 1.99543 10.7809 1.99887 11 2.001C11.2191 1.99887 11.6205 1.99543 11.8832 2.04691C12.2236 2.11368 12.582 2.27986 12.8145 2.6675C12.9236 2.8495 12.9643 3.04258 12.9826 3.23762C13 3.42204 13 3.64676 13 3.90732V8.09267C13 8.35323 13 8.57796 12.9826 8.76238C12.9643 8.9574 12.9236 9.15051 12.8145 9.33252C12.582 9.72014 12.2236 9.88632 11.8832 9.95307C11.6205 10.0046 11.2191 10.0011 11 9.99902Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M15.5 0.00622559C15.2239 0.00622559 15 0.250436 15 0.55168V11.4608C15 11.762 15.2239 12.0062 15.5 12.0062C15.7761 12.0062 16 11.762 16 11.4608V0.55168C16 0.250436 15.7761 0.00622559 15.5 0.00622559Z" fill="currentColor"/>
-                        </svg>
-                        <Tooltip
-                        message={'Evenly'}
-                        open={activeTooltip === 'jevenly'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                </div>
-            </div>
-            <div className="tw-builder__settings-setting tw-builder__settings-setting--column">
-                <span className="tw-builder__settings-subtitle">Align
-                    <StylesDeleter value={selectedAlign} cssProperty="align-items" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
-                </span>
-                <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
-                        <div className="tw-builder__settings-slider"
-                                style={{ transform: `translateX(${getSliderPosition(selectedAlign, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
-                            >
-                            </div>
-                    <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedAlign === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-start')} onMouseEnter={() => handleMouseEnter('astart')} onMouseLeave={handleMouseLeave}>
-                        <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M12 0.5C12 0.22386 11.7558 0 11.4545 0H0.545454C0.2442 0 0 0.22386 0 0.5C0 0.77614 0.2442 1 0.545454 1H11.4545C11.7558 1 12 0.77614 12 0.5Z" fill="currentColor"/>
-                        </svg>
-                        <Tooltip
-                        message={'Start'}
-                        open={activeTooltip === 'astart'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                    <button className={`tw-builder__settings-action ${selectedAlign === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('center')} onMouseEnter={() => handleMouseEnter('acenter')} onMouseLeave={handleMouseLeave}>
-                        <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2.00098 2.5C1.9989 2.22608 1.99541 1.72438 2.04693 1.396C2.11368 0.970462 2.27986 0.522462 2.66748 0.231846C2.84949 0.0954617 3.0426 0.0446155 3.23762 0.0216924C3.42205 1.14624e-07 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 1.14624e-07 8.76238 0.0216924C8.95742 0.0446155 9.1505 0.0954617 9.3325 0.231846C9.72014 0.522462 9.88632 0.970462 9.95309 1.396C10.0046 1.72438 10.0011 2.22608 9.999 2.5C10.0011 2.77392 10.0046 3.27562 9.95309 3.604C9.88632 4.02954 9.72014 4.47754 9.3325 4.76815C9.1505 4.90454 8.95742 4.95538 8.76238 4.97831C8.57795 5 8.35324 5 8.09268 5H3.90733C3.64677 5 3.42204 5 3.23762 4.97831C3.0426 4.95538 2.84949 4.90454 2.66748 4.76815C2.27986 4.47754 2.11368 4.02954 2.04693 3.604C1.99541 3.27562 1.9989 2.77392 2.00098 2.5Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M12 2.5C12 2.22386 11.7558 2 11.4545 2H0.545454C0.2442 2 0 2.22386 0 2.5C0 2.77614 0.2442 3 0.545454 3H11.4545C11.7558 3 12 2.77614 12 2.5Z" fill="currentColor"/>
-                        </svg>
-                        <Tooltip
-                        message={'Center'}
-                        open={activeTooltip === 'acenter'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                    <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedAlign === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('flex-end')} onMouseEnter={() => handleMouseEnter('aend')} onMouseLeave={handleMouseLeave}>
-                        <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2.00098 2C1.9989 1.78086 1.99541 1.37951 2.04693 1.1168C2.11368 0.776369 2.27986 0.417969 2.66748 0.185477C2.84949 0.0763693 3.0426 0.0356924 3.23762 0.0173539C3.42205 9.16995e-08 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 9.16995e-08 8.76238 0.0173539C8.95742 0.0356924 9.1505 0.0763693 9.3325 0.185477C9.72014 0.417969 9.88632 0.776369 9.95309 1.1168C10.0046 1.37951 10.0011 1.78086 9.999 2C10.0011 2.21914 10.0046 2.62049 9.95309 2.8832C9.88632 3.22363 9.72014 3.58203 9.3325 3.81452C9.1505 3.92363 8.95742 3.96431 8.76238 3.98265C8.57795 4 8.35324 4 8.09268 4H3.90733C3.64677 4 3.42204 4 3.23762 3.98265C3.0426 3.96431 2.84949 3.92363 2.66748 3.81452C2.27986 3.58203 2.11368 3.22363 2.04693 2.8832C1.99541 2.62049 1.9989 2.21914 2.00098 2Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M12 5.5C12 5.22386 11.7558 5 11.4545 5H0.545454C0.2442 5 0 5.22386 0 5.5C0 5.77614 0.2442 6 0.545454 6H11.4545C11.7558 6 12 5.77614 12 5.5Z" fill="currentColor"/>
-                        </svg>
-                        <Tooltip
-                        message={'End'}
-                        open={activeTooltip === 'aend'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                    <button className={`tw-builder__settings-action ${selectedAlign === 'stretch' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleAlignChange('stretch')} onMouseEnter={() => handleMouseEnter('astretch')} onMouseLeave={handleMouseLeave}>
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd" clipRule="evenodd" d="M12 11.5C12 11.2239 11.7558 11 11.4545 11H0.545454C0.2442 11 -3.57628e-07 11.2239 -3.57628e-07 11.5C-3.57628e-07 11.7761 0.2442 12 0.545454 12H11.4545C11.7558 12 12 11.7761 12 11.5Z" fill="currentColor"/>
-                            <path d="M10.0098 5.95261C10.013 6.3857 10.0187 7.1789 9.96855 7.69823C9.90363 8.37122 9.73938 9.07999 9.35301 9.54052C9.17159 9.75665 8.9787 9.83757 8.78377 9.87434C8.59944 9.90914 8.37472 9.90975 8.11416 9.91046L3.92883 9.92183C3.66827 9.92254 3.44355 9.92315 3.25903 9.88935C3.0639 9.85364 2.8706 9.77377 2.68802 9.55863C2.29913 9.10021 2.13103 8.39234 2.06243 7.71972C2.00953 7.20066 2.01082 6.40744 2.01177 5.97435C2.00846 5.54126 2.00287 4.74806 2.05294 4.22873C2.11788 3.55574 2.28214 2.84697 2.66853 2.38644C2.84994 2.17031 3.0428 2.08939 3.23774 2.05262C3.42207 2.01782 3.64679 2.01721 3.90735 2.0165L8.09268 2.00513C8.35324 2.00442 8.57797 2.00381 8.76248 2.03761C8.9576 2.07332 9.15093 2.15319 9.33352 2.36833C9.72239 2.82675 9.89049 3.53462 9.95907 4.20724C10.012 4.7263 10.0107 5.51952 10.0098 5.95261Z" fill="currentColor"/>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M0.00157098 0.532595C0.00232137 0.808734 0.24714 1.03193 0.548382 1.03111L11.4574 1.00147C11.7587 1.00065 12.0023 0.776125 12.0015 0.499986C12.0008 0.223847 11.756 0.000651104 11.4547 0.00146974L0.545665 0.0311142C0.244422 0.0319328 0.000820595 0.256456 0.00157098 0.532595Z" fill="currentColor"/>
-                        </svg>
-
-                        <Tooltip
-                        message={'Stretch'}
-                        open={activeTooltip === 'astretch'}
-                        responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                        width="auto"
-                        />
-                    </button>
-                </div>
-            </div>
+            <ChooseType
+                name="Justify"
+                category="super-justify"
+                cssProperty="justify-content"
+                applyGlobalCSSChange={applyGlobalCSSChange}
+                getGlobalCSSValue={getGlobalCSSValue}
+                index={`${index}-justify`}
+            />
+            <ChooseType
+                name="Align"
+                category="super-align"
+                cssProperty="align-items"
+                applyGlobalCSSChange={applyGlobalCSSChange}
+                getGlobalCSSValue={getGlobalCSSValue}
+                index={`${index}-align`}
+            />
             <TextType 
             name="Order"
             value=""
@@ -871,6 +411,7 @@ useEffect(() => {
         </React.Fragment>
     )
 }
+
 const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
     //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
@@ -903,75 +444,51 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     }, [selectedElementData, getGlobalCSSValue, cssProperty]);
 
   
-        //handlers for each side. HandleChange alows to modify the value and Blurs set the style in the jsonTree and aplied it to the element
-        const handleTopChange = (e) => {
+        // Combine handlers for each side into two generic functions
+        const handleSideChange = (side) => (e) => {
             const newValue = e.target.value;
-            setTopValue(newValue);
-
-        };
-        const handleTopBlur = (e) => {
-            const inputValue = e.target.value;
-            if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(`${cssProperty}-top`, inputValue);
+            switch (side) {
+                case 'top': setTopValue(newValue); break;
+                case 'right': setRightValue(newValue); break;
+                case 'bottom': setBottomValue(newValue); break;
+                case 'left': setLeftValue(newValue); break;
+                default: break;
             }
         };
-    
-        const handleRightChange = (e) => {
-            const newValue = e.target.value;
-            setRightValue(newValue);
 
-        };
-        const handleRightBlur = (e) => {
+        const handleSideBlur = (side) => (e) => {
             const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(`${cssProperty}-right`, inputValue);
-            }
-        };
-    
-        const handleBottomChange = (e) => {
-            const newValue = e.target.value;
-            setBottomValue(newValue);
-
-        };
-        const handleBottomBlur = (e) => {
-            const inputValue = e.target.value;
-            if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(`${cssProperty}-bottom`, inputValue);
-            }
-        };
-    
-        const handleLeftChange = (e) => {
-            const newValue = e.target.value;
-            setLeftValue(newValue);
-
-        };
-        const handleLeftBlur = (e) => {
-            const inputValue = e.target.value;
-            if (cssProperty && applyGlobalCSSChange) {
-                applyGlobalCSSChange(`${cssProperty}-left`, inputValue);
+                applyGlobalCSSChange(`${cssProperty}-${side}`, inputValue);
             }
         };
         
 
     return (
-        <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+    <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
         <span className="tw-builder__settings-subtitle">{name}
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleLeftChange} onBlur={handleLeftBlur} onKeyDown={(e) => applyOnEnter(e, handleLeftBlur)}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleSideChange('left')} onBlur={handleSideBlur('left')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('left'))}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleTopChange} onBlur={handleTopBlur} onKeyDown={(e) => applyOnEnter(e, handleTopBlur)}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleBottomChange} onBlur={handleBottomBlur} onKeyDown={(e) => applyOnEnter(e, handleBottomBlur)}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleSideChange('top')} onBlur={handleSideBlur('top')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('top'))}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleSideChange('bottom')} onBlur={handleSideBlur('bottom')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('bottom'))}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleRightChange} onBlur={handleRightBlur} onKeyDown={(e) => applyOnEnter(e, handleRightBlur)}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleSideChange('right')} onBlur={handleSideBlur('right')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('right'))}/>
         </div>
     </div>
     )
 }
+
 const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
 
-    const colorInputRef = useRef(null);
+   
+
+    //Function to convert rgb to hex
+    const rgbToHex = (r, g, b) => {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    };
 
     //Function to get the color from jsonTree
     const getSavedValue = useCallback(() => {
@@ -1005,25 +522,24 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         return { color: ``, hex: ``, percentage: `` };
     }, [getGlobalCSSValue, cssProperty]);
     
-    //Function to convert rgb to hex
-    const rgbToHex = (r, g, b) => {
-        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    };
 
-    
-        // Initialize states with saved values
-        const initialValues = getSavedValue();
-        const [color, setColor] = useState(initialValues.color);
-        const [hex, setHex] = useState(initialValues.hex);
-        const [percentage, setPercentage] = useState(initialValues.percentage);
-    
-        // Effect to update the values when the element is selected
-        useEffect(() => {
-            const newValues = getSavedValue();
-            setColor(newValues.color);
-            setHex(newValues.hex);
-            setPercentage(newValues.percentage);
-        }, [selectedElementData,getSavedValue]); 
+    // Initialize states with saved values
+    const initialValues = getSavedValue();
+    const [color, setColor] = useState(initialValues.color);
+    const [hex, setHex] = useState(initialValues.hex);
+    const [percentage, setPercentage] = useState(initialValues.percentage);
+
+    const colorInputRef = useRef(null);
+    // Timeout ref for the color
+    const colorTimeoutRef = useRef(null);
+
+    // Effect to update the values when the element is selected
+    useEffect(() => {
+        const newValues = getSavedValue();
+        setColor(newValues.color);
+        setHex(newValues.hex);
+        setPercentage(newValues.percentage);
+    }, [selectedElementData,getSavedValue]); 
 
     //Function to convert hex to rgba with opacity
     const hexToRgba = (hex, opacity) => {
@@ -1053,16 +569,11 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
             applyGlobalCSSChange(cssProperty, finalValue);
         }
     };
-    // Timeout ref for the color
-    const colorTimeoutRef = useRef(null);
+
 
     //Function to change the color
     const handleColorChange = useCallback((e) => {
         const newColor = e.target.value;
-        
-        // Update visual state immediately for responsive UI
-        setColor(newColor);
-        setHex(newColor.replace('#', '').toUpperCase());
         
         // Clear previous timeout if exists
         if (colorTimeoutRef.current) {
@@ -1083,6 +594,13 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
             }
         };
     }, []);
+
+    //Function to open the color picker(native html input)
+    const handleColorClick = () => {
+        if(colorInputRef.current){
+            colorInputRef.current.click();
+        }
+    };
 
     //Function to change the color with the text input
     const handleHexChange = (e) => {
@@ -1125,31 +643,40 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
             applyCSSChange('', '');
         } 
     };
-    //Function to change the transparency with the percentage input
-    const handlePercentageChange = (e) => {
-        let value = e.target.value.replace('%', '');
-        if(value === '' && e.type === 'blur'){
-            value = 100;
-        } 
-        if(value < 0) value = 0;
-        if(value > 100) value = 100;
-        if(isNaN(value)) value = 0;
 
-        if(value !== 0 || e.type === 'blur') {
-            const finalValue = `${value}%`;
-            setPercentage(finalValue);
-            e.target.value = finalValue;
-            applyCSSChange(color, finalValue);
+//Function to change the transparency with the percentage input
+const handlePercentageChange = (e) => {
+    let raw = (e.target.value || '').replace('%', '').trim();
+
+    //allow to delete the field
+    if (raw === '') {
+        if (e.type === 'blur') {
+            setPercentage('0');
+            applyCSSChange(color, '0');
+        } else {
+            setPercentage('');
         }
-    };
-    //Function to open the color picker(native html input)
-    const handleColorClick = () => {
-        if(colorInputRef.current){
-            colorInputRef.current.click();
-        }
-    };
+        return;
+    }
+
+    // Normalize the number between 0 and 100
+    let num = Number(raw);
+    if (Number.isNaN(num)) num = 0;
+    if (num < 0) num = 0;
+    if (num > 100) num = 100;
+
+    const finalValue = `${num}%`;
+    setPercentage(finalValue);
+    e.target.value = finalValue;
+
+    // Apply when typing (except 0) or always in blur
+    if (e.type === 'blur' || num !== 0) {
+        applyCSSChange(color, finalValue);
+    }
+};
+
     //Function to get the final color. This is used to mix the color with the transparency
-    const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage || '100%').replace('%', ''))) : 'transparent';
+    const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage).replace('%', ''))) : 'transparent';
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -1173,11 +700,16 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
     </div>
     )
 }
+
 const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange}) => {
+    
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState('');
+
+    //Refs to the image input and the image url input
     const imageRef = useRef(null);
     const imageUrlRef = useRef(null);
+
     const [errors, setErrors] = useState({});
     const [isUploading, setIsUploading] = useState(false);
 
@@ -1323,17 +855,46 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
         </>
     )
 }
+
 const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
 
-    const [selectedChoose, setSelectedChoose] = useState(getGlobalCSSValue?.(cssProperty) || '');
-    const [isReverse, setIsReverse] = useState(false);
+    const [selectedChoose, setSelectedChoose] = useState(() => {
+        if (category === 'flex-direction' && getGlobalCSSValue && cssProperty) {
+            const savedValue = getGlobalCSSValue(cssProperty) || '';
+            // Strip -reverse suffix to get base direction
+            return savedValue.replace('-reverse', '');
+        }
+        return getGlobalCSSValue?.(cssProperty) || '';
+    });
+    
+    const [isReverse, setIsReverse] = useState(() => {
+        if (category === 'flex-direction' && getGlobalCSSValue && cssProperty) {
+            const savedValue = getGlobalCSSValue(cssProperty) || '';
+            return savedValue.includes('-reverse');
+        }
+        return false;
+    });
+    
     const [activeTooltip, setActiveTooltip] = useState(null);
+ 
 
     // Update when selected element changes
     useEffect(() => {
         if (getGlobalCSSValue && cssProperty) {
-            const savedValue = getGlobalCSSValue(cssProperty);
-            setSelectedChoose(savedValue || '');
+            const savedValue = getGlobalCSSValue(cssProperty) || '';
+            
+            if (category === 'flex-direction') {
+                // Parse reverse state and base direction
+                const isCurrentlyReverse = savedValue.includes('-reverse');
+                const baseDirection = isCurrentlyReverse 
+                    ? savedValue.replace('-reverse', '') 
+                    : savedValue;
+                
+                setIsReverse(isCurrentlyReverse);
+                setSelectedChoose(baseDirection);
+            } else {
+                setSelectedChoose(savedValue);
+            }
         }
     }, [getGlobalCSSValue, cssProperty, category]);
 
@@ -1393,10 +954,12 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 
     // Define options for each category
     const directionOptions = ['column', 'row'];
-    const flexDirectionOptions = ['column', 'row'];
+    const flexDirectionOptions = ['column', 'row', ''];
     const justifyOptions = ['flex-start', 'center', 'flex-end'];
     const alignOptions = ['flex-start', 'center', 'flex-end'];
     const textAlignOptions = ['left', 'center', 'right'];
+    const superJustifyOptions = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'];
+    const superAlignOptions = ['flex-start', 'center', 'flex-end', 'stretch'];
 
 
     switch (category) {
@@ -1596,7 +1159,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                 </span>
                 <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
                     <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, alignOptions)})`, width: `${getSliderWidth(alignOptions)}` } }
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, superJustifyOptions)})`, width: `${getSliderWidth(superJustifyOptions)}` } }
                         >
                         </div>
                     <button className={`tw-builder__settings-action ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
@@ -1746,7 +1309,6 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                         </div>
                 </div>
             )
-
         case 'text-align':
             return (
                 <div className="tw-builder__settings-setting" key={index}>
@@ -1880,6 +1442,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
     }
 }
+
 const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value}) => {
     //Initial state with jsonTree
     const [textareaValue, setTextareaValue] = useState(() => {
@@ -1955,105 +1518,27 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
         </div>
     )
 }
+
 const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange}) =>{
     
+    // ========================================
+    // General states (for all types)
+    // ========================================
+    const [selected, setSelected] = useState(''); // Se inicializa después
+    const [open, setOpen] = useState(false);
+    const containerRef = useRef(null);
+    const [searchFilter, setSearchFilter] = useState('');
+    
+    // ========================================
+    // Specific states and constants for font/weight
+    // ========================================
     const [fontOptions, setFontOptions] = useState([]);
     const [fontVariants, setFontVariants] = useState([]);
     const [weightOptions, setWeightOptions] = useState([]);
-    const systemFontOptions = ['Arial', 'Courier New', 'Georgia', 'Helvetica', 'Verdana', 'Tahoma', 'Times','Times New Roman', 'Sans-serif'];
-    const [searchFilter, setSearchFilter] = useState('');
     const [italicWeightOptions, setItalicWeightOptions] = useState([]);
-
-    //Fetch the font options(families and variants) from the API
-    useEffect(() => {
-        if (name !== 'Font' && name !== 'Weight') return;
-        fetch('/api/fonts')
-            .then(r => r.json())
-            .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
-            .catch(() => setFontOptions([]));
-    }, [name]);
-
-    //Extract the first family from the css font family
-    const extractPrimaryFamily = (cssFontFamily) => {
-        if (!cssFontFamily) return '';
-        const first = cssFontFamily.split(',')[0].trim();
-        return first.replace(/^["']|["']$/g, '');
-    };
-
-    const ensureFontLoaded = (family) => {
-        if (!family) return;
-        //Create the id for the link taking off the spaces and replacing them with +
-        const famParam = family.trim().replace(/\s+/g, '+');
-        const id = `tw-gf-${famParam}`;
     
-        //Get the head of the iframe
-        const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
-        //Check if the preconnect link exists
-        if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
-            //Create the preconnect link for the Google Fonts API. Reduce latency
-            const pc1 = document.createElement('link');
-            pc1.rel = 'preconnect';
-            pc1.href = 'https://fonts.googleapis.com';
-            pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
-            head.appendChild(pc1);
+    const systemFontOptions = ['Arial', 'Courier New', 'Georgia', 'Helvetica', 'Verdana', 'Tahoma', 'Times','Times New Roman', 'Sans-serif'];
     
-            //Create the preconnect link for the Google Fonts static API. Reduce latency
-            const pc2 = document.createElement('link');
-            pc2.rel = 'preconnect';
-            pc2.href = 'https://fonts.gstatic.com';
-            pc2.crossOrigin = '';
-            pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
-            head.appendChild(pc2);
-        }
-    
-        // Build the href with all the variants
-        const entry = fontOptions.find(f => f.family === family);
-        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
-    
-        if (entry && Array.isArray(entry.variants)) {
-            //Create the sets for the normal and italic weights
-            const normal = new Set();
-            const italic = new Set();
-    
-            //map the variants to the normal and italic sets
-            entry.variants.forEach(v => {
-                if (v === 'regular') { normal.add(400); return; }
-                if (v === 'italic')  { italic.add(400); return; }
-                const m = v.match(/^(\d{3})(italic)?$/);
-                if (m) {
-                    const n = parseInt(m[1], 10);
-                    if (m[2]) italic.add(n); else normal.add(n);
-                }
-            });
-            //Sort the weights
-            const sortNums = arr => Array.from(arr).sort((a,b) => a - b).join(';');
-    
-            //Build the href with the normal or italic weights
-            if (italic.size) {
-                const parts = [];
-                const nList = sortNums(normal);
-                const iList = sortNums(italic);
-                if (nList) parts.push(`0,${nList}`);
-                if (iList) parts.push(`1,${iList}`);
-                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
-            } else if (normal.size) {
-                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
-            }
-        }
-        //Check if the link exists and append it to the head
-        let link = head.querySelector(`link#${id}`);
-        if (!link) {
-            //If the link doesn't exist, create it
-            link = document.createElement('link');
-            link.id = id;
-            link.rel = 'stylesheet';
-            link.href = href;
-            //Append the link to the head
-            head.appendChild(link);
-        }
-    };
-
-    //Object to map the font weight to the css value
     const fontWeightMap = {
         'Thin': '100',
         'Extra Light': '200', 
@@ -2065,105 +1550,210 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         'Extra Bold': '800',
         'Black': '900'
     };
-    //Object to map the css value to the font weight
+    
     const fontWeightMapReverse = () => 
         Object.fromEntries(
             Object.entries(fontWeightMap).map(([key, value]) => [value, key])
-        )
-
-        const weightNameOrder = ['Thin','Extra Light','Light','Normal','Medium','Semi Bold','Bold','Extra Bold','Black'];
-        const reverseMap = fontWeightMapReverse();
+        );
     
-        const computeWeightOptionsForFamily = (family) => {
-            if (!family) {
-                // fallback complete (system fonts)
-                return {
-                    weights: weightNameOrder,
-                    italics: weightNameOrder.map(w => `${w} Italic`)
-                };
-            }
-            //Find the family in the font options
-            const entry = fontOptions.find(f => f.family === family);
-            //If the family is not found or the variants are not found, return the default weights and italics
-            if (!entry || !entry.variants?.length) {
-                return {
-                    weights: weightNameOrder,
-                    italics: weightNameOrder.map(w => `${w} Italic`)
-                };
-            }
-            //Create the sets for the normal and italic weights
-            const weightsSet = new Set();
-            const italicsSet = new Set();
+    const weightNameOrder = ['Thin','Extra Light','Light','Normal','Medium','Semi Bold','Bold','Extra Bold','Black'];
+    const reverseMap = fontWeightMapReverse();
+    
+    // ========================================
+    // Specific functions for font/weight
+    // ========================================
+    
+    
+    // Extract the primary family from the css font family
+    const extractPrimaryFamily = (cssFontFamily) => {
+        if (!cssFontFamily) return '';
+        const first = cssFontFamily.split(',')[0].trim();
+        return first.replace(/^["']|["']$/g, '');
+    };
+    
+
+    
+    // Function to load Google Fonts in the iframe
+    const ensureFontLoaded = (family) => {
+        if (!family) return;
+        const famParam = family.trim().replace(/\s+/g, '+');
+        const id = `tw-gf-${famParam}`;
+    
+        const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
+        
+        if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
+            const pc1 = document.createElement('link');
+            pc1.rel = 'preconnect';
+            pc1.href = 'https://fonts.googleapis.com';
+            pc1.setAttribute('data-tw-preconnect', 'gfonts-apis');
+            head.appendChild(pc1);
+    
+            const pc2 = document.createElement('link');
+            pc2.rel = 'preconnect';
+            pc2.href = 'https://fonts.gstatic.com';
+            pc2.crossOrigin = '';
+            pc2.setAttribute('data-tw-preconnect', 'gfonts-apis');
+            head.appendChild(pc2);
+        }
+    
+        const entry = fontOptions.find(f => f.family === family);
+        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+    
+        if (entry && Array.isArray(entry.variants)) {
+            const normal = new Set();
+            const italic = new Set();
     
             entry.variants.forEach(v => {
-                //If the variant is regular, add the Normal weight
-                if (v === 'regular') {
-                    weightsSet.add('Normal');
-                    return;
-                }
-                //If the variant is italic, add the Normal Italic weight
-                if (v === 'italic') {
-                    italicsSet.add('Normal Italic');
-                    return;
-                }
-                //If the variant is a number, add the weight
+                if (v === 'regular') { normal.add(400); return; }
+                if (v === 'italic')  { italic.add(400); return; }
                 const m = v.match(/^(\d{3})(italic)?$/);
                 if (m) {
-                    const num = m[1];
-                    const label = reverseMap[num] || num;
-                    //If the variant is italic, add the Italic weight
-                    if (m[2]) italicsSet.add(`${label} Italic`);
-                    else weightsSet.add(label);
+                    const n = parseInt(m[1], 10);
+                    if (m[2]) italic.add(n); else normal.add(n);
                 }
             });
+            
+            const sortNums = arr => Array.from(arr).sort((a,b) => a - b).join(';');
     
-            const sortByOrder = (a, b) => weightNameOrder.indexOf(a) - weightNameOrder.indexOf(b);
-            const weights = Array.from(weightsSet).sort(sortByOrder);
-            const italics = Array.from(italicsSet).sort((a, b) =>
-                sortByOrder(a.replace(' Italic',''), b.replace(' Italic',''))
-            );
-    
-           //return the weights and italics arrays
-            return {
-                weights: weights.length ? weights : weightNameOrder,
-                italics: italics
-            };
-        };
-    
-        useEffect(() => {
-            if (name !== 'Weight') return; // Only run for Weight 
-            const cssFamily = getGlobalCSSValue?.('font-family'); // Read the current global font-family from CSS
-            const currentFamily = extractPrimaryFamily(cssFamily); // Extract the primary family 
-            const { weights, italics } = computeWeightOptionsForFamily(currentFamily); // Compute available options from Google Fonts variants
-            setWeightOptions(weights); // Set normal weight options for the dropdown
-            setItalicWeightOptions(italics); // Set italic weight options for the dropdown
-        }, [name, getGlobalCSSValue, selectedId, fontOptions]); 
-
-    //State to store the selected value
-    const [selected, setSelected] = useState(() => {
-        if (JSONProperty && getGlobalJSONValue) {
-            return getGlobalJSONValue(JSONProperty) || value || '';
+            if (italic.size) {
+                const parts = [];
+                const nList = sortNums(normal);
+                const iList = sortNums(italic);
+                if (nList) parts.push(`0,${nList}`);
+                if (iList) parts.push(`1,${iList}`);
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
+            } else if (normal.size) {
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
+            }
         }
+        
+        let link = head.querySelector(`link#${id}`);
+        if (!link) {
+            link = document.createElement('link');
+            link.id = id;
+            link.rel = 'stylesheet';
+            link.href = href;
+            head.appendChild(link);
+        }
+    };
+    
+    // Function to calculate the available weight options according to the family
+    const computeWeightOptionsForFamily = (family) => {
+        if (!family) {
+            return {
+                weights: weightNameOrder,
+                italics: weightNameOrder.map(w => `${w} Italic`)
+            };
+        }
+        
+        const entry = fontOptions.find(f => f.family === family);
+        if (!entry || !entry.variants?.length) {
+            return {
+                weights: weightNameOrder,
+                italics: weightNameOrder.map(w => `${w} Italic`)
+            };
+        }
+        
+        const weightsSet = new Set();
+        const italicsSet = new Set();
+
+        entry.variants.forEach(v => {
+            if (v === 'regular') {
+                weightsSet.add('Normal');
+                return;
+            }
+            if (v === 'italic') {
+                italicsSet.add('Normal Italic');
+                return;
+            }
+            const m = v.match(/^(\d{3})(italic)?$/);
+            if (m) {
+                const num = m[1];
+                const label = reverseMap[num] || num;
+                if (m[2]) italicsSet.add(`${label} Italic`);
+                else weightsSet.add(label);
+            }
+        });
+
+        const sortByOrder = (a, b) => weightNameOrder.indexOf(a) - weightNameOrder.indexOf(b);
+        const weights = Array.from(weightsSet).sort(sortByOrder);
+        const italics = Array.from(italicsSet).sort((a, b) =>
+            sortByOrder(a.replace(' Italic',''), b.replace(' Italic',''))
+        );
+
+        return {
+            weights: weights.length ? weights : weightNameOrder,
+            italics: italics
+        };
+    };
+    
+    // ========================================
+    // Initialization of the selected state
+    // ========================================
+    
+    // Initialize the state after defining the auxiliary functions
+    useEffect(() => {
+        if (JSONProperty && getGlobalJSONValue) {
+            setSelected(getGlobalJSONValue(JSONProperty) || value || '');
+            return;
+        }
+        
         if (name === 'Weight' && getGlobalCSSValue && cssProperty) {
             const cssValue = getGlobalCSSValue(cssProperty);
             const fontStyle = getGlobalCSSValue('font-style');
-            if (fontStyle === 'italic') {
-                const weightName = fontWeightMapReverse()[cssValue];
-                const italicOption = `${weightName} Italic`;
-                if (options2 && options2.includes(italicOption)) return italicOption;
+            const weightName = fontWeightMapReverse()[cssValue] || cssValue || value || '';
+            
+            if (fontStyle === 'italic' && weightName) {
+                setSelected(`${weightName} Italic`);
+            } else {
+                setSelected(weightName);
             }
-            return fontWeightMapReverse()[cssValue] || cssValue || value || '';
+            return;
         }
+        
         const cssVal = getGlobalCSSValue?.(cssProperty);
-        return name === 'Font'
+        const initialValue = name === 'Font'
             ? (extractPrimaryFamily(cssVal) || value || '')
             : (cssVal || value || '');
-    });
-
-    const [open, setOpen] = useState(false);
-    const containerRef = useRef(null);
+        setSelected(initialValue);
+    }, []); // Only on mount
     
-    //Close the select when clicking outside
+    // ========================================
+    // Effects - specific for font/weight
+    // ========================================
+    
+    // Fetch font options from the API (only for Font and Weight)
+    useEffect(() => {
+        if (name !== 'Font' && name !== 'Weight') return;
+        fetch('/api/fonts')
+            .then(r => r.json())
+            .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
+            .catch(() => setFontOptions([]));
+    }, [name]);
+    
+    // Update weight options when the selected family changes (only for Weight)
+    useEffect(() => {
+        if (name !== 'Weight') return;
+        const cssFamily = getGlobalCSSValue?.('font-family');
+        const currentFamily = extractPrimaryFamily(cssFamily);
+        const { weights, italics } = computeWeightOptionsForFamily(currentFamily);
+        setWeightOptions(weights);
+        setItalicWeightOptions(italics);
+    }, [name, fontOptions, selectedId, getGlobalCSSValue]);
+    
+    // Reinject the current font with all weights when fontOptions arrives
+    useEffect(() => {
+        if (name !== 'Font' && name !== 'Weight') return;
+        const cssVal = getGlobalCSSValue?.(cssProperty || 'font-family');
+        const fam = extractPrimaryFamily(cssVal) || (name === 'Font' ? selected : '');
+        if (fam) ensureFontLoaded(fam);
+    }, [fontOptions, name, selected]);
+    
+    // ========================================
+    // Effects - general
+    // ========================================
+    
+    // Close the select when clicking outside
     useEffect(() => {
         if (!open) return;
         const handleClickOutside = (e) => {
@@ -2174,13 +1764,12 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [open]);
-
-    // Update when selected element changes
-    // Update when selected element or layer values change
+    
+    // Update when the selected element changes
     useEffect(() => {
         if (!selectedId) return;
     
-        // If the control uses JSON, respect that flow
+        // If using JSON, respect that flow
         if (JSONProperty && getGlobalJSONValue) {
             const next = getGlobalJSONValue(JSONProperty) ?? '';
             if (next !== selected) setSelected(next);
@@ -2188,12 +1777,12 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         }
         
         if (getGlobalCSSValue && cssProperty) {
-            //If the name is Weight, apply the font weight and the font style
+            // Special case: Weight
             if (name === 'Weight') {
                 const cssValue = getGlobalCSSValue(cssProperty);
                 const fontStyle = getGlobalCSSValue('font-style');
                 let nextLabel = fontWeightMapReverse()[cssValue] || cssValue || '';
-                //If the font style is italic, apply the italic weight
+                
                 if (fontStyle === 'italic' && nextLabel) {
                     const italicOption = `${nextLabel} Italic`;
                     if (options2 && options2.includes(italicOption)) {
@@ -2201,113 +1790,108 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     }
                 }
                 if ((nextLabel || '') !== selected) setSelected(nextLabel || '');
-            } else {
-                
+            } 
+            // Special case: Font
+            else if (name === 'Font') {
                 const cssValue = getGlobalCSSValue(cssProperty);
-                const next = name === 'Font' ? extractPrimaryFamily(cssValue) : (cssValue ?? '');
-                if (name === 'Font' && next) ensureFontLoaded(next); // load the saved font
+                const next = extractPrimaryFamily(cssValue) || '';
+                if (next) ensureFontLoaded(next);
+                if (next !== selected) setSelected(next);
+            }
+            // General case
+            else {
+                const cssValue = getGlobalCSSValue(cssProperty);
+                const next = cssValue ?? '';
                 if (next !== selected) setSelected(next);
             }
         }
-    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue, options2]);
+    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue]);
     
-    useEffect(() => {
-        //Reinject the current family with all the weights when fontOptions arrive
-        const cssVal = getGlobalCSSValue?.(cssProperty || 'font-family');
-        const fam = extractPrimaryFamily(cssVal) || (name === 'Font' ? selected : '');
-        if (fam) ensureFontLoaded(fam);
-    }, [fontOptions]);
+    // ========================================
+    // Handler
+    // ========================================
     
-    // Handle select change with global CSS or JSON application
-    const handleSelectChange = (e) => {
-        const newValue = e;
+    // Handle changes in the select
+    const handleSelectChange = (newValue) => {
         setSelected(newValue);
-
+        
+        // Special case: Font
         if (name === 'Font') {
+            const prev = extractPrimaryFamily(getGlobalCSSValue?.('font-family')) || '';
             ensureFontLoaded(newValue);
+        
             if (applyGlobalCSSChange) {
+                const stack = prev && prev !== newValue
+                    ? `"${newValue}","${prev}",system-ui,sans-serif`
+                    : `"${newValue}",system-ui,sans-serif`;
+        
                 applyGlobalCSSChange({
-                    [cssProperty || 'font-family']: `"${newValue}"`,
-                    'font-weight': '' // reset when changing family
+                    [cssProperty || 'font-family']: stack,
+                    'font-weight': ''
                 });
             }
             onChange && onChange(newValue);
             return;
         }
-        //If the name is Weight, apply the font weight and the font style
-        if(name === 'Weight') {
-            let fontWeight;
-            if (newValue.includes('Italic')) {
-                fontWeight = fontWeightMap[newValue.replace(' Italic', '')];
-            } else {
-                fontWeight = fontWeightMap[newValue];
-            }
-            if(applyGlobalCSSChange) {         
-               if (newValue.includes('Italic')) {
+        
+        // Special case: Weight
+        if (name === 'Weight') {
+            const isItalic = newValue.includes('Italic');
+            const weightName = isItalic ? newValue.replace(' Italic', '') : newValue;
+            const fontWeight = fontWeightMap[weightName];
+            
+            if (applyGlobalCSSChange) {
                 applyGlobalCSSChange({
                     [cssProperty]: fontWeight,
-                    "font-style": "italic"
-                  });
-                    
-                } else {
-                    applyGlobalCSSChange({
-                        [cssProperty]: fontWeight,
-                        "font-style": "normal"
-                      });
-                }
+                    "font-style": isItalic ? "italic" : "normal"
+                });
+                
                 const fam = extractPrimaryFamily(getGlobalCSSValue?.('font-family'));
                 if (fam) ensureFontLoaded(fam);
-                return;
             }
             return;
         }
         
-        //This is for normal selects
-        // Apply to global JSON system if JSONProperty is provided
+        // General case: other selects
         if (JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
-        }
-        // Apply to global CSS system if cssProperty is provided
-        else if (cssProperty && applyGlobalCSSChange) {
+        } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
         }
-        //If onChange is provided, call it
-        if(onChange) {
+        
+        if (onChange) {
             onChange(newValue);
         }
     };
-
-    // Combine options for Font and Weight, with system fonts and Google fonts separated by '---'
+    
+    // ========================================
+    // COMPUTED VALUES
+    // ========================================
+    
+    // Combine options for Font and Weight
     const allOptions = (() => {
         if (name === 'Font') {
-            // Show system fonts first, then separator, then Google fonts
             const googleFonts = fontOptions?.length ? fontOptions : [];
             if (systemFontOptions?.length && googleFonts.length) {
                 return [...systemFontOptions, '---', ...googleFonts];
             }
-            if (systemFontOptions?.length) {
-                return systemFontOptions;
-            }
-            if (googleFonts.length) {
-                return googleFonts;
-            }
-            return options || [];
+            return systemFontOptions?.length ? systemFontOptions : (googleFonts.length ? googleFonts : options || []);
         }
-        //Show the weights and if there are italic weights, show them separated by '---'
+        
         if (name === 'Weight') {
             const hasDynamic = (weightOptions?.length || italicWeightOptions?.length);
             if (hasDynamic) {
-              return italicWeightOptions?.length
-                ? [...(weightOptions || []), '---', ...italicWeightOptions]
-                : (weightOptions || []);
+                return italicWeightOptions?.length
+                    ? [...(weightOptions || []), '---', ...italicWeightOptions]
+                    : (weightOptions || []);
             }
-            // If there are no dynamic (for example, system fonts or not found in fontOptions)
             return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
-          }
-        return options || [];
+        }
+        
+        return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
     })();
-
-    // Filter options based on search
+    
+    // Filter options based on search (only for Font)
     const filteredOptions = (() => {
         if (name !== 'Font' || !searchFilter) {
             return allOptions;
@@ -2315,11 +1899,15 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         
         const filterLower = searchFilter.toLowerCase();
         return allOptions.filter(opt => {
-            if (opt === '---') return true; // Always show separator
+            if (opt === '---') return true;
             const displayValue = typeof opt === 'object' ? opt.family : opt;
             return displayValue.toLowerCase().includes(filterLower);
         });
     })();
+    
+    // ========================================
+    // RENDER
+    // ========================================
 
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -2334,31 +1922,30 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     applyGlobalJSONChange={applyGlobalJSONChange}
                     cssDeleteBatch={name === 'Weight' ? { [cssProperty]: '', 'font-style': '' } : undefined}
                     onDelete={() => {
-                        setSelected(''); // Leave empty to show placeholder
-                        if (onChange) {
-                            onChange(''); // Notificar al SuperSelectType
-                        }
+                        setSelected('');
+                        if (onChange) onChange('');
                     }}
                 />
-            
             </span>
+            
             <div className="tw-builder__settings-select-container" ref={containerRef}>
-            {/* Main button */}
-            <button
-                onClick={() => setOpen(!open)}
-                className="tw-builder__settings-select"
-            >
-                {selected ? 
-                <span className="tw-builder__settings-select-value">
-                {selected}
-                </span>
-                :
-                <span className="tw-builder__settings-select-placeholder">
-                {placeholder}
-                </span>
-                }
-            </button>
-            <span className="tw-builder__settings-arrow">
+                {/* Main button */}
+                <button
+                    onClick={() => setOpen(!open)}
+                    className="tw-builder__settings-select"
+                >
+                    {selected ? 
+                        <span className="tw-builder__settings-select-value">
+                            {selected}
+                        </span>
+                        :
+                        <span className="tw-builder__settings-select-placeholder">
+                            {placeholder}
+                        </span>
+                    }
+                </button>
+                
+                <span className="tw-builder__settings-arrow">
                     <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
                         <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
@@ -2418,14 +2005,12 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             </AnimatePresence>
             </div>
         </div>
-
-      );
-
+    );
 }
 
 const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+
     const [open, setOpen] = useState(false);
-    const [inset, setInset] = useState(false);
     const instanceId = useRef(Symbol('pen'));
     const [activeTooltip, setActiveTooltip] = useState(null);
     const containerRef = useRef(null);
@@ -2639,7 +2224,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         }
     };
     
-    const handleBorderWidthBlur = (side) => {
+    const handleBorderWidthBlur = () => {
         // If width linking is active, apply the linked value to all border sides
         if (isWidthLinked) {
             if (applyGlobalCSSChange) {
@@ -2967,13 +2552,14 @@ const parseRadius = useCallback((radiusStr) => {
         </div>
     )
 }
+
 const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
 
     const [open, setOpen] = useState(false);
-    const [inset, setInset] = useState(false);
     const instanceId = useRef(Symbol('pen'));    
     const containerRef = useRef(null);
-    
+
+    const [inset, setInset] = useState(false);
     //Local state to keep the values that the user writes
     const [localValues, setLocalValues] = useState({
         x: '',
@@ -3098,56 +2684,6 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     //Function apply the box-shadow string to the CSS and JSON.
 const wrappedApplyCSS = useCallback((prop, val) => {
-    // If the first parameter is an object (batch), process it
-    if (typeof prop === 'object' && prop !== null && val === undefined) {
-        const batch = prop;
-        let nextLocal = { ...localValues };
-        let hasBoxShadowChange = false;
-        
-        // Process each property of the batch
-        Object.entries(batch).forEach(([key, value]) => {
-            switch (key) {
-                case 'box-shadow-x':
-                    nextLocal.x = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-y':
-                    nextLocal.y = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-blur':
-                    nextLocal.blur = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-spread':
-                    nextLocal.spread = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-color':
-                    nextLocal.color = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow':
-                    // If box-shadow is directly coming, apply it without more
-                    if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': value });
-                    return;
-                default:
-                    // For other properties, pass them to the original applyGlobalCSSChange
-                    if (applyGlobalCSSChange) applyGlobalCSSChange({ [key]: value });
-                    break;
-            }
-        });
-        
-        // If there were changes in box-shadow, update
-        if (hasBoxShadowChange) {
-            setLocalValues(nextLocal);
-            const finalStr = composeBoxShadow({ ...nextLocal, inset });
-            if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': finalStr });
-        }
-        return;
-    }
-    
-   
     let nextLocal = { ...localValues };
     
     //Switch the property to apply the value to the correct part.
@@ -3193,22 +2729,22 @@ const wrappedApplyCSS = useCallback((prop, val) => {
         applyGlobalCSSChange?.('box-shadow', finalStr);
     }, [localValues, composeBoxShadow, applyGlobalCSSChange]);
 
-        //Function to open and close the border/shadow controls.
-        const toggleOpen = () => {
-            const next = !open;
-            setOpen(next);
+    //Function to open and close the border/shadow controls.
+    const toggleOpen = () => {
+        const next = !open;
+        setOpen(next);
+        if (next) {
+            window.dispatchEvent(new CustomEvent('tw-pen-open', { detail: instanceId.current }));
+        }
+        if (containerRef.current) {
             if (next) {
-                window.dispatchEvent(new CustomEvent('tw-pen-open', { detail: instanceId.current }));
+                containerRef.current.setAttribute('data-pen', name?.toLowerCase());
+            } else {
+                containerRef.current.removeAttribute('data-pen');
             }
-            if (containerRef.current) {
-                if (next) {
-                    containerRef.current.setAttribute('data-pen', name?.toLowerCase());
-              } else {
-                    containerRef.current.removeAttribute('data-pen');
-                }
-            }
-        };
-    
+        }
+    };
+    //We can only open one pen at a time
         useEffect(() => {
             const onPenOpen = (e) => {
                 if (e.detail !== instanceId.current) setOpen(false);
@@ -3374,6 +2910,22 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
         });
     };
 
+    const handlePropertyBlur = useCallback((i) => {
+        const prev = prevPropsRef.current[i];
+        const now = (properties[i]?.property || '').trim();
+        const val = (properties[i]?.value ?? '').trim();
+        //If the property is empty, remove it
+        if (prev && !now) {
+            applyEnterAnimationChange(prev, "");
+            setProperties(prevList => prevList.filter((_, idx) => idx !== i));
+		return;
+        }
+        //If the property is not empty, apply the value
+        if (now && val) {
+            applyEnterAnimationChange(now, val);
+        }
+    }, [applyEnterAnimationChange, properties]);
+
     return (
         <div className="tw-builder__settings-animation" key={index}>
             <div className="tw-builder__settings-animation-container">
@@ -3386,21 +2938,7 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
                             value={prop.property}
                             onFocus={() => { prevPropsRef.current[i] = prop.property; }}
                             onChange={(e)=>handlePropertyChange(i, 'property', e.target.value)}
-                            onBlur={() => {
-                                const prev = prevPropsRef.current[i];
-                                const now = (properties[i]?.property || '').trim();
-                                const val = (properties[i]?.value ?? '').trim();
-                                //If the property is empty, remove it
-                                if (prev && !now) {
-                                  applyEnterAnimationChange(prev, "");
-                                  setProperties(prevList => prevList.filter((_, idx) => idx !== i));
-                                  return;
-                                }
-                                //If the property is not empty, apply the value
-                                if (now && val) {
-                                  applyEnterAnimationChange(now, val);
-                                }
-                              }}
+                            onBlur={()=>handlePropertyBlur(i)}
                               onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
                             />
                         </div>
@@ -3421,7 +2959,7 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
                 </div>
             </div>
         </div>
-    )};
+)};
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
@@ -3461,6 +2999,11 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     // Find the selected element in the active root
     const selectedElement = findElement(activeRootNode, selectedId);
 
+    if (!selectedElement) {
+        setSelectedElementData(null);
+        return;
+    }
+
     // Get the active breakpoint
     const bp = getActiveBreakpoint?.() || 'desktop';
     // Get the responsive idsCSSData or base idsCSSData
@@ -3472,132 +3015,161 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
 
     const elementData = {
         id: selectedElement.id,
-        elementType: selectedElement.elementType,
-        tagName: selectedElement.tagName,
-        classList: selectedElement.classList,
-        children: selectedElement.children,
-        nestable: selectedElement.nestable,
-        icon: selectedElement.icon,
-        label: selectedElement.label,
-        href: selectedElement.href,
-        innerText: selectedElement.innerText,
-        properties: elementCssData?.properties || {},
-        hasChildren: !!(selectedElement.children && selectedElement.children.length > 0),
-        className: selectedElement.classList?.[0] || null
+
     };
     // Update the selected element data state
     setSelectedElementData(elementData);
 }, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
 
 // Apply CSS (writes in the dataset of the active breakpoint if not desktop)
-const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, nestedSelector) => {
+const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = {}) => {
     if (!selectedId || !cssPropertyOrObject) return;
-    //Determine the type of selector(class or id)
-    const type = activeClass ? 'class' : 'id';
-    const selector = activeClass ? activeClass : selectedId;
-
-    //Add the property to the CSS data. The cssProperty can be a string or an object(if need to add multiple properties).
-    if (typeof cssPropertyOrObject === 'string') {
-        addCSSProperty(type, selector, cssPropertyOrObject, value, nestedSelector);
-    } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
-        addCSSProperty(type, selector, cssPropertyOrObject, undefined, nestedSelector);
+    
+    // Support legacy API: if options is a string, treat it as nestedSelector
+    const normalizedOptions = typeof options === 'string' 
+        ? { nestedSelector: options } 
+        : options;
+    
+    const { nestedSelector = null, enterScope = null } = normalizedOptions;
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    // Special handling for enter animations on root elements
+    if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+        const isRoot = selectedId === activeRoot;
+        
+        if (isRoot) {
+            type = 'class';
+            selector = enterScope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        }
     }
-}, [selectedId, addCSSProperty, JSONtree, activeClass]);
+    
+    // Build options
+    const cssOptions = {};
+    if (nestedSelector) cssOptions.nestedSelector = nestedSelector;
+    if (enterScope) cssOptions.enterScope = enterScope;
+    
+    // Apply
+    if (typeof cssPropertyOrObject === 'string') {
+        addCSSProperty(type, selector, cssPropertyOrObject, value, cssOptions);
+    } else if (typeof cssPropertyOrObject === 'object' && cssPropertyOrObject !== null) {
+        addCSSProperty(type, selector, cssPropertyOrObject, undefined, cssOptions);
+    }
+}, [selectedId, activeClass, activeRoot, addCSSProperty]);
 
 // Enter Animation: saves in ids/classes CSSData with the scope of the root and the correct selector
 const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
-    if (!selectedId || !cssPropertyOrObject) return;
-
-    //Get the scope of the root(modal or banner)
     const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
-    //Check if the selected id is the root element
-    const isRoot = selectedId === activeRoot;
-
-    //If the selected id is the root, add the property to the class .tw-modal--open or .tw-banner--open
-    if (isRoot) {
-        const selector = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
-        addEnterAnimationProperty('class', selector, cssPropertyOrObject, value, scope);
-        return;
-    }
-    //If the selected id is not the root, add the property to the class or id
-    if (activeClass) {
-        addEnterAnimationProperty('class', activeClass, cssPropertyOrObject, value, scope);
-    } else {
-        addEnterAnimationProperty('id', selectedId, cssPropertyOrObject, value, scope);
-    }
-}, [selectedId, activeClass, activeRoot, addEnterAnimationProperty]);
+    applyGlobalCSSChange(cssPropertyOrObject, value, { enterScope: scope });
+}, [activeRoot, applyGlobalCSSChange]);
 
 /// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
-const getGlobalCSSValue = useCallback((cssProperty, nestedSelector) => {
-    if (!selectedId || !cssProperty) return null;
+const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
+    if (!selectedId) return null;
+    
+    // Support legacy API: if options is a string, treat it as nestedSelector
+    const normalizedOptions = typeof options === 'string' 
+        ? { nestedSelector: options } 
+        : options;
+    
+    const { nestedSelector = null, enterScope = null, returnAll = false } = normalizedOptions;
+    
+    // For returnAll mode, cssProperty can be null
+    if (!returnAll && !cssProperty) return null;
+    
     const bp = getActiveBreakpoint?.() || 'desktop';
-  
-    //Read the entry to check possible nested selector, states and breakpoints.
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    // Special handling for enter animations on root elements
+    if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+        const isRoot = selectedId === activeRoot;
+        
+        if (isRoot) {
+            type = 'class';
+            selector = enterScope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        }
+    }
+    
+    // Get the appropriate data arrays
+    const getEntry = (breakpoint) => {
+        const isResponsive = breakpoint !== 'desktop';
+        
+        if (type === 'class') {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.classesCSSData || []
+                : JSONtree?.classesCSSData || [];
+            return arr.find(item => item.className === selector);
+        } else {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.idsCSSData || []
+                : JSONtree?.idsCSSData || [];
+            return arr.find(item => item.id === selector);
+        }
+    };
+    
+    // Read from entry with support for all modes
     const readFromEntry = (entry) => {
-      if (!entry) return null;
-        //Get the CSS value with state
-      const getCSSValueWithState = (states, properties) => {
-        const stVal = activeState ? states?.[activeState]?.[cssProperty] : undefined;
-        if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
-        return properties?.[cssProperty] ?? null;
-    };
+        if (!entry) return returnAll ? {} : null;
+        
+        // ENTER ANIMATION SCOPE
+        if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+            const enterData = entry.enter?.[enterScope];
+            if (returnAll) return enterData || {};
+            return cssProperty ? (enterData?.[cssProperty] ?? null) : null;
+        }
+        
+        // Helper to get CSS value with state support
+        const getCSSValueWithState = (states, properties) => {
+            if (returnAll) {
+                const stateProps = activeState ? (states?.[activeState] || {}) : {};
+                return { ...(properties || {}), ...stateProps };
+            }
+            
+            if (!cssProperty) return null;
+            const stVal = activeState ? states?.[activeState]?.[cssProperty] : undefined;
+            if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+            return properties?.[cssProperty] ?? null;
+        };
 
-    //If there is a nested selector, get the node with the nested selector
-    if (nestedSelector && nestedSelector.trim()) {
-        const node = entry.nested?.[nestedSelector.trim()];
-        if (!node) return null;
-        return getCSSValueWithState(node.states, node.properties);
-    }
-    //If there is no nested selector, get the node with the states and properties
-    return getCSSValueWithState(entry.states, entry.properties);
+        // NESTED SELECTOR
+        if (nestedSelector && nestedSelector.trim()) {
+            const node = entry.nested?.[nestedSelector.trim()];
+            if (!node) return returnAll ? {} : null;
+            return getCSSValueWithState(node.states, node.properties);
+        }
+        
+        // NORMAL (with optional state)
+        return getCSSValueWithState(entry.states, entry.properties);
     };
-  
-    if (activeClass) {
-    //If there is a breakpoint, get the classesCSSData with the active class and the breakpoint
-      const bpClassData = bp !== 'desktop'
-        ? JSONtree?.responsive?.[bp]?.classesCSSData?.find(item => item.className === activeClass)
-        : null;
-      //If there is no breakpoint, get the classesCSSData with the active class and the base
-      const baseClassData = JSONtree?.classesCSSData?.find(item => item.className === activeClass);
-      return readFromEntry(bpClassData) ?? readFromEntry(baseClassData);
+    
+    // Try breakpoint first, then fallback to desktop
+    const bpEntry = getEntry(bp);
+    const result = readFromEntry(bpEntry);
+    
+    if (result !== null && (returnAll ? Object.keys(result).length > 0 : true)) {
+        return result;
     }
-  
-    //If there is a breakpoint, get the idsCSSData with the active id and the breakpoint
-    const bpIdData = bp !== 'desktop'
-      ? JSONtree?.responsive?.[bp]?.idsCSSData?.find(item => item.id === selectedId)
-      : null;
-    //If there is no breakpoint, get the idsCSSData with the active id and the base
-    const baseIdData = JSONtree?.idsCSSData?.find(item => item.id === selectedId);
-    return readFromEntry(bpIdData) ?? readFromEntry(baseIdData);
-  }, [JSONtree, selectedId, activeClass, getActiveBreakpoint, activeState]);
+    
+    // Fallback to desktop if not found in breakpoint
+    if (bp !== 'desktop') {
+        const desktopEntry = getEntry('desktop');
+        return readFromEntry(desktopEntry);
+    }
+    
+    return returnAll ? {} : null;
+}, [JSONtree, selectedId, activeClass, activeRoot, getActiveBreakpoint, activeState]);
 
 
 const getEnterAnimationProps = useCallback(() => {
-    //Check if the selected id is not null
     if (!selectedId) return {};
-
     const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
-    //Get the breakpoint
-    const bp = getActiveBreakpoint?.() || 'desktop';
-    const isResponsive = bp !== 'desktop'; //Check if breakpoint 
-
-    const idsArr = isResponsive ? (JSONtree?.responsive?.[bp]?.idsCSSData || []) : (JSONtree?.idsCSSData || []); //Get the idsCSSData
-    const classesArr = isResponsive ? (JSONtree?.responsive?.[bp]?.classesCSSData || []) : (JSONtree?.classesCSSData || []); //Get the classesCSSData
-
-    let entry = null; 
-
-    // If it is the root, the props are saved in the class .tw-*-–open
-    if (selectedId === activeRoot) {
-        const openClass = scope === 'modal' ? 'tw-modal--open' : 'tw-banner--open'; 
-        entry = classesArr.find(e => e.className === openClass);
-    } else if (activeClass) {
-        entry = classesArr.find(e => e.className === activeClass); 
-    } else {
-        entry = idsArr.find(e => e.id === selectedId); 
-    }
-
-    return entry?.enter?.[scope] || {};
-}, [JSONtree, activeRoot, selectedId, activeClass, getActiveBreakpoint]);
+    return getGlobalCSSValue(null, { enterScope: scope, returnAll: true });
+}, [selectedId, activeRoot, getGlobalCSSValue]);
 
 
     //Function to apply the json to the element and save it in jsonTree

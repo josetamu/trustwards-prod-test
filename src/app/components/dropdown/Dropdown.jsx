@@ -27,12 +27,25 @@ export function Dropdown({ open, menu, onClose, children, className = "", animat
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, onClose]);
 
-  // Close dropdown when pressing Escape
+  // Close dropdown when pressing Escape and handle Tab navigation
   useEffect(() => {
     if (!open) return;
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
         onClose && onClose();
+      }
+      
+      // Handle Tab navigation - close dropdown when focus leaves the last item
+      if (event.key === 'Tab' && !event.shiftKey) {
+        const menuItems = menuRef.current?.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
+        const lastMenuItem = menuItems?.[menuItems.length - 1];
+        const activeElement = document.activeElement;
+        
+        if (lastMenuItem && activeElement === lastMenuItem) {
+          // Focus is on the last menu item and Tab was pressed
+          // Close the dropdown and let the browser handle focus naturally
+          onClose && onClose();
+        }
       }
     };
     document.addEventListener('keydown', handleKeyDown);

@@ -101,11 +101,35 @@ function Builder() {
   const handleContextMenu = (e, item, currentSelectedItem) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
+    // Determine position: if event is keyboard (clientX/Y == 0),
+    // position the menu next to the triggering element; otherwise use mouse coords
+    let x = e.clientX;
+    let y = e.clientY;
+
+    if ((!x && !y)) {
+      // Try to position near the currentTarget (tree item header or canvas node)
+      const targetEl = e.currentTarget || document.activeElement;
+      if (targetEl && targetEl.getBoundingClientRect) {
+        const rect = targetEl.getBoundingClientRect();
+        // Place menu to the right of the element with small offset
+        x = Math.round(rect.right + 8);
+        y = Math.round(rect.top);
+      } else {
+        // Fallback to center of viewport
+        x = Math.round(window.innerWidth / 2);
+        y = Math.round(window.innerHeight / 2);
+      }
+    }
+
+    // Clamp within viewport to avoid overflow
+    const clampedX = Math.max(8, Math.min(x, window.innerWidth - 8));
+    const clampedY = Math.max(8, Math.min(y, window.innerHeight - 8));
+
     // Create a completely new context menu instance with unique key
     setContextMenu({
       open: true,
-      position: { x: e.clientX, y: e.clientY },
+      position: { x: clampedX, y: clampedY },
       targetItem: item,
       previousSelectedItem: currentSelectedItem, // Keep the original selection
       key: Date.now() + Math.random() // Ensure unique key for each instance

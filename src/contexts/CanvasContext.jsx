@@ -302,24 +302,26 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * property - the CSS property: color, background-color, padding, margin, etc...
     * value - the value of the property (if empty string "", the property will be removed)
     */
-    const addCSSProperty = (type, selector, propertyOrObject, value, nestedSelector = null) => {
+    const addCSSProperty = (type, selector, propertyOrObject, value, options = {}) => {
+        // Support legacy API: if options is a string, treat it as nestedSelector
+        const normalizedOptions = typeof options === 'string' 
+            ? { nestedSelector: options } 
+            : options;
+        
+        const { nestedSelector = null, enterScope = null } = normalizedOptions;
        
         const bp = getActiveBreakpoint();
-        //Responsive is true if the breakpoint is not desktop
         const isResponsive = bp !== 'desktop';
 
         const getIdsArr = () => {
-            //if the breakpoint is not desktop, return the responsive idsCSSData, otherwise return the idsCSSData
             if(isResponsive) return JSONtree.responsive?.[bp]?.idsCSSData || [];
             return JSONtree.idsCSSData || [];
         };
         const getClassesArr = () => {
-            //if the breakpoint is not desktop, return the responsive classesCSSData, otherwise return the classesCSSData
             if(isResponsive) return JSONtree.responsive?.[bp]?.classesCSSData || [];
             return JSONtree.classesCSSData || [];
         };
 
-        //get the current idsCSSData and classesCSSData
         let currentIds = getIdsArr();
         let currentClasses = getClassesArr();
         let updatedIdsCSSData = currentIds;
@@ -344,86 +346,101 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             return updated;
         };
 
+        // Factory function to create the appropriate merger based on options
         const applyToEntry = (entry) => {
-            //Check if there is a nested selector
-            const hasNested = typeof nestedSelector === 'string' && nestedSelector.trim() !== '';
-            if (hasNested) {
-                //Get the selector(trimmed string)
+            // PRIORITY 1: ENTER ANIMATION SCOPE
+            if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+                const prev = entry.enter || {};
+                const nextScopeProps = { ...(prev[enterScope] || {}) };
+                
+                Object.entries(propertiesToAdd).forEach(([prop, val]) => {
+                    if (val === "") {
+                        delete nextScopeProps[prop];
+                    } else {
+                        nextScopeProps[prop] = val;
+                    }
+                });
+                
+                const nextEnter = { ...prev };
+                if (Object.keys(nextScopeProps).length === 0) {
+                    delete nextEnter[enterScope];
+                } else {
+                    nextEnter[enterScope] = nextScopeProps;
+                }
+                
+                if (Object.keys(nextEnter).length === 0) {
+                    const { enter, ...rest } = entry;
+                    return rest;
+                }
+                
+                return { ...entry, enter: nextEnter };
+            }
+            
+            // PRIORITY 2: NESTED SELECTOR
+            if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.trim() !== '') {
                 const key = nestedSelector.trim();
-                //Get the nested object with properties
                 const nest = { ...(entry.nested || {}) };
-                //Get the node
                 const node = { ...(nest[key] || {}) };
                 
-                //Check if there is a state and get the current state and properties
                 if (activeState) {
                     const st = { ...(node.states || {}) };
                     const cur = { ...(st[activeState] || {}) };
                     const next = cleanProperties(cur, propertiesToAdd);
-                     // If no properties remain after cleaning, remove the state
                     if (Object.keys(next).length === 0) {
                         delete st[activeState];
                     } else {
-                    // Update the state with cleaned properties
-                    st[activeState] = next;
-                }
-                node.states = st;
+                        st[activeState] = next;
+                    }
+                    node.states = st;
                 } else {
-                    // Apply properties directly to the node 
                     node.properties = cleanProperties(node.properties || {}, propertiesToAdd);
                 }
-                // Check if the node is empty after property updates
+                
                 const emptyProps = !node.properties || Object.keys(node.properties).length === 0;
                 const emptyStates = !node.states || Object.keys(node.states).length === 0;
-                // If node has no properties or states, remove it from nested structure
+                
                 if (emptyProps && emptyStates) {
-                    // If the node is empty, remove the nested selector
                     delete nest[key];
                 } else {
-                    // Otherwise, set the nested selector with the new node
                     nest[key] = node;
                 } 
-                 // Update entry's nested property (remove if empty)
+                
                 entry.nested = Object.keys(nest).length ? nest : undefined;
                 return entry;
             }
-            //Handle state-specific properties for non-nested entries
+            
+            // PRIORITY 3: PSEUDO STATE (hover, focus, etc.)
             if (activeState) {
-                //Get the states object
                 const st = { ...(entry.states || {}) };
-                //Get the current state
                 const cur = { ...(st[activeState] || {}) };
-                // Merge current properties with new properties to add
                 const next = cleanProperties(cur, propertiesToAdd);
-                // If no properties remain after cleaning, remove the state
+                
                 if (Object.keys(next).length === 0) {
                     delete st[activeState];
                 } else {
-                    //set the state with the new properties
                     st[activeState] = next;
                 }
                 entry.states = st;
-            } else {
-                //Apply properties directly to the entry
-                entry.properties = cleanProperties(entry.properties || {}, propertiesToAdd);
+                return entry;
             }
+            
+            // PRIORITY 4: NORMAL PROPERTIES
+            entry.properties = cleanProperties(entry.properties || {}, propertiesToAdd);
             return entry;
         };
-    // Switch statement to handle different selector types (ID vs Class)
+
+        // Handle ID or CLASS
         switch (type) {
             case "id": {
-                // Find existing ID entry in the current IDs array
                 const existingIdIndex = currentIds.findIndex(
                     (item) => item.id === selector
                 );
     
                 if (existingIdIndex !== -1) {
-                    // Update existing ID entry with new properties
                     const updatedEntry = applyToEntry({ ...currentIds[existingIdIndex] });
                     updatedIdsCSSData = [...currentIds];
                     updatedIdsCSSData[existingIdIndex] = updatedEntry;
                 } else {
-                     // Create new ID entry if it doesn't exist
                     const newEntry = applyToEntry({ id: selector, properties: {} });
                     updatedIdsCSSData = [
                         ...currentIds,
@@ -434,18 +451,15 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
     
             case "class": {
-                // Find existing Class entry in the current Classes array
                 const existingClassIndex = currentClasses.findIndex(
                     (item) => item.className === selector
                 );
     
                 if (existingClassIndex !== -1) {
-                    // Update existing Class entry with new properties
                     const updatedEntry = applyToEntry({ ...currentClasses[existingClassIndex] });
                     updatedClassesCSSData = [...currentClasses];
                     updatedClassesCSSData[existingClassIndex] = updatedEntry;
                 } else {
-                    // Create new Class entry if it doesn't exist
                     const newEntry = applyToEntry({ className: selector, properties: {} });
                     updatedClassesCSSData = [
                         ...currentClasses,
@@ -456,126 +470,21 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             }
         }
     
-        // Create a deep copy of the JSONtree
+        // Update JSONtree
         const updated = deepCopy(JSONtree);
-        // If the breakpoint is responsive, update the responsive IDs and Classes arrays
         if(isResponsive) {
             if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
             if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
             updated.responsive[bp].idsCSSData = updatedIdsCSSData;
             updated.responsive[bp].classesCSSData = updatedClassesCSSData;
         } else {
-            // If the breakpoint is not responsive, update the IDs and Classes arrays
             updated.idsCSSData = updatedIdsCSSData;
             updated.classesCSSData = updatedClassesCSSData;
         }
-        //updated JSONtree with new data
         setJSONtree(updated);
     };
 
 
-
-/*
-* Enter Animation - Store properties in idsCSSData/classesCSSData with scope by root
-* type - 'id' | 'class'
-* selector - id or className; if it is root, it will be 'tw-modal--open' or 'tw-banner--open' (type 'class')
-* propertyOrObject - string property or object {prop: val}
-* value - value when propertyOrObject is string
-* scope - 'modal' | 'banner'
-*/
-const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scope) => { // Add/update "enter" animation props for an id/class, scoped to 'modal' or 'banner'
-	if (!scope || (scope !== 'modal' && scope !== 'banner')) return; // Only proceed for valid scopes
-
-	const bp = getActiveBreakpoint(); // Current breakpoint ('desktop' | 'tablet' | 'mobile')
-	const isResponsive = bp !== 'desktop'; // Whether we’re editing a responsive layer
-
-	const toObj = (k, v) =>
-		typeof k === 'object' && k !== null ? k : { [k]: v }; // Normalize (key,value) into an object, or pass through if already an object
-
-	const mergeEnter = (entry, props) => { // Merge new enter properties for the current scope into an entry
-		const prev = entry.enter || {}; // Existing enter object: { banner?: {...}, modal?: {...} }
-		const nextScopeProps = { ...(prev[scope] || {}) }; // Start from existing props for this scope
-		Object.entries(props).forEach(([prop, val]) => { // Apply each incoming prop
-			if (val === "") {
-				delete nextScopeProps[prop]; // Empty string removes the property
-			} else {
-				nextScopeProps[prop] = val; // Otherwise set/update the property
-			}
-		});
-		const cleaned = nextScopeProps; // Post-mutation scope props
-		const nextEnter = { ...prev }; // Clone the enter object
-		if (Object.keys(cleaned).length === 0) {
-			delete nextEnter[scope]; // If scope has no props left, remove the scope key
-		} else {
-			nextEnter[scope] = cleaned; // Otherwise write back cleaned scope props
-		}
-		if (Object.keys(nextEnter).length === 0) {
-			const { enter, ...rest } = entry; // If no scopes left at all, drop the enter field entirely
-			return rest;
-		}
-		return { ...entry, enter: nextEnter }; // Return entry with updated enter
-	};
-
-	const updated = deepCopy(JSONtree); // Work on a cloned tree
-	const getIdsArr = () => isResponsive ? (updated.responsive?.[bp]?.idsCSSData || []) : (updated.idsCSSData || []); // Pick ids array for active layer
-	const getClassesArr = () => isResponsive ? (updated.responsive?.[bp]?.classesCSSData || []) : (updated.classesCSSData || []); // Pick classes array for active layer
-
-	if (type === 'id') { // Targeting an element by id
-		const arr = getIdsArr();
-		const idx = arr.findIndex(e => e.id === selector); // Find existing entry for this id
-		if (idx !== -1) { // Update existing
-			const cur = arr[idx];
-			const next = mergeEnter(cur, toObj(propertyOrObject, value)); // Merge new enter props
-			const nextArr = [...arr];
-			nextArr[idx] = next;
-			if (isResponsive) {
-				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } }; // Ensure responsive container
-				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] }; // Ensure bp container
-				updated.responsive[bp].idsCSSData = nextArr; // Save into responsive layer
-			} else {
-				updated.idsCSSData = nextArr; // Save into base layer
-			}
-		} else { // Create new entry for this id
-			const entry = mergeEnter({ id: selector, properties: {} }, toObj(propertyOrObject, value));
-			const nextArr = [...arr, entry];
-			if (isResponsive) {
-				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
-				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
-				updated.responsive[bp].idsCSSData = nextArr;
-			} else {
-				updated.idsCSSData = nextArr;
-			}
-		}
-	} else if (type === 'class') { // Targeting a class selector
-		const arr = getClassesArr();
-		const idx = arr.findIndex(e => e.className === selector); // Find existing entry for this class
-		if (idx !== -1) { // Update existing
-			const cur = arr[idx];
-			const next = mergeEnter(cur, toObj(propertyOrObject, value));
-			const nextArr = [...arr];
-			nextArr[idx] = next;
-			if (isResponsive) {
-				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
-				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
-				updated.responsive[bp].classesCSSData = nextArr; // Save class entry into responsive layer
-			} else {
-				updated.classesCSSData = nextArr; // Save class entry into base layer
-			}
-		} else { // Create new entry for this class
-			const entry = mergeEnter({ className: selector, properties: {} }, toObj(propertyOrObject, value));
-			const nextArr = [...arr, entry];
-			if (isResponsive) {
-				if (!updated.responsive) updated.responsive = { tablet: { idsCSSData: [], classesCSSData: [] }, mobile: { idsCSSData: [], classesCSSData: [] } };
-				if (!updated.responsive[bp]) updated.responsive[bp] = { idsCSSData: [], classesCSSData: [] };
-				updated.responsive[bp].classesCSSData = nextArr;
-			} else {
-				updated.classesCSSData = nextArr;
-			}
-		}
-	}
-
-	setJSONtree(updated); // Commit changes to the builder state
-};
 
     /*
     * Add a JSON property (for HTML and Javascript (attr) controls)
@@ -1349,7 +1258,7 @@ const addEnterAnimationProperty = (type, selector, propertyOrObject, value, scop
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty,addEnterAnimationProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState}}>
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState}}>
             {children}
         </CanvasContext.Provider>
     );
