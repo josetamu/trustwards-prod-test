@@ -202,7 +202,7 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                         </div>
                     )}
                     {activeTab === 'Actions' && (
-                        <div role="tabpanel" id="actions-panel" aria-labelledby="actions-tab" style={{ display: activeTab === 'Actions' ? 'block' : 'none' }}>
+                        
                             <div className='modal-builder-settings__content-body-actions'>
                                 <div className="modal-builder-settings__content-body-action">
                                     <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Close banner</span>
@@ -414,7 +414,7 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        
                     )}
                 </div>
             </div>
