@@ -19,13 +19,16 @@
 .tw-builder__toolbar-icon:hover{
     background: var(--toolbar-items-background);
 }
+.tw-builder__toolbar-icon:focus-visible{
+    background: var(--toolbar-items-background);
+}
 .tw-builder__toolbar-icon svg{
     width: 100%;
     height: 100%;
 }
 .tw-builder__toolbar-divider{
     background-color: var(--border-light-color);
-    width: 2px;
+    width: 1px;
     height: 100%;
 
     position: absolute;
@@ -41,7 +44,7 @@
     background-color: var(--panels-background);
     border-radius: 12px;
     border: 1px solid var(--border-light-color);
-    box-shadow: 0 2px 4px 0 var(--shadow-light-color);
+    box-shadow: var(--fancy-shadow);
 
     position: absolute;
     /*left is determined by js calcs*/
@@ -70,7 +73,8 @@
     width: 100%;
     height: var(--hover-padding-area);
 }
-.tw-builder__toolbar-icon:hover > .tw-builder__toolbar-dropdown{
+.tw-builder__toolbar-icon:hover > .tw-builder__toolbar-dropdown,
+.tw-builder__toolbar-icon:focus-within > .tw-builder__toolbar-dropdown{
     transform: translateY(0px) scale(1);
     opacity: 1;
     pointer-events: auto;
@@ -104,7 +108,7 @@
 }
 .tw-builder__toolbar-dropdown-item-title{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--toolbar-items-text-color);
 }
 .tw-builder__toolbar-dropdown-item-icon{
@@ -122,7 +126,7 @@
 }
 .tw-builder__toolbar-dropdown-column-title{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--toolbar-items-text-color);
 
     margin: 2px 0;

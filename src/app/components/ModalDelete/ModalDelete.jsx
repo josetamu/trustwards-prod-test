@@ -48,7 +48,9 @@ export const ModalDelete = ({ onClose, siteData, setIsModalOpen, setSiteData }) 
     <div className="modal-delete__content">
       <div className="modal-delete__top-wrapper">
         <h2 className="modal-delete__title">Delete site</h2>
-        <div className="modal-delete__divider"></div>
+      </div>
+      <div className="modal-delete__divider"></div>
+      <div className="modal-delete__middle-wrapper">
         <p className="modal-delete__paragraph">This will delete your site and remove your cookie scripts</p>
       </div>
       <div className="modal-delete__actions">

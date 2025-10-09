@@ -8,14 +8,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { supabase } from '@supabase/supabaseClient.js';
 import { HomeInstallation } from './homeComponents/HomeInstallation';
 import { HomeInstallationSkeleton } from '@components/Skeletons/HomeInstallationSkeleton';
-import { ScannerOverviewSkeleton } from '@components/Skeletons/ScannerOverviewSkeleton';
-import { ScannerOverview } from './homeComponents/ScannerOverview';
-import { SiteUsageSkeleton } from '@components/Skeletons/SiteUsageSkeleton';
-import { SiteUsage } from './homeComponents/SiteUsage';
-import { ComplyHealthSkeleton } from '@components/Skeletons/ComplyHealthSkeleton';
-import { ComplyHealth } from './homeComponents/ComplyHealth';
-import { AnalyticsSkeleton } from '@components/Skeletons/AnalyticsSkeleton';
-import { Analytics } from './homeComponents/Analytics';
 
 
 
@@ -28,7 +20,7 @@ import { Analytics } from './homeComponents/Analytics';
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs, showNotification, setModalType, setIsModalOpen,setWebs,allUserDataResource, isScanning, setIsScanning, scanDone, setScanDone, MAX_SCANS, isInstalled, setIsInstalled } = useDashboard();
+    const { webs, showNotification, setModalType, setIsModalOpen,setWebs,allUserDataResource, isInstalled, setIsInstalled } = useDashboard();
     const [siteData, setSiteData] = useState(null);
     
 
@@ -121,30 +113,12 @@ const noInstalled = () => {
 
     return (
     
-          <div className="home">
-                <Suspense fallback={<HomeInstallationSkeleton />}>
-                    <HomeInstallation siteSlug={siteSlug} showNotification={showNotification} verify={verify} />
-                </Suspense>
-                <div className="home__mid">
-                    <div className="home__mid-card"></div>
-                    <Suspense fallback={<ScannerOverviewSkeleton />}>
-                        <ScannerOverview siteSlug={siteSlug} showNotification={showNotification} verify={verify} noInstalled={noInstalled} isScanning={isScanning} MAX_SCANS={MAX_SCANS} setIsScanning={setIsScanning} setScanDone={setScanDone} scanDone={scanDone} />
-                    </Suspense>
-                </div>
-                <div className="home__bottom">
-                    <Suspense fallback={<SiteUsageSkeleton />}>
-                        <SiteUsage siteSlug={siteSlug}  setModalType={setModalType} setIsModalOpen={setIsModalOpen} noInstalled={noInstalled} />
-                    </Suspense>
-                    <Suspense fallback={<AnalyticsSkeleton />}>
-                        <Analytics siteSlug={siteSlug} noInstalled={noInstalled} />
-                    </Suspense>
-                    <Suspense fallback={<ComplyHealthSkeleton />}>
-                        <ComplyHealth siteSlug={siteSlug} noInstalled={noInstalled} />
-                    </Suspense>
-                </div>
-          </div>
+        <div className="home">
+            <Suspense fallback={<HomeInstallationSkeleton />}>
+                <HomeInstallation siteSlug={siteSlug} showNotification={showNotification} verify={verify} />
+            </Suspense>
+        </div>
           
-        
     );
 }
 export default Home;

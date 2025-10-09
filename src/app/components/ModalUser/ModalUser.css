@@ -59,7 +59,7 @@
 .modal-user__item-span{
     color: var(--body-fresco-color);
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .modal-user__item-span--upgrade{
@@ -94,7 +94,7 @@
 }
 .modal-user__divider{
     height: 1px;
-    background: var(--border-strong-color);
+    background: var(--border-fresco-color);
     width: 100%;
     border: none;
 }
@@ -129,7 +129,7 @@
         overflow-y: auto;
         min-width: 250px;
         scrollbar-width: thin;
-        scrollbar-color: var(--border-strong-color) transparent;
+        scrollbar-color: var(--border-fresco-color) transparent;
     }
     .modal-user__item{
         justify-content: center;

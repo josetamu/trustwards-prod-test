@@ -9,61 +9,6 @@
     margin-bottom: 15px;
 }
 
-/* Scanner Overview */
-
-.skeleton-scanner-overview {
-    width: 100%;
-    height: 100%;
-    border-radius: 16px;
-    border: 1px solid var(--skeleton-color);
-    padding: 20px;
-}
-.skeleton-scanner-overview__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
-.skeleton-scanner-overview__title {
-    width: 118px;
-    height: 17px;
-    background-color: var(--skeleton-color);
-    border-radius: 10px;
-}
-.skeleton-scanner-overview__button {
-    width: 43px;
-    height: 26px;
-    background-color: var(--skeleton-color);
-    border-radius: 10px;
-}
-.skeleton-scanner-overview__content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-top: 30px;
-}
-.skeleton-scanner-overview__item {
-    width: 100%;
-    height: 15px;
-    background-color: var(--skeleton-color);
-    border-radius: 10px;
-    margin: 10px 0;
-}
-.skeleton-scanner-overview__footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-}
-.skeleton-scanner-overview__scanner {
-    width: 200px;
-    height: 15px;
-    background-color: var(--skeleton-color);
-    border-radius: 10px;
-    margin-top: 20px;
-}
-
 /* Site Usage */
 .skeleton-site-usage {
     width: 20%;
@@ -71,7 +16,7 @@
     border-radius: 16px;
     border: 1px solid var(--skeleton-color);
     padding: 15px;
-    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    box-shadow: var(--fancy-shadow);
     gap: 10px;
     display: flex;
     flex-direction: column; 
@@ -133,118 +78,6 @@
     border-radius: 8px;
 }
 
-/* Comply Health */
-
-.skeleton-comply-health {
-    width: 20%;
-    height: 100%;
-    border-radius: 16px;
-    border: 1px solid var(--skeleton-color);
-    padding: 15px;
-    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
-}
-.skeleton-comply-health__header {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    gap: 10px;
-}
-.skeleton-comply-health__title {
-    width: 94.5px;
-    height: 17px;
-    background-color: var(--skeleton-color);
-    border-radius: 10px;
-}
-.skeleton-comply-health__content {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-.skeleton-comply-health__circle {
-    width: 96px;
-    height: 96px;
-    background-color: var(--skeleton-color);
-    border-radius: 50%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-.skeleton-comply-health__item {
-    width: 100%;
-    height: 15px;
-    background-color: var(--skeleton-color);
-    border-radius: 10px;
-}
-/* Analytics */
-.skeleton-analytics {
-    width: 60%;
-    height: 295px;
-    border-radius: 16px;
-    border: 1px solid var(--skeleton-color);
-    padding: 15px;
-    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
-    display: flex;
-    flex-direction: column;
-}
-.skeleton-analytics__header {
-    display: flex;
-    height: fit-content;
-    width: 100%;
-    flex-direction: row;
-
-}
-.skeleton-analytics__title {
-    width: 60px;
-    height: 17px;
-    background-color: var(--skeleton-color);
-    border-radius: 10px;
-}
-.skeleton-analytics__content {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    width: 100%;
-    height: 100%;
-}
-.skeleton-analytics__analytics {
-    width: 50%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.skeleton-analytics__circle {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1;
-    max-width: 250px;
-    background-color: transparent;
-    border-radius: 100%;
-    border: clamp(12px, 2vw, 20px) solid var(--skeleton-color);
-}
-.skeleton-analytics__cookies {
-    padding-top: 40px;
-    width: 50%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-}
-.skeleton-analytics__item {
-    width: 100%;
-    height: 20px;
-    background-color: var(--skeleton-color);
-    border-radius: 10px;
-}
-
 /* Monthly Scans */
 
 .skeleton-monthly-scans {
@@ -278,7 +111,7 @@
     display: flex;
     flex-direction: column;
     gap: 25px;
-    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    box-shadow: var(--fancy-shadow);
 }
 .skeleton-scan-result__header {
     display: flex;
@@ -417,7 +250,7 @@
     top: 107px;
     left: 50%;
     transform: translateX(-50%);
-    box-shadow: 0px 0px 5px 0px var(--shadow-fresco-color);
+    box-shadow: var(--fancy-shadow);
     z-index: 0;
     display: flex;
     align-items: center;

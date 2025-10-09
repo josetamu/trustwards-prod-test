@@ -1,6 +1,6 @@
 import "./User.css";
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 
 import { SidebarLink } from '@components/sidebarLink/SidebarLink';
 import { profilePages } from '@components/sideBar/Sidebar';
@@ -16,6 +16,8 @@ import { useRouter } from 'next/navigation';
 export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,isSidebarOpen,toggleSidebar,setModalType,setIsModalOpen,isModalOpen, modalType, setUserSettings, checkProfilePicture, profileStyle, isSidebarMenu }) => {
     
     const router = useRouter();
+    const dropdownRef = useRef(null);
+    
     const handleLogout = async () => {
         try {
         await supabase.auth.signOut();
@@ -75,15 +77,29 @@ export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,i
 
 
     return (
-        <div className="user" 
-          onMouseEnter={() => (isSidebarOpen || isSidebarMenu) && setIsDropdownOpen(true)} 
-          onMouseLeave={() => (isSidebarOpen || isSidebarMenu) && setIsDropdownOpen(false)}>
+        <div 
+            className="user" 
+            onMouseEnter={() => (isSidebarOpen || isSidebarMenu) && setIsDropdownOpen(true)} 
+            onMouseLeave={() => (isSidebarOpen || isSidebarMenu) && setIsDropdownOpen(false)}
+            onFocus={() => (isSidebarOpen || isSidebarMenu) && setIsDropdownOpen(true)}
+            onBlur={(e) => {
+                // Solo cerrar si el focus no va a un elemento dentro del dropdown
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                    (isSidebarOpen || isSidebarMenu) && setIsDropdownOpen(false);
+                }
+            }}
+            tabIndex={(isSidebarOpen || isSidebarMenu) ? 0 : -1}
+            role="button"
+            aria-label="User menu"
+            aria-expanded={isDropdownOpen}
+            aria-haspopup="menu"
+        >
              <Dropdown
                 className="user-dropdown"
                 open={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
                 animationType="SCALE_BOTTOM"
-                menu={<UserMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} setIsSidebarOpen={setIsSidebarOpen} />}
+                menu={<div ref={dropdownRef}><UserMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} isModalOpen={isModalOpen} setIsDropdownOpen={setIsDropdownOpen} toggleSidebar={toggleSidebar} setIsSidebarOpen={setIsSidebarOpen} /></div>}
             >
                 <div className="user__profile">
                 <div className="user__header">

@@ -24,7 +24,7 @@
 
 .builder-save__text{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 
     min-width: 100%;

@@ -38,22 +38,22 @@
     width: 100px;
     text-align: center;
 }
-.home__verify-button{
+.home__verify{
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 5px;
-    border-radius: 8px;
     cursor: pointer;
-    border: 1px solid var(--border-strong-color);
+    border-radius: 8px;
+    background-color: var(--accent-bg-color);
+    box-shadow: var(--blue-button-shadow);
+    padding: 6px 10px;
 }
 .home__verify-text{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--body-fresco-color);
+    color: var(--accent-color);
 }
 
 /* Installation container */
@@ -68,15 +68,16 @@
     padding: 20px;  
     border-radius: 16px;
     border: 1px solid var(--border-fresco-color);
-    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    box-shadow: var(--fancy-shadow);
     margin-top: 30px;
-    
+    background: var(--installation-background);
 }
 .home__installation-container--installed{
     border: none;
     box-shadow: none;
     max-width: 600px;
     margin-top: 0;
+    background: unset;
 }
 
 .home__installation-header{
@@ -91,7 +92,7 @@
 
 .home__installation-title{
     font-size: var(--font-heading);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
@@ -107,7 +108,7 @@
 .home__paste{
     margin-top: 10px;
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -135,7 +136,8 @@
     width: 100%;
     background: linear-gradient(90deg, #337aca, #b02c47);
     border-radius: 8px;
-    padding: 30px 20px;
+    padding: 15px 20px;
+    padding-bottom: 30px;
     position: relative;
     justify-content: space-between;
     overflow: hidden;
@@ -151,7 +153,7 @@
 }
 .home__card-title{
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--home-subtitle-color);
 }
@@ -159,7 +161,7 @@
     font-size: var(--font-size-small);
     font-weight: 400;
     letter-spacing: var(--letter-spacing-negative);
-    width: 175px;
+    max-width: 200px;
     height: 30px;
     color: var(--home-text-color);
 }
@@ -194,7 +196,7 @@
     padding: 20px;
     height: 295px;
     position: relative;
-    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    box-shadow: var(--fancy-shadow);
     gap: 30px;
 }
 .home__mid-card-header{
@@ -207,7 +209,7 @@
 }
 .home__mid-card-title{
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
@@ -292,7 +294,7 @@
 }
 .home__scanner-item-text{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -319,7 +321,7 @@
 }
 .home__no-scans-text{
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
     text-align: center;
@@ -327,7 +329,7 @@
 }
 .home__full-view-text{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 
@@ -358,7 +360,7 @@
     border-radius: 16px;
     padding: 15px;
     position: relative;
-    box-shadow: 0px 2px 4px 0px var(--shadow-strong-color);
+    box-shadow: var(--fancy-shadow);
     gap: 10px;
     overflow: hidden;
 }
@@ -374,7 +376,7 @@
 }
 .home__info-card-title{
     font-size: var(--font-size-medium);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
@@ -405,7 +407,7 @@
 }
 .home__info-card-enjoy{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -437,13 +439,13 @@
 }
 .home__usage-title{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 .home__usage-value{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -495,7 +497,7 @@
 }
 .home__button-upgrade-text{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
 }
@@ -579,13 +581,13 @@
 }
 .home__cookie-title{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 .home__cookie-value{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
@@ -619,7 +621,7 @@
 }
 .home__comply-health-text{
     font-size: 32px;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--home-complyHealth-status-color);
 }
@@ -640,13 +642,13 @@
 }
 .home__comply-health-region{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }
 .home__comply-health-value{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
 }

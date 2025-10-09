@@ -4,7 +4,7 @@
     width: 100%;
     height: 100%;
     align-items: center;
-    border-bottom: 1px solid var(--border-strong-color);
+    border-bottom: 1px solid var(--border-fresco-color);
     justify-content: center;
 }
 
@@ -14,7 +14,7 @@
     padding: 15px 0;
     width: 100%;    
     align-items: center;
-    gap: 5px;
+    gap: 8px;
     justify-content: center;
 }
 
@@ -23,8 +23,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    cursor: default;
+    gap: 6px;
+    cursor: pointer;
 
 }
 .dashboard-header__img{
@@ -39,17 +39,23 @@
     display: none;
 }
 
-.dashboard-header__color{
+.dashboard-header__color-wrapper{
     width: 23px;
     height: 23px;
     border-radius: 50%;
-    border: 1px solid var(--border-strong-color);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    position: relative;
+}
+.dashboard-header__color{
     font-size: var(--font-size-mini);
     font-weight: 500;
-    text-transform: uppercase;  
+    text-transform: uppercase;
+
+    position: absolute
 }
 .dashboard-header__color--null{
     display: none;
@@ -57,7 +63,7 @@
 
 .dashboard-header__title{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
     cursor: pointer;
@@ -88,11 +94,11 @@
 }
 
 .dashboard-header__plan{
-    font-size: 11px;
-    font-weight: 700;
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight-bold);
     color: var( --site-pro-toggle-text-color);
     background-color: var(--view-toggle-background);
-    padding: 5px;
+    padding: 2px 4px;
     border-radius: 5px;
     cursor: pointer;
     text-transform: uppercase;
@@ -120,8 +126,8 @@
     align-items: center;
     justify-content: center;
     gap: 2px;
-    width: 26px;
-    height: 24px;
+    width: 28px;
+    height: 26px;
     border-radius: 6px;
     background-color: var(--view-toggle-background);
     cursor: pointer;
@@ -143,13 +149,13 @@
     border-radius: 8px;
     background-color: var(--accent-bg-color);
     box-shadow: var(--blue-button-shadow);
+    padding: 6px 10px;
 }
 .dashboard-header__builder-text{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
-    padding: 5px 7px;
 }
 
 

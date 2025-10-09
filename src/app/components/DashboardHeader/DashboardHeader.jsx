@@ -124,11 +124,26 @@ function DashboardHeader() {
                         <SiteMenu setIsModalOpen={setIsModalOpen} setModalType={setModalType} setIsDropdownOpen={setIsDropdownOpen} siteData={siteData} setSiteData={setSiteData} openChangeModalSettings={openChangeModalSettings} />
                     }
                 >
-                    <div className="dashboard-header__dots" onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setIsDropdownOpen(!isDropdownOpen);
-                    }}>
+                    <div 
+                        className="dashboard-header__dots" 
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsDropdownOpen(!isDropdownOpen);
+                        }}
+                        aria-label="Open site menu"
+                        aria-expanded={isDropdownOpen}
+                        aria-haspopup="menu"
+                        tabIndex={0}
+                        role="button"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsDropdownOpen(!isDropdownOpen);
+                            }
+                        }}
+                    >
                         <div className="dashboard-header__dots-dot"></div>
                         <div className="dashboard-header__dots-dot"></div>
                         <div className="dashboard-header__dots-dot"></div>

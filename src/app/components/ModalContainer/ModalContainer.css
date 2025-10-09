@@ -12,13 +12,16 @@
     z-index: 1000;
 
     padding: 20px;
+
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
 }
 
 .modal {
     background: var(--modal-background);
     border-radius: 16px;
     max-width: 800px;
-    box-shadow: 0 2px 4px 0 var(--shadow-strong-color);
+    box-shadow: var(--fancy-shadow);
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -29,6 +32,26 @@
     height: 100%;
     max-height: fit-content;
     will-change: opacity, transform;
+    
+    /* Accessibility improvements */
+    outline: none;
+}
+
+/* Focus styles for modal container (for focus trapping) */
+.modal:focus {
+    outline: none; /* No outline for the modal container itself */
+}
+
+/* Focus styles for focusable elements within the modal */
+.modal button:focus-visible,
+.modal input:focus-visible,
+.modal select:focus-visible,
+.modal textarea:focus-visible,
+.modal a:focus-visible,
+.modal [tabindex]:focus-visible,
+.modal label:focus-within {
+    outline: var(--focus-outline-dashed);
+    outline-offset: 2px;
 }
 
 /* Remove gap for edit actions */

@@ -68,7 +68,7 @@ function DashboardLayout({ children }) {
   const [isInstalled, setIsInstalled] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanDone, setScanDone] = useState(false);
-  const MAX_SCANS = 3;
+  const MAX_SCANS = 10;
 
 
     //NEW BD CODE
@@ -365,11 +365,11 @@ const SiteStyle = (site) => {
 //Global function to close modals with escape key
 const handleKeyDown = useCallback((e) => {
   if (e.key === 'Escape') {
-    if (isModalOpen) {
-      closeModal();
-    }
+    // Only close the topmost modal (change modal takes priority)
     if (isChangeModalOpen) {
       closeChangeModal();
+    } else if (isModalOpen) {
+      closeModal();
     }
   }
 }, [isModalOpen, isChangeModalOpen]);
@@ -478,14 +478,14 @@ const handleBackdropClick = useCallback((e) => {
     };
 
     //Function to copy script to clipboard
-    const handleCopy = async (siteSlug, position = 'top', contentCenter = false) => {
+    const handleCopy = async (siteSlug, contentCenter = false) => {
         const script = `<script>https://trustwards.io/cdn/${siteSlug}.js</script>`;
         try {
             await navigator.clipboard.writeText(script);
-            showNotification("Copied script to clipboard", position, contentCenter);
+            showNotification("Copied script to clipboard", 'top', contentCenter);
         } catch (error) {
             console.error('Failed to copy text: ', error);
-            showNotification("Failed to copy script", position, contentCenter);
+            showNotification("Failed to copy script", 'top', contentCenter);
         }
     };
 

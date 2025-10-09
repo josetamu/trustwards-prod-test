@@ -16,7 +16,7 @@
 
 .modal-upgrade-plan__title{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-strong-color);
 }
 
@@ -38,7 +38,7 @@
 
 .modal-upgrade-plan__info{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-fresco-color);
     min-width: 200px;
 }
@@ -73,7 +73,7 @@
 
 .modal-upgrade-plan__yearly-text{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-light-color);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -125,7 +125,7 @@
 
 .modal-upgrade-plan__divider{
     height: 1px;
-    background: var(--border-strong-color);
+    background: var(--border-fresco-color);
     margin: 4px 0;
     width: 100%;
     border: none;
@@ -148,7 +148,7 @@
     position: relative;
     width: fit-content;
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-fresco-color);
     display: flex;
     flex-direction: row;
@@ -164,13 +164,13 @@
     padding: 2px 3px;
     border-radius: 3px;
     align-self: center;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 
 .modal-upgrade-plan__plan-price{
     font-size: 24px;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -185,13 +185,13 @@
     font-size: var(--font-size-mini);
     color: var(--body-semistrong-color);
     letter-spacing: var(--letter-spacing-negative);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
 }
 
 .modal-upgrade-plan__plan-nsites--unlimited{
     font-size: var(--font-size-mini);
     color: var(--accent-bg-color);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -199,7 +199,7 @@
     font-size: var(--font-size-mini);
     color: var(--body-light-color);
     letter-spacing: var(--letter-spacing-negative);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     min-width: 138px;
 }
 
@@ -224,7 +224,7 @@
 .modal-upgrade-plan__subscribe-title{
     font-size: var(--font-size-mini);
     color: var(--body-strong-color);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -254,7 +254,7 @@
 
 .modal-upgrade-plan__site-title{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -284,7 +284,7 @@
 
 .modal-upgrade-plan__site-info-title{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--body-fresco-color);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -331,7 +331,7 @@
     }
 
     .modal-upgrade-plan__plan{
-        border-top: 1px solid var(--border-strong-color);
+        border-top: 1px solid var(--border-fresco-color);
         padding: 20px 0px;
     }
 
@@ -347,7 +347,7 @@
 
     .modal-upgrade-plan__site-title{
         font-size: var(--font-size-small);
-        font-weight: var(--font-weight);
+        font-weight: var(--font-weight-medium);
         color: var(--body-strong-color);
     }
 
@@ -363,7 +363,7 @@
     .modal-upgrade-plan__info-container{
         padding: 20px 0;
         width: 100%;
-        border-top: 1px solid var(--border-strong-color);
+        border-top: 1px solid var(--border-fresco-color);
     }
 
     .modal-upgrade-plan__info-container:nth-child(1)::before{
@@ -372,7 +372,7 @@
         height: 1px;
         margin-bottom: 15px;
         font-size: var(--font-size-small);
-        font-weight: var(--font-weight);
+        font-weight: var(--font-weight-medium);
         color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
@@ -383,7 +383,7 @@
         height: 1px;
         margin-bottom: 15px;
         font-size: var(--font-size-small);
-        font-weight: var(--font-weight);
+        font-weight: var(--font-weight-medium);
         color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
@@ -394,7 +394,7 @@
         height: 1px;
         margin-bottom: 15px;
         font-size: var(--font-size-small);
-        font-weight: var(--font-weight);
+        font-weight: var(--font-weight-medium);
         color: var(--body-fresco-color);
         letter-spacing: var(--letter-spacing-negative);
     }
@@ -405,7 +405,7 @@
         height: 1px;
         margin-bottom: 15px;
         font-size: var(--font-size-small);
-        font-weight: var(--font-weight);
+        font-weight: var(--font-weight-medium);
         color: var(--accent-bg-color);
         letter-spacing: var(--letter-spacing-negative);
     }

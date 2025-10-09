@@ -17,11 +17,11 @@
     border-radius: 8px;
     border: 1px solid var(--border-light-color);
     padding: 6px 12px;
-    box-shadow: 0px 4px 5px 0px var(--shadow-light-color);
+    box-shadow: var(--fancy-shadow);
     position: relative;
     color: var(--user-tooltip-color);
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .builder-user .tooltip__mask::before {
@@ -35,7 +35,7 @@
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
     border-right: 6px solid var(--user-tooltip-background);
-    filter: drop-shadow(-1px 0 1px var(--shadow-light-color));
+    filter: drop-shadow(-1px 0 1px #00000010);
   }
   .builder-user .tooltip__mask::after{
     display: none !important;
@@ -61,7 +61,7 @@
     align-items: center;
     justify-content: center;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--avatar-color);
     background-color: var(--avatar-background);
     text-transform: uppercase;

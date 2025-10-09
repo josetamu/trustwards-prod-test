@@ -16,7 +16,7 @@
 
 .tw-builder__settings-label{
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--label-color);
 }
@@ -35,7 +35,7 @@
 
 .tw-builder__settings-subtitle{
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--subtitle-color);
     display: flex;
@@ -50,7 +50,7 @@
 }
 
 .tw-builder__settings-select{
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     border-radius: 5px;
     padding: 5px;
     padding-right: 20px;
@@ -58,7 +58,7 @@
     border: none;
     color: var(--builder-text-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     appearance: none;
     cursor: pointer;
@@ -93,14 +93,14 @@
     padding: 5px;
     border-radius: 5px;
     border: none;
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     color: var(--builder-text-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     cursor: text;
     &::placeholder{
-        color: var(--shadow-color);
+        color: var(--body-fresco-color);
     }
 }
 .tw-builder__settings-input--link{
@@ -116,7 +116,7 @@
 }
 .tw-builder__settings-actions{
     display: flex;
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     width: 90px;
     height: 25px;
     border-radius: 8px;
@@ -131,12 +131,12 @@
 }
 .tw-builder__settings-action{
     width: 50%;
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     border-radius: 5px;
     padding: 5px;
     border: none;
     background-color: transparent;
-    color: var(--shadow-color);
+    color: var(--body-fresco-color);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -149,7 +149,7 @@
 }
 .tw-builder__settings-action--reverse{
         background-color: #fff;
-        color: var(--text-color);
+        color: #000;
         border: 1px solid var(--border-light-color);
         border-radius: 7px;
         height: 23px;
@@ -180,7 +180,7 @@
     padding: 5px;
     border-radius: 5px;
     border: none;
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     color: var(--builder-text-color);
     font-size: var(--font-size-mini);
     height: 100%;
@@ -197,7 +197,7 @@
     display: flex;
     align-items: center;
     flex-direction: row;
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     border-radius: 5px;
     padding: 5px;
 }
@@ -233,7 +233,7 @@
     border:none;
     background: none;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-hex:focus{
@@ -257,7 +257,7 @@
     background: none;
     text-align: center;
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-percentage:focus{
@@ -280,7 +280,7 @@
     position: relative;
     color: #222222;
     font-size: var(--font-size-extreme-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
  .tw-builder__settings-action .tooltip__mask::before {
@@ -314,7 +314,7 @@
     width: 100%;
     min-height: 80px;
     padding: 8px 12px;
-    border: 1px solid var(--shadow-color);
+    border: 1px solid var(--border-light-color);
     border-radius: 4px;
     font-family: inherit;
     font-size: 14px;
@@ -325,7 +325,7 @@
 
 .tw-builder__settings-textarea:focus {
     outline: none;
-    border-color: var(--shadow-color);
+    border-color: var(--border-light-color);
     box-shadow: 0 0 0 2px var(--box-shadow-color);
 }
 .tw-builder__settings-options {
@@ -333,10 +333,9 @@
     top: calc(100% + 6px);
     right: 5%;
     width: fit-content;
-    background: #2B2B2B;
+    background: var(--right-panel-dropdown-background);
     color: white;
     border-radius: 5px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     list-style: none;
     margin: 0;
     padding: 4px 5px;
@@ -360,7 +359,7 @@
     font-size: var(--font-size-mini);
     position: relative;
     white-space: nowrap;
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
   }
   .tw-builder__settings-option--font {
     padding: 8px 1px;
@@ -424,23 +423,25 @@
     cursor: pointer;
     padding: 4px;
     border-radius: 5px;
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     position: relative;
 }
 .tw-builder__settings-pen-controls {
     position: absolute;
-    top: 0;
-    right: 10%;
-    width: 175px;
+    top: calc(100% + 10px);
+    right: 0;
+    width: calc(var(--panels-width) - 21px);
     height: fit-content;
     border-radius: 5px;
-    background-color: #2B2B2B;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+    background-color: var(--control-context-background);
     z-index: 10;
     padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+
+    border: 1px solid var(--border-light-color);
+    box-shadow: var(--fancy-shadow);
 }
 .tw-builder__settings-pen-header {
     display: flex;
@@ -449,44 +450,39 @@
 }
 .tw-builder__settings-pen-name {
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
-    color: #F5F5F5;
+    color: var(--body-fresco-color);
 }
 .tw-builder__settings-pen-close {
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #666666;
+    color: var(--body-light-color);
 }
-.tw-builder__settings-pen-close:hover {
-    color: #F5F5F5;
-}
+
 
 .tw-builder__settings-pen-divider {
     height: 1px;
-    background-color: #363636;
-
+    background-color: var(--border-light-color);
 }
 .tw-builder__settings-pen-body {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
-.tw-builder__settings-pen-body .tw-builder__settings-subtitle {
-    color:  #AAAAAA;
-}
 .tw-builder__settings-pen-body .tw-builder__settings-input {
-    background-color: #404040;
-    color: #F5F5F5;
+    background-color: var(--control-background);
+    color: var(--body-fresco-color);
     width: 54px;
 }
 .tw-builder__settings-pen-body .tw-builder__settings-input--abled{
-    background-color: #666666;
+    background-color: var(--control-background);
 }
 .tw-builder__settings-pen-body .tw-builder__settings-input--disabled{
-    background-color: #404040;
+    background-color: var(--control-background);
+    opacity: 0.5;
 }
 .tw-builder__settings-pen-body .tw-builder__settings-background{
     background-color: #404040;
@@ -494,7 +490,7 @@
 
 .tw-builder__settings-pen-body .tw-builder__settings-hex,
 .tw-builder__settings-pen-body .tw-builder__settings-percentage {
-    color: #F5F5F5;
+    color: var(--body-fresco-color);
 }
 
 .tw-builder__settings-pen-body .tw-builder__settings-color,
@@ -549,7 +545,7 @@
 }
 
 .tw-builder__settings-pen-body .tw-builder__settings-select {
-    background-color: #2B2B2B;
+    background-color: var(--control-background);
     color: #F5F5F5;
 }
 .tw-builder__settings-pen-body .tw-builder__settings-actions {
@@ -656,7 +652,7 @@
     justify-content: center;
     width: 100%;
     height: 112px;
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     
     background-size: contain;
     border-radius: 5px;
@@ -680,16 +676,16 @@
 .tw-builder__settings-image-span{
     color: var(--label-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-image-input{
     display: none;
 }
 .tw-builder__settings-select-placeholder{
-    color: var(--shadow-color);
+    color: var(--body-fresco-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -703,7 +699,7 @@
     background-color: var(--tab-slider-background);
     border-radius: 6px;
     border: 1px solid var(--border-light-color);
-    box-shadow: 0 2px 4px 0 var(--shadow-light-color);
+    box-shadow: var(--fancy-shadow);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .tw-builder__settings-actions:has(.tw-builder__settings-action--active) .tw-builder__settings-slider {
@@ -748,13 +744,13 @@
     justify-content: center;
     flex-direction: row;
     width: 100%;
-    border: 2px dotted var(--shadow-color);
+    border: 2px dotted var(--border-light-color);
     border-radius: 5px;
     padding: 5px 20px;
     cursor: pointer;
 }
 .tw-builder__settings-add-property-label{
-    color: var(--shadow-color);
+    color: var(--body-fresco-color);
     font-size: 11px;
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
@@ -771,14 +767,14 @@
     padding: 5px;
     border-radius: 5px;
     border: none;
-    background-color: var(--builder-background);
+    background-color: var(--control-background);
     color: var(--builder-text-color);
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight);
     letter-spacing: var(--letter-spacing-negative);
     cursor: text;
     &::placeholder{
-        color: var(--shadow-color);
+        color: var(--body-fresco-color);
     }
     &:focus{
         outline: none;

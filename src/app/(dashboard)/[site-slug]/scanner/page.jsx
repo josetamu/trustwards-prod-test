@@ -2,7 +2,7 @@
 
 import './scanner.css';
 import { useParams } from 'next/navigation';
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import { ScanButton } from './ScanButton';
 import { MonthlyScans } from './MonthlyScans';
@@ -16,10 +16,16 @@ import { supabase } from '@supabase/supabaseClient';
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
+    const [scanCount, setScanCount] = useState(0);
     const {isScanning, setIsScanning, scanDone, setScanDone, MAX_SCANS, isInstalled, setIsInstalled, siteData, setSiteData, showNotification, setWebs, allUserDataResource} = useDashboard();
 
-
-
+    async function getScanCount() {
+        const { data: currentSite } = await supabase.from('Site').select('Scans').eq('id', siteSlug).single();
+        setScanCount(currentSite?.Scans || 0);
+    }
+    useEffect(() => {
+        getScanCount();
+    }, [siteSlug]);
 
     return (
         <div className="scanner__wrapper">
@@ -33,12 +39,12 @@ function Home() {
                         <ScanButton isScanning={isScanning}  MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug}/>
                     </Suspense>
                     <Suspense fallback={<MonthlyScansSkeleton />}>
-                        <MonthlyScans siteSlug={siteSlug} MAX_SCANS={MAX_SCANS} />
+                        <MonthlyScans scanCount={scanCount} MAX_SCANS={MAX_SCANS} />
                     </Suspense>
                 </div>
             </div>
             <Suspense fallback={<ScanResultSkeleton />}>
-                <ScanResult scanDone={scanDone} isScanning={isScanning} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug} />
+                <ScanResult scanDone={scanDone} isScanning={isScanning} MAX_SCANS={MAX_SCANS} setScanDone={setScanDone} setIsScanning={setIsScanning} siteSlug={siteSlug} scanCount={scanCount} setScanCount={setScanCount} />
             </Suspense>
         </div>
     );

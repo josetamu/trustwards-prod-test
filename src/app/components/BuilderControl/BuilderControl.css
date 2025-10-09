@@ -25,7 +25,7 @@
     justify-content: center;
     gap: 7px;
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     color: var(--label-color);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -51,11 +51,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--shadow-color);
+    color: var(--body-light-color);
     font-size: 8px;
     font-weight: 900;
     letter-spacing: var(--letter-spacing-negative);
-    border: 1px solid var(--shadow-color);
+    border: var(--border-light-color);
     border-radius: 2px;
     position: relative;
 }

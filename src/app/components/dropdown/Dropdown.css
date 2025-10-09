@@ -23,7 +23,7 @@
   background: var(--dropdown-background);
   border: 1px solid var(--border-strong-color);
   border-radius: 8px;
-  box-shadow: 0 4px 5px 0 var(--shadow-fresco-color);
+  box-shadow: var(--fancy-shadow);
   backdrop-filter: blur(2.5px);
   display: flex;
   flex-direction: column;
@@ -45,7 +45,7 @@
   border-radius: 6px;
   color: var(--body-fresco-color);
   letter-spacing: var(--letter-spacing-negative);
-  font-weight: var(--font-weight);
+  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-small);
   white-space: nowrap;
   padding: 8px 12px;
