@@ -29,43 +29,43 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
         if(activeTheme || !isFirstTime){
             switch(activeTheme){
                 case 'blank':
-                    setJSONtree(blank);
+                    setJSONtree(blank, !isFirstTime);
                     save(blank);
                     break;
                 case 'trustwards-light':
-                    setJSONtree(trustwardsLight);
+                    setJSONtree(trustwardsLight, !isFirstTime);
                     save(trustwardsLight);
                     break;
                 case 'trustwards-dark':
-                    setJSONtree(trustwardsDark);
+                    setJSONtree(trustwardsDark, !isFirstTime);
                     save(trustwardsDark);
                     break;
                 case 'oregano':
-                    setJSONtree(oregano);
+                    setJSONtree(oregano, !isFirstTime);
                     save(oregano);
                     break;
                 case 'nebula':
-                    setJSONtree(nebula);
+                    setJSONtree(nebula, !isFirstTime);
                     save(nebula);
                     break;
                 case 'quiero':
-                    setJSONtree(quiero);
+                    setJSONtree(quiero, !isFirstTime);
                     save(quiero);
                     break;
                 case 'avocado':
-                    setJSONtree(avocado);
+                    setJSONtree(avocado, !isFirstTime);
                     save(avocado);
                     break;
                 case 'mito':
-                    setJSONtree(mito);
+                    setJSONtree(mito, !isFirstTime);
                     save(mito);
                     break;
                 case 'grainient':
-                    setJSONtree(grainient);
+                    setJSONtree(grainient, !isFirstTime);
                     save(grainient);
                     break;
                 case 'brutal':
-                    setJSONtree(brutal);
+                    setJSONtree(brutal, !isFirstTime);
                     save(brutal);
                     break;
                 default:

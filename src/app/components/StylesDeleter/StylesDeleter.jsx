@@ -30,32 +30,42 @@ export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, get
         return hasDirectValue || hasCSS || hasJSON || hasAnyGroupSide;
     })();
 
-    //Function to delete the styles
-    const handleDelete = useCallback(() => {
-        //If jsonProperty is set, apply the empty marker to it
-        if (JSONProperty && applyGlobalJSONChange) applyGlobalJSONChange(JSONProperty, effectiveEmptyMarker);
+//Function to delete the styles
+const handleDelete = useCallback(() => {
+    //If jsonProperty is set, apply the empty marker to it
+    if (JSONProperty && applyGlobalJSONChange) applyGlobalJSONChange(JSONProperty, effectiveEmptyMarker);
 
-        //If cssDeleteBatch is set, apply the cssDeleteBatch to the cssProperty and call onDelete. This is used for the border width, radius, etc. Because they have multiple properties.(border-width, border-radius, border-top-width, border-top-radius, etc.)
-        if (cssDeleteBatch && applyGlobalCSSChange) {
-            applyGlobalCSSChange(cssDeleteBatch);
-            onDelete?.();
-            return;
-        }
-
-        //Permit restore the default value if defaultValue is set,if not just set the cssProperty to empty string.
-        const batch = {};
-        if (cssProperty) batch[cssProperty] = defaultValue || '';
-        if (cssPropertyGroup) {
-            batch[cssPropertyGroup] = '';
-            ['top','right','bottom','left'].forEach(side => {
-                batch[`${cssPropertyGroup}-${side}`] = '';
-            });
-        }
-        if (Object.keys(batch).length && applyGlobalCSSChange) {
-            applyGlobalCSSChange(batch);
-        }
+    //If cssDeleteBatch is set, apply the cssDeleteBatch to the cssProperty and call onDelete. This is used for the border width, radius, etc. Because they have multiple properties.(border-width, border-radius, border-top-width, border-top-radius, etc.)
+    if (cssDeleteBatch && applyGlobalCSSChange) {
+        applyGlobalCSSChange(cssDeleteBatch);
         onDelete?.();
-    }, [JSONProperty, cssProperty, cssPropertyGroup, applyGlobalCSSChange, applyGlobalJSONChange, effectiveEmptyMarker, cssDeleteBatch, onDelete]);
+        return;
+    }
+
+    // Single property: call prop, val so it works even if the handler doesn't support batch
+    if (cssProperty && !cssPropertyGroup && applyGlobalCSSChange) {
+        applyGlobalCSSChange(cssProperty, defaultValue || '');
+        onDelete?.();
+        return;
+    }
+
+    // Group or mixed: build a batch
+    const batch = {};
+    if (cssPropertyGroup) {
+        batch[cssPropertyGroup] = '';
+        ['top','right','bottom','left'].forEach(side => {
+            batch[`${cssPropertyGroup}-${side}`] = '';
+        });
+    }
+    if (cssProperty) {
+        batch[cssProperty] = defaultValue || '';
+    }
+
+    if (Object.keys(batch).length && applyGlobalCSSChange) {
+        applyGlobalCSSChange(batch);
+    }
+    onDelete?.();
+}, [JSONProperty, cssProperty, cssPropertyGroup, applyGlobalCSSChange, applyGlobalJSONChange, effectiveEmptyMarker, cssDeleteBatch, onDelete, defaultValue]);
 
     return (
         <div className={`tw-builder__settings-deleter ${hasValue && jsonRaw !== effectiveEmptyMarker ? 'tw-builder__settings-deleter--active' : ''}`}>

@@ -46,7 +46,14 @@ function treeReducer(state, action) {
                 future: []
             };
         case 'SET': //Saves the current JSONtree in the undo stack, puts the new JSONtree in the present and clears the redo stack
-            return {
+            if (action.skipHistory) {
+                return {
+                    past: past,
+                    present: action.payload,
+                    future: future
+                };
+            }
+        return {
                 past: [...past, deepCopy(present)],
                 present: action.payload,
                 future: []

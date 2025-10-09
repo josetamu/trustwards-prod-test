@@ -79,8 +79,6 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                         {name: 'Border', type: 'border'},
                         {name: 'Shadow', type: 'box-shadow'},
                         {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
-                        {name: 'Prueba', type: 'select', placeholder: 'Prueba', options: ['Prueba'], options2: ['Prueba 2'], cssProperty: 'postion'},
-                        {name: 'Direction', type: 'choose', category: 'flex-direction', cssProperty: 'flex-direction'},
                     ]
                 }
             ]

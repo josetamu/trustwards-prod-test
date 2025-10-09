@@ -1524,18 +1524,19 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     // ========================================
     // General states (for all types)
     // ========================================
-    const [selected, setSelected] = useState(''); // Se inicializa después
+    const [selected, setSelected] = useState('');
+
     const [open, setOpen] = useState(false);
     const containerRef = useRef(null);
-    const [searchFilter, setSearchFilter] = useState('');
+    
     
     // ========================================
     // Specific states and constants for font/weight
     // ========================================
     const [fontOptions, setFontOptions] = useState([]);
-    const [fontVariants, setFontVariants] = useState([]);
     const [weightOptions, setWeightOptions] = useState([]);
     const [italicWeightOptions, setItalicWeightOptions] = useState([]);
+    const [searchFilter, setSearchFilter] = useState('');
     
     const systemFontOptions = ['Arial', 'Courier New', 'Georgia', 'Helvetica', 'Verdana', 'Tahoma', 'Times','Times New Roman', 'Sans-serif'];
     
@@ -1578,9 +1579,9 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         if (!family) return;
         const famParam = family.trim().replace(/\s+/g, '+');
         const id = `tw-gf-${famParam}`;
-    
+        //Get the head of the iframe
         const head = document.querySelector('.tw-builder__canvas iframe')?.contentDocument?.head || document.head;
-        
+        //Preconnect to agilize the loading of the fonts
         if (!head.querySelector('link[data-tw-preconnect="gfonts-apis"]')) {
             const pc1 = document.createElement('link');
             pc1.rel = 'preconnect';
@@ -1596,13 +1597,16 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             head.appendChild(pc2);
         }
     
+        //Find the font options
         const entry = fontOptions.find(f => f.family === family);
+        //Build the href
         let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
     
+        //If the family has variants, add the variants row
         if (entry && Array.isArray(entry.variants)) {
             const normal = new Set();
             const italic = new Set();
-    
+            //Add the variants to the set
             entry.variants.forEach(v => {
                 if (v === 'regular') { normal.add(400); return; }
                 if (v === 'italic')  { italic.add(400); return; }
@@ -1613,26 +1617,32 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 }
             });
             
+            //Sort the numbers
             const sortNums = arr => Array.from(arr).sort((a,b) => a - b).join(';');
     
             if (italic.size) {
+                //Build the href with the variants
                 const parts = [];
                 const nList = sortNums(normal);
                 const iList = sortNums(italic);
                 if (nList) parts.push(`0,${nList}`);
                 if (iList) parts.push(`1,${iList}`);
+                //Build the href with the variants italic
                 href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
             } else if (normal.size) {
+                //Build the href with the weights
                 href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
             }
         }
         
         let link = head.querySelector(`link#${id}`);
+        //If the link doesn't exist, create it
         if (!link) {
             link = document.createElement('link');
             link.id = id;
             link.rel = 'stylesheet';
             link.href = href;
+            //Append the link to the head
             head.appendChild(link);
         }
     };
@@ -1692,7 +1702,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     // ========================================
     
     // Initialize the state after defining the auxiliary functions
-    useEffect(() => {
+/*     useEffect(() => {
         if (JSONProperty && getGlobalJSONValue) {
             setSelected(getGlobalJSONValue(JSONProperty) || value || '');
             return;
@@ -1716,7 +1726,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             ? (extractPrimaryFamily(cssVal) || value || '')
             : (cssVal || value || '');
         setSelected(initialValue);
-    }, []); // Only on mount
+    }, []); // Only on mount */
     
     // ========================================
     // Effects - specific for font/weight
@@ -1827,7 +1837,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         
                 applyGlobalCSSChange({
                     [cssProperty || 'font-family']: stack,
-                    'font-weight': ''
+                    'font-weight': '', 'font-style': ''
                 });
             }
             onChange && onChange(newValue);
@@ -2658,9 +2668,6 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
         const parsed = parseBoxShadow(currentShadow);
         setInset(!!parsed.inset);
         
-        // Only update localValues if the currentShadow changed by selection of element
-        // Do not update if it is an empty string and we already have local values
-        if (currentShadow || (!currentShadow && !Object.values(localValues).some(v => v))) {
             setLocalValues({
                 x: parsed.x === '0' ? '' : parsed.x,
                 y: parsed.y === '0' ? '' : parsed.y,
@@ -2668,8 +2675,8 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
                 spread: parsed.spread === '0' ? '' : parsed.spread,
                 color: parsed.color
             });
-        }
-    }, [selectedElementData?.id]);
+        
+    }, [selectedElementData?.id, currentShadow ]);
 
     //Function get the box-shadow values from local state
     const wrappedGetCSS = useCallback((prop) => {
@@ -2684,6 +2691,54 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     //Function apply the box-shadow string to the CSS and JSON.
 const wrappedApplyCSS = useCallback((prop, val) => {
+    // If the first parameter is an object (batch), process it
+   /*  if (typeof prop === 'object' && prop !== null && val === undefined) {
+        const batch = prop;
+        let nextLocal = { ...localValues };
+        let hasBoxShadowChange = false;
+        
+        // Process each property of the batch
+        Object.entries(batch).forEach(([key, value]) => {
+            switch (key) {
+                case 'box-shadow-x':
+                    nextLocal.x = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-y':
+                    nextLocal.y = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-blur':
+                    nextLocal.blur = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-spread':
+                    nextLocal.spread = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow-color':
+                    nextLocal.color = value != null ? value.toString().trim() : '';
+                    hasBoxShadowChange = true;
+                    break;
+                case 'box-shadow':
+                    // If box-shadow is directly coming, apply it without more
+                    if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': value });
+                    return;
+                default:
+                    // For other properties, pass them to the original applyGlobalCSSChange
+                    if (applyGlobalCSSChange) applyGlobalCSSChange({ [key]: value });
+                    break;
+            }
+        });
+        
+        // If there were changes in box-shadow, update
+        if (hasBoxShadowChange) {
+            setLocalValues(nextLocal);
+            const finalStr = composeBoxShadow({ ...nextLocal, inset });
+            if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': finalStr });
+        }
+        return;
+    } */
     let nextLocal = { ...localValues };
     
     //Switch the property to apply the value to the correct part.
@@ -2784,7 +2839,11 @@ const wrappedApplyCSS = useCallback((prop, val) => {
     return (
         <div className="tw-builder__settings-setting" key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-                <StylesDeleter value={currentShadow} cssProperty="box-shadow" getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange}/>
+                <StylesDeleter 
+                value={currentShadow} 
+                cssProperty="box-shadow" 
+                getGlobalCSSValue={getGlobalCSSValue} 
+                applyGlobalCSSChange={applyGlobalCSSChange}/>
             </span>
             <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
                 <span className="tw-builder__settings-pen" onClick={toggleOpen}>
