@@ -482,7 +482,12 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
 
 const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
 
-    const colorInputRef = useRef(null);
+   
+
+    //Function to convert rgb to hex
+    const rgbToHex = (r, g, b) => {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    };
 
     //Function to get the color from jsonTree
     const getSavedValue = useCallback(() => {
@@ -516,25 +521,24 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         return { color: ``, hex: ``, percentage: `` };
     }, [getGlobalCSSValue, cssProperty]);
     
-    //Function to convert rgb to hex
-    const rgbToHex = (r, g, b) => {
-        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    };
 
-    
-        // Initialize states with saved values
-        const initialValues = getSavedValue();
-        const [color, setColor] = useState(initialValues.color);
-        const [hex, setHex] = useState(initialValues.hex);
-        const [percentage, setPercentage] = useState(initialValues.percentage);
-    
-        // Effect to update the values when the element is selected
-        useEffect(() => {
-            const newValues = getSavedValue();
-            setColor(newValues.color);
-            setHex(newValues.hex);
-            setPercentage(newValues.percentage);
-        }, [selectedElementData,getSavedValue]); 
+    // Initialize states with saved values
+    const initialValues = getSavedValue();
+    const [color, setColor] = useState(initialValues.color);
+    const [hex, setHex] = useState(initialValues.hex);
+    const [percentage, setPercentage] = useState(initialValues.percentage);
+
+    const colorInputRef = useRef(null);
+    // Timeout ref for the color
+    const colorTimeoutRef = useRef(null);
+
+    // Effect to update the values when the element is selected
+    useEffect(() => {
+        const newValues = getSavedValue();
+        setColor(newValues.color);
+        setHex(newValues.hex);
+        setPercentage(newValues.percentage);
+    }, [selectedElementData,getSavedValue]); 
 
     //Function to convert hex to rgba with opacity
     const hexToRgba = (hex, opacity) => {
@@ -564,16 +568,11 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
             applyGlobalCSSChange(cssProperty, finalValue);
         }
     };
-    // Timeout ref for the color
-    const colorTimeoutRef = useRef(null);
+
 
     //Function to change the color
     const handleColorChange = useCallback((e) => {
         const newColor = e.target.value;
-        
-        // Update visual state immediately for responsive UI
-        setColor(newColor);
-        setHex(newColor.replace('#', '').toUpperCase());
         
         // Clear previous timeout if exists
         if (colorTimeoutRef.current) {
@@ -594,6 +593,13 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
             }
         };
     }, []);
+
+    //Function to open the color picker(native html input)
+    const handleColorClick = () => {
+        if(colorInputRef.current){
+            colorInputRef.current.click();
+        }
+    };
 
     //Function to change the color with the text input
     const handleHexChange = (e) => {
@@ -636,31 +642,40 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
             applyCSSChange('', '');
         } 
     };
-    //Function to change the transparency with the percentage input
-    const handlePercentageChange = (e) => {
-        let value = e.target.value.replace('%', '');
-        if(value === '' && e.type === 'blur'){
-            value = 100;
-        } 
-        if(value < 0) value = 0;
-        if(value > 100) value = 100;
-        if(isNaN(value)) value = 0;
 
-        if(value !== 0 || e.type === 'blur') {
-            const finalValue = `${value}%`;
-            setPercentage(finalValue);
-            e.target.value = finalValue;
-            applyCSSChange(color, finalValue);
+//Function to change the transparency with the percentage input
+const handlePercentageChange = (e) => {
+    let raw = (e.target.value || '').replace('%', '').trim();
+
+    //allow to delete the field
+    if (raw === '') {
+        if (e.type === 'blur') {
+            setPercentage('0');
+            applyCSSChange(color, '0');
+        } else {
+            setPercentage('');
         }
-    };
-    //Function to open the color picker(native html input)
-    const handleColorClick = () => {
-        if(colorInputRef.current){
-            colorInputRef.current.click();
-        }
-    };
+        return;
+    }
+
+    // Normalize the number between 0 and 100
+    let num = Number(raw);
+    if (Number.isNaN(num)) num = 0;
+    if (num < 0) num = 0;
+    if (num > 100) num = 100;
+
+    const finalValue = `${num}%`;
+    setPercentage(finalValue);
+    e.target.value = finalValue;
+
+    // Apply when typing (except 0) or always in blur
+    if (e.type === 'blur' || num !== 0) {
+        applyCSSChange(color, finalValue);
+    }
+};
+
     //Function to get the final color. This is used to mix the color with the transparency
-    const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage || '100%').replace('%', ''))) : 'transparent';
+    const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage).replace('%', ''))) : 'transparent';
 
     return (
         <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
@@ -1544,21 +1559,20 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     const reverseMap = fontWeightMapReverse();
     
     // ========================================
-    // General helper functions
+    // Specific functions for font/weight
     // ========================================
     
-    // Función general para extraer la primera familia de fuentes
+    
+    // Extract the primary family from the css font family
     const extractPrimaryFamily = (cssFontFamily) => {
         if (!cssFontFamily) return '';
         const first = cssFontFamily.split(',')[0].trim();
         return first.replace(/^["']|["']$/g, '');
     };
     
-    // ========================================
-    // Specific functions for font/weight
-    // ========================================
+
     
-    // Función para cargar fuentes de Google Fonts en el iframe
+    // Function to load Google Fonts in the iframe
     const ensureFontLoaded = (family) => {
         if (!family) return;
         const famParam = family.trim().replace(/\s+/g, '+');
@@ -1622,7 +1636,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         }
     };
     
-    // Función para calcular las opciones de peso disponibles según la familia
+    // Function to calculate the available weight options according to the family
     const computeWeightOptionsForFamily = (family) => {
         if (!family) {
             return {
@@ -1676,7 +1690,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     // Initialization of the selected state
     // ========================================
     
-    // Inicializar el estado después de definir las funciones auxiliares
+    // Initialize the state after defining the auxiliary functions
     useEffect(() => {
         if (JSONProperty && getGlobalJSONValue) {
             setSelected(getGlobalJSONValue(JSONProperty) || value || '');
@@ -1701,13 +1715,13 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             ? (extractPrimaryFamily(cssVal) || value || '')
             : (cssVal || value || '');
         setSelected(initialValue);
-    }, []); // Solo al montar
+    }, []); // Only on mount
     
     // ========================================
     // Effects - specific for font/weight
     // ========================================
     
-    // Fetch font options desde la API (solo para Font y Weight)
+    // Fetch font options from the API (only for Font and Weight)
     useEffect(() => {
         if (name !== 'Font' && name !== 'Weight') return;
         fetch('/api/fonts')
@@ -1716,7 +1730,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             .catch(() => setFontOptions([]));
     }, [name]);
     
-    // Actualizar opciones de peso cuando cambia la familia seleccionada (solo para Weight)
+    // Update weight options when the selected family changes (only for Weight)
     useEffect(() => {
         if (name !== 'Weight') return;
         const cssFamily = getGlobalCSSValue?.('font-family');
@@ -1726,7 +1740,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         setItalicWeightOptions(italics);
     }, [name, fontOptions, selectedId, getGlobalCSSValue]);
     
-    // Reinyectar la fuente actual con todos los pesos cuando fontOptions llega
+    // Reinject the current font with all weights when fontOptions arrives
     useEffect(() => {
         if (name !== 'Font' && name !== 'Weight') return;
         const cssVal = getGlobalCSSValue?.(cssProperty || 'font-family');
@@ -1738,7 +1752,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     // Effects - general
     // ========================================
     
-    // Cerrar el select al hacer clic fuera
+    // Close the select when clicking outside
     useEffect(() => {
         if (!open) return;
         const handleClickOutside = (e) => {
@@ -1750,11 +1764,11 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [open]);
     
-    // Actualizar cuando cambia el elemento seleccionado
+    // Update when the selected element changes
     useEffect(() => {
         if (!selectedId) return;
     
-        // Si usa JSON, respeta ese flujo
+        // If using JSON, respect that flow
         if (JSONProperty && getGlobalJSONValue) {
             const next = getGlobalJSONValue(JSONProperty) ?? '';
             if (next !== selected) setSelected(next);
@@ -1762,7 +1776,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         }
         
         if (getGlobalCSSValue && cssProperty) {
-            // Caso especial: Weight
+            // Special case: Weight
             if (name === 'Weight') {
                 const cssValue = getGlobalCSSValue(cssProperty);
                 const fontStyle = getGlobalCSSValue('font-style');
@@ -1776,14 +1790,14 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 }
                 if ((nextLabel || '') !== selected) setSelected(nextLabel || '');
             } 
-            // Caso especial: Font
+            // Special case: Font
             else if (name === 'Font') {
                 const cssValue = getGlobalCSSValue(cssProperty);
                 const next = extractPrimaryFamily(cssValue) || '';
                 if (next) ensureFontLoaded(next);
                 if (next !== selected) setSelected(next);
             }
-            // Caso general
+            // General case
             else {
                 const cssValue = getGlobalCSSValue(cssProperty);
                 const next = cssValue ?? '';
@@ -1793,14 +1807,14 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue]);
     
     // ========================================
-    // Handlers - general
+    // Handler
     // ========================================
     
-    // Manejar cambios en el select
+    // Handle changes in the select
     const handleSelectChange = (newValue) => {
         setSelected(newValue);
         
-        // Caso especial: Font
+        // Special case: Font
         if (name === 'Font') {
             const prev = extractPrimaryFamily(getGlobalCSSValue?.('font-family')) || '';
             ensureFontLoaded(newValue);
@@ -1819,7 +1833,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             return;
         }
         
-        // Caso especial: Weight
+        // Special case: Weight
         if (name === 'Weight') {
             const isItalic = newValue.includes('Italic');
             const weightName = isItalic ? newValue.replace(' Italic', '') : newValue;
@@ -1837,7 +1851,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             return;
         }
         
-        // Caso general: otros selects
+        // General case: other selects
         if (JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
         } else if (cssProperty && applyGlobalCSSChange) {
@@ -1850,10 +1864,10 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     };
     
     // ========================================
-    // 9️⃣ COMPUTED VALUES
+    // COMPUTED VALUES
     // ========================================
     
-    // Combinar opciones para Font y Weight
+    // Combine options for Font and Weight
     const allOptions = (() => {
         if (name === 'Font') {
             const googleFonts = fontOptions?.length ? fontOptions : [];
@@ -1876,7 +1890,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
     })();
     
-    // Filtrar opciones basado en búsqueda (solo para Font)
+    // Filter options based on search (only for Font)
     const filteredOptions = (() => {
         if (name !== 'Font' || !searchFilter) {
             return allOptions;
@@ -1891,7 +1905,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     })();
     
     // ========================================
-    // 🔟 RENDER
+    // RENDER
     // ========================================
 
     return (
@@ -1994,6 +2008,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
 }
 
 const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));
     const [activeTooltip, setActiveTooltip] = useState(null);
@@ -2208,7 +2223,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         }
     };
     
-    const handleBorderWidthBlur = (side) => {
+    const handleBorderWidthBlur = () => {
         // If width linking is active, apply the linked value to all border sides
         if (isWidthLinked) {
             if (applyGlobalCSSChange) {
@@ -2540,10 +2555,10 @@ const parseRadius = useCallback((radiusStr) => {
 const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
 
     const [open, setOpen] = useState(false);
-    const [inset, setInset] = useState(false);
     const instanceId = useRef(Symbol('pen'));    
     const containerRef = useRef(null);
-    
+
+    const [inset, setInset] = useState(false);
     //Local state to keep the values that the user writes
     const [localValues, setLocalValues] = useState({
         x: '',
@@ -2668,56 +2683,6 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     //Function apply the box-shadow string to the CSS and JSON.
 const wrappedApplyCSS = useCallback((prop, val) => {
-    // If the first parameter is an object (batch), process it
-    if (typeof prop === 'object' && prop !== null && val === undefined) {
-        const batch = prop;
-        let nextLocal = { ...localValues };
-        let hasBoxShadowChange = false;
-        
-        // Process each property of the batch
-        Object.entries(batch).forEach(([key, value]) => {
-            switch (key) {
-                case 'box-shadow-x':
-                    nextLocal.x = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-y':
-                    nextLocal.y = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-blur':
-                    nextLocal.blur = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-spread':
-                    nextLocal.spread = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-color':
-                    nextLocal.color = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow':
-                    // If box-shadow is directly coming, apply it without more
-                    if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': value });
-                    return;
-                default:
-                    // For other properties, pass them to the original applyGlobalCSSChange
-                    if (applyGlobalCSSChange) applyGlobalCSSChange({ [key]: value });
-                    break;
-            }
-        });
-        
-        // If there were changes in box-shadow, update
-        if (hasBoxShadowChange) {
-            setLocalValues(nextLocal);
-            const finalStr = composeBoxShadow({ ...nextLocal, inset });
-            if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': finalStr });
-        }
-        return;
-    }
-    
-   
     let nextLocal = { ...localValues };
     
     //Switch the property to apply the value to the correct part.
@@ -2763,22 +2728,22 @@ const wrappedApplyCSS = useCallback((prop, val) => {
         applyGlobalCSSChange?.('box-shadow', finalStr);
     }, [localValues, composeBoxShadow, applyGlobalCSSChange]);
 
-        //Function to open and close the border/shadow controls.
-        const toggleOpen = () => {
-            const next = !open;
-            setOpen(next);
+    //Function to open and close the border/shadow controls.
+    const toggleOpen = () => {
+        const next = !open;
+        setOpen(next);
+        if (next) {
+            window.dispatchEvent(new CustomEvent('tw-pen-open', { detail: instanceId.current }));
+        }
+        if (containerRef.current) {
             if (next) {
-                window.dispatchEvent(new CustomEvent('tw-pen-open', { detail: instanceId.current }));
+                containerRef.current.setAttribute('data-pen', name?.toLowerCase());
+            } else {
+                containerRef.current.removeAttribute('data-pen');
             }
-            if (containerRef.current) {
-                if (next) {
-                    containerRef.current.setAttribute('data-pen', name?.toLowerCase());
-              } else {
-                    containerRef.current.removeAttribute('data-pen');
-                }
-            }
-        };
-    
+        }
+    };
+    //We can only open one pen at a time
         useEffect(() => {
             const onPenOpen = (e) => {
                 if (e.detail !== instanceId.current) setOpen(false);
@@ -2944,6 +2909,22 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
         });
     };
 
+    const handlePropertyBlur = useCallback((i) => {
+        const prev = prevPropsRef.current[i];
+        const now = (properties[i]?.property || '').trim();
+        const val = (properties[i]?.value ?? '').trim();
+        //If the property is empty, remove it
+        if (prev && !now) {
+            applyEnterAnimationChange(prev, "");
+            setProperties(prevList => prevList.filter((_, idx) => idx !== i));
+		return;
+        }
+        //If the property is not empty, apply the value
+        if (now && val) {
+            applyEnterAnimationChange(now, val);
+        }
+    }, [applyEnterAnimationChange, properties]);
+
     return (
         <div className="tw-builder__settings-animation" key={index}>
             <div className="tw-builder__settings-animation-container">
@@ -2956,21 +2937,7 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
                             value={prop.property}
                             onFocus={() => { prevPropsRef.current[i] = prop.property; }}
                             onChange={(e)=>handlePropertyChange(i, 'property', e.target.value)}
-                            onBlur={() => {
-                                const prev = prevPropsRef.current[i];
-                                const now = (properties[i]?.property || '').trim();
-                                const val = (properties[i]?.value ?? '').trim();
-                                //If the property is empty, remove it
-                                if (prev && !now) {
-                                  applyEnterAnimationChange(prev, "");
-                                  setProperties(prevList => prevList.filter((_, idx) => idx !== i));
-                                  return;
-                                }
-                                //If the property is not empty, apply the value
-                                if (now && val) {
-                                  applyEnterAnimationChange(now, val);
-                                }
-                              }}
+                            onBlur={()=>handlePropertyBlur(i)}
                               onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
                             />
                         </div>
