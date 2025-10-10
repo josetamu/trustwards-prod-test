@@ -7,7 +7,9 @@ export const DashboardHeaderBuilder = ({siteSlug}) => {
 
     if(!allUserDataResource) return <PlanSkeleton />;
 
-    const {appearanceSettings} = allUserDataResource.read();
+    const {webs} = allUserDataResource.read();
+
+    if(!siteSlug || !webs || !Array.isArray(webs)) return null;
 
 
 

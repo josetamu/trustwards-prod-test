@@ -10,6 +10,12 @@
 html.trustwards-login{
     padding: 0;
 }
+[tw-login-flickering="true"]{
+    opacity: 0;
+}
+.tw-login{
+    transition: opacity 0.2s ease-in-out;
+}
 
 /*
 Light selected: use root
@@ -23,8 +29,8 @@ System selected: will fallback to root or html[data-theme="dark"]
 
     --login-email-background: #FFFFFF;
     --login-email-text-color: #333333;
-    --login-email-border: 1px solid #dce0e6;
-    --login-email-box-shadow: 0 1px 2px #0d131e1a;
+    --login-email-border: 1px solid #E1E6F9;
+    --login-email-box-shadow: 0px 4px 8px 0px rgba(0, 17, 119, 0.025), 0px 8px 20px 0px rgba(0, 17, 119, 0.025);
 
     --login-or-color: #444;
     --login-or-divider-color: #CCC;
@@ -33,8 +39,8 @@ System selected: will fallback to root or html[data-theme="dark"]
     --login-continue-with-text-color: #444;
 
     --login-sent-email-background: #FFF;
-    --login-sent-email-border-color: #dce0e6;
-    --login-sent-email-box-shadow: 0 1px 2px #0d131e1a;
+    --login-sent-email-border-color: #E1E6F9;
+    --login-sent-email-box-shadow: 0px 4px 8px 0px rgba(0, 17, 119, 0.025), 0px 8px 20px 0px rgba(0, 17, 119, 0.025);
     --login-sent-email-title-color: #232323;
     --login-sent-email-text-color: #444;
     --login-sent-email-link-color: #0099FE;
@@ -53,11 +59,11 @@ System selected: will fallback to root or html[data-theme="dark"]
     margin-bottom: 10px;
 }
 html[data-theme="dark"]{
-    --login-background: #191919;
+    --login-background: #282828;
     --login-title-color: #FFFFFF;
     --login-text-color: #CCCCCC;
 
-    --login-email-background: #292929;
+    --login-email-background: #363636;
     --login-email-text-color: #FFFFFF;
     --login-email-border: unset;
     --login-email-box-shadow: 0 1px 2px #0d131e1a;
@@ -65,16 +71,16 @@ html[data-theme="dark"]{
     --login-or-color: #CCC;
     --login-or-divider-color: #444;
 
-    --login-continue-with-background: #333333;
+    --login-continue-with-background: #363636;
     --login-continue-with-text-color: #F5F5F5;
 
-    --login-sent-email-background: #33333350;
-    --login-sent-email-border-color: #333333;
+    --login-sent-email-background: #36363650;
+    --login-sent-email-border-color: #363636;
     --login-sent-email-box-shadow: unset;
     --login-sent-email-title-color: #FFFFFF;
     --login-sent-email-text-color: #CCCCCC;
 
-    --login-sent-email-icon-fill: #232323;
+    --login-sent-email-icon-fill: #333333;
     --login-sent-email-icon-stroke: #999;
 }
 html[data-theme="dark"] .tw-login__logo{

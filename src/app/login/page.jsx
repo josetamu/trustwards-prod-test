@@ -2,7 +2,7 @@
 
 import './login.css';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@supabase/supabaseClient';
 
@@ -21,6 +21,8 @@ export default function LoginPage() {
     const [sentEmail, setSentEmail] = useState(false); // To store if an email was sent, then display check your inbox message
     const [email, setEmail] = useState(''); // To store the email for the resend link
     const [resendEmail, setResendEmail] = useState(false); // To store if an email was resent, then hide resend email message
+
+    const loginRef = useRef(null); // Reference to the login container
 
     // If there is a session, redirect to the home
     useEffect(() => {
@@ -43,7 +45,7 @@ export default function LoginPage() {
 
     // Send email used by submit email and resend email
     async function sendEmail(email) {
-        const origin = window.location.origin;
+        const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
         const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
@@ -80,7 +82,7 @@ export default function LoginPage() {
 
     // Submit Google
     async function onGoogle() {
-        const origin = window.location.origin;
+        const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
         await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: `${origin}/api/auth?next=${encodeURIComponent(next)}` },
@@ -89,7 +91,7 @@ export default function LoginPage() {
 
     // Submit Github
     async function onGithub() {
-        const origin = window.location.origin;
+        const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
         await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: { redirectTo: `${origin}/api/auth?next=${encodeURIComponent(next)}` },
@@ -105,9 +107,16 @@ export default function LoginPage() {
     }
     }, [])
 
+    // Remove flickering attribute on page load for fade effect
+    useEffect(() => {
+        if (loginRef.current) {
+            loginRef.current.removeAttribute('tw-login-flickering');
+        }
+    }, [])
+
     return (
         <ThemeProvider>
-            <div className="tw-login">
+            <div ref={loginRef} className="tw-login" tw-login-flickering="true">
                 <AnimatePresence>
                     {sentEmail && (
                         <motion.div
