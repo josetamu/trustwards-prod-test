@@ -113,7 +113,7 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, mod
         try {
           previousActiveElement.current.focus();
         } catch (error) {
-          
+          console.error('Error focusing previous active element:', error);
         }
       } else {
         // Try to focus the first focusable element in the document

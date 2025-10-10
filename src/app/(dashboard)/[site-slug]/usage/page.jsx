@@ -26,28 +26,6 @@ function Home() {
         notFound();
     }
 
-    // Fetch detailed site data including scans and analytics
-    useEffect(() => {
-        const fetchSiteData = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('Site')
-                    .select('*')
-                    .eq('id', siteSlug)
-                    .single();
-                
-                if (error) throw error;
-                setSiteData(data);
-            } catch (error) {
-                console.error('Error fetching site data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSiteData();
-    }, [siteSlug]);
-
     if (loading) {
         return <div className="usage__loading">Loading analytics...</div>
     }

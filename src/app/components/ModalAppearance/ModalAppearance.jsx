@@ -62,7 +62,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                 .eq('userid', user.id);
 
             if (error) {
-
+                console.error('Error saving appearance settings:', error);
             } else {
                 // Update local state
                 if (newTheme !== null) setSelected(newTheme);
