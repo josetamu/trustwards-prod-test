@@ -19,16 +19,36 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@api/*": ["src/app/api/*"],
-      "@app/*": ["src/app/*"],
-      "@dashboard/*": ["src/app/(dashboard)/*"],
-      "@components/*": ["src/app/components/*"],
-      "@builder/*": ["src/app/builder/*"],
-      "@builderElements/*": ["src/app/builderElements/*"],
-      "@animations/*": ["src/animations/*"],
-      "@contexts/*": ["src/contexts/*"],
-      "@supabase/*": ["src/supabase/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@api/*": [
+        "src/app/api/*"
+      ],
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@dashboard/*": [
+        "src/app/(dashboard)/*"
+      ],
+      "@components/*": [
+        "src/app/components/*"
+      ],
+      "@builder/*": [
+        "src/app/builder/*"
+      ],
+      "@builderElements/*": [
+        "src/app/builderElements/*"
+      ],
+      "@animations/*": [
+        "src/animations/*"
+      ],
+      "@contexts/*": [
+        "src/contexts/*"
+      ],
+      "@supabase/*": [
+        "src/supabase/*"
+      ]
     },
     "plugins": [
       {
@@ -40,10 +60,13 @@
     "**/*.ts",
     "**/*.tsx",
     "./build/types/**/*.ts",
+    "./dist/types/**/*.ts",
+    "build/types/**/*.ts",
     "next-env.d.ts",
+    "src/app/api/scan/route.js",
     "src/app/dashboard/DashboardContext.tsx",
-    "./dist/types/**/*.ts"
-, "src/app/api/scan/route.js"  ],
+    ".next/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
   ]
