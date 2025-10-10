@@ -63,3 +63,13 @@
         transform: rotate(270deg);
     }
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Builder save button focus */
+.builder-save:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}

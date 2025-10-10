@@ -285,3 +285,13 @@
 .modal-support__choices .modal-support__choice--warning .modal-support__choice-text {
     color: var(--warning-color);
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Support button focus */
+.modal-support__button:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}

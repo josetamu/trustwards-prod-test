@@ -177,7 +177,6 @@ export function SidebarSites ({name, isSidebarOpen, setIsModalOpen, setModalType
                         }
                     }}
                     tabIndex={(isHovered || isFocused || isAnyChildFocused) ? 0 : -1}
-                    role="button"
                     aria-label={`Open menu for ${siteData.Name}`}
                     aria-expanded={isDropdownOpen}
                     aria-haspopup="menu"

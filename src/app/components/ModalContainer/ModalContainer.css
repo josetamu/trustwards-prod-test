@@ -53,7 +53,46 @@
 .modal [tabindex]:focus-visible,
 .modal label:focus-within {
     outline: var(--focus-outline-dashed);
-    outline-offset: 2px;
+    outline-offset: var(--focus-outline-offset);
+}
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Modal container should not have focus */
+.modal:focus,
+.modal:focus-visible {
+  outline: none !important;
+}
+
+/* Focus styles for keyboard navigation ONLY */
+.modal *:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Disable focus outline when clicked with mouse */
+.modal input.mouse-focused {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.modal textarea.mouse-focused {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Disable focus on switch inputs in modals when clicked */
+.modal input[type="checkbox"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Disable focus on switch labels in modals when clicked */
+.modal label:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Remove gap for edit actions */

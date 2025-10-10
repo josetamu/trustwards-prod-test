@@ -173,3 +173,17 @@ html[data-theme="dark"] #trustwards-light{
     background-image: url('/assets/trustwards-light--dark.png');
     background-repeat: no-repeat;
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+   
+.tw-builder-themes__save-button:focus-visible {
+    outline: var(--focus-outline-solid) !important;
+    outline-offset: var(--focus-outline-offset);
+}
+
+.tw-builder-themes__theme-preview:focus-visible {
+    outline: var(--focus-outline-dashed) !important;
+    outline-offset: var(--focus-outline-offset);
+}

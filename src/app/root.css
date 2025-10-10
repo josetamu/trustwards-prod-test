@@ -551,155 +551,27 @@ html[data-theme="dark"] .tw-builder__logo{
    ACCESSIBILITY FOCUS STYLES
    ======================= */
 
+/* Accessibility variables for outline offsets */
+:root {
+  --focus-outline-offset: 2px;
+  --focus-outline-offset-inner: calc(-1 * var(--focus-outline-offset));
+}
+
 /* Base focus style for all focusable elements */
 *:focus-visible {
   outline: var(--focus-outline-dashed);
-  outline-offset: 2px;
-}
-
-/* Sidebar specific elements (Dashboard) - use inner outline to avoid overflow issues */
-/* Main containers - inner outline */
-.sidebar-sites__site:focus-visible,
-.sidebar-header:focus-visible,
-.sidebar__site-link:focus-visible,
-.sidebar__link:focus-visible,
-.sidebar__sites-add:focus-visible,
-.context-menu__item:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: -2px; /* draw inside element instead of outside */
-  border-radius: 6px;
-}
-
-/* Small action elements - external outline */
-.sidebar__action:focus-visible,
-.sidebar__sites-edit:focus-visible,
-.sidebar__sites-delete:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: 2px; /* external outline for small elements */
-  border-radius: 6px;
-}
-
-/* Dropdown items - inner outline */
-.dropdown__item:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: -2px; /* draw inside element instead of outside */
-  border-radius: 6px;
-}
-
-/* Builder tabs - remove outline from button, apply only to text content */
-.tw-builder__tab:focus-visible {
-  outline: none !important;
-  border: 1px solid transparent !important;
-}
-
-.tw-builder__tab:focus-visible::before {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  outline: var(--focus-outline-dashed);
-  outline-offset: 2px;
-  pointer-events: none;
-}
-
-/* Builder logo button - keep original border when focused */
-.tw-builder__logo-button:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: 2px;
-  border: 1px solid var(--border-light-color) !important;
-}
-
-/* Builder panel toggle button - remove outline from button, apply only to SVG */
-.tw-builder__panel-toggle-btn:focus-visible {
-  outline: none !important;
-}
-
-.tw-builder__panel-toggle-btn:focus-visible svg {
-  outline: var(--focus-outline-dashed);
-  outline-offset: 2px;
+  outline-offset: var(--focus-outline-offset);
 }
 
 /* =======================
-   BLUE BUTTONS - SOLID FOCUS
+   GLOBAL ACCESSIBILITY STYLES
    ======================= */
 
 /* Solid focus for accent color buttons and important actions */
 [style*="background-color: var(--accent-bg-color)"]:focus-visible,
-.sites__new-button:focus-visible,
-.newSite__button:focus-visible,
-.new-site__button:focus-visible,
-.modalAppearance__accentColor__button:focus-visible,
-.modal-change__button:focus-visible,
-.modal-support__button:focus-visible,
-.modal-welcome__button:focus-visible,
-.builder-save:focus-visible,
-.modal-appearance__accent-color-choice:focus-visible,
-.modal-upgrade-plan__subscribe--popular:focus-visible,
-.dashboard-header__builder:focus-visible,
-.home__button-upgrade:focus-visible,
-.home__button-upgrade-text:focus-visible,
 button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
 button[class*="accent"]:focus-visible,
 [class*="accent"]:focus-visible {
   outline: var(--focus-outline-solid) !important;
-  outline-offset: 2px;
-  border-radius: 8px;
-}
-
-/* Remove outline from builder text */
-.dashboard-header__builder-text:focus-visible {
-  outline: none !important;
-}
-
-/* Tree item selected state - solid outline when selected */
-.tw-builder__tree-item-header--selected:focus-visible {
-  outline: var(--focus-outline-solid) !important;
-  outline-offset: -2px; /* inner outline to prevent clipping/overflow */
-  border-radius: 4px;
-}
-
-/* Tree expand button solid outline when parent item is selected */
-.tw-builder__tree-item-header--selected .tw-builder__tree-expand-button:focus-visible {
-  outline: var(--focus-outline-solid) !important;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* Builder Left Panel (Tree) - default focus for non-selected items uses inner dashed */
-.tw-builder__tree-item-header:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: -2px; /* inner outline to avoid overflow with container */
-  border-radius: 4px;
-}
-
-/* Tree expand button - external outline */
-.tw-builder__tree-expand-button:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: 2px; /* external outline for the arrow */
-  border-radius: 4px;
-}
-
-/* Builder Right Panel - accessibility for user and save only */
-.builder-user:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: -2px; /* inner outline to avoid overflow */
-  border-radius: 4px;
-}
-
-/* =======================
-   MODAL FOCUS STYLES
-   ======================= */
-
-/* Modal container should not have focus */
-.modal:focus,
-.modal:focus-visible {
-  outline: none !important;
-}
-
-/* Modal focusable elements inherit base styles */
-.modal *:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: 2px;
+  outline-offset: var(--focus-outline-offset);
 }

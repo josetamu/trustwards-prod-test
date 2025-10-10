@@ -11,7 +11,6 @@ export const SidebarLink = ({ icon, text, onClick, className, children}) => {
             id={sidebarLinkId}
             aria-label={text}
             tabIndex={0}
-            role="button"
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();

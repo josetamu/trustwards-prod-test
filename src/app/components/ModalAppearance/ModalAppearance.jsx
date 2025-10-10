@@ -62,7 +62,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                 .eq('userid', user.id);
 
             if (error) {
-                console.error('Error saving appearance settings:', error);
+
             } else {
                 // Update local state
                 if (newTheme !== null) setSelected(newTheme);
@@ -84,7 +84,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
             console.error('Error saving appearance settings:', error);
         }
     };
-
+    
     return (
         <div className={`modal-appearance__content ${isInitialized ? 'modal-appearance__content--initialized' : ''}`}>
             <div className="modal-appearance__theme">
@@ -92,7 +92,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                         Theme
                     </span>
                     <div className="modal-appearance__theme-choices">
-                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('light')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('light'); } }} tabIndex={0} role="button" aria-pressed={selected === 'light'}>
+                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('light')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('light'); } }} tabIndex={0}  aria-pressed={selected === 'light'}>
                             <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--light ${selected === 'light' ? 'modal-appearance__theme-choice--active' : ''}`}>
                                 <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_350)">
@@ -144,7 +144,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                 Light
                             </span>
                         </div>
-                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('dark')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('dark'); } }} tabIndex={0} role="button" aria-pressed={selected === 'dark'}>
+                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('dark')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('dark'); } }} tabIndex={0}  aria-pressed={selected === 'dark'}>
                             <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--dark ${selected === 'dark' ? 'modal-appearance__theme-choice--active' : ''}`}>
                                 <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_351)">
@@ -196,7 +196,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                 Dark
                             </span>
                         </div>
-                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('system')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('system'); } }} tabIndex={0} role="button" aria-pressed={selected === 'system'}>
+                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('system')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('system'); } }} tabIndex={0}  aria-pressed={selected === 'system'}>
                             <div className="modal-appearance__img-wrapper modal-appearance__img-wrapper--system">
                                 <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--light ${selected === 'system' ? 'modal-appearance__theme-choice--active' : ''}`}>
                                     <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -304,13 +304,16 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                     handleReducedMotionToggle(!reducedMotion);
                                 }
                             }}
+                            onClick={(e) => {
+                                // Prevent focus on click
+                                e.target.blur();
+                            }}
                             aria-label="Toggle reduced motion"
                         />
                         <span className="modal-appearance__reduced-motion-slider"></span>
                     </label>
                 </div>
             </div>
-    
         </div>
     )
 

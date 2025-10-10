@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    gap: 10px;
+    
 }
 
 .tw-builder__settings-header{
@@ -19,6 +19,7 @@
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--label-color);
+    padding-bottom: 10px;
 }
 /* Controls css */
 
@@ -112,7 +113,7 @@
 .tw-builder__settings-body{
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    
 }
 .tw-builder__settings-actions{
     display: flex;

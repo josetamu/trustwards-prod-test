@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "./BuilderClasses.css";
 import { useCanvas } from "@contexts/CanvasContext";
 import {Dropdown} from "@components/dropdown/Dropdown";
+import { AnimatePresence } from "framer-motion";
 
 
 
@@ -94,7 +95,7 @@ const createNewClass = (newClass) => {
 
 //Function to handle the add class. Created by enter key, if it doesn't exist, create it and show the notification, if it exists, set the active class to it.
 const handleAddClass = (e) => {
-    if (e.key === "Enter") {
+    if (e.type === "click" || e.key === "Enter") {
         const created = createNewClass(newClass);
         if (created) {
             showNotification("Class created");
@@ -212,7 +213,7 @@ useEffect(() => {
                     <div className="tw-builder__settings-classes-pool" ref={poolRef}>
                         <div className="tw-builder__settings-classes-adder">
                             <input className="tw-builder__settings-classes-add-input" type="text" placeholder="Class name..." value={newClass} onChange={(e) => setNewClass(e.target.value)} onKeyDown={handleAddClass}/>
-                            <div className="tw-builder__settings-classes-add">
+                            <div className="tw-builder__settings-classes-add" onClick={handleAddClass}>
                                 <span className="tw-builder__settings-classes-add-span">Add</span>
                             </div>
                         </div>
@@ -232,9 +233,9 @@ useEffect(() => {
                                     <span className="tw-builder__settings-classes-item-name">.{className}</span>
                                 </div>
                             ))}
-                            <div className="tw-builder__settings-classes-item--empty">
+         {/*                    <div className="tw-builder__settings-classes-item--empty">
                                 <span className="tw-builder__settings-classes-item-name">Create a new CSS class</span>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 )}

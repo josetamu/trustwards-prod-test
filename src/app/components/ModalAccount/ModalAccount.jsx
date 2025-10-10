@@ -126,25 +126,25 @@ export function ModalAccount({ user, openChangeModal, checkProfilePicture, profi
               {user?.Name.charAt(0)}
             </span>
             <img className={`modal-account__avatar ${checkProfilePicture(user) === '' ? 'modal-account__avatar--null' : ''}`} src={user?.["Avatar URL"]} alt="logo" />
-            <span className='modal-account__edit' onClick={handleEditClick} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEditClick(); } }} tabIndex={0} role="button" aria-label="Edit profile picture">Edit</span>
+            <span className='modal-account__edit' onClick={handleEditClick} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEditClick(); } }} tabIndex={0}  aria-label="Edit profile picture">Edit</span>
           </div>
         </div>
         <div className="modal-account__main">
           <div className="modal-account__section">
             <span className='modal-account__title'>Name</span>  
             <span className='modal-account__field'>{user?.Name}</span>
-            <span className='modal-account__change' onClick={() => handleChangeType('name')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleChangeType('name'); } }} tabIndex={0} role="button" aria-label="Change name">Change name</span>
+            <span className='modal-account__change' onClick={() => handleChangeType('name')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleChangeType('name'); } }} tabIndex={0}  aria-label="Change name">Change name</span>
           </div>
           <div className="modal-account__divider"></div>
           <div className="modal-account__section">
             <span className='modal-account__title'>Email</span>  
             <span className='modal-account__field'>{user?.Email}</span>
-            <span className='modal-account__change' onClick={() => handleChangeType('email')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleChangeType('email'); } }} tabIndex={0} role="button" aria-label="Change email">Change email</span>
+            <span className='modal-account__change' onClick={() => handleChangeType('email')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleChangeType('email'); } }} tabIndex={0}  aria-label="Change email">Change email</span>
           </div>
           <div className="modal-account__divider"></div>
           <div className="modal-account__section">
             <span className='modal-account__title'>Password</span>  
-            <span className='modal-account__change' onClick={() => handleChangeType('password')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleChangeType('password'); } }} tabIndex={0} role="button" aria-label="Change password">Change password</span>
+            <span className='modal-account__change' onClick={() => handleChangeType('password')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleChangeType('password'); } }} tabIndex={0}  aria-label="Change password">Change password</span>
           </div>
         </div>
         {/* Hidden input to open file selector */}

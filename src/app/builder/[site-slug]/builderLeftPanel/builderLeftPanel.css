@@ -736,3 +736,31 @@
 .tw-builder__drop-line--toolbar.tw-builder__drop-line--inside {
     display: none;
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Tree item selected state - solid outline when selected */
+.tw-builder__tree-item-header--selected:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset-inner); /* inner outline to prevent clipping/overflow */
+}
+
+/* Tree expand button solid outline when parent item is selected */
+.tw-builder__tree-item-header--selected .tw-builder__tree-expand-button:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Builder Left Panel (Tree) - default focus for non-selected items uses inner dashed */
+.tw-builder__tree-item-header:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset-inner); /* inner outline to avoid overflow with container */
+}
+
+/* Tree expand button - external outline */
+.tw-builder__tree-expand-button:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset); /* external outline for the arrow */
+}

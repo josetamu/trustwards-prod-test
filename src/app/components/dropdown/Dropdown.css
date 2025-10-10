@@ -216,3 +216,13 @@
   left: unset;
   right: 0;
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Dropdown items - inner outline */
+.dropdown__item:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset-inner); /* draw inside element instead of outside */
+}

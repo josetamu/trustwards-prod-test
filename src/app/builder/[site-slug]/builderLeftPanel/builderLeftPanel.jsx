@@ -957,6 +957,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     role="treeitem"
                     aria-label={`${item.label}${hasChildren ? (isExpanded ? ', expanded' : ', collapsed') : ''}`}
                     aria-expanded={hasChildren ? isExpanded : undefined}
+                    data-item-id={item.id}
                     draggable={!isToolbarDragActive} // Disable internal drag when toolbar drag is active
                     onDragStart={(e) => handleDragStart(e, item)}
                     onDragEnd={handleDragEnd}
@@ -1007,7 +1008,6 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                                 }
                             }}
                             tabIndex={0}
-                            role="button"
                             aria-label={isExpanded ? `Collapse ${item.label}` : `Expand ${item.label}`}
                         >
                             <svg width="5" height="3" viewBox="0 0 5 3" fill="none" xmlns="http://www.w3.org/2000/svg">
