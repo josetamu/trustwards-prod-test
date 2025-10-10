@@ -1,6 +1,6 @@
 import './Skeletons.css';
 
-export const SitesSkeleton = ({}) => {
+export const SitesSkeleton = () => {
     
     return (
         <div className="skeleton-site-container">

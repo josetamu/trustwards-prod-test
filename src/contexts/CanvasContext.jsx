@@ -249,14 +249,18 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         const sentinel = { __tw_blocker: true, t: Date.now() };
         try {
             history.pushState(sentinel, '');
-        } catch {}
+        } catch {
+            // Ignore history API errors - browser may not support or deny access
+        }
     
         const onPopState = (e) => {
             // Show confirm when user presses Back
             const leave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
             if (!leave) {
                 // Cancel: restore the sentinel to keep user on the page
-                try { history.pushState(sentinel, ''); } catch {}
+                try { history.pushState(sentinel, ''); } catch {
+                    // Ignore history API errors - browser may not support or deny access
+                }
             } else {
                 // Allow: remove listener and go back one more
                 window.removeEventListener('popstate', onPopState);

@@ -6,7 +6,7 @@ import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import { supabase } from '@supabase/supabaseClient';
 
 // Sort: Dropdown component for sorting sites by date or alphabetically
-export const Sort = ({ }) => {
+export const Sort = () => {
   const {allUserDataResource, setAppearanceSettings} = useDashboard();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);

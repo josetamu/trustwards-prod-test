@@ -1,11 +1,12 @@
 import { useDashboard } from '@dashboard/layout';
 import UserAvatarSkeleton from '@components/Skeletons/UserAvatarSkeleton';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '@supabase/supabaseClient';
 
 export const DashboardAvatar = ({siteSlug, SiteStyle, setSiteData}) => {
     const [errors, setErrors] = useState({});
     const { allUserDataResource, setWebs } = useDashboard();
+    const fileInputRef = useRef(null);
 
     if(!allUserDataResource) return <UserAvatarSkeleton />;
 
@@ -105,10 +106,19 @@ export const DashboardAvatar = ({siteSlug, SiteStyle, setSiteData}) => {
       };
 
     return (
-      <div className='dashboard-header__color-wrapper' style={SiteStyle(site)}>
-        <span className={`dashboard-header__color`}>
-          {site?.Name?.charAt(0)}
-        </span> 
-      </div>
+      <>
+        <div className='dashboard-header__color-wrapper' style={SiteStyle(site)}>
+          <span className={`dashboard-header__color`}>
+            {site?.Name?.charAt(0)}
+          </span> 
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+      </>
     );
 }

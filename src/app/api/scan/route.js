@@ -107,7 +107,9 @@ export async function POST(req) {
           url: prev.url || 'about:blank',
           name: prev.name || null,
         });
-      } catch {}
+      } catch {
+        // Ignore frame attachment errors - non-critical for cookie detection
+      }
     });
 
     // Listen for frame navigation events
@@ -121,7 +123,9 @@ export async function POST(req) {
           url: f.url || prev.url || 'about:blank',
           name: f.name || prev.name || null,
         });
-      } catch {}
+      } catch {
+        // Ignore frame navigation errors - non-critical for cookie detection
+      }
     });
 
     // ========== 5. HELPER FUNCTIONS ==========
@@ -133,7 +137,10 @@ export async function POST(req) {
      */
     const getOrigin = (u) => { 
       try { return new URL(u).origin; } 
-      catch { return null; } 
+      catch { 
+        // Invalid URL - return null
+        return null; 
+      } 
     };
     
     /**
@@ -182,7 +189,9 @@ export async function POST(req) {
         if (customCategory) eventData.customCategory = customCategory;
         cookieEvents.set(key, eventData);
         touch();
-        try { page.evaluate(() => window.__tw_cookie_event?.()); } catch {}
+        try { page.evaluate(() => window.__tw_cookie_event?.()); } catch {
+          // Ignore evaluation errors - page context may not be available
+        }
         return;
       }
       
@@ -212,7 +221,9 @@ export async function POST(req) {
       }
       
       touch();
-      try { page.evaluate(() => window.__tw_cookie_event?.()); } catch {}
+      try { page.evaluate(() => window.__tw_cookie_event?.()); } catch {
+        // Ignore evaluation errors - page context may not be available
+      }
     };
 
     /**
@@ -251,6 +262,7 @@ export async function POST(req) {
         
         return null;
       } catch { 
+        // Error parsing initiator - return null
         return null; 
       }
     };
@@ -271,7 +283,9 @@ export async function POST(req) {
             }
           }
         }
-      } catch {}
+      } catch {
+        // Ignore request tracking errors - non-critical
+      }
     });
 
     // Track response URLs
@@ -280,7 +294,9 @@ export async function POST(req) {
         if (evt?.requestId && evt?.response?.url) {
           urlByRequestId.set(evt.requestId, evt.response.url);
         }
-      } catch {}
+      } catch {
+        // Ignore response tracking errors - non-critical
+      }
     });
 
     // Detect cookies from HTTP Set-Cookie headers (CDP)
@@ -303,7 +319,9 @@ export async function POST(req) {
           if (!name) continue;
           addCookieEvent(name, source, 'http-set-cookie');
         }
-      } catch {}
+      } catch {
+        // Ignore header parsing errors - continue with other detection methods
+      }
     });
 
     // Detect cookies from HTTP responses (Playwright)
@@ -334,7 +352,9 @@ export async function POST(req) {
           if (!name) continue;
           addCookieEvent(name, source, 'http-set-cookie');
         }
-      } catch {}
+      } catch {
+        // Ignore response parsing errors - continue with other detection methods
+      }
     });
 
     // ========== 8. PAGE COOKIE EVENT LISTENER ==========
@@ -345,7 +365,9 @@ export async function POST(req) {
     });
     
     await page.exposeFunction('__tw_cookie_event', () => { 
-      try { cookieEventResolver?.(); } catch {} 
+      try { cookieEventResolver?.(); } catch {
+        // Ignore resolver errors - non-critical
+      } 
     });
 
     // ========== 9. INJECT CLIENT-SIDE COOKIE DETECTION ==========
@@ -384,7 +406,9 @@ export async function POST(req) {
           const data = { cookieName, src, method };
           if (customCategory) data.customCategory = customCategory;
           window.__tw_detected_cookies.set(key, data);
-          try { window.__tw_cookie_event?.(); } catch {}
+          try { window.__tw_cookie_event?.(); } catch {
+            // Ignore event notification errors - non-critical
+          }
         }
       };
 
@@ -476,7 +500,9 @@ export async function POST(req) {
         wrapInsert(Node.prototype, 'appendChild');
         wrapInsert(Element.prototype, 'insertBefore');
         wrapInsert(Element.prototype, 'replaceChild');
-      } catch {}
+      } catch {
+        // Ignore wrapping errors - browser may not support all methods
+      }
 
       // Wrap document.write methods
       try {
@@ -493,7 +519,9 @@ export async function POST(req) {
           try { return wl.apply(this, args); }
           finally { restore(); }
         };
-      } catch {}
+      } catch {
+        // Ignore document.write wrapping errors - older browsers may not support
+      }
 
       // ========== HOOK document.cookie ==========
       try {
@@ -518,7 +546,9 @@ export async function POST(req) {
               if (name) {
                 addDetectedCookie(name, source, 'document.cookie');
               }
-            } catch {}
+            } catch {
+              // Ignore cookie detection errors - still set the cookie
+            }
             return originalSet.call(document, v);
           };
           
@@ -529,7 +559,9 @@ export async function POST(req) {
             set: replacementSetter,
           });
         }
-      } catch {}
+      } catch {
+        // Ignore cookie hooking errors - browser may not support property descriptors
+      }
 
       // ========== HOOK CookieStore API ==========
       if ('cookieStore' in window) {
@@ -548,7 +580,9 @@ export async function POST(req) {
               if (name) {
                 addDetectedCookie(name, source, 'cookieStore');
               }
-            } catch {}
+            } catch {
+              // Ignore cookie detection errors - still set the cookie
+            }
             return _set(...args);
           };
 
@@ -576,7 +610,9 @@ export async function POST(req) {
               }
             }
           });
-        } catch {}
+        } catch {
+          // Ignore cookieStore event listener errors - browser may not support
+        }
       }
 
       // ========== CAPTURE INITIAL COOKIES ==========
@@ -600,7 +636,9 @@ export async function POST(req) {
             }
           });
         }
-      } catch {}
+      } catch {
+        // Ignore initial cookie capture errors - continue with other detection
+      }
 
       // ========== DETECT CUSTOM CATEGORIZED ELEMENTS ==========
       
@@ -722,13 +760,19 @@ export async function POST(req) {
                   if (name) {
                     console.log(`__tw_worker_cookie__ ${JSON.stringify({ name, src: source })}`);
                   }
-                } catch {}
+                } catch {
+                  // Ignore worker cookie detection errors - still set the cookie
+                }
                 return _set(...args);
               };
             }
-          } catch {}
+          } catch {
+            // Ignore worker cookieStore hook errors - worker may not support API
+          }
         });
-      } catch {}
+      } catch {
+        // Ignore worker evaluation errors - worker context may not be available
+      }
     });
 
     // Listen for worker console messages
@@ -742,7 +786,9 @@ export async function POST(req) {
             addCookieEvent(data.name, data.src || 'unknown', 'cookieStore');
           }
         }
-      } catch {}
+      } catch {
+        // Ignore worker console message parsing errors - continue processing
+      }
     });
 
     // ========== 11. NAVIGATION AND SCANNING ==========
@@ -996,8 +1042,8 @@ export async function POST(req) {
     // ========== 20. CLEANUP ==========
     try { 
       await browser?.close(); 
-    } catch {
-      console.error('Error closing browser');
+    } catch (error) {
+      console.error('Error closing browser:', error);
     }
   }
 }
