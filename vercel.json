@@ -3,6 +3,5 @@
       "src/app/api/scan/route.js": {
         "maxDuration": 60
       }
-    },
-    "installCommand": "npm install && npx playwright install chromium"
+    }
 }
