@@ -1,4 +1,5 @@
 {
+    "buildCommand": "next build",
     "functions": {
       "src/app/api/scan/route.js": {
         "maxDuration": 60
