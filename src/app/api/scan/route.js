@@ -682,7 +682,9 @@ export async function POST(req) {
             if (iframe.ownerDocument && iframe.ownerDocument !== document) {
               parentSrc = iframe.ownerDocument.location.href;
             }
-          } catch {}
+          } catch {
+            // Ignore cross-origin access errors
+          }
           
           // Create unique key to avoid duplicates
           const key = `iframe::${src}::${parentSrc}::${category}`;
