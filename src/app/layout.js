@@ -11,17 +11,21 @@ export default async function RootLayout({ children }) {
   const { data: { user } } = await supabase.auth.getUser();
 
   let initialSidebarState = null;
+  let reducedMotion = 'no-preference';
   if (user) {
     const { data: appearance } = await supabase
       .from('Appearance')
       .select('*')
       .eq('userid', user.id)
       .single();
-    if (appearance) initialSidebarState = appearance.Sidebar ?? null;
+    if (appearance) {
+      initialSidebarState = appearance.Sidebar ?? null;
+      reducedMotion = appearance['Reduced Motion'] ?? false;
+    }
   }
 
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning data-reduced-motion={reducedMotion}>
       <head><title>Trustwards</title></head>
       <body>
         <ThemeProvider>

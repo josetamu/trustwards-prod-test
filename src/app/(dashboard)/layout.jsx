@@ -478,8 +478,8 @@ const handleBackdropClick = useCallback((e) => {
     };
 
     //Function to copy script to clipboard
-    const handleCopy = async (siteSlug, contentCenter = false) => {
-        const script = `<script>https://trustwards.io/cdn/${siteSlug}.js</script>`;
+    const handleCopy = async (siteID, contentCenter = false) => {
+        const script = `<script>https://cdn.trustwards.io/storage/v1/object/public/cdn-script/${siteID}.js</script>`;
         try {
             await navigator.clipboard.writeText(script);
             showNotification("Copied script to clipboard", 'top', contentCenter);

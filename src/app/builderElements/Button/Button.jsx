@@ -49,13 +49,13 @@ export const Button = (node, nodeProps = {}) => {
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' },
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color' },
                 ]
             },
             {
                 label: 'Text',
                 controls: [
-                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'color' },
+                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'color' },
                     { name: 'Font', type: 'select', cssProperty: 'font-family' },
                     { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
                     { name: 'Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
@@ -68,23 +68,15 @@ export const Button = (node, nodeProps = {}) => {
             {
                 label: 'Styles',
                 controls: [
-                    { name: 'Border Width', type: 'panel'},
-                    { name: 'Border Style', type: 'select', value: 'None', options: ['None', 'Hidden', 'Solid',  'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'] },
-                    { name: 'Border Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'border-color' },
-                    { name: 'Border Radius', type: 'panel'},
-                    { name: 'Box Shadow X', type: 'text' },
-                    { name: 'Box Shadow Y', type: 'text' },
-                    { name: 'Blur', type: 'text' },
-                    { name: 'Spread', type: 'text' },
-                    { name: 'Box Shadow Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'box-shadow' },
-                    { name: 'Position', type: 'select', value: 'static', options: ['Static', 'Relative', 'Absolute', 'Fixed', 'Sticky'] },
-                    { name: 'Z-Index', type: 'text' },
-                    { name: 'Overflow', type: 'select', value: 'visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'] },
-                    { name: 'Opacity', type: 'text', value: '1' },
-                    { name: 'Cursor', type: 'select', value: 'default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'] },
-                    { name: 'Transform', type: 'text'},
+                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
+                    { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
+                    { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                    { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                    {name: 'Border', type: 'border'},
+                    {name: 'Shadow', type: 'box-shadow'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
                 ]
-            }
+            },
         ]
     }
 

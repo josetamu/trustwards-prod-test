@@ -7,7 +7,6 @@ import { useTheme } from 'next-themes';
 export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSettings}) => {
     const { theme, setTheme } = useTheme();
     const [selected, setSelected] = useState('');
-    const [selectedColor, setSelectedColor] = useState('');
     const [reducedMotion, setReducedMotion] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
 
@@ -15,7 +14,6 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
     useEffect(() => {
         // Always set the values, even if appearanceSettings is null/undefined
         setSelected(appearanceSettings?.['Theme'] || 'system');
-        setSelectedColor(appearanceSettings?.['Accent Color'] || '');
         setReducedMotion(appearanceSettings?.['Reduced Motion'] || false);
         
         // Mark as initialized after a short delay to prevent initial animation
@@ -34,11 +32,23 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
         handleSave(newTheme, null, null);
     };
 
+    // Handle reduced motion toggle
+    const handleReducedMotionToggle = (checked) => {
+        // Update local state immediately for instant visual feedback
+        setReducedMotion(checked);
+        // Update the data-reduced-motion attribute on the html element
+        if (checked) {
+            document.documentElement.setAttribute('data-reduced-motion', true);
+        } else {
+            document.documentElement.setAttribute('data-reduced-motion', false);
+        }
+        handleSave(null, null, checked);
+    };
+
     // Save appearance settings to database
     const handleSave = async (newTheme = null, newColor = null, newReducedMotion = null) => {
         //Get the current theme from the theme hook
         const themeToSave = newTheme !== null ? newTheme : selected;
-        const colorToSave = newColor !== null ? newColor : selectedColor;
         const motionToSave = newReducedMotion !== null ? newReducedMotion : reducedMotion;
         
         //Save the appearance settings to the database
@@ -47,7 +57,6 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                 .from('Appearance')
                 .update({
                     'Theme': themeToSave,
-                    'Accent Color': colorToSave,
                     'Reduced Motion': motionToSave
                 })
                 .eq('userid', user.id);
@@ -57,7 +66,6 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
             } else {
                 // Update local state
                 if (newTheme !== null) setSelected(newTheme);
-                if (newColor !== null) setSelectedColor(newColor);
                 if (newReducedMotion !== null) setReducedMotion(newReducedMotion);
 
                 // Update global state immediately, but only the specific properties that changed
@@ -65,7 +73,6 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                     setAppearanceSettings(prev => ({
                         ...prev,
                         'Theme': themeToSave,
-                        'Accent Color': colorToSave,
                         'Reduced Motion': motionToSave
                  
                     }));
@@ -74,32 +81,10 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                
             }
         } catch (error) {
-
+            console.error('Error saving appearance settings:', error);
         }
     };
-
-    // Handle color selection
-    const handleColorSelect = (color) => {
-        // Update local state immediately for instant visual feedback
-        setSelectedColor(color);
-        
-        // Set data-color attribute on document
-        if (color) {
-            document.documentElement.setAttribute('data-color', color);
-        } else {
-            document.documentElement.removeAttribute('data-color');
-        }
-        
-        handleSave(null, color, null);
-    };
-
-    // Handle reduced motion toggle
-    const handleReducedMotionToggle = (checked) => {
-        // Update local state immediately for instant visual feedback
-        setReducedMotion(checked);
-        handleSave(null, null, checked);
-    };
-
+    
     return (
         <div className={`modal-appearance__content ${isInitialized ? 'modal-appearance__content--initialized' : ''}`}>
             <div className="modal-appearance__theme">
@@ -303,20 +288,6 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
             
             </div>
             <div className="modal-appearance__bottom">
-                <div className="modal-appearance__accent-color">
-                    <span className="modal-appearance__accent-color-title">
-                        Accent color
-                    </span>
-                    <div className="modal-appearance__accent-color-choices">
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--green ${selectedColor === 'green' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('green')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('green'); } }} tabIndex={0}  aria-pressed={selectedColor === 'green'} aria-label="Select green accent color"></div>
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--purple ${selectedColor === 'purple' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('purple')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('purple'); } }} tabIndex={0}  aria-pressed={selectedColor === 'purple'} aria-label="Select purple accent color"></div>
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--red ${selectedColor === 'red' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('red')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('red'); } }} tabIndex={0}  aria-pressed={selectedColor === 'red'} aria-label="Select red accent color"></div>
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--orange ${selectedColor === 'orange' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('orange')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('orange'); } }} tabIndex={0}  aria-pressed={selectedColor === 'orange'} aria-label="Select orange accent color"></div>
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--blue ${selectedColor === 'blue' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('blue')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('blue'); } }} tabIndex={0}  aria-pressed={selectedColor === 'blue'} aria-label="Select blue accent color"></div>    
-                    </div>
-                    
-                </div>
-                <div className="modal-appearance__divider"></div>
                 <div className="modal-appearance__reduced-motion">
                     <span className="modal-appearance__reduced-motion-title">
                         Reduced motion
@@ -343,7 +314,6 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                     </label>
                 </div>
             </div>
-    
         </div>
     )
 

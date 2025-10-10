@@ -1,23 +1,23 @@
 import { useParams } from 'next/navigation';
 import { useDashboard } from '@dashboard/layout';
+import { useState, useEffect } from 'react';
 import './ScriptCopy.css';
 import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 
 const ScriptCopy = () => {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { handleCopy } = useDashboard();
+    const { handleCopy, siteData } = useDashboard();
+    const [script, setScript] = useState('');
 
-    
-   
-
-  
-    const script = `
-    <script>https://trustwards.io/cdn/${siteSlug}.js</script>
-    `;
+    useEffect(() => {
+        if (siteData?.id) {
+            setScript(`<script>https://cdn.trustwards.io/storage/v1/object/public/cdn-script/${siteData.id}.js</script>`);
+        }
+    }, [siteData]);
 
     const handleCopyClick = () => {
-        handleCopy(siteSlug, 'bottom', true);
+        handleCopy(siteData?.id, 'bottom', true);
     };
 
     return (

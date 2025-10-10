@@ -20,10 +20,8 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
     const groupControls =  {
             header: [
                 {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span'], placeholder: 'h3', JSONProperty: 'tagName'},
-               
                 { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
                 { name: 'Text', type: 'textarea', placeholder: 'Text goes here...', JSONProperty: 'text'},
-                
             ],
             body: [
                 {
@@ -55,13 +53,13 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                 {
                     label: 'Background',
                     controls: [
-                        { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'background-color' },
+                        { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color' },
                     ]
                 },
                 {
                     label: 'Text',
                     controls: [
-                        { name: 'Color', type: 'color', value: '000000', opacity: '100%', elementId: id, cssProperty: 'color' },
+                        { name: 'Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'color' },
                         { name: 'Font', type: 'select', cssProperty: 'font-family', placeholder: 'Inter'},
                         { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
                         { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
@@ -86,7 +84,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
             ]
     }
 
-    // Function to sanitize HTML manually without libraries
+    // Function to sanitize HTML
     const sanitizeHTML = (html) => {
         if (typeof window === 'undefined') return html; // SSR safety
         

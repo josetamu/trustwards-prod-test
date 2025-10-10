@@ -1,11 +1,10 @@
 import './ModalChange.css';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@supabase/supabaseClient';
 import { ModalContainer } from '../ModalContainer/ModalContainer';
 
 export function ModalChange({ changeType, onClose, user, setUser, showNotification, siteData, setSiteData, createNewSite, setWebs, allUserDataResource, useOwnContainer = false }) {
-
     const [newName, setNewName] = useState(user?.Name);
     const [newEmail, setNewEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');

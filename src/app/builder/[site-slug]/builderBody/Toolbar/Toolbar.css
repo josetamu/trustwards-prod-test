@@ -25,7 +25,7 @@
 }
 .tw-builder__toolbar-divider{
     background-color: var(--border-light-color);
-    width: 2px;
+    width: 1px;
     height: 100%;
 
     position: absolute;
@@ -41,7 +41,7 @@
     background-color: var(--panels-background);
     border-radius: 12px;
     border: 1px solid var(--border-light-color);
-    box-shadow: 0 2px 4px 0 var(--shadow-light-color);
+    box-shadow: var(--fancy-shadow);
 
     position: absolute;
     /*left is determined by js calcs*/

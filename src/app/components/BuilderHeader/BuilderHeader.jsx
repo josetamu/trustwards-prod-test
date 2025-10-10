@@ -48,28 +48,28 @@ export default function BuilderHeader({site, setSite, setModalType, setIsModalOp
 //this function is used to change the breakpoint and update the JSONtree
 const handleBreakpointChange = (newBreakpoint) => {
     setBreakpoint(newBreakpoint);
+    if (!JSONtree?.breakpoints) {
+      return;
+  }
     const updated = { ...JSONtree, canvasMaxWidth: JSONtree.breakpoints[newBreakpoint] };
     setJSONtree(updated);
 
 };
 
-//tooltip timeout
-let tooltipTimeout = null;
+
 
 //open the tooltip
 const handleMouseEnter = (id) => {
-  tooltipTimeout = setTimeout(() => setShowTooltip(id), 500);
+  setShowTooltip(id);
 };
 
 //close the tooltip
 const handleMouseLeave = () => {
-  if (tooltipTimeout) {
-    clearTimeout(tooltipTimeout);
-    tooltipTimeout = null;
+  if (showTooltip) {
+    setShowTooltip('');
     setEditingBreakpoint(null);
     setEditingValue('');
   }
-  setShowTooltip('');
   setEditingBreakpoint(null);
   setEditingValue('');
 };

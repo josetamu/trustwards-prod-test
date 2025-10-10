@@ -177,6 +177,9 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
             !e.target.closest('.tw-builder__settings-option') &&
             !e.target.closest('.tw-builder__settings-pen-controls')&&
             !e.target.closest('.tw-builder__header-breakpoint') &&
+            !e.target.closest('.tw-builder__header-settings') &&
+            !e.target.closest('.tw-builder__right-header') &&
+            !e.target.closest('.tw-builder__settings-classes-pool') &&
             !e.target.closest('.tw-builder__settings-class')) {
                 setSelectedId(null);
                 setSelectedItem(null);

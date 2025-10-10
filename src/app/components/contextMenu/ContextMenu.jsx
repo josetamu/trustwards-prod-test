@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 import { useCanvas } from '@contexts/CanvasContext';
 import './ContextMenu.css';
 
@@ -432,7 +432,7 @@ export function ContextMenu({
         <AnimatePresence>
             {open && (
                 <motion.div
-                {...ANIM_TYPES.find(anim => anim.name === animationType)}
+                {...getAnimTypes().find(anim => anim.name === animationType)}
                 className={`tw-context-menu ${className}`}
                 ref={containerRef}
                 style={{

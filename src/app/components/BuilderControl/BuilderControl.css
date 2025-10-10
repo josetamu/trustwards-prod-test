@@ -5,9 +5,7 @@
     border-bottom: 1px solid var(--border-light-color);
 
 }
-.tw-builder__control:first-child .tw-builder__control-header{
-    padding-top: 10px;
-}
+
 
 .tw-builder__control-header{
     display: flex;
@@ -16,7 +14,7 @@
     align-items: center;
     flex-direction: row;
     cursor: pointer;
-    padding-bottom: 10px;
+    padding: 10px 0;
     
 }
 .tw-builder__control-label{
@@ -51,11 +49,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--shadow-color);
+    color: var(--body-light-color);
     font-size: 8px;
     font-weight: 900;
     letter-spacing: var(--letter-spacing-negative);
-    border: 1px solid var(--shadow-color);
+    border: var(--border-light-color);
     border-radius: 2px;
     position: relative;
 }

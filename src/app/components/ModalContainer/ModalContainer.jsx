@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useLayoutEffect, useRef} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 import './ModalContainer.css';
 
 
@@ -212,12 +212,12 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, mod
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          {...ANIM_TYPES.find(anim => anim.name === 'OVERLAY_FADE')} 
+          {...getAnimTypes().find(anim => anim.name === 'OVERLAY_FADE')} 
           className="modal__backdrop" 
           onClick={modalType !== 'Welcome' ? handleBackdropClick : undefined}
         >
           <motion.div
-            {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+            {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}
             className="modal"
             onClick={(e) => e.stopPropagation()}
             ref={modalRef}

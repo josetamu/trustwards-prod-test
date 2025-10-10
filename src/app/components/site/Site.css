@@ -13,12 +13,14 @@
   min-height: 120px;
   height: 120px;
   border: 1px solid var(--border-fresco-color);
+  border-bottom: none;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  z-index: 0;
   overflow: hidden;
   background: var(--site-background);
 }
@@ -89,7 +91,7 @@
   padding: 16px;
   background: var(--site-footer-background);
   border: 1px solid var(--border-fresco-color);
-  border-top: none;
+  border-top: 1px solid var(--border-strong-color);
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
   position: relative;

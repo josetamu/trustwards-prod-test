@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--builder-background);
+    background-color: var(--no-selected-item-background);
     gap: 15px;
     border-radius: var(--panels-radius);
     padding: 15px;
@@ -11,7 +11,7 @@
 .no-selected-item__text{
     font-size: var(--font-size-small);
     font-weight: 500;
-    color: var(--shadow-color);
+    color: var(--no-selected-item-text-color);
     width: 120px;
     letter-spacing: var(--letter-spacing-negative);
     text-align: center;

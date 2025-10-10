@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 
 import './Notification.css';
 
@@ -37,7 +37,7 @@ const Notification = ({
     <AnimatePresence>
       {open && (
         <motion.div
-          {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+          {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}
           className={`notification notification--${position} ${getCenterClass()}`}
           ref={notificationRef}
         >

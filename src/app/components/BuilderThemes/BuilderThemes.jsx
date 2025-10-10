@@ -5,13 +5,13 @@ import { supabase } from '@supabase/supabaseClient';
 import { createCDN } from '@contexts/CDNsContext';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ANIM_TYPES } from '@animations/animations';
+import { getAnimTypes } from '@animations/animations';
 
 export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThemesOpen, setIsManualThemesOpen, showNotification, siteSlug}) {
     const { setJSONtree } = useCanvas();
     const [activeTheme, setActiveTheme] = useState(null);
 
-    const blank = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": [], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": [], "tagName": "div", "children": [], "nestable": true}]};
+    const blank = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "blockEvents": false, "blockScroll": false, "liveWebsite": false, "canvasColor": "#FFFFFF", "canvasMaxWidth": null, "breakpoints": { "tablet": "1024px", "mobile": "767px" }, "responsive": { "tablet": { "idsCSSData": [], "classesCSSData": [] }, "mobile": { "idsCSSData": [], "classesCSSData": [] } }, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": [], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": [], "tagName": "div", "children": [], "nestable": true}]};
     const trustwardsLight = {"roots": [{"id": "tw-root--banner", "icon": "banner", "label": "Banner", "tagName": "div", "children": [{"id": "tw-vghhri", "icon": "text", "text": "New Text", "label": "Text", "tagName": "h3", "classList": ["tw-text"], "elementType": "text"}, {"id": "tw-ycsvhl", "icon": "text", "text": "New Text", "label": "Text", "tagName": "h3", "classList": ["tw-text"], "elementType": "text"}, {"id": "tw-loyhvd", "icon": "text", "text": "New Text", "label": "Text", "tagName": "h3", "classList": ["tw-text"], "elementType": "text"}, {"id": "tw-ljdyrs", "icon": "text", "text": "New Text", "label": "Text", "tagName": "h3", "classList": ["tw-text"], "elementType": "text"}], "nestable": true, "classList": [], "elementType": "banner"}, {"id": "tw-root--modal", "icon": "modal", "label": "Modal", "tagName": "div", "children": [], "nestable": true, "classList": [], "elementType": "modal"}], "activeRoot": "tw-root--banner", "idsCSSData": [], "isFirstTime": false, "classesCSSData": []}
     const trustwardsDark = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": [], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": [], "tagName": "div", "children": [], "nestable": true}]};
     const oregano = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": [], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": [], "tagName": "div", "children": [], "nestable": true}]};
@@ -29,43 +29,43 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
         if(activeTheme || !isFirstTime){
             switch(activeTheme){
                 case 'blank':
-                    setJSONtree(blank);
+                    setJSONtree(blank, !isFirstTime);
                     save(blank);
                     break;
                 case 'trustwards-light':
-                    setJSONtree(trustwardsLight);
+                    setJSONtree(trustwardsLight, !isFirstTime);
                     save(trustwardsLight);
                     break;
                 case 'trustwards-dark':
-                    setJSONtree(trustwardsDark);
+                    setJSONtree(trustwardsDark, !isFirstTime);
                     save(trustwardsDark);
                     break;
                 case 'oregano':
-                    setJSONtree(oregano);
+                    setJSONtree(oregano, !isFirstTime);
                     save(oregano);
                     break;
                 case 'nebula':
-                    setJSONtree(nebula);
+                    setJSONtree(nebula, !isFirstTime);
                     save(nebula);
                     break;
                 case 'quiero':
-                    setJSONtree(quiero);
+                    setJSONtree(quiero, !isFirstTime);
                     save(quiero);
                     break;
                 case 'avocado':
-                    setJSONtree(avocado);
+                    setJSONtree(avocado, !isFirstTime);
                     save(avocado);
                     break;
                 case 'mito':
-                    setJSONtree(mito);
+                    setJSONtree(mito, !isFirstTime);
                     save(mito);
                     break;
                 case 'grainient':
-                    setJSONtree(grainient);
+                    setJSONtree(grainient, !isFirstTime);
                     save(grainient);
                     break;
                 case 'brutal':
-                    setJSONtree(brutal);
+                    setJSONtree(brutal, !isFirstTime);
                     save(brutal);
                     break;
                 default:
@@ -172,15 +172,18 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
         <AnimatePresence>
         {(isFirstTime || isManualThemesOpen) && (
             <div className="tw-builder-themes">
-                <div className="tw-builder-themes__backdrop-click" onClick={() => {
-                    if (isFirstTime) {
-                        showNotification('Please select a theme', 'top', false);
-                    } else {
-                        setIsManualThemesOpen(false);
-                    }
-                }}></div>
                 <motion.div
-                    {...ANIM_TYPES.find(anim => anim.name === 'SCALE_TOP')}
+                    {...getAnimTypes().find(anim => anim.name === 'OVERLAY_FADE')} 
+                    className="tw-builder-themes__backdrop-click" onClick={() => {
+                        if (isFirstTime) {
+                            showNotification('Please select a theme', 'top', false);
+                        } else {
+                            setIsManualThemesOpen(false);
+                        }
+                    }}
+                ></motion.div>
+                <motion.div
+                    {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}
                     className={`tw-builder-themes__modal`}
                 >
                     <div className="tw-builder-themes__modal-header">
