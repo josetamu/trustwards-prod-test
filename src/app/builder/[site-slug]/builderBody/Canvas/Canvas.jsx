@@ -180,6 +180,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
             !e.target.closest('.tw-builder__header-settings') &&
             !e.target.closest('.tw-builder__right-header') &&
             !e.target.closest('.tw-builder__settings-classes-pool') &&
+            !e.target.closest('.modal__backdrop') &&
             !e.target.closest('.tw-builder__settings-class')) {
                 setSelectedId(null);
                 setSelectedItem(null);

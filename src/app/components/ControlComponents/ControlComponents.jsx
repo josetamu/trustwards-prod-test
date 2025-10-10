@@ -2032,6 +2032,9 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
     const [br, setBr] = useState({tl: '', tr: '', br: '', bl: ''});
     const [bwLinked, setBwLinked] = useState('');
     const [brLinked, setBrLinked] = useState('');   
+
+    const sliderX = (on) =>(on ? '0%' : '100%');
+    const sliderW = 'calc(50%)';
     
   
 
@@ -2244,10 +2247,10 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
             // Apply all individual sides at once on any small input blur
             if (applyGlobalCSSChange) {
                 applyGlobalCSSChange({
-                    'border-top-width': bw.t || '0',
-                    'border-right-width': bw.r || '0',
-                    'border-bottom-width': bw.b || '0',
-                    'border-left-width': bw.l || '0'
+                    'border-top-width': bw.t || '',
+                    'border-right-width': bw.r || '',
+                    'border-bottom-width': bw.b || '',
+                    'border-left-width': bw.l || ''
                 });
             }
         }
@@ -2325,6 +2328,8 @@ const parseRadius = useCallback((radiusStr) => {
         }else{
             const value = sideOrValue || '';
             setBrLinked(value);
+            const syncedBr = { tl: value, tr: value, br: value, bl: value };
+            setBr(syncedBr);
         }
     
 
@@ -2335,11 +2340,13 @@ const parseRadius = useCallback((radiusStr) => {
                 applyGlobalCSSChange('border-radius', brLinked);
             }
         } else {
-            const sideMap = { tl: 'top-left', tr: 'top-right', br: 'bottom-right', bl: 'bottom-left' };
-            const property = `border-${sideMap[side]}-radius`;
             if (applyGlobalCSSChange) {
-                applyGlobalCSSChange(property, br[side] || '');
-                console.log('Applied individual property:', property, br[side] || '');
+                applyGlobalCSSChange({
+                    'border-top-left-radius': br.tl || '',
+                    'border-top-right-radius': br.tr || '',
+                    'border-bottom-right-radius': br.br || '',
+                    'border-bottom-left-radius': br.bl || ''
+                });
             }
         }
     };
@@ -2416,13 +2423,20 @@ const parseRadius = useCallback((radiusStr) => {
                                         <input 
                                             type="text" 
                                             className={`tw-builder__settings-input ${isWidthLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`}
-                                            value={isWidthLinked ? bwLinked : ''}
+                                            value={isWidthLinked ? bwLinked : bw.t}
                                             onChange={(e) => handleBorderWidthChange(e.target.value)}
                                             onBlur={handleBorderWidthBlur}
                                             onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur)}
-                                            disabled={!isWidthLinked}    
+                                              
                                         />
                                         <div className="tw-builder__settings-actions">
+                                            <div className="tw-builder__settings-slider-width"
+                                            style={{
+                                                transform: `translateX(${(isWidthLinked ? '0%' : '100%')})`,
+                                                width: '50%',
+                                                }}
+                                            >
+                                            </div>
                                             <button className={`tw-builder__settings-action ${isWidthLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleWidthLinkToggle(true)} onMouseEnter={() => handleMouseEnter('link')} onMouseLeave={handleMouseLeave}>
                                                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <rect x="0.5" y="0.5" width="7" height="7" rx="1.5" stroke="currentColor"/>
@@ -2450,16 +2464,16 @@ const parseRadius = useCallback((radiusStr) => {
                                             </button> 
                                         </div>
                                     </div>
-                                    
+                                    {!isWidthLinked && (
                                     <div className="tw-builder__settings-units">
                                         <div className={`tw-builder__settings-units-label ${isWidthLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={isWidthLinked ? '' : bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('t'))} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('t'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('r'))} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('r'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('b'))} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('b'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isWidthLinked ? '' : bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('l'))} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('l'))} disabled={isWidthLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">T</span>
@@ -2468,6 +2482,7 @@ const parseRadius = useCallback((radiusStr) => {
                                             <span className="tw-builder__settings-units-direction">L</span>
                                         </div>
                                     </div>
+                                    )}
                                     
                                 </div>
                                 <SelectType
@@ -2479,6 +2494,7 @@ const parseRadius = useCallback((radiusStr) => {
                                     applyGlobalCSSChange={applyGlobalCSSChange}
                                     getGlobalCSSValue={getGlobalCSSValue}
                                     selectedElementData={selectedElementData}
+                                    selectedId={selectedElementData?.id}
                                 />
                                 <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Radius
@@ -2499,13 +2515,20 @@ const parseRadius = useCallback((radiusStr) => {
                                         <input 
                                             type="text" 
                                             className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`} 
-                                            value={isRadiusLinked ? brLinked : ''}
+                                            value={isRadiusLinked ? brLinked : br.tl}
                                             onChange={(e) => handleRadiusChange(e.target.value)}
                                             onBlur={handleRadiusBlur}
                                             onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur)}
-                                            disabled={!isRadiusLinked}
+                                            
                                         />
                                         <div className="tw-builder__settings-actions">
+                                        <div className="tw-builder__settings-slider-width"
+                                            style={{
+                                                transform: `translateX(${(isRadiusLinked ? '0%' : '100%')})`,
+                                                width: '50%',
+                                                }}
+                                            >
+                                            </div>
                                             <button className={`tw-builder__settings-action ${isRadiusLinked === true ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleRadiusLinkToggle(true)} onMouseEnter={() => handleMouseEnter('rlink')} onMouseLeave={handleMouseLeave}>
                                                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <rect x="0.5" y="0.5" width="7" height="7" rx="1.5" stroke="currentColor"/>
@@ -2533,7 +2556,7 @@ const parseRadius = useCallback((radiusStr) => {
                                             </button> 
                                         </div>
                                     </div>
-                                    
+                                    {!isRadiusLinked && (
                                     <div className="tw-builder__settings-units">
                                         <div className={`tw-builder__settings-units-label ${isRadiusLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
                                                 <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('tl'))} disabled={isRadiusLinked}/>
@@ -2551,7 +2574,7 @@ const parseRadius = useCallback((radiusStr) => {
                                             <span className="tw-builder__settings-units-direction">BL</span>
                                         </div>
                                     </div>
-                                   
+                                    )}
                                 </div>
 
                         </div>

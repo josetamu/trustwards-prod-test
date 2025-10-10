@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import "./BuilderClasses.css";
 import { useCanvas } from "@contexts/CanvasContext";
 import {Dropdown} from "@components/dropdown/Dropdown";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
+import { getAnimTypes } from '@animations/animations';
 
 
 
@@ -209,8 +210,9 @@ useEffect(() => {
                         ))}
                 </div>
                 {/*Pool of classes*/}
+                <AnimatePresence>
                 {isOpen && (
-                    <div className="tw-builder__settings-classes-pool" ref={poolRef}>
+                    <motion.div className="tw-builder__settings-classes-pool" ref={poolRef} {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-classes-adder">
                             <input className="tw-builder__settings-classes-add-input" type="text" placeholder="Class name..." value={newClass} onChange={(e) => setNewClass(e.target.value)} onKeyDown={handleAddClass}/>
                             <div className="tw-builder__settings-classes-add" onClick={handleAddClass}>
@@ -233,12 +235,10 @@ useEffect(() => {
                                     <span className="tw-builder__settings-classes-item-name">.{className}</span>
                                 </div>
                             ))}
-         {/*                    <div className="tw-builder__settings-classes-item--empty">
-                                <span className="tw-builder__settings-classes-item-name">Create a new CSS class</span>
-                            </div> */}
                         </div>
-                    </div>
-                )}
+                    </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         )
 }

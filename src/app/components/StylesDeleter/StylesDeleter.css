@@ -5,9 +5,12 @@
     cursor: pointer;
     display: none;
     position: absolute;
-    right: calc(100% + 1px);
-    top: -22.5%;
+    right: calc(100% + 2px);
+    top: 3px;
     height: 22px;
+}
+.tw-builder__settings-setting .tw-builder__settings-deleter{
+    top: -4px;
 }
 .tw-builder__settings-deleter-point{
     width: 5px;
