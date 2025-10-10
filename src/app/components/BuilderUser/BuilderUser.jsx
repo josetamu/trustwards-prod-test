@@ -32,7 +32,6 @@ export default function BuilderUser({user, checkProfilePicture, profileStyle, se
                 }
             }}
             tabIndex={0}
-            role="button"
             aria-label={`User account: ${user?.Name || 'User'}. Click to open account settings`}
         >
             {/*If the user has no profile picture, show the user color */}

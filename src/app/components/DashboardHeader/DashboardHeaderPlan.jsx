@@ -24,7 +24,6 @@ export const DashboardHeaderPlan = ({siteSlug, setModalType, setIsModalOpen}) =>
                 }
             }}
             tabIndex={0}
-            role="button"
             aria-label={`Current plan: ${site?.Plan || 'Free'}. Click to change plan`}
         >
             {site?.Plan || 'Free'}

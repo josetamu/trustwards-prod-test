@@ -202,7 +202,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                         Please be as descriptive as possible. Screenshots and recordings will help us identify better your concerns.
                     </span>
                     <div className="modal-support__choices">
-                        <div className={`modal-support__choice ${selectedChoice === 'Bug report' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); } }} tabIndex={0} role="button" aria-pressed={selectedChoice === 'Bug report'}>
+                        <div className={`modal-support__choice ${selectedChoice === 'Bug report' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedChoice('Bug report'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); } }} tabIndex={0}  aria-pressed={selectedChoice === 'Bug report'}>
                             <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
@@ -220,7 +220,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 Bug report
                             </span>
                         </div>
-                        <div className={`modal-support__choice ${selectedChoice === 'Pre-sale questions' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); } }} tabIndex={0} role="button" aria-pressed={selectedChoice === 'Pre-sale questions'}>
+                        <div className={`modal-support__choice ${selectedChoice === 'Pre-sale questions' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedChoice('Pre-sale questions'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); } }} tabIndex={0}  aria-pressed={selectedChoice === 'Pre-sale questions'}>
                         <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
@@ -238,7 +238,7 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                                 Pre-sale questions
                             </span>
                         </div>
-                        <div className={`modal-support__choice ${selectedChoice === 'Other' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); } }} tabIndex={0} role="button" aria-pressed={selectedChoice === 'Other'}>
+                        <div className={`modal-support__choice ${selectedChoice === 'Other' ? 'modal-support__choice--active' : ''} ${errors.selectedChoice ? 'modal-support__choice--warning' : ''}`} onClick={() => { setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedChoice('Other'); setErrors(prev => ({ ...prev, selectedChoice: undefined })); } }} tabIndex={0}  aria-pressed={selectedChoice === 'Other'}>
                         <span className="modal-support__choice-icon">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g clipPath="url(#clip0_254_2015)">
@@ -321,7 +321,6 @@ export const ModalSupport = ({user, setIsModalOpen, showNotification}) => {
                     }
                 }}
                 tabIndex={0}
-                role="button"
                 aria-label="Upload files by clicking or dragging"
                 style={{ 
                     borderColor: isDragging ? 'var(--accent-bg-color)' : 'var(--border-strong-color)',

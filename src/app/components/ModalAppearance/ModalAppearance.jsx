@@ -53,7 +53,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                 .eq('userid', user.id);
 
             if (error) {
-                console.error('Error saving appearance settings:', error);
+
             } else {
                 // Update local state
                 if (newTheme !== null) setSelected(newTheme);
@@ -74,7 +74,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                
             }
         } catch (error) {
-            console.error('Error saving appearance settings:', error);
+
         }
     };
 
@@ -107,7 +107,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                         Theme
                     </span>
                     <div className="modal-appearance__theme-choices">
-                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('light')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('light'); } }} tabIndex={0} role="button" aria-pressed={selected === 'light'}>
+                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('light')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('light'); } }} tabIndex={0}  aria-pressed={selected === 'light'}>
                             <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--light ${selected === 'light' ? 'modal-appearance__theme-choice--active' : ''}`}>
                                 <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_350)">
@@ -159,7 +159,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                 Light
                             </span>
                         </div>
-                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('dark')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('dark'); } }} tabIndex={0} role="button" aria-pressed={selected === 'dark'}>
+                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('dark')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('dark'); } }} tabIndex={0}  aria-pressed={selected === 'dark'}>
                             <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--dark ${selected === 'dark' ? 'modal-appearance__theme-choice--active' : ''}`}>
                                 <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_410_351)">
@@ -211,7 +211,7 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                 Dark
                             </span>
                         </div>
-                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('system')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('system'); } }} tabIndex={0} role="button" aria-pressed={selected === 'system'}>
+                        <div className="modal-appearance__theme-choice" onClick={() => updateTheme('system')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateTheme('system'); } }} tabIndex={0}  aria-pressed={selected === 'system'}>
                             <div className="modal-appearance__img-wrapper modal-appearance__img-wrapper--system">
                                 <div className={`modal-appearance__img-wrapper modal-appearance__img-wrapper--light ${selected === 'system' ? 'modal-appearance__theme-choice--active' : ''}`}>
                                     <svg className='modal-appearance__img' width="93" height="65" viewBox="0 0 93 65" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -308,11 +308,11 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                         Accent color
                     </span>
                     <div className="modal-appearance__accent-color-choices">
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--green ${selectedColor === 'green' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('green')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('green'); } }} tabIndex={0} role="button" aria-pressed={selectedColor === 'green'} aria-label="Select green accent color"></div>
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--purple ${selectedColor === 'purple' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('purple')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('purple'); } }} tabIndex={0} role="button" aria-pressed={selectedColor === 'purple'} aria-label="Select purple accent color"></div>
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--red ${selectedColor === 'red' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('red')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('red'); } }} tabIndex={0} role="button" aria-pressed={selectedColor === 'red'} aria-label="Select red accent color"></div>
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--orange ${selectedColor === 'orange' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('orange')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('orange'); } }} tabIndex={0} role="button" aria-pressed={selectedColor === 'orange'} aria-label="Select orange accent color"></div>
-                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--blue ${selectedColor === 'blue' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('blue')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('blue'); } }} tabIndex={0} role="button" aria-pressed={selectedColor === 'blue'} aria-label="Select blue accent color"></div>    
+                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--green ${selectedColor === 'green' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('green')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('green'); } }} tabIndex={0}  aria-pressed={selectedColor === 'green'} aria-label="Select green accent color"></div>
+                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--purple ${selectedColor === 'purple' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('purple')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('purple'); } }} tabIndex={0}  aria-pressed={selectedColor === 'purple'} aria-label="Select purple accent color"></div>
+                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--red ${selectedColor === 'red' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('red')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('red'); } }} tabIndex={0}  aria-pressed={selectedColor === 'red'} aria-label="Select red accent color"></div>
+                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--orange ${selectedColor === 'orange' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('orange')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('orange'); } }} tabIndex={0}  aria-pressed={selectedColor === 'orange'} aria-label="Select orange accent color"></div>
+                        <div className={`modal-appearance__accent-color-choice modal-appearance__accent-color-choice--blue ${selectedColor === 'blue' ? 'modal-appearance__accent-color-choice--active' : ''}`} onClick={() => handleColorSelect('blue')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColorSelect('blue'); } }} tabIndex={0}  aria-pressed={selectedColor === 'blue'} aria-label="Select blue accent color"></div>    
                     </div>
                     
                 </div>
@@ -332,6 +332,10 @@ export const ModalAppearance = ({ user, appearanceSettings, setAppearanceSetting
                                     e.preventDefault();
                                     handleReducedMotionToggle(!reducedMotion);
                                 }
+                            }}
+                            onClick={(e) => {
+                                // Prevent focus on click
+                                e.target.blur();
                             }}
                             aria-label="Toggle reduced motion"
                         />

@@ -410,3 +410,13 @@
         letter-spacing: var(--letter-spacing-negative);
     }
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Upgrade plan subscribe button focus */
+.modal-upgrade-plan__subscribe--popular:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}

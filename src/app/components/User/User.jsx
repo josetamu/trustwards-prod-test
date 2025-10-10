@@ -89,7 +89,6 @@ export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,i
                 }
             }}
             tabIndex={(isSidebarOpen || isSidebarMenu) ? 0 : -1}
-            role="button"
             aria-label="User menu"
             aria-expanded={isDropdownOpen}
             aria-haspopup="menu"

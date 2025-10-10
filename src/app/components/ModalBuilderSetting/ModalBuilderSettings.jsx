@@ -107,9 +107,9 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                     </span>
                 </div>
                 <div className='modal-builder-settings__content-divider modal-builder-settings__content-divider--vertical'></div>
-                <div className='modal-builder-settings__content-body' role="tabpanel" id="builder-panel" aria-labelledby="builder-tab" style={{ display: activeTab === 'Builder' ? 'block' : 'none' }}>
+                <div className='modal-builder-settings__content-body'>
                     {activeTab === 'Builder' && (
-                        <div className='modal-builder-settings__content-body-builder'>
+                        <>
                             <span className='modal-builder-settings__content-body-title'>Canvas Background</span>
                             <div className='modal-builder-settings__content-body-setting'>
                                 <span className='modal-builder-settings__content-body-subtitle'>Live Website</span>
@@ -117,23 +117,27 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     className="modal-builder-settings__content-body-label" 
                                     onMouseEnter={() => handleMouseEnter('liveWebsite')} 
                                     onMouseLeave={handleMouseLeave}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                            e.preventDefault();
-                                            handleLiveWebsiteChange();
-                                        }
-                                    }}
-                                    tabIndex={0}
-                                    role="switch"
-                                    aria-checked={!!JSONtree.liveWebsite}
-                                    aria-label="Toggle live website background"
                                 >
                                     <input
                                         type="checkbox"
                                         className="modal-builder-settings__content-body-checkbox"
                                         checked={!!JSONtree.liveWebsite}
                                         onChange={handleLiveWebsiteChange}
-                                        aria-hidden="true"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                handleLiveWebsiteChange();
+                                            }
+                                        }}
+                                        onClick={(e) => {
+                                            // Prevent focus on click
+                                            e.target.blur();
+                                        }}
+                                        style={{ opacity: 0, width: 0, height: 0 }}
+                                        tabIndex={0}
+                                        role="switch"
+                                        aria-checked={!!JSONtree.liveWebsite}
+                                        aria-label="Toggle live website background"
                                     />
                                     <span className="modal-builder-settings__content-body-switch"></span>
                                     <Tooltip 
@@ -154,10 +158,10 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     aria-label="Select canvas background color"
                                 />
                             </div>
-                        </div>
+                        </>
                     )}
                     {activeTab === 'Consent' && (
-                        <div role="tabpanel" id="consent-panel" aria-labelledby="consent-tab" style={{ display: activeTab === 'Consent' ? 'block' : 'none' }}>
+                        <>
                             <span className='modal-builder-settings__content-body-title'>Until a decision is made</span>
                             <div className='modal-builder-settings__content-body-setting'>
                                 <span className='modal-builder-settings__content-body-subtitle'>Block events</span>
@@ -174,6 +178,14 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                                 handleEventsChange();
                                             }
                                         }}
+                                        onClick={(e) => {
+                                            // Prevent focus on click
+                                            e.target.blur();
+                                        }}
+                                        style={{ opacity: 0, width: 0, height: 0 }}
+                                        tabIndex={0}
+                                        role="switch"
+                                        aria-checked={!!JSONtree.blockEvents}
                                         aria-label="Toggle block events"
                                     />
                                     <span className="modal-builder-settings__content-body-switch"></span>
@@ -194,16 +206,23 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                                 handleScrollChange();
                                             }
                                         }}
+                                        onClick={(e) => {
+                                            // Prevent focus on click
+                                            e.target.blur();
+                                        }}
+                                        style={{ opacity: 0, width: 0, height: 0 }}
+                                        tabIndex={0}
+                                        role="switch"
+                                        aria-checked={!!JSONtree.blockScroll}
                                         aria-label="Toggle block scroll"
                                     />
                                     <span className="modal-builder-settings__content-body-switch"></span>
                                 </label>
                             </div>
-                        </div>
+                        </>
                     )}
                     {activeTab === 'Actions' && (
-                        <div role="tabpanel" id="actions-panel" aria-labelledby="actions-tab" style={{ display: activeTab === 'Actions' ? 'block' : 'none' }}>
-                            <div className='modal-builder-settings__content-body-actions'>
+                        <div className='modal-builder-settings__content-body-actions'>
                                 <div className="modal-builder-settings__content-body-action">
                                     <span className='modal-builder-settings__content-body-title modal-builder-settings__content-body-title--active'>Close banner</span>
                                     <div className="modal-builder-settings__content-body-clipper">
@@ -213,7 +232,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-close-banner to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -232,7 +250,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-open-banner to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -251,7 +268,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-close-modal to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -266,11 +282,10 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     <div className="modal-builder-settings__content-body-clipper">
                                         <span className='modal-builder-settings__content-body-subtitle'>data-tw-open-modal</span>
                                         <span 
-                                            className='modal-builder-settings__content-body-clip'
+                                            className='modal-builder-settings__content-body-clip' 
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-open-modal to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -289,7 +304,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-enable-all to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -308,7 +322,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-disable-all to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -327,7 +340,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-save-choices to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -346,7 +358,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-accept-category to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -365,7 +376,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-reject-category to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -384,7 +394,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-accept-all to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -403,7 +412,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                             onClick={copyFromSubtitle}
                                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyFromSubtitle(e); } }}
                                             tabIndex={0}
-                                            role="button"
                                             aria-label="Copy data-tw-reject-all to clipboard"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -414,7 +422,6 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     )}
                 </div>
             </div>

@@ -292,3 +292,15 @@
         gap: 10px;
     }
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Accent color button focus */
+.modalAppearance__accentColor__button:focus-visible,
+.modal-appearance__accent-color-choice:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+  border-radius: 8px;
+}

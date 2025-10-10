@@ -179,3 +179,85 @@ letter-spacing: var(--letter-spacing-negative);
 .tw-builder__header-tooltip-input:focus{
     outline: none;
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Builder tabs - remove outline from button, apply only to text content */
+.tw-builder__tab:focus-visible {
+  outline: none !important;
+}
+
+.tw-builder__tab:focus-visible::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+  pointer-events: none;
+}
+
+/* Builder logo button - keep original border when focused */
+.tw-builder__logo-button:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Builder panel toggle button - remove outline from button, apply only to SVG */
+.tw-builder__panel-toggle-btn:focus-visible {
+  outline: none !important;
+}
+
+.tw-builder__panel-toggle-btn:focus-visible svg {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Dashboard header builder button focus */
+.dashboard-header__builder:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Remove outline from builder text */
+.dashboard-header__builder-text:focus-visible {
+  outline: none !important;
+}
+
+/* =======================
+   BUILDER HEADER ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Breakpoint buttons focus styles */
+.tw-builder__header-breakpoint:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Plan button focus styles */
+.tw-builder__header-plan:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Settings wheel button focus styles */
+.tw-builder__header-setting:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Undo/Redo control buttons focus styles */
+.tw-builder__header-control:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Disabled state for undo/redo buttons */
+.tw-builder__header-control[aria-disabled="true"]:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}

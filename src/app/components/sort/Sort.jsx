@@ -56,7 +56,6 @@ export const Sort = ({ }) => {
       aria-expanded={open}
       aria-haspopup="menu"
       tabIndex={0}
-      role="button"
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();

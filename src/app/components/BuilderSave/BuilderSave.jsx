@@ -168,7 +168,6 @@ const captureCanvas = useCallback(async () => {
                 }
             }}
             tabIndex={isLoading ? -1 : 0}
-            role="button"
             aria-label={isLoading ? "Saving changes..." : "Save changes"}
             aria-disabled={isLoading}
         >

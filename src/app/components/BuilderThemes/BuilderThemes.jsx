@@ -124,6 +124,50 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
         };
     }, [isFirstTime]);
 
+
+    // Focus trap for keyboard navigation
+    useEffect(() => {
+        if (!isFirstTime && !isManualThemesOpen) return;
+
+        const handleKeyDown = (e) => {
+            if (e.key !== 'Tab') return;
+
+            const modal = document.querySelector('.tw-builder-themes__modal');
+            const saveButton = document.querySelector('.tw-builder-themes__save-button');
+            const themePreviews = document.querySelectorAll('.tw-builder-themes__theme-preview');
+            
+            if (!modal || !saveButton || themePreviews.length === 0) return;
+
+            const focusableElements = [saveButton, ...Array.from(themePreviews)];
+            const activeElement = document.activeElement;
+            const activeIndex = focusableElements.indexOf(activeElement);
+
+            // If focus is outside the modal, focus the save button
+            if (!modal.contains(activeElement)) {
+                e.preventDefault();
+                saveButton.focus();
+                return;
+            }
+
+            if (e.shiftKey) {
+                // Shift + Tab: move backwards
+                if (activeIndex <= 0) {
+                    e.preventDefault();
+                    focusableElements[focusableElements.length - 1].focus();
+                }
+            } else {
+                // Tab: move forwards
+                if (activeIndex >= focusableElements.length - 1) {
+                    e.preventDefault();
+                    focusableElements[0].focus();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isFirstTime, isManualThemesOpen]);
+
     return (
         <AnimatePresence>
         {(isFirstTime || isManualThemesOpen) && (
@@ -141,97 +185,230 @@ export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThem
                 >
                     <div className="tw-builder-themes__modal-header">
                         <span className="tw-builder-themes__header-title">Themes</span>
-                        <div className="tw-builder-themes__save-button" onClick={() => {
-                            saveTheme();
-                        }}>Save</div>
+                        <div 
+                            className="tw-builder-themes__save-button" 
+                            onClick={() => {
+                                saveTheme();
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    saveTheme();
+                                }
+                            }}
+                            tabIndex={0}
+                            aria-label="Save selected theme"
+                        >
+                            Save
+                        </div>
                     </div>
 
                     <div className="tw-builder-themes__grid">
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="blank" onClick={() => {
-                                setActiveThemeFunction('blank');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="blank" 
+                                onClick={() => {
+                                    setActiveThemeFunction('blank');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('blank');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Blank theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Blank</span>
                                 <span className="tw-builder-themes__theme-info-free">FREE</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="trustwards-light" onClick={() => {
-                                setActiveThemeFunction('trustwards-light');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="trustwards-light" 
+                                onClick={() => {
+                                    setActiveThemeFunction('trustwards-light');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('trustwards-light');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Trustwards Light theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Trustwards Light</span>
                                 <span className="tw-builder-themes__theme-info-free">FREE</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="trustwards-dark" onClick={() => {
-                                setActiveThemeFunction('trustwards-dark');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="trustwards-dark" 
+                                onClick={() => {
+                                    setActiveThemeFunction('trustwards-dark');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('trustwards-dark');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Trustwards Dark theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Trustwards Dark</span>
                                 <span className="tw-builder-themes__theme-info-free">FREE</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="oregano" onClick={() => {
-                                setActiveThemeFunction('oregano');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="oregano" 
+                                onClick={() => {
+                                    setActiveThemeFunction('oregano');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('oregano');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Oregano theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Oregano</span>
                                 <span className="tw-builder-themes__theme-info-pro">PRO</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="nebula" onClick={() => {
-                                setActiveThemeFunction('nebula');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="nebula" 
+                                onClick={() => {
+                                    setActiveThemeFunction('nebula');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('nebula');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Nebula theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Nebula</span>
                                 <span className="tw-builder-themes__theme-info-pro">PRO</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="quiero" onClick={() => {
-                                setActiveThemeFunction('quiero');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="quiero" 
+                                onClick={() => {
+                                    setActiveThemeFunction('quiero');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('quiero');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Quiero theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Quiero</span>
                                 <span className="tw-builder-themes__theme-info-pro">PRO</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="avocado" onClick={() => {
-                                setActiveThemeFunction('avocado');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="avocado" 
+                                onClick={() => {
+                                    setActiveThemeFunction('avocado');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('avocado');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Avocado theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Avocado</span>
                                 <span className="tw-builder-themes__theme-info-pro">PRO</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="mito" onClick={() => {
-                                setActiveThemeFunction('mito');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="mito" 
+                                onClick={() => {
+                                    setActiveThemeFunction('mito');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('mito');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Mito theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Mito</span>
                                 <span className="tw-builder-themes__theme-info-pro">PRO</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="grainient" onClick={() => {
-                                setActiveThemeFunction('grainient');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="grainient" 
+                                onClick={() => {
+                                    setActiveThemeFunction('grainient');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('grainient');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Grainient theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Grainient</span>
                                 <span className="tw-builder-themes__theme-info-pro">PRO</span>
                             </div>
                         </div>
                         <div className="tw-builder-themes__theme">
-                            <div className="tw-builder-themes__theme-preview" id="brutal" onClick={() => {
-                                setActiveThemeFunction('brutal');
-                            }}></div>
+                            <div 
+                                className="tw-builder-themes__theme-preview" 
+                                id="brutal" 
+                                onClick={() => {
+                                    setActiveThemeFunction('brutal');
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setActiveThemeFunction('brutal');
+                                    }
+                                }}
+                                tabIndex={0}
+                                aria-label="Select Brutal theme"
+                            ></div>
                             <div className="tw-builder-themes__theme-info">
                                 <span className="tw-builder-themes__theme-info-title">Brutal</span>
                                 <span className="tw-builder-themes__theme-info-pro">PRO</span>

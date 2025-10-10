@@ -119,3 +119,13 @@
 .tree-context-menu .tw-context-menu__menu {
   min-width: 140px;
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Context menu items - inner outline */
+.context-menu__item:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset-inner); /* draw inside element instead of outside */
+}

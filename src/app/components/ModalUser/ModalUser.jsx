@@ -47,14 +47,14 @@ export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSett
         <div className={`modal-user ${userSettings === 'Plan' ? 'modal-user--upgrade' : ''}`}>
             <div className="modal-user__aside">
                 <div className="modal-user__settings">
-                    <div className={`modal-user__item ${userSettings === 'Account' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Account');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Account'); } }} tabIndex={0} role="button" aria-pressed={userSettings === 'Account'}>
+                    <div className={`modal-user__item ${userSettings === 'Account' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Account');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Account'); } }} tabIndex={0}  aria-pressed={userSettings === 'Account'}>
                         <span className="modal-user__item-span">Account</span>
                     </div>
-                    <div className={`modal-user__item ${userSettings === 'Appearance' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Appearance');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Appearance'); } }} tabIndex={0} role="button" aria-pressed={userSettings === 'Appearance'}>
+                    <div className={`modal-user__item ${userSettings === 'Appearance' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Appearance');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Appearance'); } }} tabIndex={0}  aria-pressed={userSettings === 'Appearance'}>
                         <span className="modal-user__item-span">Appearance</span>
                     </div>
                     <div className="modal-user__divider"></div>
-                    <div className={`modal-user__item modal-user__item--upgrade ${userSettings === 'Plan' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Plan');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Plan'); } }} tabIndex={0} role="button" aria-pressed={userSettings === 'Plan'}>
+                    <div className={`modal-user__item modal-user__item--upgrade ${userSettings === 'Plan' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Plan');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Plan'); } }} tabIndex={0}  aria-pressed={userSettings === 'Plan'}>
                         <span className="modal-user__item-icon">
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clipPath="url(#clip0_439_1015)">

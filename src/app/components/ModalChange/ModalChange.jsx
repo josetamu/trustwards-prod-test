@@ -77,7 +77,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             </div>
                         </div>
                         <div className='modal-change__actions'>
-                            <a href="#" className='modal-change__forgot' tabIndex={0} role="button" aria-label="Forgot password">Forgot password?</a>
+                            <a href="#" className='modal-change__forgot' tabIndex={0}  aria-label="Forgot password">Forgot password?</a>
                             <button className='modal-change__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
@@ -129,7 +129,7 @@ export function ModalChange({ changeType, onClose, user, setUser, showNotificati
                             </div>
                         </div>
                         <div className='modal-change__actions'>
-                            <a href="#" className='modal-change__forgot' tabIndex={0} role="button" aria-label="Forgot password">Forgot password?</a>
+                            <a href="#" className='modal-change__forgot' tabIndex={0}  aria-label="Forgot password">Forgot password?</a>
                             <button className='modal-change__button' onClick={handleSave}>Save</button>
                         </div>
                     </>
