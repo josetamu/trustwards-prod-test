@@ -298,13 +298,13 @@ const renderTooltip = (id) => (
               <span 
                   className={`tw-builder__header-plan ${site?.Plan === 'Pro' ? 'tw-builder__header-plan--pro' : ''}`} 
                   onClick={() => {
-                    setModalType('Plan');
+                    setModalType('Billing');
                     setIsModalOpen(true);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      setModalType('Plan');
+                      setModalType('Billing');
                       setIsModalOpen(true);
                     }
                   }}
