@@ -68,8 +68,21 @@ const handleDelete = useCallback(() => {
 }, [JSONProperty, cssProperty, cssPropertyGroup, applyGlobalCSSChange, applyGlobalJSONChange, effectiveEmptyMarker, cssDeleteBatch, onDelete, defaultValue]);
 
     return (
-        <div className={`tw-builder__settings-deleter ${hasValue && jsonRaw !== effectiveEmptyMarker ? 'tw-builder__settings-deleter--active' : ''}`}>
-                <div className='tw-builder__settings-deleter-point' onClick={handleDelete}></div>
+        <div 
+        className={`tw-builder__settings-deleter ${hasValue && jsonRaw !== effectiveEmptyMarker ? 'tw-builder__settings-deleter--active' : ''}`}
+
+        onClick={handleDelete}>
+                <div className='tw-builder__settings-deleter-point' onClick={handleDelete}
+                        tabIndex={0}
+                        role="button"
+                        aria-label="Delete style"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                handleDelete();
+                            }
+                        }}>
+
+                </div>
                 <span className="tw-builder__settings-deleter-cross" onClick={handleDelete}>X</span>
         </div>
     )

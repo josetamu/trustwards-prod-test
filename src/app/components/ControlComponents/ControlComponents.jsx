@@ -79,6 +79,9 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             </span>
            
             <input 
+            tabIndex={0}
+            role="textbox"
+            aria-label={`${name} input`}
             type="text" 
             className="tw-builder__settings-input" 
             value={textValue} 
@@ -686,8 +689,8 @@ const handlePercentageChange = (e) => {
             
         <div className="tw-builder__settings-background">
             <div className="tw-builder__settings-colors">
-                <input  ref={colorInputRef} type="color" className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
-                <div className="tw-builder__settings-color" onClick={handleColorClick} style={{
+                <input  ref={colorInputRef} type="color" tabIndex={-1} className="tw-builder__settings-color-input" value={color} onChange={handleColorChange} />
+                <div className="tw-builder__settings-color" tabIndex={0} role="button" aria-label="Select color" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleColorClick(); } }} onClick={handleColorClick} style={{
                         backgroundColor: finalColor, 
                     }}>
                 </div>
@@ -838,7 +841,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
                 className="tw-builder__settings-image"
                 style={imageUrl ? { backgroundImage: `url(${imageUrl})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center center' } : undefined}
             >
-                <div className={`tw-builder__settings-image-upload ${imageUrl ? 'tw-builder__settings-image-upload-preview' : ''}`} onClick={() => imageRef.current.click()}>
+                <div className={`tw-builder__settings-image-upload ${imageUrl ? 'tw-builder__settings-image-upload-preview' : ''}`} tabIndex={0} role="button" aria-label="Upload image" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { imageRef.current.click(); } }} onClick={() => imageRef.current.click()}>
                     <span className="tw-builder__settings-image-span">Upload Image</span>
                     <input 
                     ref={imageRef} 
@@ -1698,37 +1701,6 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     };
     
     // ========================================
-    // Initialization of the selected state
-    // ========================================
-    
-    // Initialize the state after defining the auxiliary functions
-/*     useEffect(() => {
-        if (JSONProperty && getGlobalJSONValue) {
-            setSelected(getGlobalJSONValue(JSONProperty) || value || '');
-            return;
-        }
-        
-        if (name === 'Weight' && getGlobalCSSValue && cssProperty) {
-            const cssValue = getGlobalCSSValue(cssProperty);
-            const fontStyle = getGlobalCSSValue('font-style');
-            const weightName = fontWeightMapReverse()[cssValue] || cssValue || value || '';
-            
-            if (fontStyle === 'italic' && weightName) {
-                setSelected(`${weightName} Italic`);
-            } else {
-                setSelected(weightName);
-            }
-            return;
-        }
-        
-        const cssVal = getGlobalCSSValue?.(cssProperty);
-        const initialValue = name === 'Font'
-            ? (extractPrimaryFamily(cssVal) || value || '')
-            : (cssVal || value || '');
-        setSelected(initialValue);
-    }, []); // Only on mount */
-    
-    // ========================================
     // Effects - specific for font/weight
     // ========================================
     
@@ -1771,8 +1743,17 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 setOpen(false);
             }
         };
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                setOpen(false);
+            }
+        };
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleEsc);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEsc);
+        };
     }, [open]);
     
     // Update when the selected element changes
@@ -1938,11 +1919,12 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 />
             </span>
             
-            <div className="tw-builder__settings-select-container" ref={containerRef}>
+            <div className="tw-builder__settings-select-container" tabIndex={0} role="button" aria-label="Select" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setOpen(!open); } }} ref={containerRef}>
                 {/* Main button */}
                 <button
                     onClick={() => setOpen(!open)}
                     className="tw-builder__settings-select"
+                    tabIndex={-1}
                 >
                     {selected ? 
                         <span className="tw-builder__settings-select-value">
@@ -1990,12 +1972,17 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     
                     return (
                         <li
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`Select ${optionValue}`}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleSelectChange(optionValue); setOpen(false); setSearchFilter(''); } }}    
                             key={typeof opt === 'object' ? opt.family : `${opt}-${index}`}
                             onClick={() => {
                                 if (opt === '---') return;
                                 handleSelectChange(optionValue);
                                 setOpen(false);
                                 setSearchFilter('');
+                                
                             }}
                             className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
                         >
@@ -2018,7 +2005,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     );
 }
 
-const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified, setBwUnified, brUnified, setBrUnified}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));
@@ -2031,10 +2018,9 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
     const [bw, setBw] = useState({t: '', r: '', b: '', l: ''});
     const [br, setBr] = useState({tl: '', tr: '', br: '', bl: ''});
     const [bwLinked, setBwLinked] = useState('');
-    const [brLinked, setBrLinked] = useState('');   
+    const [brLinked, setBrLinked] = useState('');  
 
-    const sliderX = (on) =>(on ? '0%' : '100%');
-    const sliderW = 'calc(50%)';
+
     
   
 
@@ -2091,6 +2077,45 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         return () => document.removeEventListener('keydown', handleEscKey);
     }, [open]);
 
+    useEffect(() => {
+        if (!open) return;
+    
+        const handleTabClose = (e) => {
+            if (e.key !== 'Tab') return;
+    
+            const root = containerRef.current?.querySelector('.tw-builder__settings-pen-controls');
+            if (!root) return;
+    
+            const focusableSelectors = [
+                'a[href]',
+                'button:not([disabled])',
+                'input:not([disabled])',
+                'select:not([disabled])',
+                'textarea:not([disabled])',
+                '[tabindex]:not([tabindex="-1"])'
+            ].join(',');
+    
+            const focusables = Array.from(root.querySelectorAll(focusableSelectors))
+                .filter(el => !el.hasAttribute('disabled') && el.tabIndex !== -1 && el.offsetParent !== null);
+    
+            if (focusables.length === 0) return;
+    
+            const last = focusables[focusables.length - 1];
+    
+            if (!e.shiftKey && document.activeElement === last) {
+                setOpen(false);
+            }
+    
+             const first = focusables[0];
+            if (e.shiftKey && document.activeElement === first) {
+                setOpen(false);
+            }
+        };
+    
+        document.addEventListener('keydown', handleTabClose);
+        return () => document.removeEventListener('keydown', handleTabClose);
+    }, [open]);
+
     //Handle the mouse enter and leave of the tooltip
     const handleMouseEnter = (tooltipId) => setActiveTooltip(tooltipId);
     const handleMouseLeave = () => setActiveTooltip(null);
@@ -2102,6 +2127,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
             if(getGlobalCSSValue?.('border-width')){
                 const a = getGlobalCSSValue?.('border-width');
                 setBw({ t: a, r: a, b: a, l: a });
+                setBwUnified(a);
                 applyGlobalCSSChange({
                     'border-width': '',
                     "border-top-width": a,
@@ -2113,6 +2139,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         }else{
             if(getGlobalCSSValue?.('border-top-width') || getGlobalCSSValue?.('border-right-width') || getGlobalCSSValue?.('border-bottom-width') || getGlobalCSSValue?.('border-left-width')){
                 const a = getGlobalCSSValue?.('border-top-width') || getGlobalCSSValue?.('border-right-width') || getGlobalCSSValue?.('border-bottom-width') || getGlobalCSSValue?.('border-left-width');
+                setBwUnified(a);
                 applyGlobalCSSChange({
                     'border-width': a,
                     "border-top-width": '',
@@ -2130,6 +2157,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
             if(getGlobalCSSValue?.('border-radius')){
                 const a = getGlobalCSSValue?.('border-radius');
                 setBr({ tl: a, tr: a, br: a, bl: a });
+                setBrUnified(a);
                 applyGlobalCSSChange({
                     'border-radius': '',
                     "border-top-left-radius": a,
@@ -2141,6 +2169,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         }else{
             if(getGlobalCSSValue?.('border-top-left-radius') || getGlobalCSSValue?.('border-top-right-radius') || getGlobalCSSValue?.('border-bottom-right-radius') || getGlobalCSSValue?.('border-bottom-left-radius')){
                 const a = getGlobalCSSValue?.('border-top-left-radius') || getGlobalCSSValue?.('border-top-right-radius') || getGlobalCSSValue?.('border-bottom-right-radius') || getGlobalCSSValue?.('border-bottom-left-radius');
+                setBrUnified(a);
                 applyGlobalCSSChange({
                     'border-radius': a,
                     "border-top-left-radius": '',
@@ -2214,6 +2243,12 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
         }
     }, [selectedElementData, currentBorderWidth, currentBorderTopWidth, currentBorderRightWidth, currentBorderBottomWidth, currentBorderLeftWidth, parsedBorderWidth]);
 
+    useEffect(() => {
+        if (!isWidthLinked) {
+            const a = currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth || '';
+            setBwUnified(a);
+        }
+    }, [selectedElementData?.id, isWidthLinked]);
 
     const handleBorderWidthChange = (sideOrValue, valueIfAny) => {
         // Individual side modification: sideOrValue = side ('t','r','b','l'), valueIfAny = width value
@@ -2234,6 +2269,9 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
             setBwLinked(value);
             const newBw = { t: value, r: value, b: value, l: value };
             setBw(newBw);
+            if(!isWidthLinked){
+                setBwUnified(value);
+            }
         }
     };
     
@@ -2313,6 +2351,14 @@ const parseRadius = useCallback((radiusStr) => {
             setIsRadiusLinked(false);
         }
     }, [selectedElementData, currentRadius, currentBorderTopLeftRadius, currentBorderTopRightRadius, currentBorderBottomRightRadius, currentBorderBottomLeftRadius, parsedRadius]);
+
+    useEffect(() => {
+        if (!isRadiusLinked) {
+            const a = currentBorderTopLeftRadius || currentBorderTopRightRadius || currentBorderBottomRightRadius || currentBorderBottomLeftRadius || '';
+            setBrUnified(a);
+        }
+    }, [selectedElementData?.id, isRadiusLinked]);
+
     const handleRadiusChange = (sideOrValue, valueIfAny) => {
 
         if(valueIfAny !== undefined){
@@ -2330,6 +2376,9 @@ const parseRadius = useCallback((radiusStr) => {
             setBrLinked(value);
             const syncedBr = { tl: value, tr: value, br: value, bl: value };
             setBr(syncedBr);
+            if(!isRadiusLinked){
+                setBrUnified(value);
+            }
         }
     
 
@@ -2372,10 +2421,14 @@ const parseRadius = useCallback((radiusStr) => {
                 }}
                 getGlobalCSSValue={getGlobalCSSValue} 
                 applyGlobalCSSChange={applyGlobalCSSChange} 
+                onDelete={() => {
+                    setBwUnified('');
+                    setBwUnified('');
+                }}
             />
         </span>
             <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
-                <span className="tw-builder__settings-pen" onClick={toggleOpen}>
+                <span className="tw-builder__settings-pen" tabIndex={0} role="button" aria-label="Toggle pen" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { toggleOpen(); } }} onClick={toggleOpen}>
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.3815 0.493193C8.30876 0.486644 8.23552 0.486644 8.16278 0.493193C7.90608 0.516317 7.69916 0.63382 7.51218 0.780856C7.33673 0.918791 7.14298 1.1126 6.91819 1.33743L6.31055 1.94503L9.05176 4.6862L9.65935 4.07864C9.88419 3.85382 10.078 3.66003 10.2159 3.48462C10.363 3.29763 10.4805 3.09068 10.5036 2.83398C10.5101 2.76124 10.5101 2.68805 10.5036 2.61531C10.4805 2.35861 10.363 2.15166 10.2159 1.96468C10.078 1.78927 9.88419 1.59547 9.65935 1.37066C9.43456 1.14583 9.20754 0.918797 9.0321 0.780856C8.84511 0.63382 8.6382 0.516317 8.3815 0.493193Z" fill="#999999"/>
                         <path d="M8.47787 5.26072L5.73671 2.51953L1.50458 6.75161C1.08775 7.16804 0.798073 7.45745 0.642951 7.83196C0.487828 8.20647 0.488023 8.61591 0.488305 9.20514L0.488332 10.1028C0.488332 10.3272 0.670213 10.5091 0.894582 10.5091H1.7923C2.38151 10.5094 2.79098 10.5096 3.16548 10.3544C3.53997 10.1994 3.82937 9.90969 4.2458 9.49282L8.47787 5.26072Z" fill="#999999"/>
@@ -2387,7 +2440,7 @@ const parseRadius = useCallback((radiusStr) => {
                     <motion.div className="tw-builder__settings-pen-controls" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
-                            <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
+                            <span className="tw-builder__settings-pen-close" tabIndex={0} role="button" aria-label="Toggle pen" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { toggleOpen(); } }} onClick={() => toggleOpen()}>
                                 <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M6 1L1.00034 5.99967M5.99967 6L1 1.00035" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
@@ -2413,17 +2466,18 @@ const parseRadius = useCallback((radiusStr) => {
                                                 'border-top-width': '',
                                                 'border-right-width': '',
                                                 'border-bottom-width': '',
-                                                'border-left-width': ''
+                                                'border-left-width': '',
                                             }}
                                             getGlobalCSSValue={getGlobalCSSValue} 
                                             applyGlobalCSSChange={applyGlobalCSSChange}
+                                            onDelete={() => setBwUnified('')}
                                         />
                                     </span>
                                     <div className="tw-builder__settings-width">
                                         <input 
                                             type="text" 
-                                            className={`tw-builder__settings-input ${isWidthLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`}
-                                            value={isWidthLinked ? bwLinked : bw.t}
+                                            className={`tw-builder__settings-input`}
+                                            value={isWidthLinked ? bwLinked : bwUnified}
                                             onChange={(e) => handleBorderWidthChange(e.target.value)}
                                             onBlur={handleBorderWidthBlur}
                                             onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur)}
@@ -2466,7 +2520,7 @@ const parseRadius = useCallback((radiusStr) => {
                                     </div>
                                     {!isWidthLinked && (
                                     <div className="tw-builder__settings-units">
-                                        <div className={`tw-builder__settings-units-label ${isWidthLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
+                                        <div className={`tw-builder__settings-units-label`}>
                                             <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('t'))} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
                                             <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('r'))} disabled={isWidthLinked}/>
@@ -2515,7 +2569,7 @@ const parseRadius = useCallback((radiusStr) => {
                                         <input 
                                             type="text" 
                                             className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`} 
-                                            value={isRadiusLinked ? brLinked : br.tl}
+                                            value={isRadiusLinked ? brLinked : brUnified}
                                             onChange={(e) => handleRadiusChange(e.target.value)}
                                             onBlur={handleRadiusBlur}
                                             onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur)}
@@ -2714,54 +2768,6 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     //Function apply the box-shadow string to the CSS and JSON.
 const wrappedApplyCSS = useCallback((prop, val) => {
-    // If the first parameter is an object (batch), process it
-   /*  if (typeof prop === 'object' && prop !== null && val === undefined) {
-        const batch = prop;
-        let nextLocal = { ...localValues };
-        let hasBoxShadowChange = false;
-        
-        // Process each property of the batch
-        Object.entries(batch).forEach(([key, value]) => {
-            switch (key) {
-                case 'box-shadow-x':
-                    nextLocal.x = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-y':
-                    nextLocal.y = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-blur':
-                    nextLocal.blur = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-spread':
-                    nextLocal.spread = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow-color':
-                    nextLocal.color = value != null ? value.toString().trim() : '';
-                    hasBoxShadowChange = true;
-                    break;
-                case 'box-shadow':
-                    // If box-shadow is directly coming, apply it without more
-                    if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': value });
-                    return;
-                default:
-                    // For other properties, pass them to the original applyGlobalCSSChange
-                    if (applyGlobalCSSChange) applyGlobalCSSChange({ [key]: value });
-                    break;
-            }
-        });
-        
-        // If there were changes in box-shadow, update
-        if (hasBoxShadowChange) {
-            setLocalValues(nextLocal);
-            const finalStr = composeBoxShadow({ ...nextLocal, inset });
-            if (applyGlobalCSSChange) applyGlobalCSSChange({ 'box-shadow': finalStr });
-        }
-        return;
-    } */
     let nextLocal = { ...localValues };
     
     //Switch the property to apply the value to the correct part.
@@ -2801,11 +2807,11 @@ const wrappedApplyCSS = useCallback((prop, val) => {
 
     //Function to handle the inset checkbox change
     const handleInsetChange = useCallback((e) => {
-        const nextInset = e.target.checked;
+        const nextInset = typeof e?.target?.checked === 'boolean' ? e.target.checked : !inset;
         setInset(nextInset);
         const finalStr = composeBoxShadow({ ...localValues, inset: nextInset });
         applyGlobalCSSChange?.('box-shadow', finalStr);
-    }, [localValues, composeBoxShadow, applyGlobalCSSChange]);
+    }, [localValues, composeBoxShadow, applyGlobalCSSChange, inset]);
 
     //Function to open and close the border/shadow controls.
     const toggleOpen = () => {
@@ -2858,6 +2864,45 @@ const wrappedApplyCSS = useCallback((prop, val) => {
             document.addEventListener('keydown', handleEscKey);
             return () => document.removeEventListener('keydown', handleEscKey);
         }, [open]);
+
+        useEffect(() => {
+            if (!open) return;
+        
+            const handleTabClose = (e) => {
+                if (e.key !== 'Tab') return;
+        
+                const root = containerRef.current?.querySelector('.tw-builder__settings-pen-controls');
+                if (!root) return;
+        
+                const focusableSelectors = [
+                    'a[href]',
+                    'button:not([disabled])',
+                    'input:not([disabled])',
+                    'select:not([disabled])',
+                    'textarea:not([disabled])',
+                    '[tabindex]:not([tabindex="-1"])'
+                ].join(',');
+        
+                const focusables = Array.from(root.querySelectorAll(focusableSelectors))
+                    .filter(el => !el.hasAttribute('disabled') && el.tabIndex !== -1 && el.offsetParent !== null);
+        
+                if (focusables.length === 0) return;
+        
+                const last = focusables[focusables.length - 1];
+        
+                if (!e.shiftKey && document.activeElement === last) {
+                    setOpen(false);
+                }
+
+                const first = focusables[0];
+                if (e.shiftKey && document.activeElement === first) {
+                    setOpen(false);
+                }
+            };
+        
+            document.addEventListener('keydown', handleTabClose);
+            return () => document.removeEventListener('keydown', handleTabClose);
+        }, [open]);
     
     return (
         <div className="tw-builder__settings-setting" key={index}>
@@ -2869,7 +2914,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                 applyGlobalCSSChange={applyGlobalCSSChange}/>
             </span>
             <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
-                <span className="tw-builder__settings-pen" onClick={toggleOpen}>
+                <span className="tw-builder__settings-pen" tabIndex={0} role="button" aria-label="Toggle pen" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { toggleOpen(); } }} onClick={toggleOpen}>
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.3815 0.493193C8.30876 0.486644 8.23552 0.486644 8.16278 0.493193C7.90608 0.516317 7.69916 0.63382 7.51218 0.780856C7.33673 0.918791 7.14298 1.1126 6.91819 1.33743L6.31055 1.94503L9.05176 4.6862L9.65935 4.07864C9.88419 3.85382 10.078 3.66003 10.2159 3.48462C10.363 3.29763 10.4805 3.09068 10.5036 2.83398C10.5101 2.76124 10.5101 2.68805 10.5036 2.61531C10.4805 2.35861 10.363 2.15166 10.2159 1.96468C10.078 1.78927 9.88419 1.59547 9.65935 1.37066C9.43456 1.14583 9.20754 0.918797 9.0321 0.780856C8.84511 0.63382 8.6382 0.516317 8.3815 0.493193Z" fill="#999999"/>
                         <path d="M8.47787 5.26072L5.73671 2.51953L1.50458 6.75161C1.08775 7.16804 0.798073 7.45745 0.642951 7.83196C0.487828 8.20647 0.488023 8.61591 0.488305 9.20514L0.488332 10.1028C0.488332 10.3272 0.670213 10.5091 0.894582 10.5091H1.7923C2.38151 10.5094 2.79098 10.5096 3.16548 10.3544C3.53997 10.1994 3.82937 9.90969 4.2458 9.49282L8.47787 5.26072Z" fill="#999999"/>
@@ -2881,7 +2926,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                     <motion.div className="tw-builder__settings-pen-controls" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-pen-header">
                             <span className="tw-builder__settings-pen-name">{name}</span>
-                            <span className="tw-builder__settings-pen-close" onClick={() => toggleOpen()}>
+                            <span className="tw-builder__settings-pen-close" tabIndex={0} role="button" aria-label="Toggle pen" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { toggleOpen(); } }} onClick={() => toggleOpen()}>
                                 <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M6 1L1.00034 5.99967M5.99967 6L1 1.00035" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
@@ -2935,8 +2980,9 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                                 />
                                 <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Inset</span>
-                                    <label className="tw-builder__settings-inset-container">
+                                    <label className="tw-builder__settings-inset-container" tabIndex={0} role="button" aria-label="Toggle inset" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleInsetChange(); }}}>
                                         <input
+                                            tabIndex={-1}
                                             type="checkbox"
                                             className="tw-builder__settings-checkbox"
                                             checked={!!inset}
@@ -3036,7 +3082,7 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
                         </div>
                 </div>
             ))}
-                <div className="tw-builder__settings-add-property" onClick={handleAddProperty}>
+                <div className="tw-builder__settings-add-property" tabIndex={0} role="button" aria-label="Add property" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleAddProperty(); } }} onClick={handleAddProperty}>
                     <span className="tw-builder__settings-add-property-label">Add Property</span>
                 </div>
             </div>
@@ -3046,6 +3092,10 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
     const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
+
+
+    const [bwUnified, setBwUnified] = useState('');
+    const [brUnified, setBrUnified] = useState('');
 
     //state to store the selected element properties o  acnfedata
     const [selectedElementData, setSelectedElementData] = useState(null);
@@ -3208,13 +3258,21 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         // Helper to get CSS value with state support
         const getCSSValueWithState = (states, properties) => {
             if (returnAll) {
-                const stateProps = activeState ? (states?.[activeState] || {}) : {};
-                return { ...(properties || {}), ...stateProps };
+                if (activeState) {
+                    return states?.[activeState] || {};
+                }
+                return properties || {};
             }
             
             if (!cssProperty) return null;
-            const stVal = activeState ? states?.[activeState]?.[cssProperty] : undefined;
-            if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+
+            // If there is an active state, only search in that state 
+            if (activeState) {
+                const stVal = states?.[activeState]?.[cssProperty];
+                return typeof stVal !== 'undefined' && stVal !== null ? stVal : null;
+            }
+            
+            // If no active state, search in base properties
             return properties?.[cssProperty] ?? null;
         };
 
@@ -3331,7 +3389,7 @@ const getEnterAnimationProps = useCallback(() => {
             case 'select':
                 return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
             case 'border':
-                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} setBwUnified={setBwUnified} setBrUnified={setBrUnified} />;
             case 'box-shadow':
                 return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
             case 'enter-animation':
@@ -3355,9 +3413,11 @@ const getEnterAnimationProps = useCallback(() => {
                     controls={section.controls} 
                     whatType={whatType}
                     globalControlProps={globalControlProps}
+                    setBwUnified={setBwUnified}
+                    setBrUnified={setBrUnified}
                     />
                 ))}
-               <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} />
+               <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} setBwUnified={setBwUnified} setBrUnified={setBrUnified} />
             </div>
         </div>
     )

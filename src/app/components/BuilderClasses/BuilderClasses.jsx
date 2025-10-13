@@ -17,6 +17,8 @@ export default function BuilderClasses({selectedId,showNotification,externalActi
     const poolRef = useRef(null);
     const [isStatesOpen, setIsStatesOpen] = useState(false);
 
+    const statesButtonRef = useRef(null);
+
 
     //If the externalActiveClass(given by the control component) is set, set the active class to it
     useEffect(() => {
@@ -60,23 +62,39 @@ export default function BuilderClasses({selectedId,showNotification,externalActi
         }
     }
 
- 
-    //Close pool when clicking outside
+
+    // Close pool when clicking outside or pressing Escape
     useEffect(() => {
         if (!isOpen) return;
-        //Function to handle the click outside the pool. Use poolRef to check if the click is outside the pool. If target(click) is not the pool or the id, close the pool
-        //The id is also there because clicking in id open the pool, so we dont close and open again.
+
+        // Function to handle the click outside the pool
         const handleClickOutside = (event) => {
-            if (poolRef.current && !poolRef.current.contains(event.target) && !event.target.classList.contains("tw-builder__settings-id")) {
+            if (
+                poolRef.current &&
+                !poolRef.current.contains(event.target) &&
+                !event.target.classList.contains("tw-builder__settings-id")
+            ) {
+                setIsOpen(false);
+            }
+        };
+
+        // Function to handle Escape key
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
                 setIsOpen(false);
             }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleKeyDown);
+
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("keydown", handleKeyDown);
         };
     }, [isOpen]);
+
+
 
 const createNewClass = (newClass) => {
     // Check if the class already exists in the selected element's classList
@@ -138,7 +156,21 @@ useEffect(() => {
 
         return (
 			<div className="tw-builder__settings-classes">
-				<span className={`tw-builder__settings-id`} onClick={() => {
+				<span 
+                className={`tw-builder__settings-id`} 
+                tabIndex={isOpen ? -1 : 0}
+                role="button"
+                aria-label="Classes"
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        if (activeClass) {
+                            setActiveClass(null);
+                        } else {
+                            setIsOpen(!isOpen);
+                        }
+                    }
+                }}
+                onClick={() => {
 					if (activeClass) {
 						setActiveClass(null);
 					} else {
@@ -158,20 +190,31 @@ useEffect(() => {
 						className="tw-builder__states-dropdown"
 						menu={
 							<div className="tw-builder__settings-states-menu">
-								<span className="tw-builder__settings-states-item" onClick={(e) => { e.stopPropagation(); setActiveState(':hover'); setIsStatesOpen(false); }}>:hover</span>
-								<span className="tw-builder__settings-states-item" onClick={(e) => { e.stopPropagation(); setActiveState(':active'); setIsStatesOpen(false); }}>:active</span>
-								<span className="tw-builder__settings-states-item" onClick={(e) => { e.stopPropagation(); setActiveState(':focus'); setIsStatesOpen(false); }}>:focus</span>
+								<span className="tw-builder__settings-states-item" tabIndex={0} role="button" aria-label="hover" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setActiveState(':hover'); setIsStatesOpen(false); } }} onClick={(e) => { e.stopPropagation(); setActiveState(':hover'); setIsStatesOpen(false); }}>:hover</span>
+								<span className="tw-builder__settings-states-item" tabIndex={0} role="button" aria-label="active" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setActiveState(':active'); setIsStatesOpen(false); } }} onClick={(e) => { e.stopPropagation(); setActiveState(':active'); setIsStatesOpen(false); }}>:active</span>
+								<span className="tw-builder__settings-states-item" tabIndex={0} role="button" aria-label="focus" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setActiveState(':focus'); setIsStatesOpen(false); } }} onClick={(e) => { e.stopPropagation(); setActiveState(':focus'); setIsStatesOpen(false); }}>:focus</span>
 							</div>
 						}
 					>
 						<span
+                            ref={statesButtonRef}
 							className={`tw-builder__settings-states ${activeState ? `tw-builder__settings-states--active` : ''}`}
+                            tabIndex={isOpen ? -1 : 0}
+                            role="button"
+                            aria-label="States"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    e.stopPropagation(); 
+                                    if(activeState) {setActiveState(null); setIsStatesOpen(false);}
+                                    else {setIsStatesOpen(v => !v);}
+                                }
+                            }}
 							onClick={(e) => { 
                                 e.stopPropagation(); 
                                 //if the state is active, set it to null and close the dropdown
-                                if(activeState) {setActiveState(null); setIsStatesOpen(false);}
-                                //if the state is not active, open the dropdown
-                                else {setIsStatesOpen(v => !v);}
+                                    if(activeState) {setActiveState(null); setIsStatesOpen(false);}
+                                    //if the state is not active, open the dropdown
+                                    else {setIsStatesOpen(v => !v);}
                                 }}
 						>
 							<svg width="9" height="11" viewBox="0 0 9 11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -187,6 +230,14 @@ useEffect(() => {
                             onClick={() => {
                                 setActiveClass(null);
                             }}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`Select class ${activeClass}`}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    setActiveClass(null);
+                                }
+                            }}
                         >
                             <span className="tw-builder__settings-class-name">#{selectedId}</span>
                         </div>
@@ -200,7 +251,16 @@ useEffect(() => {
                                 key={index}
                                 onClick={() => {
                                     setActiveClass(className);
-                                }}>
+                                }}
+                                tabIndex={isOpen ? -1 : 0}
+                                role="button"
+                                aria-label={`Select class ${className}`}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        setActiveClass(className);
+                                    }
+                                }}
+                                >
                                 <span className="tw-builder__settings-class-name">.{className}</span>
                                 <span className="tw-builder__settings-class-remove" onClick={(e) => {
                                     e.stopPropagation();
@@ -214,27 +274,57 @@ useEffect(() => {
                 {isOpen && (
                     <motion.div className="tw-builder__settings-classes-pool" ref={poolRef} {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                         <div className="tw-builder__settings-classes-adder">
-                            <input className="tw-builder__settings-classes-add-input" type="text" placeholder="Class name..." value={newClass} onChange={(e) => setNewClass(e.target.value)} onKeyDown={handleAddClass}/>
-                            <div className="tw-builder__settings-classes-add" onClick={handleAddClass}>
+                            <input className="tw-builder__settings-classes-add-input" tabIndex={0} type="text" placeholder="Class name..." value={newClass} onChange={(e) => setNewClass(e.target.value)} onKeyDown={handleAddClass}/>
+                            <div className="tw-builder__settings-classes-add" tabIndex={0} role="button" aria-label="Add class" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleAddClass(e); } }} onClick={handleAddClass}>
                                 <span className="tw-builder__settings-classes-add-span">Add</span>
                             </div>
                         </div>
                         <div className="tw-builder__settings-classes-divider"></div>
                         <div className="tw-builder__settings-classes-searcher">
-                            <input className="tw-builder__settings-classes-search" type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}/>
+                            <input className="tw-builder__settings-classes-search" tabIndex={0} type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}/>
                         </div>
                         <div className="tw-builder__settings-classes-list">
-                            {AllClasses.map((className, index) => (
-                                <div className="tw-builder__settings-classes-item" key={index} onClick={(e) => {
-                                    if(selectedId) {
-                                        addClass(selectedId, className);
-                                        setActiveClass(className);
-                                        setIsOpen(false);
-                                    }
-                                }}>
-                                    <span className="tw-builder__settings-classes-item-name">.{className}</span>
-                                </div>
-                            ))}
+                            {AllClasses.map((className, index) => {
+                                const isLastItem = index === AllClasses.length - 1;
+                                
+                                return (
+                                    <div 
+                                        className="tw-builder__settings-classes-item" 
+                                        key={index} 
+                                        tabIndex={0} 
+                                        role="button" 
+                                        aria-label={`Añadir clase ${className}`}
+                                        onKeyDown={(e) => {
+                                            // Si presiona Tab en el último elemento
+                                            if (e.key === 'Tab' && !e.shiftKey && isLastItem) {
+                                                e.preventDefault();
+                                                setIsOpen(false);
+                                                setTimeout(() => {
+                                                    statesButtonRef.current?.focus();
+                                                }, 50);
+                                            }
+                                            // Enter o Espacio para añadir
+                                            else if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                if(selectedId) {
+                                                    addClass(selectedId, className);
+                                                    setActiveClass(className);
+                                                    setIsOpen(false);
+                                                }
+                                            }
+                                        }} 
+                                        onClick={(e) => {
+                                            if(selectedId) {
+                                                addClass(selectedId, className);
+                                                setActiveClass(className);
+                                                setIsOpen(false);
+                                            }
+                                        }}
+                                    >
+                                        <span className="tw-builder__settings-classes-item-name">.{className}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </motion.div>
                     )}
