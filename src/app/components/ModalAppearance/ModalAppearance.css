@@ -205,7 +205,7 @@
 }
 .modal-appearance__accent-color-choice--active{
     box-shadow:
-    0 0 4px var(--border-light-color),    
+    0 0 4px var(--border-fresco-color),    
     0 0 0 2px white,               /* External border white */
     0 0 0 3px #0094ff;             /* External border blue */
 }

@@ -3,6 +3,7 @@
 import './integrations.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/layout';
+import { InstallationFirst } from '../homeComponents/InstallationFirst';
 
 function Home() {
     const params = useParams();
@@ -19,6 +20,15 @@ function Home() {
         notFound();
     }
 
+    // If not installed, show installation screen (check directly from site data)
+    if (!selectedSite.Verified) {
+        return (
+            <div className='integrations'>
+                <InstallationFirst siteSlug={siteSlug} />
+            </div>
+        );
+    }
+
     return (
         <div className='integrations'>
             <div className='integrations__card'>
@@ -29,7 +39,7 @@ function Home() {
                     <br/>
                     <br/>
                     No API keys or third-party consent has to be granted. If you are using Google Analytics or Google Tag Manager on your website,
-                    Trustwards will detect them automatically and will keep Google updated with user’s consent choices.
+                    Trustwards will detect them automatically and will keep Google updated with user's consent choices.
                 </p>
 
                 <div className='integrations__card-divider'></div>

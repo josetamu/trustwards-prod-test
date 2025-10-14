@@ -7,6 +7,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { Area, AreaChart, Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useState, useEffect } from 'react';
 import { supabase } from '@supabase/supabaseClient';
+import { InstallationFirst } from '../homeComponents/InstallationFirst';
 
 function Home() {
     const params = useParams();
@@ -17,6 +18,14 @@ function Home() {
 
     // Find the selected site based on the slug
     const selectedSite = webs.find(site => site.id === siteSlug);
+
+    // Set siteData for charts
+    useEffect(() => {
+        if (selectedSite) {
+            setSiteData(selectedSite);
+            setLoading(false);
+        }
+    }, [selectedSite]);
     
     if(!webs || webs.length === 0) {
         return <div className="usage__loading">Loading...</div>
@@ -24,6 +33,15 @@ function Home() {
     
     if (!selectedSite) {
         notFound();
+    }
+
+    // If not installed, show installation screen (check directly from site data)
+    if (!selectedSite.Verified) {
+        return (
+            <div className='usage'>
+                <InstallationFirst siteSlug={siteSlug} />
+            </div>
+        );
     }
 
     if (loading) {
