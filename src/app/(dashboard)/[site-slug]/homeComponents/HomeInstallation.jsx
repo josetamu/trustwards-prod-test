@@ -1,11 +1,13 @@
 import { useDashboard } from '@dashboard/layout'; // Ajusta el import según tu estructura
 import ScriptCopy from '@components/ScriptCopy/ScriptCopy';
 import { HomeInstallationSkeleton } from '@components/Skeletons/HomeInstallationSkeleton';
+import { supabase } from '@supabase/supabaseClient';
+import { useState } from 'react';
 
 
 export const HomeInstallation = ({ siteSlug, showNotification, verify}) => {
     const { allUserDataResource } = useDashboard();
-    
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     if(!allUserDataResource) return <HomeInstallationSkeleton />;
 
@@ -16,10 +18,61 @@ export const HomeInstallation = ({ siteSlug, showNotification, verify}) => {
     const site = webs.find(web => web.id === siteSlug);
     const isInstalled = site?.Verified;
 
+    // Simple function to get canvas preview URL
+    const getCanvasPreviewUrl = () => {
+        // Get the current user ID from site or use a fallback
+        const userId = site?.userid || 'anonymous';
+        const filePath = `${userId}/${siteSlug}.png`;
+        
+        // Get the public URL from Supabase Storage
+        const { data: { publicUrl } } = supabase.storage
+            .from('Canvas capture')
+            .getPublicUrl(filePath);
+        
+        return publicUrl;
+    };
+
+    // Check if there's a canvas capture image
+    const hasCanvasCapture = () => {
+        return getCanvasPreviewUrl() && imageLoaded;
+    };
+
+    // Get canvas color from site data
+    const getCanvasColor = () => {
+        // Only use canvas color if the site has been saved (has JSON data)
+        if (site?.JSON?.canvasColor) {
+            return site.JSON.canvasColor;
+        }
+        // Default to black if no canvas color has been saved
+        return 'var(--site-background)';
+    };
+
     return (
         isInstalled ? (
             <div className='home__installation-container home__installation-container--installed'>
                     <ScriptCopy showNotification={showNotification}/>
+                    
+                    {/* Preview Box */}
+                    <div className="home__preview-container">
+                        <div 
+                            className={`home__preview ${imageLoaded ? 'home__preview--loaded' : ''} ${hasCanvasCapture() ? 'home__preview--with-capture' : ''}`}
+                            style={{
+                                backgroundColor: hasCanvasCapture() ? 'transparent' : getCanvasColor(),
+                                backgroundImage: hasCanvasCapture() ? `url(${getCanvasPreviewUrl()})` : 'none'
+                            }}
+                        >
+                            {getCanvasPreviewUrl() && (
+                                <img 
+                                    src={getCanvasPreviewUrl()}
+                                    alt=""
+                                    className="home__preview-image"
+                                    style={{ display: imageLoaded ? 'block' : 'none' }}
+                                    onLoad={() => setImageLoaded(true)}
+                                    onError={() => setImageLoaded(false)}
+                                />
+                            )}
+                        </div>
+                    </div>
              
             </div>
             ) : (

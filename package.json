@@ -10,6 +10,7 @@
     "postinstall": "npx playwright install chromium"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.2.6",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.57.4",
     "@swc/core": "^1.13.5",

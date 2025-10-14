@@ -666,7 +666,7 @@ useEffect(() => {
               openChangeModal={openChangeModal}
               checkProfilePicture={checkProfilePicture}
               profileStyle={ProfileStyle}
-          
+              allUserDataResource={allUserDataResource}
             />
           )
         
@@ -707,6 +707,8 @@ useEffect(() => {
         setIsInstalled,
         appearanceSettings,
         setAppearanceSettings,
+        userSettings,
+        setUserSettings,
     };
    
     // Show loading state while checking authentication to avoid flickering

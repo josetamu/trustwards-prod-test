@@ -108,15 +108,20 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, mod
       document.body.style.overflow = 'hidden';
       
     } else {
-      // Restore focus to the previously focused element
+      // Only restore focus if we actually had a modal open before
+      // This prevents auto-focusing on page load
       if (previousActiveElement.current && previousActiveElement.current.isConnected) {
         try {
           previousActiveElement.current.focus();
         } catch (error) {
-          
+          console.error('Error restoring focus to previous element:', error);
         }
+      } else if (previousActiveElement.current === null) {
+        // If previousActiveElement is null, it means this is the initial render
+        // Don't do anything to avoid auto-focus on page load
+        return;
       } else {
-        // Try to focus the first focusable element in the document
+        // If the previous element is not connected, try to focus the first focusable element
         const firstFocusable = document.querySelector('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])');
         if (firstFocusable) {
           firstFocusable.focus();
