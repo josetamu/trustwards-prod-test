@@ -20,15 +20,21 @@ html[data-reduced-motion="true"] *:not(.tw-builder__canvas *) {
 a {
   text-decoration: none;
 }
+*:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset);
+}
+/* Solid focus for accent color buttons and important actions */
+[style*="background-color: var(--accent-bg-color)"]:focus-visible,
+button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
+button[class*="accent"]:focus-visible,
+[class*="accent"]:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}
 
-/*
-Light selected: use root
-Dark selected: use html[data-theme="dark"]
-System selected: will fallback to root or html[data-theme="dark"]
-*/
-
+/* Shadcn/UI Variables */
 :root {
-  /* Shadcn/UI Variables */
   --background: 0 0% 100%;
   --foreground: 0 0% 3.9%;
   --card: 0 0% 100%;
@@ -54,8 +60,44 @@ System selected: will fallback to root or html[data-theme="dark"]
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
   --radius: 0.5rem;
+}
+:root[data-theme="dark"] {
+  --background: 0 0% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 0 0% 83.1%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+  --radius: 0.5rem;
+}
 
+/*
+Light selected: use root
+Dark selected: use html[data-theme="dark"]
+System selected: will fallback to root or html[data-theme="dark"]
+*/
+:root {
   /* Focus styles for accessibility */
+  --focus-outline-offset: 2px;
+  --focus-outline-offset-inner: calc(-1 * var(--focus-outline-offset));
   --focus-outline-dashed: 1px dashed #0099FE;
   --focus-outline-solid: 2px solid #ff2676;
 
@@ -63,13 +105,14 @@ System selected: will fallback to root or html[data-theme="dark"]
    =======================
           DASHBOARD
    =======================
-   */
+  */
+  --sidebar-menu-backdrop-color: rgba(255, 255, 255, 0.35);
+
   --input-padding: 12px;
   --backdrop-blur: 7px;
 
   --sidebar-width-open: 230px;
   --sidebar-width-close: 65px;
-  --sidebar-menu-backdrop-color: rgba(255, 255, 255, 0.35);
 
   --font-size-extreme-mini: 10px;
   --font-size-mini: 12px;
@@ -150,6 +193,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   /*Notification*/
   --notification-color: #FFFFFF;
   --notification-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --notification-warning-background: #ef2828;
   
   /*Modal*/
   --modal-background: #FFFFFF;
@@ -174,16 +218,6 @@ System selected: will fallback to root or html[data-theme="dark"]
   --home-subtitle-color: #FFFFFF;
   --home-text-color: #FFFFFFB3;
   --home-verify-container-bg: #FFFFFFB3;
-  --home-bar-color: #EEEEEE;
-  --home-complyHealth-status-color: #FFFFFF;
-  --comply-health-percentage: 80;
-  --percent: 100%;
-  --home-accepted-color: #0099FE;
-  --home-modified-color: #0099fe80;
-  --home-rejected-color: #F61C0D;
-  --home-noanswer-color: #FE8700;
-  --home-chart-color: #666666;
-  --home-chart-icon-color: #F3F3F3;
 
   /*Usage*/
   --usage-title-color: #FFFFFF;
@@ -230,8 +264,6 @@ System selected: will fallback to root or html[data-theme="dark"]
   --panels-background: #FFFFFF;
   --canvas-background: #FFFFFF;
 
-  --border-light-color: #E1E6F9;
-
   --shadow-color: #999999;
   --subtitle-color: #666666;
   --label-color: #222222;
@@ -242,7 +274,6 @@ System selected: will fallback to root or html[data-theme="dark"]
   --user-tooltip-color: #333333;
 
   /*Builder - Themes Modal*/
-  --themes-modal-background: #FFFFFF;
   --free-badge-background: #EEEEEE;
 
   /*Builder - Toolbar*/
@@ -285,14 +316,28 @@ System selected: will fallback to root or html[data-theme="dark"]
   --drop-indicator-background: #0099FE15;
 
   /*Builder - Right Panel*/
+  --title-right-panel-color: #F5F5F5;
+  --subtitle-right-panel-color: #666666;
+  --value-color: #000000;
+  --placeholder-color: #999999;
+  --slider-border-control-bg-active: #8c8c8c;
+
+  --border-control-color-color: #E6E6E6;
   --no-selected-item-background: #F5F5F5;
   --no-selected-item-text-color: #999999;
+
   --control-background: #F5F5F5;
   --control-context-background: #FFFFFF;
+ 
+
   --classes-background: #F5F5F5;
+  --classes-item-hover-background: #2B2B2B;
   --right-panel-dropdown-background: #000000;
+
   --states-background: #ddd;
   --states-active-color: #333;
+
+  
 }
 
 .sidebar__logo-img{
@@ -321,41 +366,11 @@ System selected: will fallback to root or html[data-theme="dark"]
 }
 
 html[data-theme="dark"] {
-  /* Shadcn/UI Variables - Dark Mode */
-  --background: 0 0% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 0 0% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 0 0% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 0 0% 9%;
-  --secondary: 0 0% 14.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 0 0% 14.9%;
-  --muted-foreground: 0 0% 63.9%;
-  --accent: 0 0% 14.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 14.9%;
-  --input: 0 0% 14.9%;
-  --ring: 0 0% 83.1%;
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-
-  /* Focus styles for accessibility - Dark Mode */
-  --focus-outline-dashed: 1px dashed #0099FE;
-  --focus-outline-solid: 2px solid #ff2676;
-
   /* 
    =======================
           DASHBOARD
    =======================
-   */
+  */
   --sidebar-menu-backdrop-color: rgba(0, 0, 0, 0.5);
 
   /*App*/
@@ -437,10 +452,6 @@ html[data-theme="dark"] {
   --home-subtitle-color: #FFFFFF;
   --home-text-color: #FFFFFFB3;
   --home-verify-container-bg: #191919b3;
-  --home-bar-color: #666666;
-  --home-complyHealth-status-color: #FFFFFF;
-  --home-chart-color: #FFFFFF;
-  --home-chart-icon-color: #272727;
 
   /*Usage*/
   --usage-title-color: #FFFFFF;
@@ -462,6 +473,11 @@ html[data-theme="dark"] {
   /*Integrations*/
   --integrations-card-background: #363636;
 
+  /*Offcanvas - Pricing*/
+  --offcanvas-background: #282828;
+  --offcanvas-toggle-background: #363636;
+  --offcanvas-toggle-active: #666666;
+
   /* 
    =======================
           BUILDER
@@ -478,8 +494,6 @@ html[data-theme="dark"] {
   --panels-background: #282828;
   --canvas-background: #FFFFFF;
 
-  --border-light-color: #363636;
-
   --subtitle-color: #AAAAAA;
   --label-color: #F5F5F5;
   --icons-color: #999999;
@@ -489,7 +503,6 @@ html[data-theme="dark"] {
   --user-tooltip-color: #F5F5F5;
 
   /*Builder - Themes Modal*/
-  --themes-modal-background: #282828;
   --free-badge-background: #363636;
 
   /*Builder - Toolbar*/
@@ -497,7 +510,7 @@ html[data-theme="dark"] {
   --toolbar-items-background-hover: #404040;
   --toolbar-items-text-color: #999999;
   --toolbar-items-icon-color: #FFFFFF;
-  --toolbar-items-icon-background: #666;
+  --toolbar-items-icon-background: #666666;
 
   /*Builder - Left Panel*/
   --logo-background: #363636;
@@ -532,12 +545,21 @@ html[data-theme="dark"] {
   --drop-indicator-background: #0099FE15;
 
   /*Builder - Right Panel*/
+  --value-color: #FFFFFF;
+  --subtitle-right-panel-color: #AAAAAA;
+  --placeholder-color: #999999;
+
+  --border-control-color-color: #555555;
+  --slider-border-control-bg-active: #666666;
+
   --no-selected-item-background: #363636;
   --no-selected-item-text-color: #999999;
   --control-background: #363636;
   --control-context-background: #282828;
+
   --classes-background: #363636;
   --right-panel-dropdown-background: #000000;
+
   --states-background: #505050;
   --states-active-color: #FFFFFF;
 }
@@ -559,33 +581,4 @@ html[data-theme="dark"] .tw-builder__logo{
   background-size: cover;
   width: 15px;
   height: 11px;
-}
-
-/* =======================
-   ACCESSIBILITY FOCUS STYLES
-   ======================= */
-
-/* Accessibility variables for outline offsets */
-:root {
-  --focus-outline-offset: 2px;
-  --focus-outline-offset-inner: calc(-1 * var(--focus-outline-offset));
-}
-
-/* Base focus style for all focusable elements */
-*:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: var(--focus-outline-offset);
-}
-
-/* =======================
-   GLOBAL ACCESSIBILITY STYLES
-   ======================= */
-
-/* Solid focus for accent color buttons and important actions */
-[style*="background-color: var(--accent-bg-color)"]:focus-visible,
-button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
-button[class*="accent"]:focus-visible,
-[class*="accent"]:focus-visible {
-  outline: var(--focus-outline-solid) !important;
-  outline-offset: var(--focus-outline-offset);
 }

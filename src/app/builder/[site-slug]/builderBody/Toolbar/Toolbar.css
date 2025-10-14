@@ -24,7 +24,7 @@
     height: 100%;
 }
 .tw-builder__toolbar-divider{
-    background-color: var(--border-light-color);
+    background-color: var(--border-fresco-color);
     width: 1px;
     height: 100%;
 
@@ -40,7 +40,7 @@
 .tw-builder__toolbar-dropdown{
     background-color: var(--panels-background);
     border-radius: 12px;
-    border: 1px solid var(--border-light-color);
+    border: 1px solid var(--border-fresco-color);
     box-shadow: var(--fancy-shadow);
 
     position: absolute;
@@ -132,7 +132,7 @@
 .tw-builder__toolbar-dropdown-divider{
     min-height: 100%;
     width: 1px;
-    background-color: var(--border-light-color);
+    background-color: var(--border-fresco-color);
 }
 
 /*Block element*/

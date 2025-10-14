@@ -12,7 +12,7 @@ const ScriptCopy = () => {
 
     useEffect(() => {
         if (siteData?.id) {
-            setScript(`<script>https://cdn.trustwards.io/storage/v1/object/public/cdn-script/${siteData.id}.js</script>`);
+            setScript(`<script src="https://cdn.trustwards.io/storage/v1/object/public/cdn-script/${siteData.id}.js"></script>`);
         }
     }, [siteData]);
 

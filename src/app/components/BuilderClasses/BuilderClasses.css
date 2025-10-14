@@ -10,7 +10,7 @@
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
-    color: var(--body-fresco-color);
+    color: var(--placeholder-color);
     background-color: var(--classes-background);
     border-radius: 5px;
     padding: 5px;
@@ -44,7 +44,7 @@
     padding: 5px;
     cursor: pointer;
     position: relative;
-    color: var(--body-fresco-color);
+    color: var(--placeholder-color);
 }
 
 .tw-builder__settings-class-name{
@@ -105,7 +105,7 @@
     height: 100%;
     border-radius: 5px;
     border: none;
-    padding: 5px;
+    padding: 10px 5px;
     background-color: transparent;
     color: #FFFFFF;
     font-size: var(--font-size-small);
@@ -131,7 +131,7 @@
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-classes-add-input::placeholder {
-    color: #FFFFFF;
+    color: #666666;
 }
 .tw-builder__settings-classes-add-input:focus {
     outline: none;
@@ -144,7 +144,7 @@
 
 .tw-builder__settings-classes-searcher {
     width: 100%;
-    height: 25px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -165,10 +165,10 @@
     outline: none;
 }
 .tw-builder__settings-classes-search::placeholder {
-    color: #FFFFFF;
+    color: #666666;
 }
 .tw-builder__settings-classes-list{
-    padding: 0 10px 10px 10px;
+    padding: 7px;
     display: flex;
     flex-direction: column;
     max-height: 150px;
@@ -177,6 +177,8 @@
     scrollbar-width: thin;
     width: 98%;
     scrollbar-arrow-color: transparent;
+    gap: 5px;
+  
 }
 
 
@@ -184,14 +186,11 @@
     display: none;
 }
 
-
-
-
 .tw-builder__settings-classes-item{
     display: none;
 } 
 .tw-builder__settings-classes-item:hover{
-    background-color: var(--accent-bg-color);
+    background-color: #2B2B2B;
 }
 .tw-builder__settings-classes-item:has(.tw-builder__settings-classes-item-name){
     cursor: pointer;
@@ -202,7 +201,7 @@
     align-items: center;
 }
 .tw-builder__settings-classes-item-name{
-    color: #999999;
+    color: var(--placeholder-color);
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
@@ -215,12 +214,7 @@
    width: 100%;
    padding-top: 10px;
 }
-.tw-builder__settings-classes-item--empty .tw-builder__settings-classes-item-name{
-    color: #0099FE;
-    font-size: var(--font-size-mini);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--letter-spacing-negative);
-}
+
 
 .tw-builder__settings-classes-item:has(.tw-builder__settings-classes-item-name) + .tw-builder__settings-classes-item--empty{
     display: none;
@@ -234,9 +228,10 @@
 }
 
 .tw-builder__settings-states{
+    width: 16px;
+    height: 16px;
     background-color: var(--states-background);
     border-radius: 5px;
-    padding: 4px;
     cursor: pointer;
     color: var(--states-active-color);
     display: flex;
@@ -244,8 +239,12 @@
     justify-content: center;
 }
 .tw-builder__settings-states--active{
-    background-color: var(--accent-bg-color);
+    background-color: var(--states-active-color);
     color: var(--accent-color);
+}
+.tw-builder__settings-states svg{
+    position: absolute;
+    right: 3px;
 }
 .tw-builder__settings-states-dropdown{
     position: relative;

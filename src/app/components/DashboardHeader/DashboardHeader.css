@@ -26,7 +26,8 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    cursor: pointer;
+    cursor: default;
+
 
 }
 .dashboard-header__img{
@@ -45,18 +46,15 @@
     width: 23px;
     height: 23px;
     border-radius: 50%;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     position: relative;
 }
 .dashboard-header__color{
     font-size: var(--font-size-mini);
     font-weight: 500;
     text-transform: uppercase;
-
     position: absolute
 }
 .dashboard-header__color--null{

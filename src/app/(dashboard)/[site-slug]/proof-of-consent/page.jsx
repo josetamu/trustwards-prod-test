@@ -3,6 +3,7 @@
 import './proof-of-consent.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/layout';
+import { InstallationFirst } from '../homeComponents/InstallationFirst';
 
 function Home() {
     const params = useParams();
@@ -17,6 +18,15 @@ function Home() {
     
     if (!selectedSite) {
         notFound();
+    }
+
+    // If not installed, show installation screen (check directly from site data)
+    if (!selectedSite.Verified) {
+        return (
+            <div className='proof-of-consent'>
+                <InstallationFirst siteSlug={siteSlug} />
+            </div>
+        );
     }
 
     return (

@@ -16,7 +16,8 @@ import { ModalWelcome } from '@components/ModalWelcome/ModalWelcome'
 import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
 import { useSidebarSettings } from '@contexts/SidebarSettingsContext';
-
+import { OffcanvasContainer } from '@components/OffcanvasContainer/OffcanvasContainer'
+import  OffcanvasPricing  from '@components/OffcanvasPricing/OffcanvasPricing'
 import { createCDN } from '@contexts/CDNsContext';
 
 import { useTheme } from 'next-themes'
@@ -49,6 +50,9 @@ function DashboardLayout({ children }) {
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [changeType, setChangeType] = useState('');
 
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
+  const [offcanvasType, setOffcanvasType] = useState(null);
+
   // ModalWelcome state
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
 
@@ -68,6 +72,7 @@ function DashboardLayout({ children }) {
   const [isInstalled, setIsInstalled] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanDone, setScanDone] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const MAX_SCANS = 10;
 
 
@@ -355,7 +360,7 @@ const SiteStyle = (site) => {
 
   // Set userSettings based on modalType
   useEffect(() => {
-    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Plan') {
+    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Billing') {
       setUserSettings(modalType);
     }
   }, [modalType]);
@@ -457,12 +462,13 @@ const handleBackdropClick = useCallback((e) => {
   }, [user?.id, user?.["Avatar Color"]]);
 
     //Function to show the notification
-    const showNotification = (message, position = 'top', contentCenter = false) => {
+    const showNotification = (message, position = 'top', contentCenter = false, isWarning = false) => {
       setNotification({
         open: true,
         message: message,
         position: position,
         contentCenter: contentCenter,
+        isWarning: isWarning,
       });
     };
 
@@ -478,7 +484,7 @@ const handleBackdropClick = useCallback((e) => {
 
     //Function to copy script to clipboard
     const handleCopy = async (siteID, contentCenter = false) => {
-        const script = `<script>https://cdn.trustwards.io/storage/v1/object/public/cdn-script/${siteID}.js</script>`;
+        const script = `<script src="https://cdn.trustwards.io/storage/v1/object/public/cdn-script/${siteID}.js"></script>`;
         try {
             await navigator.clipboard.writeText(script);
             showNotification("Copied script to clipboard", 'top', contentCenter);
@@ -599,11 +605,11 @@ useEffect(() => {
               
             }}
             user={user}
+            setIsModalOpen={setIsModalOpen}
             appearanceSettings={appearanceSettings}
             setAppearanceSettings={setAppearanceSettings}
             userSettings={userSettings}
             setUserSettings={setUserSettings}
-
             openChangeModal={openChangeModal}
             checkProfilePicture={checkProfilePicture}
             profileStyle={ProfileStyle}
@@ -649,7 +655,7 @@ useEffect(() => {
             profileStyle={ProfileStyle}
             allUserDataResource={allUserDataResource}
           />)
-        case 'Plan':
+        case 'Billing':
           return (
             <ModalUser
               onClose={() => setIsModalOpen(false)}
@@ -674,6 +680,27 @@ useEffect(() => {
           return null;
       }
     }
+
+    const renderOffcanvas = () => {
+      if (!isOffcanvasOpen) return null;
+    
+      switch (offcanvasType) {
+        case 'Pricing':
+          return (
+            <OffcanvasPricing 
+              onClose={() => setIsOffcanvasOpen(false)}
+              user={user}
+              currentPlan={(() => {
+                console.log('user object:', user);
+                console.log('user.Plan:', user?.Plan);
+                return user?.Plan || 'Basic';
+              })()}
+            />
+          );
+        default:
+          return null;
+      }
+    };
 
 
 
@@ -705,8 +732,12 @@ useEffect(() => {
         MAX_SCANS,
         isInstalled,
         setIsInstalled,
+        isVerifying,
+        setIsVerifying,
         appearanceSettings,
         setAppearanceSettings,
+        setOffcanvasType,
+        setIsOffcanvasOpen,
         userSettings,
         setUserSettings,
     };
@@ -812,13 +843,21 @@ useEffect(() => {
                     <Notification
                     open={notification.open}
                     onClose={hideNotification}
-                    autoClose={2000} //duration of the notification in ms
+                    autoClose={2500} //duration of the notification in ms
                     notificationMessage={notification.message}
                     position={notification.position || 'top'}
                     isSidebarOpen={isSidebarOpen}
                     contentCenter={notification.contentCenter || false}
+                    isWarning={notification.isWarning || false}
                     >
                     </Notification>
+                    <OffcanvasContainer
+                      isOpen={isOffcanvasOpen}
+                      onClose={() => setIsOffcanvasOpen(false)}
+                      position="left"
+                    >
+                      {renderOffcanvas()}
+                    </OffcanvasContainer>
             </div>
         </DashboardContext.Provider>
     );

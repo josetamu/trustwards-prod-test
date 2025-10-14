@@ -18,6 +18,7 @@ import { chromium } from 'playwright';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Maximum execution time in seconds (Vercel Pro plan required for >10s)
 
 // Configuration constants
 const QUIET_PERIOD_MS = 7000;    // 7 seconds of no activity before considering scan complete
