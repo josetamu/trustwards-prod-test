@@ -9,7 +9,10 @@
   box-shadow: var(--notification-box-shadow);
   overflow: hidden;
   width: fit-content;
-  
+}
+
+.notification--warning {
+  background: var(--notification-warning-background);
 }
 
 /* Position variants */

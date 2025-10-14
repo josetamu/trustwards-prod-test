@@ -6,11 +6,45 @@ import ScriptCopy from '@components/ScriptCopy/ScriptCopy';
 import { supabase } from '@supabase/supabaseClient.js';
 
 export const InstallationFirst = ({ siteSlug }) => {
-    const { showNotification, setWebs, allUserDataResource, setIsInstalled } = useDashboard();
+    const { showNotification, setWebs, allUserDataResource, setIsInstalled, siteData, isVerifying, setIsVerifying } = useDashboard();
 
     const verify = async () => {
+        // Prevent more clicks if already verifying
+        if (isVerifying) return;
+        
+        setIsVerifying(true);
         try {
-            // 1. Actualizar en la base de datos
+            // 1. Verify that the script is installed on the website
+            if (!siteData?.Domain || !siteData?.id) {
+                if (showNotification) {
+                    showNotification('Site data not available. Please try again.', 'top', false, true);
+                }
+                return;
+            }
+
+            // Call the verification API (Playwright)
+            const verifyResponse = await fetch('/api/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    domain: siteData.Domain,
+                    siteId: siteData.id
+                })
+            });
+
+            const verifyResult = await verifyResponse.json();
+
+            // If the script is not found, show message from API (Playwright) and do not continue
+            if (!verifyResult.success) {
+                if (showNotification) {
+                    showNotification(verifyResult.message || "The script couldn't be found on your website", 'top', false, true);
+                }
+                return;
+            }
+
+            // 2. If the script is found, update in the database
             const { data, error } = await supabase
                 .from('Site')
                 .update({ Verified: true })
@@ -21,22 +55,22 @@ export const InstallationFirst = ({ siteSlug }) => {
             if (error) {
                 console.error('Error updating site verification:', error);
                 if (showNotification) {
-                    showNotification('Failed to verify site. Please try again.', 'top', false);
+                    showNotification('Failed to verify site. Please try again.', 'top', false, true);
                 }
                 return;
             }
 
-            // 2. Actualizar el estado local
+            // 3. Update the local state
             setIsInstalled(true);
 
-            // 3. Actualizar el estado global webs
+            // 4. Update the global webs state
             setWebs(prevWebs =>
                 prevWebs.map(site =>
                     site.id === siteSlug ? { ...site, Verified: true } : site
                 )
             );
 
-            // 4. Actualizar el resource para mantener consistencia
+            // 5. Update the resource to maintain consistency
             if (allUserDataResource) {
                 const currentData = allUserDataResource.read();
                 currentData.webs = currentData.webs.map(web =>
@@ -44,16 +78,18 @@ export const InstallationFirst = ({ siteSlug }) => {
                 );
             }
 
-            // 5. Mostrar notificación de éxito
+            // 6. Show success notification
             if (showNotification) {
-                showNotification('Site verified successfully!', 'top', true);
+                showNotification('Site verified successfully!', 'top', true, false);
             }
 
         } catch (error) {
             console.error('Error verifying site:', error);
             if (showNotification) {
-                showNotification('Failed to verify site. Please try again.', 'top', false);
+                showNotification('Failed to verify site. Please try again.', 'top', false, true);
             }
+        } finally {
+            setIsVerifying(false);
         }
     };
 
@@ -61,8 +97,33 @@ export const InstallationFirst = ({ siteSlug }) => {
         <div className='home__installation-container'>
             <div className='home__installation-header'>
                 <span className='home__installation-title'>Installation</span>
-                <div className='home__verify' onClick={verify}>
-                    <span className='home__verify-text'>Verify</span>
+                <div 
+                    className={`home__verify ${isVerifying ? 'home__verify--loading' : ''}`} 
+                    onClick={verify}
+                    style={{ cursor: isVerifying ? 'not-allowed' : 'pointer' }}
+                >
+                    {isVerifying ? (
+                        <>
+                            <svg 
+                                className="home__verify-spinner" 
+                                width="14" 
+                                height="14" 
+                                viewBox="0 0 14 14" 
+                                fill="none" 
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path 
+                                    d="M7 1V3M7 11V13M13 7H11M3 7H1M11.364 11.364L9.95 9.95M4.05 4.05L2.636 2.636M11.364 2.636L9.95 4.05M4.05 9.95L2.636 11.364" 
+                                    stroke="currentColor" 
+                                    strokeWidth="2" 
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                            <span className='home__verify-text'>Verifying...</span>
+                        </>
+                    ) : (
+                        <span className='home__verify-text'>Verify</span>
+                    )}
                 </div>
             </div>
             <div className='home__installation-content'>

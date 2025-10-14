@@ -21,17 +21,35 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     cursor: pointer;
     border-radius: 8px;
     background-color: var(--accent-bg-color);
     box-shadow: var(--blue-button-shadow);
     padding: 6px 10px;
+    transition: opacity 0.2s ease;
+}
+.home__verify--loading{
+    opacity: 0.7;
 }
 .home__verify-text{
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
+}
+.home__verify-spinner{
+    color: var(--accent-color);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Installation container */

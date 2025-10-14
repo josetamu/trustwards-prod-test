@@ -68,6 +68,7 @@ function DashboardLayout({ children }) {
   const [isInstalled, setIsInstalled] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanDone, setScanDone] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const MAX_SCANS = 10;
 
 
@@ -457,12 +458,13 @@ const handleBackdropClick = useCallback((e) => {
   }, [user?.id, user?.["Avatar Color"]]);
 
     //Function to show the notification
-    const showNotification = (message, position = 'top', contentCenter = false) => {
+    const showNotification = (message, position = 'top', contentCenter = false, isWarning = false) => {
       setNotification({
         open: true,
         message: message,
         position: position,
         contentCenter: contentCenter,
+        isWarning: isWarning,
       });
     };
 
@@ -478,7 +480,7 @@ const handleBackdropClick = useCallback((e) => {
 
     //Function to copy script to clipboard
     const handleCopy = async (siteID, contentCenter = false) => {
-        const script = `<script>https://cdn.trustwards.io/storage/v1/object/public/cdn-script/${siteID}.js</script>`;
+        const script = `<script src="https://cdn.trustwards.io/storage/v1/object/public/cdn-script/${siteID}.js"></script>`;
         try {
             await navigator.clipboard.writeText(script);
             showNotification("Copied script to clipboard", 'top', contentCenter);
@@ -705,6 +707,8 @@ useEffect(() => {
         MAX_SCANS,
         isInstalled,
         setIsInstalled,
+        isVerifying,
+        setIsVerifying,
         appearanceSettings,
         setAppearanceSettings,
     };
@@ -810,11 +814,12 @@ useEffect(() => {
                     <Notification
                     open={notification.open}
                     onClose={hideNotification}
-                    autoClose={2000} //duration of the notification in ms
+                    autoClose={2500} //duration of the notification in ms
                     notificationMessage={notification.message}
                     position={notification.position || 'top'}
                     isSidebarOpen={isSidebarOpen}
                     contentCenter={notification.contentCenter || false}
+                    isWarning={notification.isWarning || false}
                     >
                     </Notification>
             </div>
