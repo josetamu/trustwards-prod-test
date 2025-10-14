@@ -4,7 +4,7 @@ import './usage.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/layout';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, RadialBarChart, RadialBar, PolarAngleAxis, Cell, PieChart, Pie, Cell } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis, RadialBarChart, RadialBar, PolarAngleAxis, Cell, PieChart, Pie } from 'recharts';
 import { useState, useEffect } from 'react';
 import { supabase } from '@supabase/supabaseClient';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
