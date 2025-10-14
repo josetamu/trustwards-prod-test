@@ -689,7 +689,11 @@ useEffect(() => {
             <OffcanvasPricing 
               onClose={() => setIsOffcanvasOpen(false)}
               user={user}
-              currentPlan={user?.Plan || 'Free'}
+              currentPlan={(() => {
+                console.log('user object:', user);
+                console.log('user.Plan:', user?.Plan);
+                return user?.Plan || 'Basic';
+              })()}
             />
           );
         default:

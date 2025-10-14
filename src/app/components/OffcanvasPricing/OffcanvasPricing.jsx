@@ -6,157 +6,211 @@ const OffcanvasPricing = ({ onClose, user, currentPlan }) => {
     
     const plans = [
         {
-            name: 'Free',
-            price: { monthly: 0, yearly: 0 },
-            description: 'Perfect for getting started',
-            features: [
-                '1 Website',
-                'Basic Analytics',
-                'Community Support',
-                '100 Monthly Visitors'
+            name: 'Basic',
+            price: { monthly: 7, yearly: 5.83 },
+            featuresSites: [
+                '10 pages',
+                '5 scans/month',
+                '5000 visitors/month'
             ],
-            limitations: [
-                'Trustwards Branding',
-                'Limited Customization'
+            featuresBuilder: [
+                '2 themes',
             ],
-            cta: 'Current Plan',
-            current: currentPlan === 'Free'
+            limitationsBuilder: [
+                'Watermark removed'
+            ],
+            cta: currentPlan === 'Basic' ? 'Current Plan' : 'Contact support',
+            current: currentPlan === 'Basic',
+            limited: false,
         },
         {
             name: 'Pro',
-            price: { monthly: 29, yearly: 290 },
-            description: 'For professionals and growing businesses',
-            features: [
-                'Unlimited Websites',
-                'Advanced Analytics',
-                'Priority Support',
-                'Unlimited Visitors',
-                'Custom Domain',
-                'Remove Branding',
-                'Advanced Customization',
-                'A/B Testing',
-                'Team Collaboration'
+            price: { monthly: 15, yearly: 12.5 },
+            featuresSites: [
+                'Unlimited pages',
+                '50 scans/month',
+                'Unlimited visitors'
             ],
-            cta: 'Upgrade to Pro',
+            featuresBuilder: [
+                'All themes',
+                'Watermark removed'
+            ],
+            
+            cta: currentPlan === 'Pro' ? 'Current Plan' : 'Upgrade to Pro',
             current: currentPlan === 'Pro',
-            popular: true
+            limited: false,
+        },
+        {
+            name: 'Pro LTD',
+            price: { oneTime: 449 },
+            featuresSites: [
+                'Unlimited pages',
+                '25 scans/month',
+                'Unlimited visitors'
+            ],
+            featuresBuilder: [
+                'All themes',
+                'Watermark removed'
+            ],
+            lifetimeFeatures: [
+                'Unlimited Pro sites',
+                'No suscriptions',
+            ],
+            cta: currentPlan === 'Pro LTD' ? 'Current Plan' : 'Upgrade to Pro LTD',
+            current: currentPlan === 'Pro LTD',
+            limited: true,
         }
     ];
 
     const handleUpgrade = (planName) => {
         if (planName === currentPlan) return;
         
-        // Aquí irá la lógica de upgrade (Stripe, etc.)
+    
         console.log(`Upgrading to ${planName}`);
     };
 
     return (
         <div className="offcanvas-pricing">
+            <div className="offcanvas-pricing__bg" aria-hidden="true">
+                <svg width="740" height="380" viewBox="0 0 740 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g filter="url(#filter0_f_1766_310)">
+                    <path d="M-18 130V-46H249L-18 130Z" fill="#0099FE"/>
+                    </g>
+                    <g filter="url(#filter1_f_1766_310)">
+                    <path d="M756 130V-46H489L756 130Z" fill="#0099FE"/>
+                    </g>
+                    <g filter="url(#filter2_f_1766_310)">
+                    <rect width="344.287" height="20.1182" transform="matrix(1 0 0 -1 206.945 4.11816)" fill="#0099FE"/>
+                    </g>
+                    <defs>
+                    <filter id="filter0_f_1766_310" x="-268" y="-296" width="767" height="676" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+                    <feGaussianBlur stdDeviation="125" result="effect1_foregroundBlur_1766_310"/>
+                    </filter>
+                    <filter id="filter1_f_1766_310" x="239" y="-296" width="767" height="676" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+                    <feGaussianBlur stdDeviation="125" result="effect1_foregroundBlur_1766_310"/>
+                    </filter>
+                    <filter id="filter2_f_1766_310" x="6.94507" y="-246" width="744.287" height="450.118" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+                    <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_1766_310"/>
+                    </filter>
+                    </defs>
+                </svg>
+            </div>
             <div className="offcanvas-pricing__header">
-                <div className="offcanvas-pricing__header-top">
-                    <span className="offcanvas-pricing__title">Choose Your Plan</span>
-                    <button 
-                        className="offcanvas-pricing__close" 
-                        onClick={onClose}
-                        aria-label="Close pricing"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd" clipRule="evenodd" d="M2.55806 2.55806C2.80213 2.31398 3.19787 2.31398 3.44194 2.55806L7 6.1161L10.5581 2.55806C10.8021 2.31398 11.1979 2.31398 11.4419 2.55806C11.686 2.80213 11.686 3.19787 11.4419 3.44194L7.8839 7L11.4419 10.5581C11.686 10.8021 11.686 11.1979 11.4419 11.4419C11.1979 11.686 10.8021 11.686 10.5581 11.4419L7 7.8839L3.44194 11.4419C3.19787 11.686 2.80213 11.686 2.55806 11.4419C2.31398 11.1979 2.31398 10.8021 2.55806 10.5581L6.1161 7L2.55806 3.44194C2.31398 3.19787 2.31398 2.80213 2.55806 2.55806Z" fill="currentColor"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <div className="offcanvas-pricing__toggle">
-                    <span className={`offcanvas-pricing__toggle-label ${!isYearly ? 'offcanvas-pricing__toggle-label--active' : ''}`}>
-                        Monthly
-                    </span>
-                    <button 
-                        className="offcanvas-pricing__toggle-switch"
-                        onClick={() => setIsYearly(!isYearly)}
-                        aria-label={`Switch to ${isYearly ? 'monthly' : 'yearly'} billing`}
-                    >
-                        <span className={`offcanvas-pricing__toggle-slider ${isYearly ? 'offcanvas-pricing__toggle-slider--active' : ''}`}></span>
-                    </button>
-                    <span className={`offcanvas-pricing__toggle-label ${isYearly ? 'offcanvas-pricing__toggle-label--active' : ''}`}>
-                        Yearly
-                        <span className="offcanvas-pricing__toggle-save">Save 17%</span>
-                    </span>
+                <span className='offcanvas-pricing__header-icon'>
+                <svg width="48" height="37" viewBox="0 0 48 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g filter="url(#filter0_d_1766_316)">
+                    <path d="M4 0H44V7.90909H4V0Z" fill="url(#paint0_linear_1766_316)"/>
+                    <path d="M14.6667 29V13.1818H30.6667L14.6667 29Z" fill="url(#paint1_linear_1766_316)"/>
+                    <path d="M25.3333 29V13.1818H38.6667L25.3333 29Z" fill="url(#paint2_linear_1766_316)"/>
+                    </g>
+                    <defs>
+                    <filter id="filter0_d_1766_316" x="0" y="0" width="48" height="37" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dy="4"/>
+                    <feGaussianBlur stdDeviation="2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1766_316"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1766_316" result="shape"/>
+                    </filter>
+                    <linearGradient id="paint0_linear_1766_316" x1="24" y1="0" x2="24" y2="29" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="white"/>
+                    <stop offset="1" stopColor="#1C6DE8"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_1766_316" x1="24" y1="0" x2="24" y2="29" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="white"/>
+                    <stop offset="1" stopColor="#1C6DE8"/>
+                    </linearGradient>
+                    <linearGradient id="paint2_linear_1766_316" x1="24" y1="0" x2="24" y2="29" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="white"/>
+                    <stop offset="1" stopColor="#1C6DE8"/>
+                    </linearGradient>
+                    </defs>
+                    </svg>
+                </span>
+                <span className="offcanvas-pricing__header-title">Choose Untitled Plan</span>
+                <div className="offcanvas-pricing__header-billing">
+                    <div className="offcanvas-pricing__header-billing-slider" style={{transform: `translateX(${isYearly ? '100%' : '0%'})`}}></div>
+                    <span className="offcanvas-pricing__header-billing-time" onClick={() => setIsYearly(false)}>Monthly</span>
+                    <span className="offcanvas-pricing__header-billing-time" onClick={() => setIsYearly(true)}>Yearly</span>
+                    <span className="offcanvas-pricing__header-billing-discount">-20%</span>
                 </div>
             </div>
-
             <div className="offcanvas-pricing__content">
                 {plans.map((plan) => (
-                    <div 
-                        key={plan.name}
-                        className={`offcanvas-pricing__plan ${plan.popular ? 'offcanvas-pricing__plan--popular' : ''} ${plan.current ? 'offcanvas-pricing__plan--current' : ''}`}
-                    >
-                        {plan.popular && (
-                            <div className="offcanvas-pricing__badge">Most Popular</div>
+                    <div className="offcanvas-pricing__content-plan" key={plan.name}>
+                        <div className="offcanvas-pricing__content-plan-header">
+                        <span className="offcanvas-pricing__content-plan-name">{plan.name}</span>
+                        {plan.limited && (
+                            <span className="offcanvas-pricing__content-plan-limited">Expires soon</span>
                         )}
-                        
-                        <div className="offcanvas-pricing__plan-header">
-                            <h3 className="offcanvas-pricing__plan-name">{plan.name}</h3>
-                            <p className="offcanvas-pricing__plan-description">{plan.description}</p>
                         </div>
-
-                        <div className="offcanvas-pricing__plan-price">
-                            <span className="offcanvas-pricing__currency">$</span>
-                            <span className="offcanvas-pricing__amount">
-                                {isYearly ? Math.floor(plan.price.yearly / 12) : plan.price.monthly}
-                            </span>
-                            <span className="offcanvas-pricing__period">/month</span>
+                        <span className="offcanvas-pricing__content-plan-price">{isYearly ? plan.price.yearly : plan.price.monthly}</span>
+                        <span className="offcanvas-pricing__content-plan-billed">Per month, billed {isYearly ? 'yearly' : 'monthly'}</span>
+                        <div className="offcanvas-pricing__content-plan-cta">
+                            <span className="offcanvas-pricing__content-plan-cta-text">{plan.cta}</span>
                         </div>
-                        
-                        {isYearly && plan.price.yearly > 0 && (
-                            <p className="offcanvas-pricing__billed">
-                                Billed ${plan.price.yearly} yearly
-                            </p>
-                        )}
+                        <div className="offcanvas-pricing__content-plan-features">
+                            {plan.featuresSites.map((feature, index) => (
+                                <>
+                                <span className="offcanvas-pricing__content-plan-features-title">Site</span>
+                                <div className="offcanvas-pricing__content-plan-features-item" key={index}>
+                                    <span className="offcanvas-pricing__content-plan-features-icon offcanvas-pricing__content-plan-features-icon--pro">
+                                    <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M6.73519 0.259953C6.85402 0.116133 7.02428 0.0243711 7.20975 0.0041998C7.39521 -0.0159715 7.58123 0.0370411 7.72819 0.151953C7.80036 0.207847 7.8606 0.277642 7.90534 0.357213C7.95008 0.436784 7.97841 0.524516 7.98867 0.615223C7.99892 0.705931 7.99089 0.797775 7.96504 0.885325C7.9392 0.972875 7.89606 1.05436 7.83819 1.12495L4.07819 5.74495C4.01527 5.82129 3.93718 5.88374 3.84888 5.92834C3.76058 5.97295 3.66398 5.99875 3.5652 6.00411C3.46642 6.00946 3.3676 5.99426 3.27499 5.95947C3.18238 5.92467 3.098 5.87104 3.02719 5.80195L0.207192 3.03195L0.158192 2.97995C-0.0678082 2.70795 -0.0518084 2.30695 0.207192 2.05295C0.466192 1.79895 0.875192 1.78295 1.15219 2.00495L1.20519 2.05295L3.47519 4.27295L6.74519 0.262953L6.73519 0.259953Z" fill="currentColor"/>
+                                    </svg>
 
-                        <button 
-                            className={`offcanvas-pricing__cta ${plan.current ? 'offcanvas-pricing__cta--current' : ''}`}
-                            onClick={() => handleUpgrade(plan.name)}
-                            disabled={plan.current}
-                        >
-                            {plan.current ? 'Current Plan' : plan.cta}
-                        </button>
-
-                        <div className="offcanvas-pricing__features">
-                            <p className="offcanvas-pricing__features-title">What's included:</p>
-                            <ul className="offcanvas-pricing__features-list">
-                                {plan.features.map((feature, idx) => (
-                                    <li key={idx} className="offcanvas-pricing__feature">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="8" cy="8" r="8" fill="#10B981"/>
-                                            <path d="M11.3327 5.5L6.74935 10.0833L4.66602 8" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </span>
+                                    <span className="offcanvas-pricing__content-plan-features-text" key={feature}>{feature}</span>
+                                </div>
+                               {/*  {plan} */}
+                                </>
+                            ))}
+                        </div>
+                        <div className="offcanvas-pricing__conent-divider"></div>   
+                        <div className="offcanvas-pricing__content-plan-features">
+                           {plan.featuresBuilder.map((feature, index) => (
+                                <>
+                                <span className="offcanvas-pricing__content-plan-features-title">Builder</span>
+                                <div className="offcanvas-pricing__content-plan-features-item" key={index}>
+                                    <span className="offcanvas-pricing__content-plan-features-icon offcanvas-pricing__content-plan-features-icon--pro">
+                                        <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.73519 0.259953C6.85402 0.116133 7.02428 0.0243711 7.20975 0.0041998C7.39521 -0.0159715 7.58123 0.0370411 7.72819 0.151953C7.80036 0.207847 7.8606 0.277642 7.90534 0.357213C7.95008 0.436784 7.97841 0.524516 7.98867 0.615223C7.99892 0.705931 7.99089 0.797775 7.96504 0.885325C7.9392 0.972875 7.89606 1.05436 7.83819 1.12495L4.07819 5.74495C4.01527 5.82129 3.93718 5.88374 3.84888 5.92834C3.76058 5.97295 3.66398 5.99875 3.5652 6.00411C3.46642 6.00946 3.3676 5.99426 3.27499 5.95947C3.18238 5.92467 3.098 5.87104 3.02719 5.80195L0.207192 3.03195L0.158192 2.97995C-0.0678082 2.70795 -0.0518084 2.30695 0.207192 2.05295C0.466192 1.79895 0.875192 1.78295 1.15219 2.00495L1.20519 2.05295L3.47519 4.27295L6.74519 0.262953L6.73519 0.259953Z" fill="currentColor"/>
                                         </svg>
-                                        <span>{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            
-                            {plan.limitations && plan.limitations.length > 0 && (
-                                <ul className="offcanvas-pricing__limitations">
-                                    {plan.limitations.map((limitation, idx) => (
-                                        <li key={idx} className="offcanvas-pricing__limitation">
-                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <circle cx="8" cy="8" r="8" fill="#EF4444"/>
-                                                <path d="M10 6L6 10M6 6L10 10" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                                    </span>
+                                    <span className="offcanvas-pricing__content-plan-features-text" key={feature}>{feature}</span>
+                                </div>
+                                {plan.limitationsBuilder.map((limitation, index) => (
+                                    <div className="offcanvas-pricing__content-plan-features-item" key={index}>
+                                        <span className="offcanvas-pricing__content-plan-features-icon offcanvas-pricing__content-plan-features-icon--cross">
+                                            <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6 1L1 6L6 1ZM1 1L6 6L1 1Z" fill="currentColor"/>
+                                                <path d="M6 1L1 6M1 1L6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                                             </svg>
-                                            <span>{limitation}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                                        </span>
+                                        <span className="offcanvas-pricing__content-plan-features-text" key={limitation}>{limitation}</span>
+                                    </div>
+                                ))}
+                            </>
+                        ))}
                         </div>
+                        <div className="offcanvas-pricing__conent-divider"></div>
+                        {plan.lifetimeFeatures && (
+                            <div className="offcanvas-pricing__content-plan-features">
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
 
             <div className="offcanvas-pricing__footer">
-                <p className="offcanvas-pricing__footer-text">
-                    Need help choosing? <a href="mailto:support@trustwards.com" className="offcanvas-pricing__footer-link">Contact us</a>
-                </p>
             </div>
         </div>
     );

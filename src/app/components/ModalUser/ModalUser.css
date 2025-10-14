@@ -42,7 +42,7 @@
     flex-direction: column;
     min-width: 157px;
     height: 100%;
-    background-color: var(--modal-sidebar-background);
+    background-color: transparent;
     border-radius: 16px 0px 0px 16px;
     padding: 15px;
     overflow: auto;

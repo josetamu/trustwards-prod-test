@@ -462,6 +462,11 @@ html[data-theme="dark"] {
   /*Integrations*/
   --integrations-card-background: #363636;
 
+  /*Offcanvas - Pricing*/
+  --offcanvas-background: #282828;
+  --offcanvas-toggle-background: #363636;
+  --offcanvas-toggle-active: #666666;
+
   /* 
    =======================
           BUILDER
