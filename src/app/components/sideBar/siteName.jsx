@@ -14,6 +14,6 @@ export const SiteName = ({siteSlug}) => {
 
 
   return (
-    <span className='sidebar__sites-title sidebar__sites-title--link'>{site?.Name || 'SITE'}</span>
+    <span className='sidebar__sites-title sidebar__sites-title--link'>{site?.Name}</span>
   );
 };

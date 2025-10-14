@@ -349,7 +349,6 @@ export function Sidebar({
                         className="sidebar__action" 
                         onClick={handleToggleSidebar}
                         tabIndex={0}
-                        role="button"
                         aria-label="Toggle sidebar"
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {

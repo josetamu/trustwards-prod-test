@@ -192,10 +192,47 @@ export function ContextMenu({
         return () => window.removeEventListener('resize', handleResize);
     }, [open, onClose]);
 
-    // Helper function to close menu and execute action
-    const executeAction = (action) => {
-        action();
+    // Focus helpers
+    const focusTreeById = (id, delay = 150) => {
+        setTimeout(() => {
+            const el = document.querySelector(`[data-item-id="${id}"]`) ||
+                       document.querySelector('.tw-builder__tree-item-header[tabindex="0"]');
+            if (el && typeof el.focus === 'function') el.focus();
+        }, delay);
+    };
+
+    const focusNextTreeItemById = (id, delay = 200) => {
+        setTimeout(() => {
+            const items = document.querySelectorAll('.tw-builder__tree-item-header[data-item-id]');
+            const arr = Array.from(items);
+            const idx = arr.findIndex(it => it.getAttribute('data-item-id') === id);
+            const next = idx !== -1 ? arr[idx + 1] : null;
+            const target = next || document.querySelector(`[data-item-id="${id}"]`) || document.querySelector('.tw-builder__tree-item-header[tabindex="0"]');
+            if (target && typeof target.focus === 'function') target.focus();
+        }, delay);
+    };
+
+    // Helper function to close menu and execute action with unified focus handling
+    // focusStrategy: 'byId' | 'nextById' | 'none'
+    const executeAction = (action, focusStrategy = 'byId') => {
+        const result = action(); // action may return a new element id to focus
         onClose && onClose();
+        if (focusStrategy === 'none') return;
+
+        // If action returned a specific id (e.g., wrap new block), focus it
+        if (typeof result === 'string') {
+            focusTreeById(result, 200);
+            return;
+        }
+
+        // Strategy-based focusing using the original target id
+        if (focusStrategy === 'nextById' && targetItem?.id) {
+            focusNextTreeItemById(targetItem.id);
+            return;
+        }
+        if (targetItem?.id) {
+            focusTreeById(targetItem.id);
+        }
     };
 
     // Context menu actions
@@ -281,6 +318,7 @@ export function ContextMenu({
             nestable: true,
             children: [targetItem] // Put the target item directly inside the block
         };
+        const newBlockId = blockProperties.id; // Return this id for focusing
         
         // Replace the target item with the new block containing it
         const updated = deepCopy(JSONtree);
@@ -293,6 +331,8 @@ export function ContextMenu({
             updatedParentInfo.parent.children[updatedParentInfo.index] = blockProperties;
             
             setJSONtree(updated);
+            // Return the id so executeAction can focus it
+            return newBlockId;
         }
     };
 
@@ -311,7 +351,7 @@ export function ContextMenu({
                 {/* Copy */}
                 <button 
                     className="tw-context-menu__item"
-                    onClick={() => executeAction(handleCopy)}
+                    onClick={() => executeAction(handleCopy, 'byId')}
                 >
                     <div className="tw-context-menu__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
@@ -326,7 +366,7 @@ export function ContextMenu({
                 {clipboard && (
                     <button 
                         className="tw-context-menu__item"
-                        onClick={() => executeAction(handlePaste)}
+                        onClick={() => executeAction(handlePaste, 'byId')}
                     >
                         <div className="tw-context-menu__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
@@ -344,7 +384,7 @@ export function ContextMenu({
                 {/* Duplicate */}
                 <button 
                     className="tw-context-menu__item"
-                    onClick={() => executeAction(handleDuplicate)}
+                    onClick={() => executeAction(handleDuplicate, 'nextById')}
                 >
                     <div className="tw-context-menu__icon">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -357,7 +397,7 @@ export function ContextMenu({
                 {/* Wrap */}
                 <button 
                     className="tw-context-menu__item"
-                    onClick={() => executeAction(handleWrap)}
+                    onClick={() => executeAction(handleWrap, 'byId')}
                 >
                     <div className="tw-context-menu__icon">
                         <svg width="8" height="8" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -372,7 +412,7 @@ export function ContextMenu({
                 {/* Remove */}
                 <button 
                     className="tw-context-menu__item tw-context-menu__item--delete"
-                    onClick={() => executeAction(handleRemove)}
+                    onClick={() => executeAction(handleRemove, 'byId')}
                 >
                     <div className="tw-context-menu__icon">
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

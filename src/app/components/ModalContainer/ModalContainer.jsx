@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useRef} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAnimTypes } from '@animations/animations';
 import './ModalContainer.css';
@@ -7,6 +7,12 @@ import './ModalContainer.css';
 export function ModalContainer({ isOpen, onClose, children, onBackdropClick, modalType }) {
   const modalRef = useRef(null);
   const previousActiveElement = useRef(null);
+  
+  // Capture the active element immediately when component mounts with isOpen=true
+  // This runs before any other effects
+  if (isOpen && !previousActiveElement.current) {
+    previousActiveElement.current = document.activeElement;
+  }
 
   // Function to get all focusable elements within the modal
   const getFocusableElements = useCallback(() => {
@@ -95,30 +101,26 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, mod
   // Effect to handle focus management when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      // Store the currently focused element
-      previousActiveElement.current = document.activeElement;
-      
       // Add event listener for focus trapping
       document.addEventListener('keydown', trapFocus);
       
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
       
-      // Small delay to ensure modal content is rendered
-      const timeoutId = setTimeout(() => {
-        if (modalRef.current) {
-          modalRef.current.focus();
-        }
-      }, 50);
-      
-      return () => {
-        clearTimeout(timeoutId);
-      };
-      
     } else {
       // Restore focus to the previously focused element
-      if (previousActiveElement.current) {
-        previousActiveElement.current.focus();
+      if (previousActiveElement.current && previousActiveElement.current.isConnected) {
+        try {
+          previousActiveElement.current.focus();
+        } catch (error) {
+          console.error('Error focusing previous active element:', error);
+        }
+      } else {
+        // Try to focus the first focusable element in the document
+        const firstFocusable = document.querySelector('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])');
+        if (firstFocusable) {
+          firstFocusable.focus();
+        }
       }
       
       // Remove event listener
@@ -126,6 +128,9 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, mod
       
       // Restore body scroll
       document.body.style.overflow = 'unset';
+      
+      // Reset the previous active element for next time
+      previousActiveElement.current = null;
     }
     
     // Cleanup function
@@ -134,6 +139,64 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, mod
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, trapFocus]);
+
+  // Layout effect to focus modal after it's rendered
+  useLayoutEffect(() => {
+    if (isOpen && modalRef.current) {
+      modalRef.current.focus();
+    }
+  }, [isOpen]);
+
+  // Effect to handle mouse vs keyboard focus detection
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) return;
+
+    const modal = modalRef.current;
+    let isMouseDown = false;
+
+    const handleMouseDown = () => {
+      isMouseDown = true;
+    };
+
+    const handleMouseUp = () => {
+      isMouseDown = false;
+    };
+
+    const handleFocus = (e) => {
+      if (isMouseDown && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+        e.target.classList.add('mouse-focused');
+      }
+    };
+
+    const handleBlur = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        e.target.classList.remove('mouse-focused');
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Tab') {
+        // Remove mouse-focused class when navigating with keyboard
+        const mouseFocusedElements = modal.querySelectorAll('.mouse-focused');
+        mouseFocusedElements.forEach(el => el.classList.remove('mouse-focused'));
+      }
+    };
+
+    // Add event listeners
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mouseup', handleMouseUp);
+    modal.addEventListener('focus', handleFocus, true);
+    modal.addEventListener('blur', handleBlur, true);
+    modal.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
+      modal.removeEventListener('focus', handleFocus, true);
+      modal.removeEventListener('blur', handleBlur, true);
+      modal.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
 //Function to handle the backdrop click, to close the modal
   const handleBackdropClick = useCallback((e) => {

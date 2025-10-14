@@ -4,21 +4,42 @@ import './usage.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/layout';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { Area, AreaChart, Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useState, useEffect } from 'react';
+import { supabase } from '@supabase/supabaseClient';
+import { InstallationFirst } from '../homeComponents/InstallationFirst';
 
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
     const { webs } = useDashboard();
+    const [siteData, setSiteData] = useState(null);
 
     // Find the selected site based on the slug (using id like the main page)
     const selectedSite = webs.find(site => site.id === siteSlug);
+
+    // Set siteData for charts
+    useEffect(() => {
+        if (selectedSite) {
+            setSiteData(selectedSite);
+        }
+    }, [selectedSite]);
+
     if(!webs || webs.length === 0) {
         return
     }
     
     if (!selectedSite) {
         notFound();
+    }
+
+    // If not installed, show installation screen (check directly from site data)
+    if (!selectedSite.Verified) {
+        return (
+            <div className='usage'>
+                <InstallationFirst siteSlug={siteSlug} />
+            </div>
+        );
     }
 
     const visitorData = [

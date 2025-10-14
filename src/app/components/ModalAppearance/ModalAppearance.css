@@ -205,7 +205,7 @@
 }
 .modal-appearance__accent-color-choice--active{
     box-shadow:
-    0 0 4px var(--border-light-color),    
+    0 0 4px var(--border-fresco-color),    
     0 0 0 2px white,               /* External border white */
     0 0 0 3px #0094ff;             /* External border blue */
 }
@@ -291,4 +291,16 @@
     .modal-appearance__bottom{
         gap: 10px;
     }
+}
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Accent color button focus */
+.modalAppearance__accentColor__button:focus-visible,
+.modal-appearance__accent-color-choice:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+  border-radius: 8px;
 }

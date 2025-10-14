@@ -16,3 +16,14 @@
     letter-spacing: var(--letter-spacing-negative);
     color: var(--accent-color);
   }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* New site button focus */
+.newSite__button:focus-visible,
+.new-site__button:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}

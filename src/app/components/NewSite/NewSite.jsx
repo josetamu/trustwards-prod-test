@@ -24,7 +24,6 @@ export function NewSite({openChangeModal, showNotification, setIsModalOpen, setM
             }}
             aria-label="Create new site"
             tabIndex={0}
-            role="button"
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();

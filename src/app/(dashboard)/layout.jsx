@@ -269,7 +269,6 @@ const SiteStyle = (site) => {
       const isPublic = pathname.startsWith('/login') || pathname.startsWith('/public');
       if (!user && !isPublic) {
         router.replace('/login');
-        if (!cancelled) setCheckingAuth(false);
         return;
       }
       if (user && allUserDataResourceRef.current.userId !== user.id) {
@@ -737,8 +736,21 @@ useEffect(() => {
         setIsOffcanvasOpen,
     };
    
+    // Show loading state while checking authentication to avoid flickering
+    if (checkingAuth) {
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-auth-checking', 'true');
+      }
+      return (
+        <div className="auth-checking-loader"></div>
+      );
+    }else{
+      if (typeof document !== 'undefined') {
+        document.documentElement.removeAttribute('data-auth-checking');
+      }
+    }
+
     return (
-      !checkingAuth && (
         <DashboardContext.Provider value={contextProps}>
             <div className="app-container">
                 <Sidebar  
@@ -841,7 +853,6 @@ useEffect(() => {
                     </OffcanvasContainer>
             </div>
         </DashboardContext.Provider>
-      )
     );
 }
 

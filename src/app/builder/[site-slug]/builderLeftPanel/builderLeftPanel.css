@@ -2,7 +2,7 @@
 .tw-builder__left-panel {
     background-color: var(--panels-background);
     border-radius: var(--panels-radius);
-    border: 1px solid var(--border-light-color);
+    border: 1px solid var(--border-fresco-color);
     box-shadow: var(--fancy-shadow);
     display: flex;
     flex-direction: column;
@@ -23,7 +23,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px;
-    border-bottom: 1px solid var(--border-light-color);
+    border-bottom: 1px solid var(--border-fresco-color);
 }
 
 /* Panel toggle button */
@@ -58,7 +58,7 @@
     align-items: center;
     gap: 10px;
     background-color: var(--logo-background);
-    border: 1px solid var(--border-light-color);
+    border: 1px solid var(--border-fresco-color);
     box-shadow: var(--fancy-shadow);
     border-radius: 6px;
     padding: 7px;
@@ -81,7 +81,7 @@
 .builder-logo-dropdown .dropdown__menu {
     min-width: 200px;
     background: var(--dropdown-background);
-    border: 1px solid var(--border-light-color);
+    border: 1px solid var(--border-fresco-color);
     border-radius: 8px;
     box-shadow: var(--fancy-shadow);
     margin-top: 15px;
@@ -105,7 +105,7 @@
 
 .tw-builder__tab-tree-divider {
     height: 1px;
-    background-color: var(--border-light-color);
+    background-color: var(--border-fresco-color);
     margin: 0 0 10px 0;
 }
 
@@ -137,7 +137,7 @@
     height: calc(100% - 6px);
     background-color: var(--tab-slider-background);
     border-radius: 6px;
-    border: 1px solid var(--border-light-color);
+    border: 1px solid var(--border-fresco-color);
     box-shadow: var(--fancy-shadow);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -735,4 +735,32 @@
 /* Toolbar drop line inside position - HIDDEN when inside */
 .tw-builder__drop-line--toolbar.tw-builder__drop-line--inside {
     display: none;
+}
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Tree item selected state - solid outline when selected */
+.tw-builder__tree-item-header--selected:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset-inner); /* inner outline to prevent clipping/overflow */
+}
+
+/* Tree expand button solid outline when parent item is selected */
+.tw-builder__tree-item-header--selected .tw-builder__tree-expand-button:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Builder Left Panel (Tree) - default focus for non-selected items uses inner dashed */
+.tw-builder__tree-item-header:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset-inner); /* inner outline to avoid overflow with container */
+}
+
+/* Tree expand button - external outline */
+.tw-builder__tree-expand-button:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset); /* external outline for the arrow */
 }

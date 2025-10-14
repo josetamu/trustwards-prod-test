@@ -59,7 +59,6 @@ export function SidebarSitesList({ openChangeModal, setIsModalOpen, setModalType
                         openChangeModal('newsite');
                     }}
                     tabIndex={0}
-                    role="button"
                     aria-label="Create new site"
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -118,7 +117,6 @@ export function SidebarSitesList({ openChangeModal, setIsModalOpen, setModalType
                     openChangeModal('newsite');
                 }}
                 tabIndex={0}
-                role="button"
                 aria-label="Create new site"
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {

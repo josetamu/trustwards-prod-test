@@ -125,6 +125,8 @@
   width: 100%;
   justify-content: flex-start;
   align-items: center;
+
+  height: 17px;
 }
 /* Sites searcher */
 .sidebar__sites-searcher{
@@ -530,4 +532,27 @@
 }
 .sidebar.sidebar--menu .user__profile{
   display: flex;
+}
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Sidebar specific elements - use inner outline to avoid overflow issues */
+/* Main containers - inner outline */
+.sidebar-sites__site:focus-visible,
+.sidebar-header:focus-visible,
+.sidebar__site-link:focus-visible,
+.sidebar__link:focus-visible,
+.sidebar__sites-add:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset-inner); /* draw inside element instead of outside */
+}
+
+/* Small action elements - external outline */
+.sidebar__action:focus-visible,
+.sidebar__sites-edit:focus-visible,
+.sidebar__sites-delete:focus-visible {
+  outline: var(--focus-outline-dashed);
+  outline-offset: var(--focus-outline-offset); /* external outline for small elements */
 }

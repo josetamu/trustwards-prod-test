@@ -80,3 +80,11 @@ html[data-color] .modalAppearance__accentColor__button {
       width: 100%;
     }
 }
+
+
+.auth-checking-loader {
+  background-color: var(--content-background);
+}
+html[data-auth-checking="true"]{
+  padding: 0;
+}

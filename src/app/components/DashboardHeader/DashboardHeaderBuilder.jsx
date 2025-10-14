@@ -7,7 +7,9 @@ export const DashboardHeaderBuilder = ({siteSlug}) => {
 
     if(!allUserDataResource) return <PlanSkeleton />;
 
-    const {appearanceSettings} = allUserDataResource.read();
+    const {webs} = allUserDataResource.read();
+
+    if(!siteSlug || !webs || !Array.isArray(webs)) return null;
 
 
 
@@ -16,7 +18,6 @@ export const DashboardHeaderBuilder = ({siteSlug}) => {
             href={`/builder/${siteSlug}`} 
             className="dashboard-header__builder"
             tabIndex={0}
-            role="button"
             aria-label="Open builder"
         >
             <span className="dashboard-header__builder-text">Builder</span>

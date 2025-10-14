@@ -102,12 +102,21 @@
     position: relative;
     width: 26px;
     height: 16px;
+    border-radius: 8px;
+    outline: none;
+}
+
+.modal-builder-settings__content-body-label:focus-visible {
+    outline: var(--focus-outline-dashed) !important;
+    outline-offset: var(--focus-outline-offset);
 }
 .modal-builder-settings__content-body-label .tooltip__mask{
     width: 200px;
 }
 .modal-builder-settings__content-body-checkbox {
-    display: none;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 .modal-builder-settings__content-body-switch {
     position: absolute;
@@ -120,6 +129,7 @@
     border-radius: 34px;
     transition: .2s;
     overflow: hidden;
+    outline: none;
 }
 .modal-builder-settings__content-body-switch:before {
     position: absolute;
@@ -143,7 +153,7 @@
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    border: 1px solid var(--border-light-color);
+    border: 1px solid var(--border-fresco-color);
     cursor: pointer;
     padding: 0;
     background: none;
@@ -190,4 +200,26 @@
     flex-direction: row;
     gap: 10px;
     cursor: pointer;
+}
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Toggle switch focus styles */
+.modal-builder-settings__content-body-checkbox:focus-visible {
+    outline: var(--focus-outline-dashed) !important;
+    outline-offset: var(--focus-outline-offset);
+}
+
+/* Color picker focus styles */
+.modal-builder-settings__content-body-color:focus-visible {
+    outline: var(--focus-outline-dashed) !important;
+    outline-offset: var(--focus-outline-offset);
+}
+
+/* Copy button focus styles */
+.modal-builder-settings__content-body-clip:focus-visible {
+    outline: var(--focus-outline-dashed) !important;
+    outline-offset: var(--focus-outline-offset);
 }

@@ -122,3 +122,13 @@
 }.modal-welcome__input--warning::placeholder {
     color: var(--warning-color);
 }
+
+/* =======================
+   ACCESSIBILITY FOCUS STYLES
+   ======================= */
+
+/* Welcome button focus */
+.modal-welcome__button:focus-visible {
+  outline: var(--focus-outline-solid) !important;
+  outline-offset: var(--focus-outline-offset);
+}
