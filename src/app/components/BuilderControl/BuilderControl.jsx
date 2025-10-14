@@ -4,7 +4,7 @@ import {Tooltip} from '@components/tooltip/Tooltip';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 
 // Component to render the control(label with + and -) Pass the label(title) and the control to render
-export default function BuilderControl({label, controls, whatType, activeRoot, globalControlProps}) {
+export default function BuilderControl({label, controls, whatType, activeRoot, globalControlProps, setBwUnified, setBrUnified}) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [activeTooltip, setActiveTooltip] = useState(null);
 
@@ -153,7 +153,11 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
                 <span  className="tw-builder__control-deleter" onClick={(e) => e.stopPropagation()}>
 						<StylesDeleter
 							value={hasAnyValue}
-							onDelete={handleSectionClear}
+							onDelete={() => {
+								handleSectionClear();
+								setBwUnified('');
+								setBrUnified('');
+							}}
 						/>
 					</span>
 				<span className="tw-builder__control-label">{label}
@@ -170,7 +174,7 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 						</span>
 					)}
 				</span>
-				<div className="tw-builder__control-icons">
+				<div className="tw-builder__control-icons" tabIndex={0} role="button" aria-label="Toggle control" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setIsOpen(!isOpen); } }}>
 
 					<span className={`tw-builder__control-icon ${!isOpen ? 'tw-builder__control-icon--active' : ''}`}>
 						<svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">

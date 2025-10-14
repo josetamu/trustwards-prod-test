@@ -331,20 +331,21 @@ const renderTooltip = (id) => (
               }}>{site?.Name || 'SITE'}</span> 
               </div>
               <span 
-                className={`tw-builder__header-plan ${site?.Plan === 'Pro' ? 'tw-builder__header-plan--pro' : ''}`} 
-                onClick={() => {
-                  setModalType('Plan');
-                  setIsModalOpen(true);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setModalType('Plan');
+                  className={`tw-builder__header-plan ${site?.Plan === 'Pro' ? 'tw-builder__header-plan--pro' : ''}`} 
+                  onClick={() => {
+                    setModalType('Billing');
                     setIsModalOpen(true);
-                  }
-                }}
-                tabIndex={0}
-                aria-label={`Open plan modal for ${site?.Plan || 'Free'} plan`}
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setModalType('Billing');
+                      setIsModalOpen(true);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Current plan: ${site?.Plan || 'Free'}. Click to change plan`}
               >
                   {site?.Plan || 'Free'}
               </span>

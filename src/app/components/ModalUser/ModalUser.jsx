@@ -2,7 +2,7 @@ import './ModalUser.css';
 
 import { ModalAccount } from '@components/ModalAccount/ModalAccount';
 import { ModalAppearance } from '@components/ModalAppearance/ModalAppearance';
-import ModalUpgradePlan from '@components/ModalUpgradePlan/ModalUpgradePlan';
+import ModalBilling from '@components/ModalBilling/ModalBilling';
 
 export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSettings, setAppearanceSettings, userSettings, setUserSettings, openChangeModal, avatarColors, checkProfilePicture, profileStyle, allUserDataResource }) {
 //Modal User is a modal that allows the user to change their account settings, appearance settings, and upgrade plan.
@@ -31,8 +31,8 @@ export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSett
                     setAppearanceSettings={setAppearanceSettings}
                     userSettings={userSettings}
                 />
-            case 'Plan':
-                return <ModalUpgradePlan 
+            case 'Billing':
+                return <ModalBilling 
                     onClose={() => setIsModalOpen(false)}
                     onSave={onSave}
                     user={user}
@@ -44,36 +44,34 @@ export function ModalUser({onSave, user, setUser, setIsModalOpen, appearanceSett
     }
     
     return (
-        <div className={`modal-user ${userSettings === 'Plan' ? 'modal-user--upgrade' : ''}`}>
-            <div className="modal-user__aside">
-                <div className="modal-user__settings">
-                    <div className={`modal-user__item ${userSettings === 'Account' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Account');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Account'); } }} tabIndex={0}  aria-pressed={userSettings === 'Account'}>
-                        <span className="modal-user__item-span">Account</span>
-                    </div>
-                    <div className={`modal-user__item ${userSettings === 'Appearance' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Appearance');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Appearance'); } }} tabIndex={0}  aria-pressed={userSettings === 'Appearance'}>
-                        <span className="modal-user__item-span">Appearance</span>
-                    </div>
-                    <div className="modal-user__divider"></div>
-                    <div className={`modal-user__item modal-user__item--upgrade ${userSettings === 'Plan' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Plan');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Plan'); } }} tabIndex={0}  aria-pressed={userSettings === 'Plan'}>
-                        <span className="modal-user__item-icon">
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clipPath="url(#clip0_439_1015)">
-                                <path className="modal-user__tick" d="M7.00002 0.728516C10.4633 0.728516 13.2709 3.53606 13.2709 6.99935C13.2709 10.4627 10.4633 13.2702 7.00002 13.2702C3.53674 13.2702 0.729187 10.4627 0.729187 6.99935C0.729187 3.53606 3.53674 0.728516 7.00002 0.728516ZM4.13349 6.70768L4.95835 7.53257L6.41669 6.07424V9.91602H7.58335V6.07424L9.04169 7.53257L9.86658 6.70768L7.00002 3.84115L4.13349 6.70768Z" fill="currentColor"/>
-                                </g>
-                                <defs>
-                                <clipPath id="clip0_439_1015">
-                                <rect width="14" height="14" fill="white"/>
-                                </clipPath>
-                                </defs>
-                            </svg>
-                        </span>
-                        <span className="modal-user__item-span modal-user__item-span--upgrade">Upgrade plan</span>
+        <div className={`modal-user ${userSettings === 'Billing' ? 'modal-user--upgrade' : ''}`}>
+            <div className="modal-user__header">
+                <span className="modal-user__header-title">User Settings</span>
+                <span className="modal-user__header-close" onClick={() => {setIsModalOpen(false);}}>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M2.55806 2.55806C2.80213 2.31398 3.19787 2.31398 3.44194 2.55806L6 5.1161L8.55805 2.55806C8.80215 2.31398 9.19785 2.31398 9.44195 2.55806C9.686 2.80213 9.686 3.19787 9.44195 3.44194L6.8839 6L9.44195 8.55805C9.686 8.80215 9.686 9.19785 9.44195 9.44195C9.19785 9.686 8.80215 9.686 8.55805 9.44195L6 6.8839L3.44194 9.44195C3.19787 9.686 2.80213 9.686 2.55806 9.44195C2.31398 9.19785 2.31398 8.80215 2.55806 8.55805L5.1161 6L2.55806 3.44194C2.31398 3.19787 2.31398 2.80213 2.55806 2.55806Z" fill="currentColor"/>
+                    </svg>
+                </span>
+            </div>
+            <div className="modal-user__body">
+                <div className="modal-user__aside">
+                    <div className="modal-user__settings">
+                        <div className={`modal-user__item ${userSettings === 'Account' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Account');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Account'); } }} tabIndex={0} role="button" aria-pressed={userSettings === 'Account'}>
+                            <span className="modal-user__item-span">Account</span>
+                        </div>
+                        <div className={`modal-user__item ${userSettings === 'Appearance' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Appearance');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Appearance'); } }} tabIndex={0} role="button" aria-pressed={userSettings === 'Appearance'}>
+                            <span className="modal-user__item-span">Appearance</span>
+                        </div>
+                        <div className={`modal-user__item ${userSettings === 'Billing' ? 'modal-user__item--active' : ''}`} onClick={() => {setUserSettings('Billing');}} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Billing'); } }} tabIndex={0} role="button" aria-pressed={userSettings === 'Billing'}>
+                            <span className="modal-user__item-span">Billing</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="modal-user__setting">
-                {/* render the content of the modal based on the userSettings state */}
-                {renderContent()}
+                <div className="modal-user__divider"></div>
+                <div className="modal-user__setting">
+                    {/* render the content of the modal based on the userSettings state */}
+                    {renderContent()}
+                </div>
             </div>
         </div>
     )

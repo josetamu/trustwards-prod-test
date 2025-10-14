@@ -24,13 +24,13 @@
     gap: 7px;
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-medium);
-    color: var(--label-color);
+    color: var(--value-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
 .tw-builder__control-icon{
     display: none;
-    color: var(--label-color);
+    color: var(--value-color);
 }
 .tw-builder__control-icon--active{
     display: flex;

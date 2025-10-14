@@ -83,8 +83,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                 setModalType('Appearance')
                 setIsModalOpen(true)
                 break
-            case 'upgrade':
-                setModalType('Plan')
+            case 'billing':
+                setModalType('Billing')
                 setIsModalOpen(true)
                 break
             case 'help':

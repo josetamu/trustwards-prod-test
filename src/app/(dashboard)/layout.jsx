@@ -16,7 +16,8 @@ import { ModalWelcome } from '@components/ModalWelcome/ModalWelcome'
 import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
 import { useSidebarSettings } from '@contexts/SidebarSettingsContext';
-
+import { OffcanvasContainer } from '@components/OffcanvasContainer/OffcanvasContainer'
+import  OffcanvasPricing  from '@components/OffcanvasPricing/OffcanvasPricing'
 import { createCDN } from '@contexts/CDNsContext';
 
 import { useTheme } from 'next-themes'
@@ -48,6 +49,9 @@ function DashboardLayout({ children }) {
   const [modalType, setModalType] = useState(null);
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [changeType, setChangeType] = useState('');
+
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
+  const [offcanvasType, setOffcanvasType] = useState(null);
 
   // ModalWelcome state
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
@@ -356,7 +360,7 @@ const SiteStyle = (site) => {
 
   // Set userSettings based on modalType
   useEffect(() => {
-    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Plan') {
+    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Billing') {
       setUserSettings(modalType);
     }
   }, [modalType]);
@@ -601,11 +605,11 @@ useEffect(() => {
               
             }}
             user={user}
+            setIsModalOpen={setIsModalOpen}
             appearanceSettings={appearanceSettings}
             setAppearanceSettings={setAppearanceSettings}
             userSettings={userSettings}
             setUserSettings={setUserSettings}
-
             openChangeModal={openChangeModal}
             checkProfilePicture={checkProfilePicture}
             profileStyle={ProfileStyle}
@@ -651,7 +655,7 @@ useEffect(() => {
             profileStyle={ProfileStyle}
             allUserDataResource={allUserDataResource}
           />)
-        case 'Plan':
+        case 'Billing':
           return (
             <ModalUser
               onClose={() => setIsModalOpen(false)}
@@ -676,6 +680,27 @@ useEffect(() => {
           return null;
       }
     }
+
+    const renderOffcanvas = () => {
+      if (!isOffcanvasOpen) return null;
+    
+      switch (offcanvasType) {
+        case 'Pricing':
+          return (
+            <OffcanvasPricing 
+              onClose={() => setIsOffcanvasOpen(false)}
+              user={user}
+              currentPlan={(() => {
+                console.log('user object:', user);
+                console.log('user.Plan:', user?.Plan);
+                return user?.Plan || 'Basic';
+              })()}
+            />
+          );
+        default:
+          return null;
+      }
+    };
 
 
 
@@ -711,6 +736,8 @@ useEffect(() => {
         setIsVerifying,
         appearanceSettings,
         setAppearanceSettings,
+        setOffcanvasType,
+        setIsOffcanvasOpen,
     };
    
     // Show loading state while checking authentication to avoid flickering
@@ -822,6 +849,13 @@ useEffect(() => {
                     isWarning={notification.isWarning || false}
                     >
                     </Notification>
+                    <OffcanvasContainer
+                      isOpen={isOffcanvasOpen}
+                      onClose={() => setIsOffcanvasOpen(false)}
+                      position="left"
+                    >
+                      {renderOffcanvas()}
+                    </OffcanvasContainer>
             </div>
         </DashboardContext.Provider>
     );

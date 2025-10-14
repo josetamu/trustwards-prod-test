@@ -83,7 +83,7 @@ function Builder() {
 
   // Set userSettings based on modalType
   useEffect(() => {
-    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Plan') {
+    if (modalType === 'Account' || modalType === 'Appearance' || modalType === 'Billing') {
       setUserSettings(modalType);
     }
   }, [modalType]);
@@ -439,7 +439,7 @@ const renderModal = () => {
         profileStyle={ProfileStyle}
         
       />) 
-    case 'Plan':
+    case 'Billing':
       return (
         <ModalUser
           onClose={() => setIsModalOpen(false)}

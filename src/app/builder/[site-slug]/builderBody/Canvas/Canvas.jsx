@@ -180,6 +180,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
             !e.target.closest('.tw-builder__header-settings') &&
             !e.target.closest('.tw-builder__right-header') &&
             !e.target.closest('.tw-builder__settings-classes-pool') &&
+            !e.target.closest('.modal__backdrop') &&
             !e.target.closest('.tw-builder__settings-class')) {
                 setSelectedId(null);
                 setSelectedItem(null);
@@ -699,7 +700,7 @@ useEffect(() => {
             //out is the CSS content to return. Starts empty
             let out = '';
 
-            idsArr?.forEach(({ id, enter }) => {
+            idsArr?.forEach(({ id, enter, states }) => {
                 //props is the properties of the id
                 const props = enter?.[scope];
                 if (!id || !props || Object.keys(props).length === 0) return;
@@ -712,9 +713,22 @@ useEffect(() => {
                     out += `${prop}: ${addUnits(prop, String(value))};\n`;
                 });
                 out += `}\n`;
+
+                if (states && typeof states === 'object') {
+                    Object.entries(states).forEach(([pseudo, stateProps]) => {
+                        const stEntries = Object.entries(stateProps || {});
+                        if (stEntries.length > 0) {
+                            out += `${baseSel}${pseudo} {\n`;
+                            stEntries.forEach(([prop, value]) => {
+                                out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                            });
+                            out += `}\n`;
+                        }
+                    });
+                }
             });
 
-            classesArr?.forEach(({ className, enter }) => {
+            classesArr?.forEach(({ className, enter, states }) => {
                 //props is the properties of the class
                 const props = enter?.[scope];
                 if (!className || !props || Object.keys(props).length === 0) return;
@@ -728,6 +742,19 @@ useEffect(() => {
                     out += `${prop}: ${addUnits(prop, String(value))};\n`;
                 });
                 out += `}\n`;
+
+                if (states && typeof states === 'object') {
+                    Object.entries(states).forEach(([pseudo, stateProps]) => {
+                        const stEntries = Object.entries(stateProps || {});
+                        if (stEntries.length > 0) {
+                            out += `${baseSel}${pseudo} {\n`;
+                            stEntries.forEach(([prop, value]) => {
+                                out += `${prop}: ${addUnits(prop, String(value))};\n`;
+                            });
+                            out += `}\n`;
+                        }
+                    });
+                }
             });
 
             return out;

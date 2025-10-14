@@ -307,14 +307,28 @@ System selected: will fallback to root or html[data-theme="dark"]
   --drop-indicator-background: #0099FE15;
 
   /*Builder - Right Panel*/
+  --title-right-panel-color: #F5F5F5;
+  --subtitle-right-panel-color: #666666;
+  --value-color: #000000;
+  --placeholder-color: #999999;
+  --slider-border-control-bg-active: #8c8c8c;
+
+  --border-control-color-color: #E6E6E6;
   --no-selected-item-background: #F5F5F5;
   --no-selected-item-text-color: #999999;
+
   --control-background: #F5F5F5;
   --control-context-background: #FFFFFF;
+ 
+
   --classes-background: #F5F5F5;
+  --classes-item-hover-background: #2B2B2B;
   --right-panel-dropdown-background: #000000;
-  --states-background: #DDDDDD;
-  --states-active-color: #333333;
+
+  --states-background: #ddd;
+  --states-active-color: #333;
+
+  
 }
 
 .sidebar__logo-img{
@@ -445,6 +459,11 @@ html[data-theme="dark"] {
   /*Integrations*/
   --integrations-card-background: #363636;
 
+  /*Offcanvas - Pricing*/
+  --offcanvas-background: #282828;
+  --offcanvas-toggle-background: #363636;
+  --offcanvas-toggle-active: #666666;
+
   /* 
    =======================
           BUILDER
@@ -512,12 +531,21 @@ html[data-theme="dark"] {
   --drop-indicator-background: #0099FE15;
 
   /*Builder - Right Panel*/
+  --value-color: #FFFFFF;
+  --subtitle-right-panel-color: #AAAAAA;
+  --placeholder-color: #999999;
+
+  --border-control-color-color: #555555;
+  --slider-border-control-bg-active: #666666;
+
   --no-selected-item-background: #363636;
   --no-selected-item-text-color: #999999;
   --control-background: #363636;
   --control-context-background: #282828;
+
   --classes-background: #363636;
   --right-panel-dropdown-background: #000000;
+
   --states-background: #505050;
   --states-active-color: #FFFFFF;
 }
