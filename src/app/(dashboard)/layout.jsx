@@ -13,6 +13,7 @@ import { ModalSupport } from '@components/ModalSupport/ModalSupport'
 import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
 import { ModalWelcome } from '@components/ModalWelcome/ModalWelcome'
+import { ModalCheckout } from '@components/ModalCheckout/ModalCheckout'
 import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
 import { useSidebarSettings } from '@contexts/SidebarSettingsContext';
@@ -55,6 +56,9 @@ function DashboardLayout({ children }) {
 
   // ModalWelcome state
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+
+  //ModalCheckout state
+  const [checkoutPlan, setCheckoutPlan] = useState(null);
 
   // Notification state
   const [notification, setNotification] = useState({
@@ -673,7 +677,15 @@ useEffect(() => {
           
             />
           )
-        
+        case 'Upgrade':
+          return (
+            <ModalCheckout
+              onClose={() => setIsModalOpen(false)}
+              setIsModalOpen={setIsModalOpen}
+              currentPlan={user?.Plan || 'Free'}
+              selectedPlan={checkoutPlan?.plan}            
+            />
+          )
         default:
           return null;
       }
@@ -689,10 +701,12 @@ useEffect(() => {
               onClose={() => setIsOffcanvasOpen(false)}
               user={user}
               currentPlan={(() => {
-                console.log('user object:', user);
-                console.log('user.Plan:', user?.Plan);
-                return user?.Plan || 'Basic';
+                return user?.Plan || 'Free';
               })()}
+              setModalType={setModalType}
+              setIsModalOpen={setIsModalOpen}
+              setIsOffcanvasOpen={setIsOffcanvasOpen}
+              setCheckoutPlan={setCheckoutPlan}
             />
           );
         default:

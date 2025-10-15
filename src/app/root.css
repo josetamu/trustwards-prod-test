@@ -462,6 +462,7 @@ html[data-theme="dark"] {
   --offcanvas-background: #282828;
   --offcanvas-toggle-background: #363636;
   --offcanvas-toggle-active: #666666;
+  --offcanvas-billing-color: #777777;
 
   /* 
    =======================

@@ -31,6 +31,7 @@ function Home() {
 
     return (
         <div className='proof-of-consent'>
+            
         </div>
     );
 }

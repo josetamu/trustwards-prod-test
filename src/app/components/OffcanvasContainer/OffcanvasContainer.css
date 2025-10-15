@@ -11,7 +11,7 @@
 }
 
 .offcanvas {
-    background-color: var(--modal-background);
+    background-color: var(--offcanvas-background);
     height: 100%;
     overflow-y: auto;
     box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
