@@ -10,7 +10,7 @@ export const InstallationFirst = ({ siteSlug }) => {
 
     const verify = async () => {
         try {
-            // 1. Actualizar en la base de datos
+            // 1. Update in the database
             const { data, error } = await supabase
                 .from('Site')
                 .update({ Verified: true })
@@ -26,17 +26,17 @@ export const InstallationFirst = ({ siteSlug }) => {
                 return;
             }
 
-            // 2. Actualizar el estado local
+            // 2. Update the local state
             setIsInstalled(true);
 
-            // 3. Actualizar el estado global webs
+            // 3. Update the global webs state
             setWebs(prevWebs =>
                 prevWebs.map(site =>
                     site.id === siteSlug ? { ...site, Verified: true } : site
                 )
             );
 
-            // 4. Actualizar el resource para mantener consistencia
+            // 4. Update the resource to maintain consistency
             if (allUserDataResource) {
                 const currentData = allUserDataResource.read();
                 currentData.webs = currentData.webs.map(web =>
@@ -44,7 +44,7 @@ export const InstallationFirst = ({ siteSlug }) => {
                 );
             }
 
-            // 5. Mostrar notificación de éxito
+            // 5. Show success notification
             if (showNotification) {
                 showNotification('Site verified successfully!', 'top', true);
             }
