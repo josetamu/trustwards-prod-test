@@ -1,0 +1,279 @@
+.analytics {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 50px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header Section */
+.analytics__header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.analytics__header-content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.analytics__title {
+    font-size: var(--font-heading);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--analytics-title-color);
+}
+
+.analytics__description {
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--analytics-description-color);
+}
+
+.analytics__upgrade-link {
+    color: var(--analytics-upgrade-link-color);
+    cursor: pointer;
+    text-decoration: none;
+}
+.analytics__upgrade-link:hover {
+    opacity: 0.8;
+}
+
+.analytics__upgrade-button {
+    background-color: var(--accent-bg-color);
+    color: var(--accent-color);
+    border: none;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Chart Section */
+.analytics__chart {
+    background-color: transparent;
+    border: 1px solid var(--border-fresco-color);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.analytics__chart-divider {
+    height: 1px;
+    background: var(--border-fresco-color);
+    width: 100%;
+    border: none;
+    margin: 20px 0;
+}
+
+.analytics__chart-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.analytics__chart-content-left-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.analytics__chart-title {
+    font-size: var(--font-size-big);
+    font-weight: var(--font-weight-medium);
+    color: var(--body-strong-color);
+    letter-spacing: var(--letter-spacing-negative);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.analytics__chart-info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    color: var(--accent-color);
+    cursor: help;
+    position: relative;
+}
+
+.analytics__chart-subtitle {
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--body-fresco-color);
+}
+
+.analytics__chart-dropdown {
+    display: flex;
+    align-items: center;
+}
+
+/* Dropdown Styles using project component */
+.analytics__dropdown-trigger {
+    background-color: var(--accent-bg-color);
+    color: var(--accent-color);
+    border: 1px solid var(--border-fresco-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight-medium);
+    gap: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.analytics__dropdown-value {
+    flex: 1;
+    text-align: left;
+}
+
+.analytics__dropdown-chevron {
+    color: var(--accent-color);
+    transition: transform 0.2s ease;
+}
+
+.analytics__dropdown-chevron--open {
+    transform: rotate(180deg);
+}
+
+/* Custom Tooltip Styles */
+.analytics__tooltip {
+    background: var(--analytics-area-chart-tooltip);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.analytics__tooltip-label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--analytics-area-chart-tooltip-color);
+    font-size: var(--font-size-medium);
+    letter-spacing: var(--letter-spacing-negative);
+}
+
+.analytics__tooltip-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var( --analytics-area-chart-tooltip-value-color);
+}
+
+.analytics__tooltip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+
+.analytics__area-chart-container {
+    height: auto;
+    width: 100%;
+    margin-top: 20px;
+    position: relative;
+}
+
+.analytics__area-chart-container .recharts-wrapper {
+    width: 100% !important;
+}
+
+/* Radial Charts Section */
+.analytics__radial-charts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.analytics__radial-chart-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.analytics__radial-chart-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    margin: 10px 0;
+}
+
+.analytics__radial-chart-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.analytics__radial-chart-value {
+    font-size: var(--font-heading-big);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--body-strong-color);
+}
+
+.analytics__radial-chart-label {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--body-fresco-color);
+}
+
+
+/* Responsive Design */
+@media (max-width: 767px) { 
+    .analytics__radial-charts {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Accessibility Styles */
+.analytics__upgrade-link:focus-visible {
+    outline: var(--focus-outline-dashed);
+    outline-offset: 2px;
+}
+
+.analytics__upgrade-button:focus-visible {
+    outline: var(--focus-outline-solid);
+    outline-offset: 2px;
+}
+
+.analytics__chart-info-icon:focus-visible {
+    outline: var(--focus-outline-dashed);
+    outline-offset: 2px;
+}
+
+.analytics__dropdown-trigger:focus-visible {
+    outline: var(--focus-outline-solid);
+    outline-offset: 2px;
+    border-color: var(--border-strong-color);
+}

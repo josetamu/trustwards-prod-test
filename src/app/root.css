@@ -219,12 +219,14 @@ System selected: will fallback to root or html[data-theme="dark"]
   --home-text-color: #FFFFFFB3;
   --home-verify-container-bg: #FFFFFFB3;
 
-  /*Usage*/
-  --usage-title-color: #FFFFFF;
-  --usage-description-color: #9B9B9B;
-  --usage-upgrade-link-color: #11A8FF;
-  --usage-inset-shadow: inset 0 2px 8px 0 rgba(17,24,39,0.07);
-  --usage-radial-chart-background: #424242;
+  /*Analytics*/
+  --analytics-title-color: #FFFFFF;
+  --analytics-description-color: #9B9B9B;
+  --analytics-upgrade-link-color: #11A8FF;
+  --analytics-radial-chart-background: #424242;
+  --analytics-area-chart-tooltip: #F5F5F5;
+  --analytics-area-chart-tooltip-color: #222222;
+  --analytics-area-chart-tooltip-value-color: #555555;
 
 
   /*Installation*/
@@ -424,7 +426,7 @@ html[data-theme="dark"] {
   --sidebar-dividers-shadow: 0px 1px 0px 0px #232323;
 
   /*Tooltip*/
-  --tooltip-background: #494E58;
+  --tooltip-background: #444444;
   --tooltip-color: #FFFFFF;
 
   /*Notification*/
@@ -453,10 +455,14 @@ html[data-theme="dark"] {
   --home-text-color: #FFFFFFB3;
   --home-verify-container-bg: #191919b3;
 
-  /*Usage*/
-  --usage-title-color: #FFFFFF;
-  --usage-description-color: #9B9B9B;
-  --usage-upgrade-link-color: #11A8FF;
+  /*Analytics*/
+  --analytics-title-color: #FFFFFF;
+  --analytics-description-color: #9B9B9B;
+  --analytics-upgrade-link-color: #11A8FF;
+  --analytics-radial-chart-background: #424242;
+  --analytics-area-chart-tooltip: #CCCCCC;
+  --analytics-area-chart-tooltip-color: #222222;
+  --analytics-area-chart-tooltip-value-color: #555555;
 
   /*Installation*/
   --installation-background: #363636;

@@ -1,6 +1,6 @@
 /*Adapt each page container width to installation first*/
 .home:has(> .home__installation-container),
-.usage:has(> .home__installation-container),
+.analytics:has(> .home__installation-container),
 .scanner:has(> .home__installation-container),
 .integrations:has(> .home__installation-container),
 .proof-of-consent:has(> .home__installation-container){
@@ -60,7 +60,7 @@
     height: 100%;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 20px;
     padding: 20px;  
     border-radius: 16px;
     border: 1px solid var(--border-fresco-color);
@@ -71,7 +71,6 @@
 .home__installation-container--installed{
     border: none;
     box-shadow: none;
-    max-width: 600px;
     margin-top: 0;
     background: unset;
 }
