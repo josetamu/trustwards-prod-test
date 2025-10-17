@@ -220,13 +220,33 @@ System selected: will fallback to root or html[data-theme="dark"]
   --home-verify-container-bg: #FFFFFFB3;
 
   /*Analytics*/
-  --analytics-title-color: #FFFFFF;
+  --analytics-charts-container-background: #FFFFFF;
+  --analytics-title-color: #333333;
   --analytics-description-color: #9B9B9B;
   --analytics-upgrade-link-color: #11A8FF;
-  --analytics-radial-chart-background: #424242;
-  --analytics-area-chart-tooltip: #F5F5F5;
-  --analytics-area-chart-tooltip-color: #222222;
-  --analytics-area-chart-tooltip-value-color: #555555;
+  --analytics-dropdown-text-color: #999999;
+  --analytics-dropdown-background: #F2F2F2;
+  --analytics-radial-chart-background: #CCCCCC;
+  --analytics-radial-chart-fill: #0099FE;
+
+  --analytics-area-chart-given-gradient-start: #0099FE;
+  --analytics-area-chart-given-gradient-end: #007ACC;
+  --analytics-area-chart-given-stroke: #0099FE;
+
+  --analytics-area-chart-parse-gradient-start: #E1E6F9;
+  --analytics-area-chart-parse-gradient-end: #E1E6F9;
+  --analytics-area-chart-parse-stroke: #E1E6F9;
+
+  --analytics-area-chart-rejected-gradient-start: #6B7280;
+  --analytics-area-chart-rejected-gradient-end: #4B5563;
+  --analytics-area-chart-rejected-stroke: #6B7280;
+
+  --analytics-radial-chart-icon-color: #5E5E5E;
+  --analytics-chart-tooltip: #494E58;
+  --analytics-chart-tooltip-color: #FFFFFF;
+  --analytics-chart-tooltip-value-color: #e0e0e0;
+
+  --analytics-area-chart-color: #363636;
 
 
   /*Installation*/
@@ -456,13 +476,31 @@ html[data-theme="dark"] {
   --home-verify-container-bg: #191919b3;
 
   /*Analytics*/
+  --analytics-charts-container-background: #202020;
   --analytics-title-color: #FFFFFF;
   --analytics-description-color: #9B9B9B;
   --analytics-upgrade-link-color: #11A8FF;
-  --analytics-radial-chart-background: #424242;
-  --analytics-area-chart-tooltip: #CCCCCC;
-  --analytics-area-chart-tooltip-color: #222222;
-  --analytics-area-chart-tooltip-value-color: #555555;
+  --analytics-dropdown-text-color: #9B9B9B;
+  --analytics-dropdown-background: #363636;
+  --analytics-radial-chart-background: #333333;
+  --analytics-radial-chart-fill: #0099FE;
+
+  --analytics-area-chart-given-gradient-start: #0099FE;
+  --analytics-area-chart-given-gradient-end: #0099FE;
+  --analytics-area-chart-given-stroke: #0099FE;
+
+  --analytics-area-chart-parse-gradient-start: #FFFFFF;
+  --analytics-area-chart-parse-gradient-end: #FFFFFF;
+  --analytics-area-chart-parse-stroke: #FFFFFF;
+
+  --analytics-area-chart-rejected-gradient-start: #6B7280;
+  --analytics-area-chart-rejected-gradient-end: #4B5563;
+  --analytics-area-chart-rejected-stroke: #6B7280;
+
+  --analytics-radial-chart-icon-color: #666666;
+  --analytics-area-chart-tooltip: #444444;
+  --analytics-area-chart-tooltip-color: #FFFFFF;
+  --analytics-area-chart-tooltip-value-color: #e0e0e0;
 
   /*Installation*/
   --installation-background: #363636;

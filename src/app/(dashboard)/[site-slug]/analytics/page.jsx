@@ -148,6 +148,25 @@ function Analytics() {
     const pocMax = 3;
     const pocData = [{ label: "poc", value: pocValue }];
 
+    // Custom tooltip component for radial charts
+    const RadialTooltip = ({ active, payload, currentValue, maxValue, unit }) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="analytics__radial-tooltip">
+                    <div className="analytics__radial-tooltip-content">
+                        <div className="analytics__radial-tooltip-current">
+                            {currentValue} {unit}
+                        </div>
+                        <div className="analytics__radial-tooltip-max">
+                            {maxValue} {unit} Max
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    };
+
 
     return (
         <div className='analytics'>
@@ -274,36 +293,36 @@ function Analytics() {
                                 <linearGradient id="fillFullConsentGiven" x1="0" y1="0" x2="0" y2="1">
                                     <stop
                                         offset="5%"
-                                        stopColor="#0099FE"
+                                        stopColor="var(--analytics-area-chart-given-gradient-start)"
                                         stopOpacity={0.8}
                                     />
                                     <stop
                                         offset="95%"
-                                        stopColor="#0099FE"
+                                        stopColor="var(--analytics-area-chart-given-gradient-end)"
                                         stopOpacity={0.5}
                                     />
                                 </linearGradient>
                                 <linearGradient id="fillParseConsentGiven" x1="0" y1="0" x2="0" y2="1">
                                     <stop
                                         offset="5%"
-                                        stopColor="#FFFFFF"
-                                        stopOpacity={0.9}
+                                        stopColor="var(--analytics-area-chart-parse-gradient-start)"
+                                        stopOpacity={1}
                                     />
                                     <stop
                                         offset="95%"
-                                        stopColor="#FFFFFF"
-                                        stopOpacity={0.8}
+                                        stopColor="var(--analytics-area-chart-parse-gradient-end)"
+                                        stopOpacity={1}
                                     />
                                 </linearGradient>
                                 <linearGradient id="fillFullConsentRejected" x1="0" y1="0" x2="0" y2="1">
                                     <stop
                                         offset="5%"
-                                        stopColor="#6B7280"
+                                        stopColor="var(--analytics-area-chart-rejected-gradient-start)"
                                         stopOpacity={0.8}
                                     />
                                     <stop
                                         offset="95%"
-                                        stopColor="#6B7280"
+                                        stopColor="var(--analytics-area-chart-rejected-gradient-end)"
                                         stopOpacity={0.5}
                                     />
                                 </linearGradient>
@@ -396,21 +415,21 @@ function Analytics() {
                                 dataKey="fullConsentGiven"
                                 type="natural"
                                 fill="url(#fillFullConsentGiven)"
-                                stroke="#0099FE"
+                                stroke="var(--analytics-area-chart-given-stroke)"
                                 stackId="a"
                             />
                             <Area
                                 dataKey="parseConsentGiven"
                                 type="natural"
                                 fill="url(#fillParseConsentGiven)"
-                                stroke="#FFFFFF"
+                                stroke="var(--analytics-area-chart-parse-stroke)"
                                 stackId="a"
                             />
                             <Area
                                 dataKey="fullConsentRejected"
                                 type="natural"
                                 fill="url(#fillFullConsentRejected)"
-                                stroke="#6B7280"
+                                stroke="var(--analytics-area-chart-rejected-stroke)"
                                 stackId="a"
                             />
                             <ChartLegend content={<ChartLegendContent />} />
@@ -424,9 +443,8 @@ function Analytics() {
                 {/* Pages Chart - Shows total pages tracked */}
                 <div className="analytics__chart">
                     <div className="analytics__radial-chart-content">
-                        <h3 className="analytics__chart-title">
-                            Pages
-                            <span 
+                        <h3 className="analytics__chart-title">Pages</h3>
+                        <span 
                                 className="analytics__chart-info-icon" 
                                 onMouseEnter={() => setActiveTooltip('pages')} 
                                 onMouseLeave={() => setActiveTooltip(null)}
@@ -447,13 +465,16 @@ function Analytics() {
                                     width="auto"
                                 />
                             </span>
-                        </h3>
                     </div>
 
                     <div className="analytics__radial-chart-container">
                         <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pagesData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, pagesMax]} tick={false} />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="#048DE8" background={{ fill: "var(--analytics-radial-chart-background)" }} />
+                            <ChartTooltip 
+                                content={<RadialTooltip currentValue={pagesValue} maxValue={pagesMax} unit="Pages" />}
+                                cursor={false}
+                            />
+                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{pagesValue}</span>
@@ -465,9 +486,8 @@ function Analytics() {
                 {/* Scans Chart - Shows security scans performed */}
                 <div className="analytics__chart">
                     <div className="analytics__radial-chart-content">
-                        <h3 className="analytics__chart-title">
-                            Scans
-                            <span 
+                        <h3 className="analytics__chart-title">Scans</h3>
+                        <span 
                                 className="analytics__chart-info-icon" 
                                 onMouseEnter={() => setActiveTooltip('scans')} 
                                 onMouseLeave={() => setActiveTooltip(null)}
@@ -488,13 +508,16 @@ function Analytics() {
                                     width="auto"
                                 />
                             </span>
-                        </h3>
                     </div>
 
                     <div className="analytics__radial-chart-container">
                         <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={scansData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, scansMax]} tick={false} />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="#048DE8" background={{ fill: "var(--analytics-radial-chart-background)" }} />
+                            <ChartTooltip 
+                                content={<RadialTooltip currentValue={scansValue} maxValue={scansMax} unit="Scans" />}
+                                cursor={false}
+                            />
+                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{scansValue}</span>
@@ -504,11 +527,10 @@ function Analytics() {
                 </div>
 
                 {/* PoC Chart - Shows Proof of Concept implementations */}
-                <div className="analytics__chart">             
+                <div className="analytics__chart">
                     <div className="analytics__radial-chart-content">
-                        <h3 className="analytics__chart-title">
-                            PoC
-                            <span 
+                        <h3 className="analytics__chart-title">PoC</h3>
+                        <span 
                                 className="analytics__chart-info-icon" 
                                 onMouseEnter={() => setActiveTooltip('poc')} 
                                 onMouseLeave={() => setActiveTooltip(null)}
@@ -529,13 +551,16 @@ function Analytics() {
                                     width="auto"
                                 />
                             </span>
-                        </h3>
                     </div>
 
                     <div className="analytics__radial-chart-container">
                         <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pocData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, pocMax]} tick={false} />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="#048DE8" background={{ fill: "var(--analytics-radial-chart-background)" }} />
+                            <ChartTooltip 
+                                content={<RadialTooltip currentValue={pocValue} maxValue={pocMax} unit="PoC" />}
+                                cursor={false}
+                            />
+                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{pocValue}</span>

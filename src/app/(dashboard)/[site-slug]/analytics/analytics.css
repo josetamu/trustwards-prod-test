@@ -41,11 +41,7 @@
 
 .analytics__upgrade-link {
     color: var(--analytics-upgrade-link-color);
-    cursor: pointer;
     text-decoration: none;
-}
-.analytics__upgrade-link:hover {
-    opacity: 0.8;
 }
 
 .analytics__upgrade-button {
@@ -60,10 +56,11 @@
 
 /* Chart Section */
 .analytics__chart {
-    background-color: transparent;
+    background-color: var(--analytics-charts-container-background);
     border: 1px solid var(--border-fresco-color);
     border-radius: 16px;
     padding: 24px;
+    box-shadow: var(--fancy-shadow);
 }
 
 .analytics__chart-divider {
@@ -91,7 +88,7 @@
 .analytics__chart-title {
     font-size: var(--font-size-big);
     font-weight: var(--font-weight-medium);
-    color: var(--body-strong-color);
+    color: var(--analytics-title-color);
     letter-spacing: var(--letter-spacing-negative);
     display: flex;
     align-items: center;
@@ -105,7 +102,7 @@
     width: 20px;
     height: 20px;
     background-color: transparent;
-    color: var(--accent-color);
+    color: var(--analytics-radial-chart-icon-color);
     cursor: help;
     position: relative;
 }
@@ -124,8 +121,8 @@
 
 /* Dropdown Styles using project component */
 .analytics__dropdown-trigger {
-    background-color: var(--accent-bg-color);
-    color: var(--accent-color);
+    background-color: var(--analytics-dropdown-background);
+    color: var(--analytics-dropdown-text-color);
     border: 1px solid var(--border-fresco-color);
     border-radius: 8px;
     padding: 8px 12px;
@@ -146,7 +143,7 @@
 }
 
 .analytics__dropdown-chevron {
-    color: var(--accent-color);
+    color: var(--analytics-dropdown-text-color);
     transition: transform 0.2s ease;
 }
 
@@ -156,7 +153,7 @@
 
 /* Custom Tooltip Styles */
 .analytics__tooltip {
-    background: var(--analytics-area-chart-tooltip);
+    background: var(--analytics-chart-tooltip);
     border-radius: 8px;
     padding: 12px;
     display: flex;
@@ -166,7 +163,7 @@
 
 .analytics__tooltip-label {
     font-weight: var(--font-weight-semibold);
-    color: var(--analytics-area-chart-tooltip-color);
+    color: var(--analytics-chart-tooltip-color);
     font-size: var(--font-size-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -178,7 +175,7 @@
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-negative);
-    color: var( --analytics-area-chart-tooltip-value-color);
+    color: var( --analytics-chart-tooltip-value-color);
 }
 
 .analytics__tooltip-dot {
@@ -209,8 +206,9 @@
 
 .analytics__radial-chart-content {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
 }
 
 .analytics__radial-chart-container {
@@ -247,6 +245,35 @@
     color: var(--body-fresco-color);
 }
 
+/* Radial Chart Tooltip Styles */
+.analytics__radial-tooltip {
+    background: var(--analytics-chart-tooltip);
+    border: 1px solid var(--border-strong-color);
+    border-radius: 8px;
+    box-shadow: var(--fancy-shadow);
+    padding: 8px 12px;
+    z-index: 1000;
+}
+
+.analytics__radial-tooltip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.analytics__radial-tooltip-current {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--analytics-chart-tooltip-color);
+}
+
+.analytics__radial-tooltip-max {
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--analytics-chart-tooltip-value-color);
+}
 
 /* Responsive Design */
 @media (max-width: 767px) { 
