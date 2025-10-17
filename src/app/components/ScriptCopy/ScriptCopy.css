@@ -3,6 +3,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+    max-width: 600px;
     width: 100%;
     background-color: var(--script-copy-background);
     border-radius: 10px;
