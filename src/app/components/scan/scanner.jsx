@@ -29,9 +29,15 @@ export default function Scanner({ domain, siteId, urlPath = '/', scriptsScanned,
       setIsScanning(false);
       setScanDone(true);
 
-      // Increment current scan count by 1
+      // Increment current scan count by 1 and update pages count
       setScanCount(scanCount + 1);
-      await supabase.from('Site').update({ "Scans": scanCount + 1 }).eq('id', siteId);
+      const updateData = { "Scans": scanCount + 1 };
+      
+      // Update pages count if available
+      if (json.pagesCount !== undefined && json.pagesCount !== null) {
+        updateData.Pages = json.pagesCount;
+      }
+      await supabase.from('Site').update(updateData).eq('id', siteId);
     } catch (e) {
       console.error('Error scanning', e);
       setStatus(e); //Display error

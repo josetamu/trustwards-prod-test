@@ -14,6 +14,13 @@ import { chromium } from 'playwright';
  * It uses Playwright with Chromium to simulate a real browser environment and
  * employs multiple detection strategies including CDP (Chrome DevTools Protocol)
  * event monitoring and JavaScript hooks.
+ * 
+ * Additionally, it discovers all pages on the site using a 3-tier strategy:
+ * 1. Sitemap.xml (WordPress, Webflow, etc.) - Most complete and efficient
+ * 2. Link crawling from homepage - Fallback for sites without sitemap
+ * 3. Homepage only - Last resort if no links found
+ * 
+ * Then verifies how many pages have the Trustwards script installed.
  */
 
 export const runtime = 'nodejs';
@@ -24,6 +31,397 @@ export const maxDuration = 60; // Maximum execution time in seconds (Vercel Pro 
 const QUIET_PERIOD_MS = 7000;    // 7 seconds of no activity before considering scan complete
 const MIN_WAIT_TIME_MS = 15000;  // Minimum 15 seconds wait time
 const MAX_SCAN_TIME_MS = 60000;  // Maximum 60 seconds total scan time
+const MAX_PAGES_TO_CRAWL = 50;   // Maximum number of pages to crawl for script verification
+const PAGE_FETCH_TIMEOUT_MS = 5000; // 5 seconds timeout for each page fetch
+
+/**
+ * Fast check if a page has the Trustwards script
+ * @param {string} url - URL to check
+ * @param {string} scriptIdentifier - Script filename to search for (e.g., "siteId.js")
+ * @returns {Promise<boolean>} True if script found
+ */
+async function quickScriptCheck(url, scriptIdentifier) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), PAGE_FETCH_TIMEOUT_MS);
+
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      },
+      redirect: 'follow',
+    });
+
+    clearTimeout(timeout);
+
+    if (!response.ok) return false;
+
+    const html = await response.text();
+    
+    // Check if the script identifier exists in the HTML
+    return html.includes(scriptIdentifier);
+
+  } catch (error) {
+    console.log(`Error checking ${url}:`, error.message);
+    return false;
+  }
+}
+
+/**
+ * Check if content is a sitemap index (contains references to other sitemaps)
+ * @param {string} content - XML content
+ * @returns {boolean} True if sitemap index
+ */
+function isSitemapIndex(content) {
+  return content.includes('<sitemapindex') || content.includes('</sitemap>');
+}
+
+/**
+ * Parse sitemap XML and extract URLs (handles both regular sitemaps and sitemap indices)
+ * @param {string} sitemapContent - Sitemap XML content
+ * @param {string} baseDomain - Base domain to filter URLs
+ * @returns {string[]} Array of URLs (non-XML pages only)
+ */
+function parseSitemapXML(sitemapContent, baseDomain) {
+  const urls = new Set();
+  
+  try {
+    // Match <loc> tags in sitemap
+    const locRegex = /<loc>\s*([^<]+)\s*<\/loc>/gi;
+    let match;
+    
+    while ((match = locRegex.exec(sitemapContent)) !== null) {
+      const url = match[1].trim();
+      
+      try {
+        const urlObj = new URL(url);
+        const urlDomain = urlObj.hostname.replace(/^www\./, '');
+        
+        // Only include URLs from the same domain
+        if (urlDomain === baseDomain) {
+          // Skip XML files (sub-sitemaps) - we'll handle them separately
+          if (!url.endsWith('.xml')) {
+            // Normalize URL (remove hash and trailing slash)
+            const normalized = `${urlObj.origin}${urlObj.pathname}`.replace(/\/$/, '') || urlObj.origin;
+            urls.add(normalized);
+          }
+        }
+      } catch (e) {
+        // Invalid URL in sitemap, skip
+      }
+    }
+  } catch (error) {
+    console.log('Error parsing sitemap XML:', error.message);
+  }
+  
+  return Array.from(urls);
+}
+
+/**
+ * Extract sub-sitemap URLs from a sitemap index
+ * @param {string} sitemapContent - Sitemap index XML content
+ * @returns {string[]} Array of sub-sitemap URLs
+ */
+function extractSubSitemaps(sitemapContent) {
+  const subSitemaps = [];
+  
+  try {
+    const locRegex = /<loc>\s*([^<]+)\s*<\/loc>/gi;
+    let match;
+    
+    while ((match = locRegex.exec(sitemapContent)) !== null) {
+      const url = match[1].trim();
+      
+      // Only include XML files (sub-sitemaps)
+      if (url.endsWith('.xml')) {
+        subSitemaps.push(url);
+      }
+    }
+  } catch (error) {
+    console.log('Error extracting sub-sitemaps:', error.message);
+  }
+  
+  return subSitemaps;
+}
+
+/**
+ * Fetch and parse a single sitemap or sitemap index recursively
+ * @param {string} sitemapUrl - URL of the sitemap
+ * @param {string} baseDomain - Base domain to filter URLs
+ * @param {number} depth - Current recursion depth
+ * @returns {Promise<string[]>} Array of URLs from sitemap
+ */
+async function fetchAndParseSitemap(sitemapUrl, baseDomain, depth = 0) {
+  // Prevent infinite recursion
+  if (depth > 3) {
+    console.log(`⚠️  Max recursion depth reached for ${sitemapUrl}`);
+    return [];
+  }
+  
+  try {
+    const response = await fetch(sitemapUrl, {
+      signal: AbortSignal.timeout(10000),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      },
+    });
+    
+    if (!response.ok) return [];
+    
+    const content = await response.text();
+    
+    // Check if this is a sitemap index (contains other sitemaps)
+    if (isSitemapIndex(content)) {
+      console.log(`📑 Found sitemap index, fetching sub-sitemaps... (depth: ${depth})`);
+      
+      const subSitemaps = extractSubSitemaps(content);
+      console.log(`   Found ${subSitemaps.length} sub-sitemaps`);
+      
+      // Fetch all sub-sitemaps in parallel
+      const subSitemapPromises = subSitemaps.map(subUrl => 
+        fetchAndParseSitemap(subUrl, baseDomain, depth + 1)
+      );
+      
+      const results = await Promise.all(subSitemapPromises);
+      
+      // Flatten and deduplicate all URLs
+      const allUrls = new Set();
+      results.forEach(urls => {
+        urls.forEach(url => allUrls.add(url));
+      });
+      
+      return Array.from(allUrls);
+    } else {
+      // Regular sitemap with page URLs
+      const urls = parseSitemapXML(content, baseDomain);
+      console.log(`   Found ${urls.length} page URLs`);
+      return urls;
+    }
+  } catch (e) {
+    console.log(`Error fetching sitemap ${sitemapUrl}:`, e.message);
+    return [];
+  }
+}
+
+/**
+ * Fetch and parse sitemap to get all site URLs
+ * @param {string} baseUrl - Base URL of the site
+ * @returns {Promise<string[]>} Array of URLs from sitemap
+ */
+async function fetchSitemapUrls(baseUrl) {
+  const urlObj = new URL(baseUrl);
+  const baseDomain = urlObj.hostname.replace(/^www\./, '');
+  const origin = urlObj.origin;
+  
+  // Common sitemap locations
+  const sitemapPaths = [
+    '/sitemap.xml',
+    '/sitemap_index.xml',
+    '/sitemap-index.xml',
+    '/wp-sitemap.xml', // WordPress default
+    '/sitemap1.xml',
+    '/sitemap',
+  ];
+  
+  console.log(`🗺️  Searching for sitemap on ${origin}...`);
+  
+  // Try to find sitemap from robots.txt first
+  try {
+    const robotsUrl = `${origin}/robots.txt`;
+    const robotsResponse = await fetch(robotsUrl, {
+      signal: AbortSignal.timeout(5000),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      },
+    });
+    
+    if (robotsResponse.ok) {
+      const robotsText = await robotsResponse.text();
+      const sitemapMatch = robotsText.match(/Sitemap:\s*([^\s]+)/i);
+      
+      if (sitemapMatch) {
+        const sitemapUrl = sitemapMatch[1].trim();
+        console.log(`📍 Found sitemap in robots.txt: ${sitemapUrl}`);
+        
+        const urls = await fetchAndParseSitemap(sitemapUrl, baseDomain);
+        
+        if (urls.length > 0) {
+          console.log(`✅ Successfully parsed sitemap: found ${urls.length} URLs`);
+          return urls;
+        }
+      }
+    }
+  } catch (e) {
+    console.log('Error reading robots.txt:', e.message);
+  }
+  
+  // Try common sitemap locations
+  for (const path of sitemapPaths) {
+    try {
+      const sitemapUrl = `${origin}${path}`;
+      const urls = await fetchAndParseSitemap(sitemapUrl, baseDomain);
+      
+      if (urls.length > 0) {
+        console.log(`✅ Found sitemap at ${path}: ${urls.length} URLs`);
+        return urls;
+      }
+    } catch (e) {
+      // Try next location
+    }
+  }
+  
+  console.log('⚠️  No sitemap found');
+  return [];
+}
+
+/**
+ * Extract internal links from the current page using Playwright
+ * @param {Page} page - Playwright page object
+ * @param {string} baseDomain - Base domain to filter links
+ * @param {number} maxLinks - Maximum number of links to return
+ * @returns {Promise<string[]>} Array of internal URLs
+ */
+async function crawlInternalLinks(page, baseDomain, maxLinks = MAX_PAGES_TO_CRAWL) {
+  try {
+    const links = await page.evaluate((domain, max) => {
+      const anchors = document.querySelectorAll('a[href]');
+      const urls = new Set();
+      
+      for (const anchor of anchors) {
+        if (urls.size >= max) break;
+        
+        try {
+          const href = anchor.href;
+          if (!href) continue;
+          
+          const url = new URL(href);
+          const urlDomain = url.hostname.replace(/^www\./, '');
+          
+          // Only include links from the same domain
+          if (urlDomain === domain) {
+            // Normalize URL (remove hash, query params for uniqueness, and trailing slash)
+            const normalized = `${url.origin}${url.pathname}`.replace(/\/$/, '') || url.origin;
+            
+            // Skip common non-page URLs
+            if (!normalized.match(/\.(xml|json|pdf|zip|jpg|jpeg|png|gif|svg|css|js|ico)$/i)) {
+              urls.add(normalized);
+            }
+          }
+        } catch (e) {
+          // Invalid URL, skip
+        }
+      }
+      
+      return Array.from(urls);
+    }, baseDomain, maxLinks);
+    
+    return links;
+  } catch (error) {
+    console.log('Error crawling internal links:', error.message);
+    return [];
+  }
+}
+
+/**
+ * Crawl site and count pages with Trustwards script installed
+ * Uses a 3-tier strategy: sitemap → link crawling → homepage only
+ * @param {Page} page - Playwright page object  
+ * @param {string} baseUrl - Base URL of the site
+ * @param {string} scriptIdentifier - Script filename to search for
+ * @returns {Promise<number>} Number of pages with script installed
+ */
+async function crawlAndCountPages(page, baseUrl, scriptIdentifier) {
+  try {
+    const urlObj = new URL(baseUrl);
+    const baseDomain = urlObj.hostname.replace(/^www\./, '');
+    const normalizedBaseUrl = `${urlObj.origin}${urlObj.pathname}`.replace(/\/$/, '') || urlObj.origin;
+    
+    console.log(`\n🔍 Starting page crawl for ${baseDomain}...`);
+    
+    let allUrls = [];
+    let crawlMethod = 'unknown';
+    
+    // ========== TIER 1: Try to get URLs from sitemap ==========
+    console.log('📍 Tier 1: Attempting sitemap discovery...');
+    const sitemapUrls = await fetchSitemapUrls(baseUrl);
+    
+    if (sitemapUrls.length > 0) {
+      allUrls = sitemapUrls;
+      crawlMethod = 'sitemap';
+      console.log(`✅ Found ${sitemapUrls.length} URLs from sitemap`);
+    } else {
+      // ========== TIER 2: Crawl internal links from the page ==========
+      console.log('📍 Tier 2: No sitemap found, crawling internal links...');
+      
+      try {
+        const internalLinks = await crawlInternalLinks(page, baseDomain);
+        
+        if (internalLinks.length > 0) {
+          allUrls = internalLinks;
+          crawlMethod = 'link-crawl';
+          console.log(`✅ Found ${internalLinks.length} URLs by crawling links`);
+        } else {
+          // ========== TIER 3: Use homepage only ==========
+          console.log('📍 Tier 3: No internal links found, using homepage only');
+          allUrls = [];
+          crawlMethod = 'homepage-only';
+        }
+      } catch (crawlError) {
+        console.log('⚠️  Link crawling failed:', crawlError.message);
+        allUrls = [];
+        crawlMethod = 'homepage-only';
+      }
+    }
+    
+    // Always include the base URL (homepage) if not already present
+    if (!allUrls.includes(normalizedBaseUrl)) {
+      allUrls.unshift(normalizedBaseUrl);
+    }
+    
+    // Limit to max pages to avoid excessive scanning time
+    const urlsToCheck = allUrls.slice(0, MAX_PAGES_TO_CRAWL);
+    
+    console.log(`📄 Checking ${urlsToCheck.length} pages for script installation (method: ${crawlMethod})...\n`);
+    
+    // Check all pages in parallel for efficiency
+    const checkPromises = urlsToCheck.map(async (url) => {
+      const hasScript = await quickScriptCheck(url, scriptIdentifier);
+      return { url, hasScript };
+    });
+    
+    const results = await Promise.all(checkPromises);
+    
+    // Log each page with script detected
+    const pagesWithScript = [];
+    const pagesWithoutScript = [];
+    
+    results.forEach(({ url, hasScript }) => {
+      if (hasScript) {
+        pagesWithScript.push(url);
+        console.log(`✅ Script found on: ${url}`);
+      } else {
+        pagesWithoutScript.push(url);
+        console.log(`❌ Script NOT found on: ${url}`);
+      }
+    });
+    
+    console.log(`\n📊 Summary:`);
+    console.log(`   🔍 Discovery method: ${crawlMethod}`);
+    console.log(`   ✅ Pages WITH script: ${pagesWithScript.length}`);
+    console.log(`   ❌ Pages WITHOUT script: ${pagesWithoutScript.length}`);
+    console.log(`   📄 Total pages checked: ${results.length}`);
+    console.log(`   📊 Installation rate: ${((pagesWithScript.length / results.length) * 100).toFixed(1)}%\n`);
+    
+    return pagesWithScript.length;
+    
+  } catch (error) {
+    console.error('Error during page crawl:', error);
+    // Return 1 (current page) as fallback
+    return 1;
+  }
+}
 
 /**
  * POST /api/scan-cookies
@@ -41,6 +439,7 @@ const MAX_SCAN_TIME_MS = 60000;  // Maximum 60 seconds total scan time
  *   - count: Number of unique cookies detected
  *   - scriptsScanned: Array of detected cookies with their sources and methods
  *   - iframesScanned: Array of detected iframes
+ *   - pagesCount: Number of pages with Trustwards script installed
  */
 
 export async function POST(req) {
@@ -1024,7 +1423,20 @@ export async function POST(req) {
       }
     });
 
-    // ========== 19. RETURN RESULTS ==========
+    // ========== 19. CRAWL PAGES AND COUNT SCRIPT INSTALLATIONS ==========
+    let pagesCount = 1; // Default to 1 (current page)
+    
+    if (siteId) {
+      try {
+        const scriptIdentifier = `${siteId}.js`;
+        pagesCount = await crawlAndCountPages(page, url, scriptIdentifier);
+      } catch (crawlError) {
+        console.error('Error crawling pages:', crawlError);
+        // Keep default value of 1
+      }
+    }
+
+    // ========== 20. RETURN RESULTS ==========
     return NextResponse.json({
       siteId,
       domain,
@@ -1032,6 +1444,7 @@ export async function POST(req) {
       count: finalResults.length,
       scriptsScanned: finalResults,
       iframesScanned,
+      pagesCount,
     });
     
   } catch (e) {
@@ -1042,7 +1455,7 @@ export async function POST(req) {
       status: 500 
     });
   } finally {
-    // ========== 20. CLEANUP ==========
+    // ========== 21. CLEANUP ==========
     try { 
       await browser?.close(); 
     } catch (error) {

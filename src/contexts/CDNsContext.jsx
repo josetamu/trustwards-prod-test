@@ -72,6 +72,19 @@ const buildScript = async (siteId) => {
       moClasses ? `@media (max-width: ${mobileMax}) {${moClasses}}` : '',
     ].filter(Boolean).join('\n');
 
+    //Generate Google Fonts link from all CSS data (base + responsive)
+    const allIdsCSSData = [
+        ...(builderJSON.idsCSSData || []),
+        ...(r.tablet?.idsCSSData || []),
+        ...(r.mobile?.idsCSSData || [])
+    ];
+    const allClassesCSSData = [
+        ...(builderJSON.classesCSSData || []),
+        ...(r.tablet?.classesCSSData || []),
+        ...(r.mobile?.classesCSSData || [])
+    ];
+    const googleFontsLink = await generateGoogleFontsLink(allIdsCSSData, allClassesCSSData);
+
     //Define general constants
     var blockEvents = builderJSON.blockEvents;
     var blockScroll = builderJSON.blockScroll;
@@ -113,7 +126,7 @@ const buildScript = async (siteId) => {
     const flatClassesCSSData = flattenSingleLine(classesCSSCombined);
     const flatDefaultCSS = flattenSingleLine(defaultCSS);
 
-    //Merge jsonBanner, jsonModal, idsCSSData, classesCSSData, defaultCSS, trustwardsTextsVersion, siteID, TW_COOKIE_RETENTION_MONTHS, categoriesDescriptions, scriptsScanned, iframesScanned, defaultCDNscript content
+    //Merge jsonBanner, jsonModal, idsCSSData, classesCSSData, defaultCSS, googleFontsLink, trustwardsTextsVersion, siteID, TW_COOKIE_RETENTION_MONTHS, categoriesDescriptions, scriptsScanned, iframesScanned, defaultCDNscript content
     const prelude = [
         `const jsonBanner = ${JSON.stringify(jsonBanner)};`,
         `const jsonModal = ${JSON.stringify(jsonModal)};`,
@@ -122,6 +135,7 @@ const buildScript = async (siteId) => {
         `var blockEvents = ${JSON.stringify(blockEvents)};`,
         `var blockScroll = ${JSON.stringify(blockScroll)};`,
         `const defaultCSS = ${JSON.stringify(flatDefaultCSS)};`,
+        `const googleFontsImport = ${JSON.stringify(googleFontsLink)};`,
         `const trustwardsTextsVersion = ${JSON.stringify(trustwardsTextsVersion)};`,
         `const siteID = ${JSON.stringify(siteID)};`,
         `const TW_COOKIE_RETENTION_MONTHS = ${JSON.stringify(TW_COOKIE_RETENTION_MONTHS)};`,
@@ -273,8 +287,8 @@ const convertJSONtoHTML = async (node) => {
   
       if (factory) {
         const { nodeProps, dataAttributes } = buildNodeProps(n);
-        // Call the factory as it is defined: (node, nodeProps) => { render, groupControls }
-        const instance = factory(n, { ...nodeProps, ...dataAttributes });
+        // Call the factory as it is defined: (node, nodeProps, children) => { render, groupControls }
+        const instance = factory(n, { ...nodeProps, ...dataAttributes }, children);
         const rendered = instance && typeof instance.render === 'function' ? instance.render() : null;
   
         if (React.isValidElement(rendered)) {
@@ -291,4 +305,70 @@ const convertJSONtoHTML = async (node) => {
     const element = nodeToElement(node);
     const html = renderToStaticMarkup(React.createElement(React.Fragment, null, element));
     return html;
+};
+
+/*
+* Helper function to extract and generate Google Fonts import link
+* Returns the HTML link tag for Google Fonts if any fonts are found
+*/
+const generateGoogleFontsLink = async (idsCSSData = [], classesCSSData = []) => {
+  // Extract all font-family values from both CSS data arrays
+  const extractFonts = (cssData) => {
+      const fonts = new Set();
+      const items = Array.isArray(cssData) ? cssData : [];
+      
+      for (const item of items) {
+          if (!item || typeof item !== 'object') continue;
+          
+          const props = item.properties || {};
+          if (props['font-family'] || props.fontFamily) {
+              const fontValue = props['font-family'] || props.fontFamily;
+              // Clean the font-family value (remove quotes, system fonts, fallbacks)
+              const fontName = String(fontValue)
+                  .split(',')[0] // Take only the first font
+                  .replace(/['"]/g, '') // Remove quotes
+                  .trim();
+              
+              // Exclude common system fonts
+              const systemFonts = [
+                  'sans-serif', 'serif', 'monospace', 'cursive', 'fantasy',
+                  'system-ui', 'ui-sans-serif', 'ui-serif', 'ui-monospace',
+                  'Arial', 'Helvetica', 'Times New Roman', 'Courier New',
+                  'Verdana', 'Georgia', 'Palatino', 'Garamond', 'Bookman',
+                  'Comic Sans MS', 'Trebuchet MS', 'Impact'
+              ];
+              
+              if (fontName && !systemFonts.includes(fontName)) {
+                  fonts.add(fontName);
+              }
+          }
+      }
+      return fonts;
+  };
+  
+  // Combine fonts from both idsCSSData and classesCSSData
+  const allFonts = new Set([
+      ...extractFonts(idsCSSData),
+      ...extractFonts(classesCSSData)
+  ]);
+  
+  if (allFonts.size === 0) {
+      return ''; // No fonts to load
+  }
+  
+   // Since we're generating the link for fonts that are used in the builder,
+   // and the builder likely uses Google Fonts, we'll generate the link directly
+   // Google Fonts API will return 400 if a font doesn't exist, but the browser handles this gracefully
+   
+   // Generate Google Fonts URL with all weights (variable fonts support)
+   // Using the CSS2 API with weight range for better performance
+   const fontFamilies = Array.from(allFonts)
+       .map(font => {
+           const fontName = font.replace(/ /g, '+');
+           // Use ital,wght@0,100..900;1,100..900 for full weight range including italics
+           return `family=${fontName}:ital,wght@0,100..900;1,100..900`;
+       })
+       .join('&');
+   
+   return `https://fonts.googleapis.com/css2?${fontFamilies}&display=swap`;
 };

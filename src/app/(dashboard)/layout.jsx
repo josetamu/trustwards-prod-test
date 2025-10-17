@@ -73,7 +73,7 @@ function DashboardLayout({ children }) {
   const [isScanning, setIsScanning] = useState(false);
   const [scanDone, setScanDone] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const MAX_SCANS = 10;
+  const MAX_SCANS = 50;
 
 
     //NEW BD CODE
