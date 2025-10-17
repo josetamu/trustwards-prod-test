@@ -268,15 +268,15 @@
     color: var(--body-fresco-color);
 }
 
-/* Custom Radial Chart Tooltip Styles */
-.analytics__radial-tooltip-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+/* Specific tooltip styling for radial chart info icons */
+.analytics__chart-info-icon .tooltip__mask {
+    min-width: 200px;
+    max-width: 300px;
+    padding: 8px 12px;
 }
 
 /* Responsive Design */
-@media (max-width: 767px) { 
+@media (max-width: 1100px) { 
     .analytics__radial-charts {
         grid-template-columns: 1fr;
     }
@@ -284,23 +284,16 @@
 
 
 /* Accessibility Styles */
-.analytics__upgrade-link:focus-visible {
+/* Upgrade link, Info icon and Dropdown focus styles */
+.analytics__upgrade-link:focus-visible,
+.analytics__chart-info-icon:focus-visible,
+.analytics__dropdown-trigger:focus-visible {
     outline: var(--focus-outline-dashed);
     outline-offset: 2px;
 }
 
+/* Upgrade button focus styles */
 .analytics__upgrade-button:focus-visible {
     outline: var(--focus-outline-solid);
     outline-offset: 2px;
-}
-
-.analytics__chart-info-icon:focus-visible {
-    outline: var(--focus-outline-dashed);
-    outline-offset: 2px;
-}
-
-.analytics__dropdown-trigger:focus-visible {
-    outline: var(--focus-outline-solid);
-    outline-offset: 2px;
-    border-color: var(--border-strong-color);
 }

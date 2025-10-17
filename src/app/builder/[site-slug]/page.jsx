@@ -323,14 +323,12 @@ const handleKeyDown = useCallback((e) => {
 //Global function to close modals by clicking outside the modal
 const handleBackdropClick = useCallback((e) => {
   if (e.target.className.includes('modal__backdrop')) {
-     if (isChangeModalOpen) {
+    // Only close the topmost modal
+    if (isChangeModalOpen) {
       closeChangeModal();
     } else if (isModalOpen) {
       closeModal();
-    } 
-   if(isModalOpen){
-    closeModal();
-   }
+    }
   }
 }, [isModalOpen, isChangeModalOpen]);
 
@@ -392,15 +390,15 @@ const renderModal = () => {
           
         }}
         user={user}
+        setUser={setUser}
+        setIsModalOpen={setIsModalOpen}
         appearanceSettings={appearanceSettings}
         setAppearanceSettings={setAppearanceSettings}
         userSettings={userSettings}
         setUserSettings={setUserSettings}
-
         openChangeModal={openChangeModal}
         checkProfilePicture={checkProfilePicture}
         profileStyle={ProfileStyle}
-        setUser={setUser}
         />
       );
     case 'DeleteSite':
