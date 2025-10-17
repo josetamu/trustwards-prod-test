@@ -116,7 +116,7 @@ function DashboardLayout({ children }) {
       const siteIds = sitesData.map(s => s.id).filter(Boolean);
       const { data: cData, error: cErr } = await supabase
         .from('Consents') 
-        .select('id, site_id, "Monthly files"') 
+        .select('*') 
         .in('site_id', siteIds);
     
       if (cErr) console.error('Consents fetch error:', cErr);

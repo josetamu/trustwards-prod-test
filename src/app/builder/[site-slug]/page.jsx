@@ -21,6 +21,8 @@ import Loader from '@components/Loader/Loader';
 import MobileWarning from '@components/MobileWarning/MobileWarning';
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes';
 import { ModalBuilderSettings } from '@components/ModalBuilderSetting/ModalBuilderSettings';
+import { OffcanvasContainer } from '@components/OffcanvasContainer/OffcanvasContainer'
+import  OffcanvasPricing  from '@components/OffcanvasPricing/OffcanvasPricing'
 import BuilderSave from '@components/BuilderSave/BuilderSave';
 
 function Builder() {

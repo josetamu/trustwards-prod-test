@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 50px 0;
+    padding: 50px 0 10px 0;
     gap: 15px;
 }
 .proof-of-consent__header-title{
@@ -31,11 +31,12 @@
     width: 100%;
     align-items: center;
     justify-content: space-between;
+    gap: 15px;	
 }
 .proof-of-consent__header-dates-wrapper{
     display: flex;
     flex-direction: row;
-    width: 50%;
+    width: 66%;
     gap: 15px;
 }
 .proof-of-consent__header-dates{
@@ -68,14 +69,24 @@
     border-radius: 8px;
     cursor: pointer;
 }
+.proof-of-consent__header-btn-disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 .proof-of-consent__header-btn-text{
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
 }
+.proof-of-consent__header-monthly{
+  display: flex;
+  flex-direction: column;
+  width: 33%;
+  gap: 10px;
+}
 .proof-of-consent__header-monthly-label{
-    width: 164px;
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -109,21 +120,21 @@
     font-size: var(--font-size-medium);
   }
   
-  /* Quitamos el fondo del td seleccionado */
+  
   .proof-of-consent .rdp-day.rdp-selected {
     background: transparent !important;
     font-weight: var(--font-weight-regular);
     font-size: var(--font-size-small);
   }
   
-  /* Días intermedios del rango */
+
   .proof-of-consent .rdp-day.rdp-range_middle .rdp-day_button {
-    background-color: #555; /* fondo gris oscuro */
+    background-color: #555; 
     border-radius: 0 !important;
     color: #fff;
   }
   
-  /* Primer día del rango (si no es también el final) */
+  
   .proof-of-consent .rdp-day.rdp-range_start:not(.rdp-range_end) .rdp-day_button {
     background-color: #fff;
     color: #000;
@@ -133,7 +144,7 @@
     border-bottom-right-radius: 0;
   }
   
-  /* Último día del rango (si no es también el inicio) */
+
   .proof-of-consent .rdp-day.rdp-range_end:not(.rdp-range_start) .rdp-day_button {
     background-color: #fff;
     color: #000;
@@ -143,14 +154,14 @@
     border-bottom-left-radius: 0;
   }
   
-  /* Caso: un solo día seleccionado (start + end a la vez) */
+
   .proof-of-consent .rdp-day.rdp-range_start.rdp-range_end .rdp-day_button {
     background-color: #fff;
     color: #000;
     border-radius: 10px !important;
   }
   
-  /* Opcional: quita huecos entre celdas del calendario */
+
   .proof-of-consent .rdp-month_grid {
     border-collapse: collapse !important;
   }
@@ -184,9 +195,71 @@
     margin-left: 5px;
   }
 
+.proof-of-consent__header-monthly-bar{
+    width: 100%;
+    height: 10px;
+    border: 1px solid var(--border-fresco-color);
+    border-radius: 100px;
+    background-color: transparent;
+    padding: 2px;
+}
+.proof-of-consent__header-monthly-bar-fill{
+    height: 100%;
+    border-radius: 100px;
+}
 
-  
-
-
-
+.proof-of-consent__content{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    gap: 15px;
+}
+.proof-of-consent__content-created{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+.proof-of-consent__content-created-dates{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    gap: 10px;
+}
+.proof-of-consent__content-created-dates-range{
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--body-strong-color);
+}
+.proof-of-consent__content-created-dates-today{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--body-fresco-color);
+    font-style: italic;
+}
+.proof-of-consent__content-created-download{
+    width: 20%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid var(--border-fresco-color);
+    border-radius: 8px;
+}
+.proof-of-consent__content-created-download-text{
+    font-size: var(--font-size-medium);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--body-strong-color);
+    cursor: pointer;
+}
 
