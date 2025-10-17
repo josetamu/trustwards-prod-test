@@ -152,12 +152,12 @@ function Analytics() {
     const RadialTooltip = ({ active, payload, currentValue, maxValue, unit }) => {
         if (active && payload && payload.length) {
             return (
-                <div className="analytics__radial-tooltip">
+                <div className="analytics__tooltip">
                     <div className="analytics__radial-tooltip-content">
-                        <div className="analytics__radial-tooltip-current">
+                        <div className="analytics__tooltip-label ">
                             {currentValue} {unit}
                         </div>
-                        <div className="analytics__radial-tooltip-max">
+                        <div className="analytics__tooltip-value">
                             {maxValue} {unit} Max
                         </div>
                     </div>
@@ -198,7 +198,7 @@ function Analytics() {
             <div className="analytics__chart">
                 <div className="analytics__chart-content">
                     <div className="analytics__chart-content-left-wrapper">
-                        <h2 className="analytics__chart-title">Visitor Analytics</h2>
+                        <h2 className="analytics__chart-title">Consent Analytics</h2>
                         <p className="analytics__chart-subtitle">
                             Showing consent data for the {getTimeRangeLabel()}.
                         </p>
@@ -394,15 +394,20 @@ function Analytics() {
                                             <div className="analytics__tooltip">
                                                 <p className="analytics__tooltip-label">{formattedDate}</p>
                                                 {payload.map((entry, index) => (
-                                                    <p key={index} className="analytics__tooltip-value">
-                                                        <span 
-                                                            className="analytics__tooltip-dot" 
-                                                            style={{ backgroundColor: entry.color }}
-                                                        ></span>
-                                                        {entry.dataKey === 'fullConsentGiven' ? 'Full Consent Given' :
-                                                         entry.dataKey === 'parseConsentGiven' ? 'Parse Consent Given' :
-                                                         'Full Consent Rejected'} {entry.value}
-                                                    </p>
+                                                    <div key={index} className="analytics__tooltip-value-content">
+                                                        <div className="analytics__tooltip-left">
+                                                            <span 
+                                                                className="analytics__tooltip-dot" 
+                                                                style={{ backgroundColor: entry.color }}
+                                                            ></span>
+                                                            <span className="analytics__tooltip-value">
+                                                                {entry.dataKey === 'fullConsentGiven' ? 'Full Consent Given' :
+                                                                entry.dataKey === 'parseConsentGiven' ? 'Parse Consent Given' :
+                                                                'Full Consent Rejected'}
+                                                            </span>
+                                                        </div>
+                                                        <span className="analytics__tooltip-value">{entry.value}</span>
+                                                    </div>
                                                 ))}
                                             </div>
                                         );
