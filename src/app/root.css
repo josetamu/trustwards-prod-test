@@ -61,6 +61,7 @@ button[class*="accent"]:focus-visible,
   --chart-5: 27 87% 67%;
   --radius: 0.5rem;
 }
+
 :root[data-theme="dark"] {
   --background: 0 0% 3.9%;
   --foreground: 0 0% 98%;
@@ -521,6 +522,7 @@ html[data-theme="dark"] {
   --offcanvas-background: #282828;
   --offcanvas-toggle-background: #363636;
   --offcanvas-toggle-active: #666666;
+  --offcanvas-billing-color: #777777;
 
   /* 
    =======================

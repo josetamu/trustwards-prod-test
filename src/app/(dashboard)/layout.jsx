@@ -13,12 +13,14 @@ import { ModalSupport } from '@components/ModalSupport/ModalSupport'
 import { ModalChange } from '@components/ModalChange/ModalChange'
 import { ModalUser } from '@components/ModalUser/ModalUser'
 import { ModalWelcome } from '@components/ModalWelcome/ModalWelcome'
+import { ModalCheckout } from '@components/ModalCheckout/ModalCheckout'
 import Notification from '@components/Notification/Notification'
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader'
 import { useSidebarSettings } from '@contexts/SidebarSettingsContext';
 import { OffcanvasContainer } from '@components/OffcanvasContainer/OffcanvasContainer'
 import  OffcanvasPricing  from '@components/OffcanvasPricing/OffcanvasPricing'
 import { createCDN } from '@contexts/CDNsContext';
+import 'react-day-picker/style.css';
 
 import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
@@ -56,6 +58,9 @@ function DashboardLayout({ children }) {
   // ModalWelcome state
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
 
+  //ModalCheckout state
+  const [checkoutPlan, setCheckoutPlan] = useState(null);
+
   // Notification state
   const [notification, setNotification] = useState({
     open: false,
@@ -80,6 +85,7 @@ function DashboardLayout({ children }) {
     const [user, setUser] = useState(null);
     const [webs, setWebs] = useState([]);
     const [appearanceSettings, setAppearanceSettings] = useState(null);
+    const [consents, setConsents] = useState([]);
     const [allUserDataResource, setAllUserDataResource] = useState(null);
     const allUserDataResourceRef = useRef({ userId: null, resource: null });
 
@@ -90,6 +96,7 @@ function DashboardLayout({ children }) {
       setUser(null);
       setWebs([]);
       setAppearanceSettings(null);
+      setConsents([]);
       return;
     }
 
@@ -103,11 +110,25 @@ function DashboardLayout({ children }) {
     const userData = userResult.status === 'fulfilled' && !userResult.value.error ? userResult.value.data : null;
     const sitesData = sitesResult.status === 'fulfilled' && !sitesResult.value.error ? sitesResult.value.data : [];
     const appearanceData = appearanceResult.status === 'fulfilled' && !appearanceResult.value.error ? appearanceResult.value.data : null;
+    
+    // Fetch Consents for all the user's sites
+    let consentsData = [];
+    if (Array.isArray(sitesData) && sitesData.length > 0) {
+      const siteIds = sitesData.map(s => s.id).filter(Boolean);
+      const { data: cData, error: cErr } = await supabase
+        .from('Consents') 
+        .select('*') 
+        .in('site_id', siteIds);
+    
+      if (cErr) console.error('Consents fetch error:', cErr);
+      if (Array.isArray(cData)) consentsData = cData;
+    }
+
     setUser(userData);
     setWebs(sitesData);
     setAppearanceSettings(appearanceData);
-
-    return { user: userData, webs: sitesData, appearance: appearanceData };
+    setConsents(consentsData);
+    return { user: userData, webs: sitesData, appearance: appearanceData, consents: consentsData };
     } catch (error) {
       console.error('Error fetching data:', error);
       throw error;
@@ -675,7 +696,15 @@ useEffect(() => {
               allUserDataResource={allUserDataResource}
             />
           )
-        
+        case 'Upgrade':
+          return (
+            <ModalCheckout
+              onClose={() => setIsModalOpen(false)}
+              setIsModalOpen={setIsModalOpen}
+              currentPlan={user?.Plan || 'Free'}
+              selectedPlan={checkoutPlan?.plan}            
+            />
+          )
         default:
           return null;
       }
@@ -691,10 +720,12 @@ useEffect(() => {
               onClose={() => setIsOffcanvasOpen(false)}
               user={user}
               currentPlan={(() => {
-                console.log('user object:', user);
-                console.log('user.Plan:', user?.Plan);
-                return user?.Plan || 'Basic';
+                return user?.Plan || 'Free';
               })()}
+              setModalType={setModalType}
+              setIsModalOpen={setIsModalOpen}
+              setIsOffcanvasOpen={setIsOffcanvasOpen}
+              setCheckoutPlan={setCheckoutPlan}
             />
           );
         default:
@@ -740,6 +771,8 @@ useEffect(() => {
         setIsOffcanvasOpen,
         userSettings,
         setUserSettings,
+        consents,
+        setConsents,
     };
    
     // Show loading state while checking authentication to avoid flickering

@@ -1,17 +1,83 @@
 'use client'
-
+import 'react-day-picker/style.css';
 import './proof-of-consent.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/layout';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
+import { DayPicker } from 'react-day-picker';
+import { differenceInCalendarDays, format } from 'date-fns';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { enUS } from 'date-fns/locale';
+import { supabase } from '@supabase/supabaseClient';
+
 
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs } = useDashboard();
+    const { webs,setWebs, consents, showNotification } = useDashboard();
+
+    const [range, setRange] = useState({ from: undefined, to: undefined });
+    const datesRef = useRef(null);
+    const [openCalendar, setOpenCalendar] = useState(false);
+
+    const selectedSite = webs.find(site => site.id === siteSlug);
+
+
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (datesRef.current && !datesRef.current.contains(e.target)) {
+                setOpenCalendar(false);
+            }
+        }
+
+        function handleEsc(e) {
+            if (e.key === 'Escape') {
+                setOpenCalendar(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleEsc);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEsc);
+        };
+    }, []);
+    // Read and memoize the proofs saved in Site['Proof JSON']
+    const proofJSON = selectedSite?.['Proof JSON'] ?? null;
+    const proofsObj = useMemo(() => {
+        if (!proofJSON) return {};
+
+        if (typeof proofJSON === 'object') return proofJSON;
+
+        return {};
+    }, [proofJSON]);
+
+    // List of entries sorted desc by numeric id: [id, [range, today, url]]
+    const proofEntries = useMemo(() => {
+        const entries = Object.entries(proofsObj);
+        return entries.sort(([a], [b]) => Number(b) - Number(a));
+    }, [proofsObj]);
+
+        const rangeLength = useMemo(() => {
+            if (!range?.from || !range?.to) return 0;
+            return differenceInCalendarDays(range.to, range.from) + 1;
+        }, [range]);
+    
+    // Consents usage for this site
+/*     const consentForSite = useMemo(
+        () => (webs || []).find(site => site.id === siteSlug),
+        [webs, siteSlug]
+    ); */
+    const monthlyLimit = 3;
+    const monthlyUsed = Number(selectedSite?.['Monthly proof'] ?? 0);
+    
+
+    
 
     // Find the selected site based on the slug (using id like the main page)
-    const selectedSite = webs.find(site => site.id === siteSlug);
+    
     if(!webs || webs.length === 0) {
         return
     }
@@ -29,8 +95,235 @@ function Home() {
         );
     }
 
+    const isValidRange = range?.from && range?.to && rangeLength > 0 && rangeLength <= 7;
+
+        // Fetch consents and build CSV from consent_data
+        const fetchConsentsForRange = async (siteId, fromDate, toDate) => {
+            // Intenta por columna site_id si existe
+            let { data, error } = await supabase
+                .from('Consents')
+                .select('consent_data')
+                .eq('site_id', siteId);
+    
+            // Fallback: si no hay site_id o vacío, busca por JSON contains
+            if ((!data || data.length === 0) && !error) {
+                const res = await supabase
+                    .from('Consents')
+                    .select('consent_data')
+                    .contains('consent_data', { siteid: siteId });
+                data = res.data; error = res.error;
+            }
+    
+            if (error) throw error;
+    
+            const inRange = (ts) => {
+                const d = new Date(ts);
+                return d >= fromDate && d <= toDate;
+            };
+    
+            return (data || [])
+                .map(r => r?.consent_data)
+                .filter(Boolean)
+                .filter(cd => cd.siteid === siteId && cd.ts && inRange(cd.ts));
+        };
+    
+        const buildCSVFromConsents = (items) => {
+            const headers = ['timestamp','user_ip','analytics','marketing','functional','version'];
+            const rows = items.map(cd => {
+                const c = cd.categories || {};
+                const vals = [
+                    cd.ts,
+                    cd.userip || '',
+                    c.Analytics ? 'true' : 'false',
+                    c.Marketing ? 'true' : 'false',
+                    c.Functional ? 'true' : 'false',
+                    cd.version || '',
+                ];
+                return vals
+                    .map(v => String(v).replace(/"/g, '""'))
+                    .map(v => `"${v}"`)
+                    .join(',');
+            });
+            return headers.join(',') + '\n' + rows.join('\n');
+        };
+    
+
+const handleCreate = async () => {
+    if (!isValidRange) return;
+    if (monthlyUsed >= monthlyLimit) return;
+
+    try {   
+            // 1 Generate CSV
+            // Get consents for the range for this site
+            const fromStart = new Date(range.from); fromStart.setHours(0,0,0,0);
+            const toEnd = new Date(range.to); toEnd.setHours(23,59,59,999);
+    
+            const items = await fetchConsentsForRange(siteSlug, fromStart, toEnd);
+    
+            // Generate CSV from consent_data
+            const csv = buildCSVFromConsents(items);
+    
+            // 2 Upload to Supabase Storage (bucket 'proofs')
+            const bucket = 'Consents';
+            const fromIso = format(range.from, 'yyyy-MM-dd');
+            const toIso = format(range.to, 'yyyy-MM-dd');
+            const filename = `${siteSlug}_${fromIso}_${toIso}_${Date.now()}.csv`;
+            const filePath = `${siteSlug}/${filename}`;
+            const uploadRes = await supabase.storage.from(bucket).upload(
+                filePath,
+                new Blob([csv], { type: 'text/csv' }),
+                { upsert: true, contentType: 'text/csv', cacheControl: '3600' }
+            );
+            if (uploadRes?.error) {
+                console.error('Upload error:', uploadRes.error);
+                showNotification(`Error uploading proof file`);
+                return;
+            }
+            const { data: pub } = supabase.storage.from(bucket).getPublicUrl(filePath);
+            const fileUrl = pub?.publicUrl || '';
+
+        // 3 Build the new entry and update Json 
+        const rangeLabel = `${format(range.from, 'LLL dd')} - ${format(range.to, 'LLL dd')}`;
+        const todayLabel = format(new Date(), 'LLLL d', { locale: enUS });
+
+        const current = (() => {
+            const v = selectedSite?.['Proof JSON'];
+            if (!v) return {};
+            if (typeof v === 'object') return { ...v };
+            try { return JSON.parse(v); } catch { return {}; }
+        })();
+        const nextKey = String(Math.max(0, ...Object.keys(current).map(n => Number(n) || 0)) + 1);
+        current[nextKey] = [rangeLabel, todayLabel, fileUrl || filePath];
+
+        const { error: siteErr } = await supabase
+            .from('Site')
+            .update({ 'Proof JSON': current})
+            .eq('id', siteSlug);
+        if (siteErr) {
+            showNotification('Error saving proof JSON');
+            return;
+        }
+
+        // 4) Update local 
+        setWebs(prev => prev.map(s => s.id === siteSlug ? { ...s, 'Proof JSON': current } : s));
+
+        // 5) Increment monthly files
+        const currentMonthly = Number(selectedSite?.['Monthly proof'] ?? 0);
+        const { error: consErr } = await supabase
+            .from('Site')
+            .update({ "Monthly proof": currentMonthly + 1 })
+            .eq('id', siteSlug);
+
+        if (consErr) {
+            showNotification('Error updating monthly files');
+        } else {
+            setWebs(prev => prev.map(s => s.id === siteSlug ? { ...s, 'Monthly proof': currentMonthly + 1 } : s));
+            showNotification('Proof created and saved');
+        }
+
+    } catch (e) {
+        showNotification('Error creating proof');
+    }
+};
+
     return (
         <div className='proof-of-consent'>
+            <div className="proof-of-consent__header">
+                <span className="proof-of-consent__header-title">
+                    Proof of Consent
+                </span>
+                <span className="proof-of-consent__header-text">
+                    In this area you can select a range of days (max. 1 week)<br/>and create a Proof of Consent file for this website (csv format).
+                </span>
+                <div className="proof-of-consent__header-actions">
+                    <div className="proof-of-consent__header-dates-wrapper">
+                        <div className="proof-of-consent__header-dates"
+                            ref={datesRef}
+                            role="button"
+                            tabIndex={0}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setOpenCalendar(v => !v)
+                            }}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setOpenCalendar(v => !v); }}
+                            >
+                                {range?.from && range?.to
+                                ? `${format(range.from, 'MMM dd')} - ${format(range.to, 'MMM dd')}`
+                                : 'Dates'}
+                            
+
+                            {openCalendar && (
+                                <div
+                                className="proof-of-consent__calendar-popover"
+                                onClick={(e) => e.stopPropagation()}
+                                >
+                                <DayPicker
+                                    mode="range"
+                                    numberOfMonths={1}
+                                    selected={range}
+                                    onSelect={(nextRange, selectedDay) => {
+                                        if (range?.from && range?.to && nextRange?.from && !nextRange?.to) {
+                                        setRange({ from: selectedDay, to: selectedDay })
+                                        return
+                                        }
+                                        setRange(nextRange)
+                                    }}
+                                    max={7}
+                                    captionLayout="dropdown"
+                                    navLayout="around"
+                                    locale={enUS}
+                                    formatters={{
+                                    formatMonthDropdown: (month, options) =>
+                                        format(month, 'LLL', { locale: options?.locale }),
+                                    }}
+                                    showOutsideDays={true}
+                                    weekStartsOn={1}
+                                />
+                                </div>
+                            )}
+                        </div>
+                        <div className={`proof-of-consent__header-btn ${monthlyUsed >= monthlyLimit ? 'proof-of-consent__header-btn-disabled' : ''}`} onClick={handleCreate} disabled={monthlyUsed >= monthlyLimit}>
+                            <span className="proof-of-consent__header-btn-text">Create</span>
+                        </div>
+                    </div>
+                    <div className="proof-of-consent__header-monthly">
+                        <div className="proof-of-consent__header-monthly-label">
+                            <span className="proof-of-consent__header-monthly-label-text">Monthly files</span>
+                            <span className="proof-of-consent__header-monthly-count">
+                                {monthlyUsed}/{monthlyLimit}      
+                            </span>
+                        </div>
+                        <div className="proof-of-consent__header-monthly-bar">
+                            <div
+                                className="proof-of-consent__header-monthly-bar-fill"
+                                style={{
+                                    width: `${(monthlyUsed / monthlyLimit) * 100}%`,
+                                    backgroundColor: 'var(--body-light-color)',
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="proof-of-consent__divider"></div>
+            <div className="proof-of-consent__content">
+                    {proofEntries.length === 0 ? null : proofEntries.map(([id, [rangeText, todayText, fileUrl]]) => (
+                        <div key={id} className="proof-of-consent__content-created">
+                            <div className="proof-of-consent__content-created-dates">
+                                <span className="proof-of-consent__content-created-dates-range">{rangeText}</span>
+                                <span className="proof-of-consent__content-created-dates-today">Created on {todayText}</span>
+                            </div>
+                            <div className="proof-of-consent__content-created-download">
+                                <span
+                                    className="proof-of-consent__content-created-download-text"
+                                    onClick={() => window.open(fileUrl, '_blank')}
+                                >
+                                    Download
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+            </div>
         </div>
     );
 }
