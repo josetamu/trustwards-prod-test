@@ -24,11 +24,18 @@ class TrustwardsFrontend {
     }
 
     insertBannerAndModalHTML() {
-        this.twShadowRoot.innerHTML = this.jsonBanner.html;
-        this.twShadowRoot.innerHTML += this.jsonModal.html;
+        this.twShadowRoot.innerHTML = this.jsonBanner;
+        this.twShadowRoot.innerHTML += this.jsonModal;
     }
 
     insertIdsAndClassesCSSAndDefaultCSS() {
+        // Add Google Fonts link element (works better in Shadow DOM than @import)
+        var linkEl = document.createElement('link');
+        linkEl.rel = 'stylesheet';
+        linkEl.href = googleFontsImport;
+        this.twShadowRoot.appendChild(linkEl);
+
+        // Add custom styles
         var styleEl = document.createElement('style');
         var cssRules = '';
 
@@ -187,7 +194,9 @@ class categoriesExpanders {
                 </div>
                 ${index === categoryNames.length - 1 ? '<div class="tw-modal__divider tw-modal__jxikdy"></div>' : ''}
             `;
-            expandersContainer.insertAdjacentHTML('beforeend', expanderHTML);
+            if (expandersContainer) {
+                expandersContainer.insertAdjacentHTML('beforeend', expanderHTML);
+            }
         });
     }
 
@@ -725,6 +734,7 @@ class TrustwardsConsentManager {
         }
 
         async function storeConsentInSupabase(consentData) {
+            console.log(consentData.siteid);
             const res = await fetch('https://hvtufjcqfqnlottuhhzz.supabase.co/functions/v1/store-consent-endpoint',
                 {
                   method: "POST",

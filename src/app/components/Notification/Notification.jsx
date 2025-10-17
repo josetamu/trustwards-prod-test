@@ -11,7 +11,8 @@ const Notification = ({
   position,
   isSidebarOpen,
   autoClose = 1000, // milliseconds - 1s
-  contentCenter = false
+  contentCenter = false,
+  isWarning = false
 }) => {
   const notificationRef = useRef(null);
 
@@ -38,7 +39,7 @@ const Notification = ({
       {open && (
         <motion.div
           {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}
-          className={`notification notification--${position} ${getCenterClass()}`}
+          className={`notification notification--${position} ${getCenterClass()} ${isWarning ? 'notification--warning' : ''}`}
           ref={notificationRef}
         >
           <div className="notification__content">

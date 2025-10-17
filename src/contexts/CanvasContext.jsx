@@ -103,7 +103,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 elementType: "banner",
                 icon: "banner",
                 label: "Banner",
-                classList: [],
+                classList: ["tw-banner"],
                 tagName: "div",
                 children: [],
                 nestable: true,
