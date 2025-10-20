@@ -584,6 +584,13 @@
    
 }
 
+.tw-builder__settings-select-value--font{
+    display: block;
+    max-width: 34px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 
 /* add padding bottom to the right body content when the pen is open. This is to prevent the control being next to the panel */

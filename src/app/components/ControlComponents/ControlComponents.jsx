@@ -1560,7 +1560,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             Object.entries(fontWeightMap).map(([key, value]) => [value, key])
         );
     
-    const weightNameOrder = ['Thin','Extra Light','Light','Normal','Medium','Semi Bold','Bold','Extra Bold','Black'];
+    const weightNameOrder = ['Thin','Extra Light','Light','Regular','Medium','Semi Bold','Bold','Extra Bold','Black'];
     const reverseMap = fontWeightMapReverse();
     
     // ========================================
@@ -1603,7 +1603,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         //Find the font options
         const entry = fontOptions.find(f => f.family === family);
         //Build the href
-        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=block`;
     
         //If the family has variants, add the variants row
         if (entry && Array.isArray(entry.variants)) {
@@ -1631,10 +1631,10 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 if (nList) parts.push(`0,${nList}`);
                 if (iList) parts.push(`1,${iList}`);
                 //Build the href with the variants italic
-                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=block`;
             } else if (normal.size) {
                 //Build the href with the weights
-                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=block`;
             }
         }
         
@@ -1672,11 +1672,11 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
 
         entry.variants.forEach(v => {
             if (v === 'regular') {
-                weightsSet.add('Normal');
+                weightsSet.add('Regular');
                 return;
             }
             if (v === 'italic') {
-                italicsSet.add('Normal Italic');
+                italicsSet.add('Regular Italic');
                 return;
             }
             const m = v.match(/^(\d{3})(italic)?$/);
@@ -1806,42 +1806,153 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     const handleSelectChange = (newValue) => {
         setSelected(newValue);
         
-        // Special case: Font
-        if (name === 'Font') {
-            const prev = extractPrimaryFamily(getGlobalCSSValue?.('font-family')) || '';
-            ensureFontLoaded(newValue);
+// Special case: Font
+if (name === 'Font') {
+    const prev = extractPrimaryFamily(getGlobalCSSValue?.('font-family')) || '';
+    
+    if (applyGlobalCSSChange) {
+        // Verificar si es una fuente del sistema
+        const isSystemFont = systemFontOptions.some(sf => 
+            sf.toLowerCase() === newValue?.toLowerCase()
+        );
         
-            if (applyGlobalCSSChange) {
-                const stack = prev && prev !== newValue
-                    ? `"${newValue}","${prev}",system-ui,sans-serif`
-                    : `"${newValue}",system-ui,sans-serif`;
+        // Obtener el peso y estilo actuales
+        const currentWeight = getGlobalCSSValue?.('font-weight') || '400';
+        const currentStyle = getGlobalCSSValue?.('font-style') || 'normal';
         
-                applyGlobalCSSChange({
-                    [cssProperty || 'font-family']: stack,
-                    'font-weight': '', 'font-style': ''
-                });
-            }
-            onChange && onChange(newValue);
-            return;
+        // Verificar si la nueva fuente soporta el peso actual
+        const { weights, italics } = computeWeightOptionsForFamily(newValue);
+        const currentWeightName = reverseMap[currentWeight] || 'Normal';
+        
+        let shouldKeepWeight = false;
+        if (currentStyle === 'italic') {
+            const italicLabel = `${currentWeightName} Italic`;
+            shouldKeepWeight = italics.includes(italicLabel);
+        } else {
+            shouldKeepWeight = weights.includes(currentWeightName);
         }
         
-        // Special case: Weight
-        if (name === 'Weight') {
-            const isItalic = newValue.includes('Italic');
-            const weightName = isItalic ? newValue.replace(' Italic', '') : newValue;
-            const fontWeight = fontWeightMap[weightName];
+        if (isSystemFont) {
+            // Fuentes del sistema: aplicar inmediatamente sin fallback
+            const stack = `"${newValue}",system-ui,sans-serif`;
+            applyGlobalCSSChange({
+                [cssProperty || 'font-family']: stack,
+                'font-weight': shouldKeepWeight ? currentWeight : '',
+                'font-style': shouldKeepWeight ? currentStyle : ''
+            });
+        } else {
+            // Fuentes de Google: enfoque de dos pasos para evitar flickering
             
-            if (applyGlobalCSSChange) {
+            // Paso 1: Aplicar con fallback temporal (prev) mientras carga
+            const stackWithFallback = prev && prev !== newValue
+                ? `"${newValue}","${prev}",system-ui,sans-serif`
+                : `"${newValue}",system-ui,sans-serif`;
+            
+            applyGlobalCSSChange({
+                [cssProperty || 'font-family']: stackWithFallback,
+                'font-weight': shouldKeepWeight ? currentWeight : '',
+                'font-style': shouldKeepWeight ? currentStyle : ''
+            });
+            
+            // Paso 2: Pre-cargar la fuente y luego actualizar sin fallback
+            ensureFontLoaded(newValue);
+            
+            const iframe = document.querySelector('.tw-builder__canvas iframe');
+            const targetDocument = iframe?.contentDocument || document;
+            
+            if (targetDocument.fonts) {
+                const weightToLoad = shouldKeepWeight ? currentWeight : '400';
+                const styleToLoad = shouldKeepWeight ? currentStyle : 'normal';
+                const fontDescriptor = `${styleToLoad} ${weightToLoad} 16px "${newValue}"`;
+                
+                Promise.race([
+                    targetDocument.fonts.load(fontDescriptor),
+                    new Promise((_, reject) => setTimeout(() => reject('timeout'), 3000))
+                ]).then(() => {
+                    // Esperar un frame adicional para asegurar que el navegador ha renderizado
+                    requestAnimationFrame(() => {
+                        // Actualizar sin el fallback
+                        const stackClean = `"${newValue}",system-ui,sans-serif`;
+                        applyGlobalCSSChange({
+                            [cssProperty || 'font-family']: stackClean,
+                            'font-weight': shouldKeepWeight ? currentWeight : '',
+                            'font-style': shouldKeepWeight ? currentStyle : ''
+                        });
+                    });
+                }).catch(() => {
+                    // Si falla, mantener el fallback
+                    console.log('Font loading timeout or failed, keeping fallback');
+                });
+            }
+        }
+    }
+    onChange && onChange(newValue);
+    return;
+}
+        
+// Special case: Weight
+if (name === 'Weight') {
+    const isItalic = newValue.includes('Italic');
+    const weightName = isItalic ? newValue.replace(' Italic', '') : newValue;
+    const fontWeight = fontWeightMap[weightName];
+    
+    if (applyGlobalCSSChange) {
+        const fam = extractPrimaryFamily(getGlobalCSSValue?.('font-family'));
+        const fontStyle = isItalic ? 'italic' : 'normal';
+        
+        // Verificar si es una fuente del sistema
+        const isSystemFont = systemFontOptions.some(sf => 
+            sf.toLowerCase() === fam?.toLowerCase()
+        );
+        
+        if (isSystemFont) {
+            // Fuentes del sistema: aplicar inmediatamente
+            applyGlobalCSSChange({
+                [cssProperty]: fontWeight,
+                "font-style": fontStyle
+            });
+        } else if (fam) {
+            // Fuentes de Google: pre-cargar antes de aplicar
+            ensureFontLoaded(fam);
+            
+            const iframe = document.querySelector('.tw-builder__canvas iframe');
+            const targetDocument = iframe?.contentDocument || document;
+            
+            if (targetDocument.fonts) {
+                const fontDescriptor = `${fontStyle} ${fontWeight} 16px "${fam}"`;
+                
+                // Forzar la carga del peso específico con timeout
+                Promise.race([
+                    targetDocument.fonts.load(fontDescriptor),
+                    new Promise((_, reject) => setTimeout(() => reject('timeout'), 1000))
+                ]).then(() => {
+                    applyGlobalCSSChange({
+                        [cssProperty]: fontWeight,
+                        "font-style": fontStyle
+                    });
+                }).catch(() => {
+                    // Si falla o timeout, aplicar de todas formas
+                    applyGlobalCSSChange({
+                        [cssProperty]: fontWeight,
+                        "font-style": fontStyle
+                    });
+                });
+            } else {
                 applyGlobalCSSChange({
                     [cssProperty]: fontWeight,
-                    "font-style": isItalic ? "italic" : "normal"
+                    "font-style": fontStyle
                 });
-                
-                const fam = extractPrimaryFamily(getGlobalCSSValue?.('font-family'));
-                if (fam) ensureFontLoaded(fam);
             }
-            return;
+        } else {
+            // Sin familia de fuente, aplicar inmediatamente
+            applyGlobalCSSChange({
+                [cssProperty]: fontWeight,
+                "font-style": fontStyle
+            });
         }
+    }
+    return;
+}
         
         // General case: other selects
         if (JSONProperty && applyGlobalJSONChange) {
@@ -1927,7 +2038,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     tabIndex={-1}
                 >
                     {selected ? 
-                        <span className="tw-builder__settings-select-value">
+                        <span className={`tw-builder__settings-select-value ${name === 'Font' ? 'tw-builder__settings-select-value--font' : ''}`}>
                             {selected}
                         </span>
                         :
