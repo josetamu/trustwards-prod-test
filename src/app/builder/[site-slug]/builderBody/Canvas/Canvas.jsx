@@ -822,7 +822,6 @@ useEffect(() => {
                     backgroundSize: JSONtree?.liveWebsite ? 'cover' : 'initial',
                     backgroundPosition: JSONtree?.liveWebsite ? 'center' : 'initial',
                     backgroundRepeat: JSONtree?.liveWebsite ? 'no-repeat' : 'initial',
-                    position: 'relative'
                 }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
