@@ -6,8 +6,8 @@
     align-items: center;
     border-bottom: 1px solid var(--border-fresco-color);
     justify-content: center;
+    gap: 5px;
 
-    height: 54px;
 }
 
 .dashboard-header__header{
@@ -116,8 +116,7 @@
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
-    right: 15px;
-    position: absolute;
+    padding-right: 15px;
 }
 
 .dashboard-header__dots{
@@ -162,10 +161,13 @@
 
 @media (max-width: 767px) {
     .dashboard-header{
-        padding-top: 85px;
+        padding-top: 17px;
     }
     .dashboard-header__header{
         justify-content: flex-start;
-        padding-left: 20px;
+        padding-left: 80px;
+    }
+    .dashboard-header__actions{
+        padding-right: 65px;
     }
 }

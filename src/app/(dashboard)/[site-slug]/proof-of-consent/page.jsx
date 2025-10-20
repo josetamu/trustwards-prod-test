@@ -65,11 +65,7 @@ function Home() {
             return differenceInCalendarDays(range.to, range.from) + 1;
         }, [range]);
     
-    // Consents usage for this site
-/*     const consentForSite = useMemo(
-        () => (webs || []).find(site => site.id === siteSlug),
-        [webs, siteSlug]
-    ); */
+
     const monthlyLimit = 3;
     const monthlyUsed = Number(selectedSite?.['Monthly proof'] ?? 0);
     
@@ -95,7 +91,7 @@ function Home() {
         );
     }
 
-    const isValidRange = range?.from && range?.to && rangeLength > 0 && rangeLength <= 7;
+    const isValidRange = range?.from && range?.to && rangeLength > 0 && rangeLength <= 8;
 
         // Fetch consents and build CSV from consent_data
         const fetchConsentsForRange = async (siteId, fromDate, toDate) => {
@@ -128,23 +124,18 @@ function Home() {
         };
     
         const buildCSVFromConsents = (items) => {
-            const headers = ['timestamp','user_ip','analytics','marketing','functional','version'];
+            const headers = ['Date','Analytics','Marketing','Functional'];
             const rows = items.map(cd => {
-                const c = cd.categories || {};
-                const vals = [
-                    cd.ts,
-                    cd.userip || '',
-                    c.Analytics ? 'true' : 'false',
-                    c.Marketing ? 'true' : 'false',
-                    c.Functional ? 'true' : 'false',
-                    cd.version || '',
-                ];
-                return vals
-                    .map(v => String(v).replace(/"/g, '""'))
-                    .map(v => `"${v}"`)
-                    .join(',');
+                const dateStr = format(new Date(cd.ts), 'yyyy-MM-dd');
+                const cat = cd?.categories || {};
+                return [
+                    dateStr,
+                    cat.Analytics ? 'true' : 'false',
+                    cat.Marketing ? 'true' : 'false',
+                    cat.Functional ? 'true' : 'false'
+                ].join(',');
             });
-            return headers.join(',') + '\n' + rows.join('\n');
+            return [headers.join(','), ...rows].join('\n');
         };
     
 
@@ -167,7 +158,7 @@ const handleCreate = async () => {
             const bucket = 'Consents';
             const fromIso = format(range.from, 'yyyy-MM-dd');
             const toIso = format(range.to, 'yyyy-MM-dd');
-            const filename = `${siteSlug}_${fromIso}_${toIso}_${Date.now()}.csv`;
+            const filename = `${selectedSite.Domain}_${fromIso}_${toIso}_${Date.now()}.csv`;
             const filePath = `${siteSlug}/${filename}`;
             const uploadRes = await supabase.storage.from(bucket).upload(
                 filePath,
@@ -218,7 +209,9 @@ const handleCreate = async () => {
             showNotification('Error updating monthly files');
         } else {
             setWebs(prev => prev.map(s => s.id === siteSlug ? { ...s, 'Monthly proof': currentMonthly + 1 } : s));
+            setRange({ from: undefined, to: undefined });
             showNotification('Proof created and saved');
+         
         }
 
     } catch (e) {
@@ -299,6 +292,7 @@ const handleCreate = async () => {
                                 style={{
                                     width: `${(monthlyUsed / monthlyLimit) * 100}%`,
                                     backgroundColor: 'var(--body-light-color)',
+                                    transition: 'width 0.5s'
                                 }}
                             ></div>
                         </div>
@@ -313,11 +307,13 @@ const handleCreate = async () => {
                                 <span className="proof-of-consent__content-created-dates-range">{rangeText}</span>
                                 <span className="proof-of-consent__content-created-dates-today">Created on {todayText}</span>
                             </div>
-                            <div className="proof-of-consent__content-created-download">
-                                <span
-                                    className="proof-of-consent__content-created-download-text"
-                                    onClick={() => window.open(fileUrl, '_blank')}
-                                >
+                            <div className="proof-of-consent__content-created-download" tabIndex={0}
+                                    role="button"
+                                    aria-label="Download proof"
+                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') window.open(fileUrl, '_blank'); }}
+                                    onClick={(e) => { e.stopPropagation(); window.open(fileUrl, '_blank'); }}
+                                    >
+                                <span className="proof-of-consent__content-created-download-text">
                                     Download
                                 </span>
                             </div>

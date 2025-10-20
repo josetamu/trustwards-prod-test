@@ -1547,7 +1547,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         'Thin': '100',
         'Extra Light': '200', 
         'Light': '300',
-        'Normal': '400',
+        'Regular': '400',
         'Medium': '500',
         'Semi Bold': '600',
         'Bold': '700',
@@ -1812,9 +1812,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             ensureFontLoaded(newValue);
         
             if (applyGlobalCSSChange) {
-                const stack = prev && prev !== newValue
-                    ? `"${newValue}","${prev}",system-ui,sans-serif`
-                    : `"${newValue}",system-ui,sans-serif`;
+                const stack = `"${newValue}",system-ui,sans-serif`;
         
                 applyGlobalCSSChange({
                     [cssProperty || 'font-family']: stack,

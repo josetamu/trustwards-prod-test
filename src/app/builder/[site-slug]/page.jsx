@@ -24,6 +24,7 @@ import { ModalBuilderSettings } from '@components/ModalBuilderSetting/ModalBuild
 import { OffcanvasContainer } from '@components/OffcanvasContainer/OffcanvasContainer'
 import  OffcanvasPricing  from '@components/OffcanvasPricing/OffcanvasPricing'
 import BuilderSave from '@components/BuilderSave/BuilderSave';
+import { ModalCheckout } from '@components/ModalCheckout/ModalCheckout';
 
 function Builder() {
   const params = useParams();
@@ -61,6 +62,13 @@ function Builder() {
   const [userSettings, setUserSettings] = useState(null);
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [changeType, setChangeType] = useState(null);
+
+  //Offcanvas state
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
+  const [offcanvasType, setOffcanvasType] = useState(null);
+
+  //ModalCheckout state
+  const [checkoutPlan, setCheckoutPlan] = useState(null);
 
   //Themes states
   const [isFirstTime, setIsFirstTime] = useState(true);
@@ -468,11 +476,43 @@ const renderModal = () => {
          
         />
       )
+      case 'Upgrade':
+        return (
+          <ModalCheckout
+            onClose={() => setIsModalOpen(false)}
+            setIsModalOpen={setIsModalOpen}
+            currentPlan={user?.Plan || 'Free'}
+            selectedPlan={checkoutPlan?.plan}            
+          />
+        )
     
     default:
       return null;
   }
 }
+
+const renderOffcanvas = () => {
+  if (!isOffcanvasOpen) return null;
+
+  switch (offcanvasType) {
+    case 'Pricing':
+      return (
+        <OffcanvasPricing 
+          onClose={() => setIsOffcanvasOpen(false)}
+          user={user}
+          currentPlan={(() => {
+            return user?.Plan || 'Free';
+          })()}
+          setModalType={setModalType}
+          setIsModalOpen={setIsModalOpen}
+          setIsOffcanvasOpen={setIsOffcanvasOpen}
+          setCheckoutPlan={setCheckoutPlan}
+        />
+      );
+    default:
+      return null;
+  }
+};
 
 
   
@@ -533,7 +573,7 @@ const renderModal = () => {
         clipboard={clipboard}
         setClipboard={setClipboard}
       />
-      <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} /* checkSitePicture={checkSitePicture} */ SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings} screenshotUrl={screenshotUrl} setScreenshotUrl={setScreenshotUrl}/>
+      <BuilderBody site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} setOffcanvasType={setOffcanvasType} setIsOffcanvasOpen={setIsOffcanvasOpen} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings} screenshotUrl={screenshotUrl} setScreenshotUrl={setScreenshotUrl} />
       
       <BuilderRightPanel user={user} site={site} checkProfilePicture={checkProfilePicture} profileStyle={ProfileStyle} setModalType={setModalType} setIsModalOpen={setIsModalOpen} showNotification={showNotification} siteSlug={siteSlug} isPanelOpen={isRightPanelOpen}/>
    
@@ -586,7 +626,13 @@ const renderModal = () => {
                       clipboard={clipboard}
                       setClipboard={setClipboard}
                     />
-                 
+                    <OffcanvasContainer
+                      isOpen={isOffcanvasOpen}
+                      onClose={() => setIsOffcanvasOpen(false)}
+                      position="left"
+                    >
+                      {renderOffcanvas()}
+                    </OffcanvasContainer>
       </div>
     )}
     </CanvasProvider>
