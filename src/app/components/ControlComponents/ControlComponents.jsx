@@ -1812,7 +1812,9 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             ensureFontLoaded(newValue);
         
             if (applyGlobalCSSChange) {
-                const stack = `"${newValue}",system-ui,sans-serif`;
+                const stack = prev && prev !== newValue
+                    ? `"${newValue}","${prev}",system-ui,sans-serif`
+                    : `"${newValue}",system-ui,sans-serif`;
         
                 applyGlobalCSSChange({
                     [cssProperty || 'font-family']: stack,
