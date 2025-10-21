@@ -16,7 +16,7 @@ export const Button = (node, nodeProps = {}) => {
 
     const groupControls =  {
         header: [
-            { name: 'Link to', type: 'text', placeholder: 'URL...'},
+            { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
         ],
         body: [
             {
@@ -30,6 +30,12 @@ export const Button = (node, nodeProps = {}) => {
             {
                 label: 'Size',
                 controls: [
+                    { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px'},
+                    { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+                    { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                    { name: 'Min. Height', type: 'text', cssProperty: 'min-height', autoUnit: 'px'},
+                    { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+                    { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
                     { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px'},
                     { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
                     { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
@@ -80,7 +86,9 @@ export const Button = (node, nodeProps = {}) => {
 
     const render = () => {
         return (
-            <Tag key={id} {...nodeProps} {...dataAttributes}>{text}</Tag>
+            <Tag key={id} {...nodeProps} {...dataAttributes} {...(node.href ? { href: node.href } : {})}>
+                {text}
+            </Tag>
         )
     }
 

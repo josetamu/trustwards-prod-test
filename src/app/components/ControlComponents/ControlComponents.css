@@ -558,7 +558,7 @@
 
 .tw-builder__settings-pen-body .tw-builder__settings-select {
     background-color: var(--control-background);
-    color: #F5F5F5;
+    color:  #000000;
 }
 .tw-builder__settings-pen-body .tw-builder__settings-actions {
     display: flex;

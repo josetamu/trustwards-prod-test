@@ -45,22 +45,17 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
 
     //Permit change input value
     const handleChange = (e) => {
-        const newValue = e.target.value;
-        setTextValue(newValue);
-    
-    };
-
-    //OnBlur the value is applied and saved in jsonTree
-    const handleBlur = (e) => {
         const inputValue = e.target.value;
         if(JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, inputValue);
         } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, inputValue);
         }
-    };
     
+    };
 
+
+    
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
@@ -76,8 +71,6 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             value={textValue} 
             placeholder={placeholder} 
             onChange={handleChange}
-            onBlur={handleBlur}
-            onKeyDown={(e) => applyOnEnter(e, handleBlur)}
             />
         </div>
     )
@@ -386,23 +379,11 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
   
         // Combine handlers for each side into two generic functions
         const handleSideChange = (side) => (e) => {
-            const newValue = e.target.value;
-            switch (side) {
-                case 'top': setTopValue(newValue); break;
-                case 'right': setRightValue(newValue); break;
-                case 'bottom': setBottomValue(newValue); break;
-                case 'left': setLeftValue(newValue); break;
-                default: break;
-            }
-        };
-
-        const handleSideBlur = (side) => (e) => {
             const inputValue = e.target.value;
             if (cssProperty && applyGlobalCSSChange) {
                 applyGlobalCSSChange(`${cssProperty}-${side}`, inputValue);
             }
         };
-        
 
     return (
     <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
@@ -410,12 +391,12 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} placeholder={placeholder[3]} onChange={handleSideChange('left')} onBlur={handleSideBlur('left')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('left'))}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} placeholder={placeholder[3]} onChange={handleSideChange('left')}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} placeholder={placeholder[0]} onChange={handleSideChange('top')} onBlur={handleSideBlur('top')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('top'))}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} placeholder={placeholder[2]} onChange={handleSideChange('bottom')} onBlur={handleSideBlur('bottom')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('bottom'))}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} placeholder={placeholder[0]} onChange={handleSideChange('top')}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} placeholder={placeholder[2]} onChange={handleSideChange('bottom')}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} placeholder={placeholder[1]} onChange={handleSideChange('right')} onBlur={handleSideBlur('right')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('right'))}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} placeholder={placeholder[1]} onChange={handleSideChange('right')}/>
         </div>
     </div>
     )
@@ -480,10 +461,16 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
     }, [selectedElementData,getSavedValue]); 
 
     //Function to convert hex to rgba with opacity
+   
     const hexToRgba = (hex, opacity) => {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
+        let normalizedHex = hex.replace('#', '');
+        if (normalizedHex.length === 3) {
+            // Expande el formato corto (#abc => #aabbcc)
+            normalizedHex = normalizedHex.split('').map(ch => ch + ch).join('');
+        }
+        const r = parseInt(normalizedHex.slice(0, 2), 16);
+        const g = parseInt(normalizedHex.slice(2, 4), 16);
+        const b = parseInt(normalizedHex.slice(4, 6), 16);
         return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
     };
 
@@ -543,32 +530,20 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
     //Function to change the color with the text input
     const handleHexChange = (e) => {
         let hexValue = e.target.value.toUpperCase().replace('#', '');
-
+    
         //If the hex value is longer than 6, cut it to 6
         if(hexValue.length > 6){
             hexValue = hexValue.slice(0, 6);
         }
         setHex(hexValue);
-
+    
         //Check if the hex value is valid
         const hexPattern = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-
+    
         //If the hex value is valid, set the color
         if(hexPattern.test(hexValue)) {
             const formattedHex = `#${hexValue}`;
             setColor(formattedHex);
-
-            //If the hex value is 3 characters, expand it to 6 (ex: #fff -> #ffffff)
-            if (hexValue.length === 3) {
-                const expandedHex = hexValue.split('').map(char => char + char).join('');
-                const formattedHex = `#${expandedHex}`;
-                setColor(formattedHex);
-
-
-            } else {
-                const formattedHex = `#${hexValue}`;
-                setColor(formattedHex);
-            }
             applyCSSChange(formattedHex, percentage);
         }
     };
@@ -586,18 +561,15 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
 const handlePercentageChange = (e) => {
     let raw = (e.target.value || '').replace('%', '').trim();
 
-    //allow to delete the field
+    // Allow to delete the field
     if (raw === '') {
-        if (e.type === 'blur') {
-            setPercentage('0');
-            applyCSSChange(color, '0');
-        } else {
-            setPercentage('');
-        }
+        setPercentage('');
+        // Aplicar transparencia al máximo (100%) cuando está vacío
+        applyCSSChange(color, '100%');
         return;
     }
 
-    // Normalize the number between 0 and 100
+    // Normalizar el número entre 0 y 100
     let num = Number(raw);
     if (Number.isNaN(num)) num = 0;
     if (num < 0) num = 0;
@@ -607,14 +579,15 @@ const handlePercentageChange = (e) => {
     setPercentage(finalValue);
     e.target.value = finalValue;
 
-    // Apply when typing (except 0) or always in blur
-    if (e.type === 'blur' || num !== 0) {
-        applyCSSChange(color, finalValue);
-    }
+    // Aplica siempre el cambio, incluso cuando es 0
+    applyCSSChange(color, finalValue);
 };
 
-    //Function to get the final color. This is used to mix the color with the transparency
-    const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage).replace('%', ''))) : 'transparent';
+//Function to get the final color. This is used to mix the color with the transparency
+const perc = parseInt((percentage??'').replace('%', ''));
+const effectivePerc = (isNaN(perc) || perc === 0) ? 100 : perc;
+const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'transparent';
+console.log(finalColor);
 
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
@@ -2169,60 +2142,96 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
     //Function to link the border width. If value is false, unlink the border width and work with individual sides. If value is true, link the border width and give each side the same value by using border-width.
     const handleWidthLinkToggle = (value) => {
         setIsWidthLinked(value);
-        if(!value){
-            if(getGlobalCSSValue?.('border-width')){
+        if (!value) {
+            
+            if (getGlobalCSSValue?.('border-width')) {
                 const a = getGlobalCSSValue?.('border-width');
                 setBw({ t: a, r: a, b: a, l: a });
                 setBwUnified(a);
-                applyGlobalCSSChange({
-                    'border-width': '',
-                    "border-top-width": a,
-                    "border-right-width": a,
-                    "border-bottom-width": a,
-                    "border-left-width": a
-                  });
+                setBwLinked('');
+                if (applyGlobalCSSChange) {
+                    applyGlobalCSSChange({
+                        'border-width': '',
+                        'border-top-width': a,
+                        'border-right-width': a,
+                        'border-bottom-width': a,
+                        'border-left-width': a
+                    });
+                }
             }
-        }else{
-            if(getGlobalCSSValue?.('border-top-width') || getGlobalCSSValue?.('border-right-width') || getGlobalCSSValue?.('border-bottom-width') || getGlobalCSSValue?.('border-left-width')){
-                const a = getGlobalCSSValue?.('border-top-width') || getGlobalCSSValue?.('border-right-width') || getGlobalCSSValue?.('border-bottom-width') || getGlobalCSSValue?.('border-left-width');
-                setBwUnified(a);
-                applyGlobalCSSChange({
-                    'border-width': a,
-                    "border-top-width": '',
-                    "border-right-width": '',
-                    "border-bottom-width": '',
-                    "border-left-width": ''
-                  });
+        } else {
+       
+            if (
+                getGlobalCSSValue?.('border-top-width') ||
+                getGlobalCSSValue?.('border-right-width') ||
+                getGlobalCSSValue?.('border-bottom-width') ||
+                getGlobalCSSValue?.('border-left-width')
+            ) {
+                const a =
+                    getGlobalCSSValue?.('border-top-width') ||
+                    getGlobalCSSValue?.('border-right-width') ||
+                    getGlobalCSSValue?.('border-bottom-width') ||
+                    getGlobalCSSValue?.('border-left-width');
+                setBw({ t: a, r: a, b: a, l: a });
+                setBwLinked(a);     
+                setBwUnified(a);    
+                if (applyGlobalCSSChange) {
+                    applyGlobalCSSChange({
+                        'border-width': a,
+                        'border-top-width': '',
+                        'border-right-width': '',
+                        'border-bottom-width': '',
+                        'border-left-width': ''
+                    });
+                }
             }
         }
     };
     //Function to link the border radius. If value is false, unlink the border radius and work with individual sides. If value is true, link the border radius and give each side the same value by using border-radius.
     const handleRadiusLinkToggle = (value) => {
         setIsRadiusLinked(value);
-        if(!value){
-            if(getGlobalCSSValue?.('border-radius')){
+        if (!value) {
+            
+            if (getGlobalCSSValue?.('border-radius')) {
                 const a = getGlobalCSSValue?.('border-radius');
                 setBr({ tl: a, tr: a, br: a, bl: a });
                 setBrUnified(a);
-                applyGlobalCSSChange({
-                    'border-radius': '',
-                    "border-top-left-radius": a,
-                    "border-top-right-radius": a,
-                    "border-bottom-right-radius": a,
-                    "border-bottom-left-radius": a
-                  });
+                setBrLinked('');
+                if (applyGlobalCSSChange) {
+                    applyGlobalCSSChange({
+                        'border-radius': '',
+                        'border-top-left-radius': a,
+                        'border-top-right-radius': a,
+                        'border-bottom-right-radius': a,
+                        'border-bottom-left-radius': a
+                    });
+                }
             }
-        }else{
-            if(getGlobalCSSValue?.('border-top-left-radius') || getGlobalCSSValue?.('border-top-right-radius') || getGlobalCSSValue?.('border-bottom-right-radius') || getGlobalCSSValue?.('border-bottom-left-radius')){
-                const a = getGlobalCSSValue?.('border-top-left-radius') || getGlobalCSSValue?.('border-top-right-radius') || getGlobalCSSValue?.('border-bottom-right-radius') || getGlobalCSSValue?.('border-bottom-left-radius');
+        } else {
+  
+            if (
+                getGlobalCSSValue?.('border-top-left-radius') ||
+                getGlobalCSSValue?.('border-top-right-radius') ||
+                getGlobalCSSValue?.('border-bottom-right-radius') ||
+                getGlobalCSSValue?.('border-bottom-left-radius')
+            ) {
+                const a =
+                    getGlobalCSSValue?.('border-top-left-radius') ||
+                    getGlobalCSSValue?.('border-top-right-radius') ||
+                    getGlobalCSSValue?.('border-bottom-right-radius') ||
+                    getGlobalCSSValue?.('border-bottom-left-radius');
+                setBr({ tl: a, tr: a, br: a, bl: a });
                 setBrUnified(a);
-                applyGlobalCSSChange({
-                    'border-radius': a,
-                    "border-top-left-radius": '',
-                    "border-top-right-radius": '',
-                    "border-bottom-right-radius": '',
-                    "border-bottom-left-radius": ''
-                });
+                setBrLinked(a);
+                if (applyGlobalCSSChange) {
+                    applyGlobalCSSChange({
+                        'border-radius': a,
+                        'border-top-left-radius': '',
+                        'border-top-right-radius': '',
+                        'border-bottom-right-radius': '',
+                        'border-bottom-left-radius': ''
+                    });
+                }
             }
         }
     };
@@ -2297,44 +2306,54 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
     }, [selectedElementData?.id, isWidthLinked]);
 
     const handleBorderWidthChange = (sideOrValue, valueIfAny) => {
-        // Individual side modification: sideOrValue = side ('t','r','b','l'), valueIfAny = width value
+
         if (valueIfAny !== undefined) {
             const side = sideOrValue;
             const value = valueIfAny || '';
             const newBw = { ...bw, [side]: value };
             setBw(newBw);
-            // When width linking is active, automatically sync all border sides
-            if(isWidthLinked){
+    
+            if (isWidthLinked) {
                 setBwLinked(value);
                 const syncedBw = { t: value, r: value, b: value, l: value };
                 setBw(syncedBw);
+                if (applyGlobalCSSChange) {
+                    applyGlobalCSSChange('border-width', value);
+                }
+            } else {
+
+                setBwUnified(newBw.t || newBw.r || newBw.b || newBw.l || '');
+                if (applyGlobalCSSChange) {
+                    applyGlobalCSSChange({
+                        'border-top-width': newBw.t || '',
+                        'border-right-width': newBw.r || '',
+                        'border-bottom-width': newBw.b || '',
+                        'border-left-width': newBw.l || ''
+                    });
+                }
             }
-        } else {
-            // Global modification: sideOrValue = width value, applies to all sides
-            const value = sideOrValue || '';
-            setBwLinked(value);
-            const newBw = { t: value, r: value, b: value, l: value };
-            setBw(newBw);
-            if(!isWidthLinked){
-                setBwUnified(value);
-            }
+            return;
         }
-    };
     
-    const handleBorderWidthBlur = () => {
-        // If width linking is active, apply the linked value to all border sides
+    
+        const value = sideOrValue || '';
+        setBwLinked(value);
+        const newBw = { t: value, r: value, b: value, l: value };
+        setBw(newBw);
+    
         if (isWidthLinked) {
             if (applyGlobalCSSChange) {
-                applyGlobalCSSChange('border-width', bwLinked);
+                applyGlobalCSSChange('border-width', value);
             }
         } else {
-            // Apply all individual sides at once on any small input blur
+            setBwUnified(value);
             if (applyGlobalCSSChange) {
+  
                 applyGlobalCSSChange({
-                    'border-top-width': bw.t || '',
-                    'border-right-width': bw.r || '',
-                    'border-bottom-width': bw.b || '',
-                    'border-left-width': bw.l || ''
+                    'border-top-width': value || '',
+                    'border-right-width': value || '',
+                    'border-bottom-width': value || '',
+                    'border-left-width': value || ''
                 });
             }
         }
@@ -2406,42 +2425,59 @@ const parseRadius = useCallback((radiusStr) => {
     }, [selectedElementData?.id, isRadiusLinked]);
 
     const handleRadiusChange = (sideOrValue, valueIfAny) => {
-
-        if(valueIfAny !== undefined){
+        if (valueIfAny !== undefined) {
+      
             const side = sideOrValue;
             const value = valueIfAny || '';
-            const newBr = { ...br, [side]: value };
-            setBr(newBr);
-            if(isRadiusLinked){
+            let newBr = { ...br, [side]: value };
+
+            if (isRadiusLinked) {
                 setBrLinked(value);
-                const syncedBr = { tl: value, tr: value, br: value, bl: value };
-                setBr(syncedBr);
+                newBr = { tl: value, tr: value, br: value, bl: value };
             }
-        }else{
+    
+            setBr(newBr);
+    
+          
+            if (!isRadiusLinked) {
+                setBrUnified(newBr.tl || newBr.tr || newBr.br || newBr.bl || '');
+            }
+    
+            
+            if (applyGlobalCSSChange) {
+                if (isRadiusLinked) {
+                    applyGlobalCSSChange('border-radius', newBr.tl || '');
+                } else {
+                    applyGlobalCSSChange({
+                        'border-top-left-radius': newBr.tl || '',
+                        'border-top-right-radius': newBr.tr || '',
+                        'border-bottom-right-radius': newBr.br || '',
+                        'border-bottom-left-radius': newBr.bl || ''
+                    });
+                }
+            }
+        } else {
+         
             const value = sideOrValue || '';
             setBrLinked(value);
             const syncedBr = { tl: value, tr: value, br: value, bl: value };
             setBr(syncedBr);
-            if(!isRadiusLinked){
+            if (!isRadiusLinked) {
                 setBrUnified(value);
             }
-        }
     
-
-    };
-    const handleRadiusBlur = (side) => {
-        if (isRadiusLinked) {
+           
             if (applyGlobalCSSChange) {
-                applyGlobalCSSChange('border-radius', brLinked);
-            }
-        } else {
-            if (applyGlobalCSSChange) {
-                applyGlobalCSSChange({
-                    'border-top-left-radius': br.tl || '',
-                    'border-top-right-radius': br.tr || '',
-                    'border-bottom-right-radius': br.br || '',
-                    'border-bottom-left-radius': br.bl || ''
-                });
+                if (isRadiusLinked) {
+                    applyGlobalCSSChange('border-radius', value);
+                } else {
+                    applyGlobalCSSChange({
+                        'border-top-left-radius': value || '',
+                        'border-top-right-radius': value || '',
+                        'border-bottom-right-radius': value || '',
+                        'border-bottom-left-radius': value || ''
+                    });
+                }
             }
         }
     };
@@ -2525,8 +2561,6 @@ const parseRadius = useCallback((radiusStr) => {
                                             className={`tw-builder__settings-input`}
                                             value={isWidthLinked ? bwLinked : bwUnified}
                                             onChange={(e) => handleBorderWidthChange(e.target.value)}
-                                            onBlur={handleBorderWidthBlur}
-                                            onKeyDown={(e) => applyOnEnter(e, handleBorderWidthBlur)}
                                               
                                         />
                                         <div className="tw-builder__settings-actions">
@@ -2567,13 +2601,13 @@ const parseRadius = useCallback((radiusStr) => {
                                     {!isWidthLinked && (
                                     <div className="tw-builder__settings-units">
                                         <div className={`tw-builder__settings-units-label`}>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} onBlur={() => handleBorderWidthBlur('t')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('t'))} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} onBlur={() => handleBorderWidthBlur('r')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('r'))} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} onBlur={() => handleBorderWidthBlur('b')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('b'))} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} onBlur={() => handleBorderWidthBlur('l')} onKeyDown={(e) => applyOnEnter(e, () => handleBorderWidthBlur('l'))} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} disabled={isWidthLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">T</span>
@@ -2617,8 +2651,7 @@ const parseRadius = useCallback((radiusStr) => {
                                             className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`} 
                                             value={isRadiusLinked ? brLinked : brUnified}
                                             onChange={(e) => handleRadiusChange(e.target.value)}
-                                            onBlur={handleRadiusBlur}
-                                            onKeyDown={(e) => applyOnEnter(e, handleRadiusBlur)}
+          
                                             
                                         />
                                         <div className="tw-builder__settings-actions">
@@ -2659,13 +2692,13 @@ const parseRadius = useCallback((radiusStr) => {
                                     {!isRadiusLinked && (
                                     <div className="tw-builder__settings-units">
                                         <div className={`tw-builder__settings-units-label ${isRadiusLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
-                                                <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} onBlur={() => handleRadiusBlur('tl')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('tl'))} disabled={isRadiusLinked}/>
+                                                <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} onBlur={() => handleRadiusBlur('tr')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('tr'))} disabled={isRadiusLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} onBlur={() => handleRadiusBlur('br')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('br'))} disabled={isRadiusLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} onBlur={() => handleRadiusBlur('bl')} onKeyDown={(e) => applyOnEnter(e, () => handleRadiusBlur('bl'))} disabled={isRadiusLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} disabled={isRadiusLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">TL</span>

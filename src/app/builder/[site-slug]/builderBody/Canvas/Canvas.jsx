@@ -85,7 +85,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
         const isRoot = node.id === 'tw-root--banner' || node.id === 'tw-root--modal';
         const isActiveRoot = node.id === activeRoot;
         
-        const anchorAncestor = hasAnchorAncestor || node.tagName === 'a';
+        const anchorAncestor = hasAnchorAncestor;
         // Set the node properties from its JSON (id, classes, tag, children, etc..)
         const nodeProps = {
             id: node.id, // Add the node.id as the real id
@@ -128,7 +128,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
         };
 
         const children = node.children?.map((child) => //Renders the children of the node (JSON tree) in loop
-            renderNode(child, selectedId, anchorAncestor)
+            renderNode(child, selectedId, node.tagName === 'a' || hasAnchorAncestor)
         )
 
         // Track element for script execution once it is created
