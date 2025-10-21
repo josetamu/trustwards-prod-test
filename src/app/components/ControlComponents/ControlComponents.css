@@ -339,12 +339,11 @@
     width: 100%;
     min-height: 80px;
     padding: 8px 12px;
-    border: 1px solid var(--border-fresco-color);
     border-radius: 4px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 12px;
     resize: vertical;
-    background-color: var(--input-bg-color);
+    background-color: var(--control-background);
     color: var(--value-color);
     &::placeholder{
         color: var(--placeholder-color);

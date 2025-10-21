@@ -45,36 +45,6 @@ export function Tooltip({
     return () => window.removeEventListener('resize', handleResize);
   }, [responsivePosition, responsiveAnimation, animationType]);
 
-  // Positioning logic for sidebar
-  /*
-  useEffect(() => {
-    if (open && finalPosition === 'sidebar' && tooltipRef.current) {
-      // Find the parent with the class .sidebarSites__site
-      let parent = tooltipRef.current.closest('.sidebarSites__site');
-      let rect;
-      if (parent) {
-        rect = parent.getBoundingClientRect();
-      } else {
-        rect = tooltipRef.current.getBoundingClientRect();
-      }
-      if (window.innerWidth < 767) {
-        setFixedStyle({
-          position: 'fixed',
-          top: rect.top + 4,
-        });
-      } else {
-        setFixedStyle({
-          position: 'fixed',
-          top: rect.top + 4,
-          left: 50,
-        });
-      }
-    } else {
-      setFixedStyle(null);
-    }
-  }, [open, finalPosition]);
-  */
-
   return (
     <AnimatePresence>
       {open && (

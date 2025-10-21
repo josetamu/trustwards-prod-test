@@ -170,6 +170,7 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 							open={activeTooltip === 'enter-animation'}
 							responsivePosition={{ desktop: 'top', mobile: 'top' }}
 							width="auto"
+							animationType='SCALE_TOOLTIP_BOTTOM'
 							/>
 						</span>
 					)}
