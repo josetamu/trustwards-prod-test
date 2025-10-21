@@ -19,7 +19,7 @@ export const Image = (node, nodeProps = {}) => {
     const groupControls =  {
         header: [
             { name: 'Tag', type: 'select', placeholder: 'img', options: ['img', 'figure', 'div'], JSONProperty: 'tagName'},
-            { name: 'Image', type: 'image', JSONProperty: 'src', inline: false, inline2: true},
+            { name: 'Image', type: 'image', JSONProperty: 'src', nextLine: false, nextLine2: true},
 
         ],
         body: [
@@ -36,8 +36,8 @@ export const Image = (node, nodeProps = {}) => {
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', inline: true},
-                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', inline: true},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
                 ]
             },
             {
@@ -52,7 +52,7 @@ export const Image = (node, nodeProps = {}) => {
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', cssProperty: 'background-color', inline: true},
+                    { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true},
                 ]
             },
             {

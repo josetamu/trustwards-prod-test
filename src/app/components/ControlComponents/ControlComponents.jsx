@@ -21,7 +21,7 @@ const applyOnEnter = (e,f) => {
 }
 
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, inline}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -62,7 +62,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     
 
     return (
-        <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={JSONProperty}/>
             </span>
@@ -82,7 +82,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         </div>
     )
 }
-const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, inline}) => {
+const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, nextLine}) => {
     //function to get the correct value depending on the category
     const getCurrentSelectValue = () => {
         if (category === 'block') {
@@ -365,7 +365,7 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
     )
 }
 
-const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], inline}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine}) => {
 
     //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
@@ -419,7 +419,7 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         
 
     return (
-    <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+    <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
         <span className="tw-builder__settings-subtitle">{name}
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
@@ -435,7 +435,7 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     )
 }
 
-const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, inline}) => {
+const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine}) => {
 
     //Function to convert rgb to hex
     const rgbToHex = (r, g, b) => {
@@ -631,7 +631,7 @@ const handlePercentageChange = (e) => {
     const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage).replace('%', ''))) : 'transparent';
 
     return (
-        <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={color} cssProperty={cssProperty}/>
             </span>
@@ -653,7 +653,7 @@ const handlePercentageChange = (e) => {
     )
 }
 
-const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, inline, inline2}) => {
+const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, nextLine, nextLine2}) => {
     
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState('');
@@ -767,7 +767,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     };
     return (
         <>
-        <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}>
             <span className="tw-builder__settings-subtitle">Source
                 <StylesDeleter value={imageUrl} jsonEmptyValue="/assets/builder-default-image.svg" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
             </span>
@@ -782,7 +782,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             onKeyDown={(e) => applyOnEnter(e, handleUrlSubmit)}
             />
         </div>
-        <div className={`tw-builder__settings-setting ${inline2 ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine2 ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter value={imageUrl} JSONProperty={JSONProperty} jsonEmptyValue="/assets/builder-default-image.svg" applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
             </span>
@@ -808,7 +808,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     )
 }
 
-const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, inline}) => {
+const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, nextLine}) => {
 
     const [selectedChoose, setSelectedChoose] = useState(() => {
         if (category === 'flex-direction' && getGlobalCSSValue && cssProperty) {
@@ -917,7 +917,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     switch (category) {
         case 'direction':
             return (
-                <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -955,7 +955,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'flex-direction':
             return (
-                <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1005,7 +1005,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'justify':
             return (
-                <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1055,7 +1055,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'align':
             return (
-                <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1105,7 +1105,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'super-justify':
             return(
-            <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+            <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                 <span className="tw-builder__settings-subtitle">{name}
                     <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                 </span>
@@ -1199,7 +1199,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'super-align':
             return(
-                <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                         <span className="tw-builder__settings-subtitle">{name}
                             <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                         </span>
@@ -1263,7 +1263,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             )
         case 'text-align':
             return (
-                <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1395,7 +1395,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     }
 }
 
-const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value, inline}) => {
+const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value, nextLine}) => {
     //Initial state with jsonTree
     const [textareaValue, setTextareaValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -1453,7 +1453,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
 
    
     return (
-        <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter value={textareaValue} jsonEmptyValue="New Text 2" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
             </span>
@@ -1471,7 +1471,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     )
 }
 
-const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, inline}) =>{
+const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine}) =>{
     
     // ========================================
     // General states (for all types)
@@ -1961,7 +1961,7 @@ if (name === 'Weight') {
     // ========================================
 
     return (
-        <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter
                     value={selected}
@@ -2965,7 +2965,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
         }, [open]);
     
     return (
-        <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter 
                 value={currentShadow} 
@@ -3543,25 +3543,25 @@ useEffect(() => {
 
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} inline={item.inline} />;
+                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} nextLine={item.nextLine} />;
             case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} inline={item.inline}/>;
+                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
             case 'panel':
-                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} inline={item.inline}/>;
+                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
             case 'color':
-                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} inline={item.inline}/>;
+                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
             case 'image':
-                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site} inline={item.inline} inline2={item.inline2}/>;
+                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site} nextLine={item.nextLine} nextLine2={item.nextLine2}/>;
             case 'choose':
-                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} category={item.category} cssProperty={item.cssProperty} inline={item.inline}/>;
+                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} category={item.category} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
             case 'textarea':
-                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} inline={item.inline}/>;
+                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
             case 'select':
-                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} inline={item.inline}/>;
+                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} nextLine={item.nextLine}/>;
             case 'border':
-                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} setBwUnified={setBwUnified} setBrUnified={setBrUnified} inline={item.inline}/>;
+                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
             case 'box-shadow':
-                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} inline={item.inline}/>;
+                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
             case 'enter-animation':
                 return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
         }

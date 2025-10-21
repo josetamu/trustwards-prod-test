@@ -21,7 +21,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
             header: [
                 {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span'], placeholder: 'h3', JSONProperty: 'tagName'},
                 { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
-                { name: 'Text', type: 'textarea', placeholder: 'Text goes here...', JSONProperty: 'text', inline: true},
+                { name: 'Text', type: 'textarea', placeholder: 'Text goes here...', JSONProperty: 'text', nextLine: true},
             ],
             body: [
                 {
@@ -37,8 +37,8 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                 {
                     label: 'Spacing',
                     controls: [
-                        { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', inline: true},
-                        { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', inline: true},
+                        { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
+                        { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
                     ]
                 },
                 {
@@ -53,13 +53,13 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                 {
                     label: 'Background',
                     controls: [
-                        { name: 'Background Color', type: 'color', cssProperty: 'background-color', inline: true},
+                        { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true},
                     ]
                 },
                 {
                     label: 'Text',
                     controls: [
-                        { name: 'Color', type: 'color', cssProperty: 'color', inline: true},
+                        { name: 'Color', type: 'color', cssProperty: 'color', nextLine: true},
                         { name: 'Font', type: 'select', cssProperty: 'font-family', placeholder: 'Inter'},
                         { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
                         { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },

@@ -21,7 +21,7 @@ export const Divider = (node, nodeProps = {}) => {
             { name: 'Width', type: 'text', placeholder: '100%', cssProperty: 'width', autoUnit: 'px' },
             { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction'},
             { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items'},
-            { name: 'Color', type: 'color', cssProperty: 'background-color', inline: true },
+            { name: 'Color', type: 'color', cssProperty: 'background-color', nextLine: true },
         ],
         body: [
             {

@@ -24,8 +24,8 @@ export const Banner = (node, nodeProps = {}, children) => {
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', inline: true},
-                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', inline: true},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
                 ]
             },
             {
@@ -40,14 +40,14 @@ export const Banner = (node, nodeProps = {}, children) => {
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', cssProperty: 'background-color', inline: true},
+                    { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true},
                 ]
             },
             {
                 
                     label: 'Text',
                     controls: [
-                        { name: 'Color', type: 'color', cssProperty: 'color', inline: true},
+                        { name: 'Color', type: 'color', cssProperty: 'color', nextLine: true},
                         { name: 'Font', type: 'select', cssProperty: 'font-family', placeholder: 'Inter'},
                         { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
                         { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
