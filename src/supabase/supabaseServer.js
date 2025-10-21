@@ -13,10 +13,20 @@ export async function supabaseServer() {
           return cookieStore.get(name)?.value;
         },
         set(name, value, options) {
-          cookieStore.set({ name, value, ...options });
+          try {
+            cookieStore.set({ name, value, ...options });
+          } catch (error) {
+            // Cookies can only be modified in Server Actions or Route Handlers
+            // Ignore in other contexts (Server Components)
+          }
         },
         remove(name, options) {
-          cookieStore.set({ name, value: '', ...options, expires: new Date(0) });
+          try {
+            cookieStore.set({ name, value: '', ...options, expires: new Date(0) });
+          } catch (error) {
+            // Cookies can only be modified in Server Actions or Route Handlers
+            // Ignore in other contexts (Server Components)
+          }
         },
       },
     }

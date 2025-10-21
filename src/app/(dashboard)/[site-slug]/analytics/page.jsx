@@ -14,12 +14,13 @@ import { supabase } from '@/supabase/supabaseClient';
 function Analytics() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs, setUserSettings, setIsModalOpen, setModalType } = useDashboard();
+    const { webs, setUserSettings, setIsModalOpen, setModalType, setOffcanvasType, setIsOffcanvasOpen } = useDashboard();
     const [timeRange, setTimeRange] = useState("7d");
     const [timeRangeDropdownOpen, setTimeRangeDropdownOpen] = useState(false);
     const [activeTooltip, setActiveTooltip] = useState(null);
     const [chartData, setChartData] = useState([]);
     const [isLoadingChartData, setIsLoadingChartData] = useState(true);
+    const [chartKey, setChartKey] = useState(0);
 
     // Find the selected site based on the slug (using id like the main page)
     const selectedSite = webs.find(site => site.id === siteSlug);
@@ -161,6 +162,7 @@ function Analytics() {
                 
                 setChartData(uniqueDates);
                 setIsLoadingChartData(false);
+                setChartKey(prev => prev + 1);
                 
             } catch (error) {
                 console.error('Error processing consent data:', error);
@@ -231,24 +233,6 @@ function Analytics() {
     const pocMax = 50;
     const pocData = [{ label: "poc", value: pocValue }];
 
-    // Custom tooltip component for radial charts
-    const RadialTooltip = ({ active, payload, currentValue, maxValue, unit }) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="analytics__radial-tooltip">
-                    <div className="analytics__radial-tooltip-content">
-                        <div className="analytics__radial-tooltip-current">
-                            {currentValue} {unit}
-                        </div>
-                        <div className="analytics__radial-tooltip-max">
-                            {maxValue} {unit} Max
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        return null;
-    };
 
 
     return (
@@ -260,8 +244,8 @@ function Analytics() {
                     <p className="analytics__description">
                         Get detailed analytics and insights. <span 
                             className="analytics__upgrade-link" 
-                            onClick={() => { setUserSettings('Billing'); setModalType('Billing'); setIsModalOpen(true); }} 
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Billing'); setModalType('Billing'); setIsModalOpen(true); }}}
+                            onClick={() => { setOffcanvasType('Pricing'); setIsOffcanvasOpen(true); }} 
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOffcanvasType('Pricing'); setIsOffcanvasOpen(true); }}}
                             tabIndex={0}
                             aria-label="Upgrade this site to pro"
                             style={{ cursor: 'pointer' }}
@@ -269,7 +253,7 @@ function Analytics() {
                     </p>
                     <button 
                         className="analytics__upgrade-button" 
-                        onClick={() => { setUserSettings('Billing'); setModalType('Billing'); setIsModalOpen(true); }}
+                        onClick={() => { setOffcanvasType('Pricing'); setIsOffcanvasOpen(true); }}
                         aria-label="Upgrade to pro plan"
                     >
                         Upgrade
@@ -281,7 +265,7 @@ function Analytics() {
             <div className="analytics__chart">
                 <div className="analytics__chart-content">
                     <div className="analytics__chart-content-left-wrapper">
-                        <h2 className="analytics__chart-title">Visitor Analytics</h2>
+                        <h2 className="analytics__chart-title">Consent Analytics</h2>
                         <p className="analytics__chart-subtitle">
                             Showing consent data for the {getTimeRangeLabel()}.
                         </p>
@@ -477,15 +461,20 @@ function Analytics() {
                                             <div className="analytics__tooltip">
                                                 <p className="analytics__tooltip-label">{formattedDate}</p>
                                                 {payload.map((entry, index) => (
-                                                    <p key={index} className="analytics__tooltip-value">
-                                                        <span 
-                                                            className="analytics__tooltip-dot" 
-                                                            style={{ backgroundColor: entry.color }}
-                                                        ></span>
-                                                        {entry.dataKey === 'fullConsentGiven' ? 'Full Consent Given' :
-                                                         entry.dataKey === 'parseConsentGiven' ? 'Parse Consent Given' :
-                                                         'Full Consent Rejected'} {entry.value}
-                                                    </p>
+                                                    <div key={index} className="analytics__tooltip-value-content">
+                                                        <div className="analytics__tooltip-left">
+                                                            <span 
+                                                                className="analytics__tooltip-dot" 
+                                                                style={{ backgroundColor: entry.color }}
+                                                            ></span>
+                                                            <span className="analytics__tooltip-value">
+                                                                {entry.dataKey === 'fullConsentGiven' ? 'Full Consent Given' :
+                                                                entry.dataKey === 'parseConsentGiven' ? 'Parse Consent Given' :
+                                                                'Full Consent Rejected'}
+                                                            </span>
+                                                        </div>
+                                                        <span className="analytics__tooltip-value">{entry.value}</span>
+                                                    </div>
                                                 ))}
                                             </div>
                                         );
@@ -542,7 +531,7 @@ function Analytics() {
                                     <path d="M12 8.01172V8.00172" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                                 </svg>
                                 <Tooltip
-                                    message="Total number of pages tracked on your website"
+                                    message="Total number of pages tracked on your website (12 max)"
                                     open={activeTooltip === 'pages'}
                                     responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                     width="auto"
@@ -551,13 +540,14 @@ function Analytics() {
                     </div>
 
                     <div className="analytics__radial-chart-container">
-                        <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pagesData} startAngle={90} endAngle={450}>
+                        <RadialBarChart key={`pages-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pagesData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, pagesMax]} tick={false} />
-                            <ChartTooltip 
-                                content={<RadialTooltip currentValue={pagesValue} maxValue={pagesMax} unit="Pages" />}
-                                cursor={false}
+                            <RadialBar 
+                                dataKey="value" 
+                                cornerRadius={10} 
+                                fill="var(--analytics-radial-chart-fill)" 
+                                background={{ fill: "var(--analytics-radial-chart-background)" }}
                             />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{pagesValue}</span>
@@ -585,7 +575,7 @@ function Analytics() {
                                     <path d="M12 8.01172V8.00172" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                                 </svg>
                                 <Tooltip
-                                    message="Number of security scans performed on your website"
+                                    message="Number of security scans performed on your website (3 max)"
                                     open={activeTooltip === 'scans'}
                                     responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                     width="auto"
@@ -594,13 +584,14 @@ function Analytics() {
                     </div>
 
                     <div className="analytics__radial-chart-container">
-                        <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={scansData} startAngle={90} endAngle={450}>
+                        <RadialBarChart key={`scans-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={scansData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, scansMax]} tick={false} />
-                            <ChartTooltip 
-                                content={<RadialTooltip currentValue={scansValue} maxValue={scansMax} unit="Scans" />}
-                                cursor={false}
+                            <RadialBar 
+                                dataKey="value" 
+                                cornerRadius={10} 
+                                fill="var(--analytics-radial-chart-fill)" 
+                                background={{ fill: "var(--analytics-radial-chart-background)" }}
                             />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{scansValue}</span>
@@ -628,7 +619,7 @@ function Analytics() {
                                     <path d="M12 8.01172V8.00172" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                                 </svg>
                                 <Tooltip
-                                    message="Proof of Concept implementations for your website"
+                                    message="Proof of Concept implementations for your website (3 max)"
                                     open={activeTooltip === 'poc'}
                                     responsivePosition={{ desktop: 'top', mobile: 'top' }}
                                     width="auto"
@@ -637,13 +628,14 @@ function Analytics() {
                     </div>
 
                     <div className="analytics__radial-chart-container">
-                        <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pocData} startAngle={90} endAngle={450}>
+                        <RadialBarChart key={`poc-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pocData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, pocMax]} tick={false} />
-                            <ChartTooltip 
-                                content={<RadialTooltip currentValue={pocValue} maxValue={pocMax} unit="PoC" />}
-                                cursor={false}
+                            <RadialBar 
+                                dataKey="value" 
+                                cornerRadius={10} 
+                                fill="var(--analytics-radial-chart-fill)" 
+                                background={{ fill: "var(--analytics-radial-chart-background)" }}
                             />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{pocValue}</span>

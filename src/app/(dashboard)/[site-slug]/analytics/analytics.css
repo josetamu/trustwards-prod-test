@@ -17,7 +17,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 10px;
+    gap: 3px;
 }
 
 .analytics__header-content {
@@ -37,7 +37,7 @@
 }
 
 .analytics__description {
-    font-size: var(--font-size-mini);
+    font-size: var(--font-size-medium);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     color: var(--analytics-description-color);
@@ -53,9 +53,10 @@
     color: var(--accent-color);
     border: none;
     border-radius: 8px;
-    padding: 7px 10px;
+    padding: 6px 10px;
     font-size: var(--font-size-medium);
     font-weight: var(--font-weight-medium);
+    box-shadow: var(--blue-button-shadow);
 }
 
 /* Chart Section */
@@ -123,11 +124,11 @@
     align-items: center;
 }
 
-/* Dropdown Styles using project component */
+/* Dropdown Styles */
 .analytics__dropdown-trigger {
-    background-color: var(--analytics-dropdown-background);
-    color: var(--analytics-dropdown-text-color);
-    border: 1px solid var(--border-fresco-color);
+    background-color: transparent;
+    color: var(--body-fresco-color);
+    border: 1px solid var(--analytics-dropdown-border-color);
     border-radius: 8px;
     padding: 8px 12px;
     font-size: var(--font-size-medium);
@@ -159,34 +160,52 @@
 .analytics__tooltip {
     background: var(--analytics-chart-tooltip);
     border-radius: 8px;
+    border: 1px solid var(--border-strong-color);
+    box-shadow: var(--fancy-shadow);
     padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.analytics__tooltip-label {
-    font-weight: var(--font-weight-semibold);
-    color: var(--analytics-chart-tooltip-color);
-    font-size: var(--font-size-medium);
-    letter-spacing: var(--letter-spacing-negative);
-}
-
-.analytics__tooltip-value {
+.analytics__tooltip-label-content {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: var(--font-size-medium);
+}
+
+.analytics__tooltip-label {
     font-weight: var(--font-weight-semibold);
+    color: var(--analytics-chart-tooltip-color);
+    font-size: var(--font-size-small);
     letter-spacing: var(--letter-spacing-negative);
-    color: var( --analytics-chart-tooltip-value-color);
+}
+
+.analytics__tooltip-value-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.analytics__tooltip-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .analytics__tooltip-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     display: inline-block;
+}
+
+.analytics__tooltip-value {
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var( --analytics-chart-tooltip-value-color);
 }
 
 
@@ -249,38 +268,15 @@
     color: var(--body-fresco-color);
 }
 
-/* Radial Chart Tooltip Styles */
-.analytics__radial-tooltip {
-    background: var(--analytics-chart-tooltip);
-    border: 1px solid var(--border-strong-color);
-    border-radius: 8px;
-    box-shadow: var(--fancy-shadow);
+/* Specific tooltip styling for radial chart info icons */
+.analytics__chart-info-icon .tooltip__mask {
+    min-width: 200px;
+    max-width: 300px;
     padding: 8px 12px;
-    z-index: 1000;
-}
-
-.analytics__radial-tooltip-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.analytics__radial-tooltip-current {
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--letter-spacing-negative);
-    color: var(--analytics-chart-tooltip-color);
-}
-
-.analytics__radial-tooltip-max {
-    font-size: var(--font-size-mini);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--letter-spacing-negative);
-    color: var(--analytics-chart-tooltip-value-color);
 }
 
 /* Responsive Design */
-@media (max-width: 767px) { 
+@media (max-width: 1100px) { 
     .analytics__radial-charts {
         grid-template-columns: 1fr;
     }
@@ -288,23 +284,16 @@
 
 
 /* Accessibility Styles */
-.analytics__upgrade-link:focus-visible {
+/* Upgrade link, Info icon and Dropdown focus styles */
+.analytics__upgrade-link:focus-visible,
+.analytics__chart-info-icon:focus-visible,
+.analytics__dropdown-trigger:focus-visible {
     outline: var(--focus-outline-dashed);
     outline-offset: 2px;
 }
 
+/* Upgrade button focus styles */
 .analytics__upgrade-button:focus-visible {
     outline: var(--focus-outline-solid);
     outline-offset: 2px;
-}
-
-.analytics__chart-info-icon:focus-visible {
-    outline: var(--focus-outline-dashed);
-    outline-offset: 2px;
-}
-
-.analytics__dropdown-trigger:focus-visible {
-    outline: var(--focus-outline-solid);
-    outline-offset: 2px;
-    border-color: var(--border-strong-color);
 }

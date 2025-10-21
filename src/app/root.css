@@ -218,16 +218,14 @@ System selected: will fallback to root or html[data-theme="dark"]
   /*Home*/
   --home-subtitle-color: #FFFFFF;
   --home-text-color: #FFFFFFB3;
-  --home-verify-container-bg: #FFFFFFB3;
 
   /*Analytics*/
   --analytics-charts-container-background: #FFFFFF;
   --analytics-title-color: #333333;
   --analytics-description-color: #9B9B9B;
   --analytics-upgrade-link-color: #11A8FF;
-  --analytics-dropdown-text-color: #999999;
-  --analytics-dropdown-background: #F2F2F2;
-  --analytics-radial-chart-background: #CCCCCC;
+  --analytics-dropdown-border-color: #E1E6F9;
+  --analytics-radial-chart-background: #f2f2f2;
   --analytics-radial-chart-fill: #0099FE;
 
   --analytics-area-chart-given-gradient-start: #0099FE;
@@ -474,16 +472,14 @@ html[data-theme="dark"] {
   /*Home*/
   --home-subtitle-color: #FFFFFF;
   --home-text-color: #FFFFFFB3;
-  --home-verify-container-bg: #191919b3;
 
   /*Analytics*/
-  --analytics-charts-container-background: #202020;
+  --analytics-charts-container-background: #363636;
   --analytics-title-color: #FFFFFF;
   --analytics-description-color: #9B9B9B;
   --analytics-upgrade-link-color: #11A8FF;
-  --analytics-dropdown-text-color: #9B9B9B;
-  --analytics-dropdown-background: #363636;
-  --analytics-radial-chart-background: #333333;
+  --analytics-dropdown-border-color: #454545;
+  --analytics-radial-chart-background: #454545;
   --analytics-radial-chart-fill: #0099FE;
 
   --analytics-area-chart-given-gradient-start: #0099FE;
