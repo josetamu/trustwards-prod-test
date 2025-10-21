@@ -142,44 +142,12 @@ const OffcanvasPricing = ({ onClose, user, currentPlan, setModalType, setIsModal
     return (
         <div className="offcanvas-pricing">
             <div className="offcanvas-pricing__header">
-                <span className='offcanvas-pricing__header-icon'>
-                <svg width="48" height="37" viewBox="0 0 48 37" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g filter="url(#filter0_d_1766_316)">
-                    <path d="M4 0H44V7.90909H4V0Z" fill="url(#paint0_linear_1766_316)"/>
-                    <path d="M14.6667 29V13.1818H30.6667L14.6667 29Z" fill="url(#paint1_linear_1766_316)"/>
-                    <path d="M25.3333 29V13.1818H38.6667L25.3333 29Z" fill="url(#paint2_linear_1766_316)"/>
-                    </g>
-                    <defs>
-                    <filter id="filter0_d_1766_316" x="0" y="0" width="48" height="37" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                    <feOffset dy="4"/>
-                    <feGaussianBlur stdDeviation="2"/>
-                    <feComposite in2="hardAlpha" operator="out"/>
-                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1766_316"/>
-                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1766_316" result="shape"/>
-                    </filter>
-                    <linearGradient id="paint0_linear_1766_316" x1="24" y1="0" x2="24" y2="29" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="white"/>
-                    <stop offset="1" stopColor="#1C6DE8"/>
-                    </linearGradient>
-                    <linearGradient id="paint1_linear_1766_316" x1="24" y1="0" x2="24" y2="29" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="white"/>
-                    <stop offset="1" stopColor="#1C6DE8"/>
-                    </linearGradient>
-                    <linearGradient id="paint2_linear_1766_316" x1="24" y1="0" x2="24" y2="29" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="white"/>
-                    <stop offset="1" stopColor="#1C6DE8"/>
-                    </linearGradient>
-                    </defs>
-                    </svg>
-                </span>
+                <div className="offcanvas-pricing__header-logo"></div>
                 <span className="offcanvas-pricing__header-title">Choose Untitled Plan</span>
                 <div className="offcanvas-pricing__header-billing">
                     <div className="offcanvas-pricing__header-billing-slider" style={{transform: `translateX(${isYearly ? '100%' : '0%'})`}}></div>
-                    <span className="offcanvas-pricing__header-billing-time" onClick={() => setIsYearly(false)}>Monthly</span>
-                    <span className="offcanvas-pricing__header-billing-time" onClick={() => setIsYearly(true)}>Yearly</span>
+                    <span className="offcanvas-pricing__header-billing-time" tabIndex={0} role="button" aria-label="Toggle monthly billing" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setIsYearly(false); }}} onClick={() => setIsYearly(false)}>Monthly</span>
+                    <span className="offcanvas-pricing__header-billing-time" tabIndex={0} role="button" aria-label="Toggle yearly billing"  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setIsYearly(true); }}} onClick={() => setIsYearly(true)}>Yearly</span>
                     <span className="offcanvas-pricing__header-billing-discount">-20%</span>
                 </div>
             </div>
@@ -222,7 +190,7 @@ const OffcanvasPricing = ({ onClose, user, currentPlan, setModalType, setIsModal
                             </>
                         )}
 
-                        <div className={`offcanvas-pricing__content-plan-cta ${plan.current ? 'offcanvas-pricing__content-plan-cta--current' : ''}`} onClick={() => {if(plan.name !== currentPlan){handleUpgrade(plan.name)}}}>
+                        <div className={`offcanvas-pricing__content-plan-cta ${plan.current ? 'offcanvas-pricing__content-plan-cta--current' : ''}`} tabIndex={0} role="button" aria-label="Upgrade to plan" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { if(plan.name !== currentPlan){handleUpgrade(plan.name)} }}} onClick={() => {if(plan.name !== currentPlan){handleUpgrade(plan.name)}}}>
                             <span className="offcanvas-pricing__content-plan-cta-text">{plan.cta}</span>
                         </div>
                         {plan.lifetimeFeatures && (
@@ -305,7 +273,7 @@ const OffcanvasPricing = ({ onClose, user, currentPlan, setModalType, setIsModal
                             <span className="offcanvas-pricing__content-plan-features-text">Customized solutions designed
                             for large scale applications.
                             </span>
-                            <div className={`offcanvas-pricing__content-plan-cta offcanvas-pricing__content-plan-cta--current`} onClick={() => {handleUpgrade('Enterprise')}}>
+                            <div className={`offcanvas-pricing__content-plan-cta offcanvas-pricing__content-plan-cta--current`} tabIndex={0} role="button" aria-label="Contact us" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleUpgrade('Enterprise') }}} onClick={() => {handleUpgrade('Enterprise')}}>
                                 <span className="offcanvas-pricing__content-plan-cta-text">Contact us</span>
                             </div>
                         </div>

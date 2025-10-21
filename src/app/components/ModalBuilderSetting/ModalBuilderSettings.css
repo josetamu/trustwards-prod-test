@@ -32,7 +32,7 @@
 .modal-builder-settings__content {
     display: flex;
     flex-direction: row;
-    height: 100%;
+    height: 85%;
     
 }
 .modal-builder-settings__content-divider--vertical {
@@ -51,10 +51,14 @@
     font-weight: 600;
     letter-spacing: var(--letter-spacing-negative);
     color: var(--subtitle-color);
-    padding: 10px;
+    height: 28px;
+    width: 138px;
     border-radius: 8px;
     cursor: pointer;
-    width: 138px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    
 }
 
 .modal-builder-settings__content-tab--active {
@@ -194,6 +198,10 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    background-color: var(--modal-sidebar-background);
+    padding: 8px;
+    border-radius: 6px;
 }
 .modal-builder-settings__content-body-clip {
     display: flex;

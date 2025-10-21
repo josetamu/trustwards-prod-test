@@ -3,7 +3,7 @@ import { supabase } from '@supabase/supabaseClient';
 import './BuilderHeader.css';
 import { useCanvas } from '@contexts/CanvasContext';
 import { Tooltip } from '@components/tooltip/Tooltip';
-export default function BuilderHeader({site, setSite, setModalType, setIsModalOpen, checkSitePicture, SiteStyle, openChangeModalSettings}) {
+export default function BuilderHeader({site, setSite, setModalType, setIsModalOpen, setOffcanvasType, setIsOffcanvasOpen, checkSitePicture, SiteStyle, openChangeModalSettings}) {
     const [errors, setErrors] = useState({});
    /*  const fileInputRef = useRef(null); */
     const [breakpoint, setBreakpoint] = useState('desktop');
@@ -333,14 +333,14 @@ const renderTooltip = (id) => (
               <span 
                   className={`tw-builder__header-plan ${site?.Plan === 'Pro' ? 'tw-builder__header-plan--pro' : ''}`} 
                   onClick={() => {
-                    setModalType('Billing');
-                    setIsModalOpen(true);
+                    setOffcanvasType('Pricing');
+                    setIsOffcanvasOpen(true);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      setModalType('Billing');
-                      setIsModalOpen(true);
+                      setOffcanvasType('Pricing');
+                      setIsOffcanvasOpen(true);
                     }
                   }}
                   tabIndex={0}

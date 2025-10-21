@@ -4,10 +4,10 @@ import BuilderHeader from '@components/BuilderHeader/BuilderHeader';
 import { Toolbar } from './Toolbar/Toolbar';
 import { Canvas } from './Canvas/Canvas';
 
-function BuilderBody({site, setSite, setModalType, setIsModalOpen, checkSitePicture, SiteStyle, openChangeModalSettings, screenshotUrl, setScreenshotUrl}) {
+function BuilderBody({site, setSite, setModalType, setIsModalOpen, setOffcanvasType, setIsOffcanvasOpen, SiteStyle, openChangeModalSettings, screenshotUrl, setScreenshotUrl}) {
     return (
         <div className="tw-builder__body">
-                <BuilderHeader site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} checkSitePicture={checkSitePicture} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
+                <BuilderHeader site={site} setSite={setSite} setModalType={setModalType} setIsModalOpen={setIsModalOpen} setOffcanvasType={setOffcanvasType} setIsOffcanvasOpen={setIsOffcanvasOpen} SiteStyle={SiteStyle} openChangeModalSettings={openChangeModalSettings}/>
                 <Canvas site={site} screenshotUrl={screenshotUrl} setScreenshotUrl={setScreenshotUrl}/>
                 <Toolbar/>
         </div>

@@ -168,13 +168,13 @@
     font-size: var(--font-size-mini);
   }
 
-  /* Keep arrows for side positions on mobile */
+  /* Keep arrows for side positions on mobile (unless tooltip--no-arrows is applied) */
   .tooltip--right .tooltip__mask::after,
   .tooltip--left .tooltip__mask::after {
     display: block;
   }
   
-  /* Hide arrows for sidebar and upgrade on mobile */
+  /* Hide arrows for sidebar and upgrade on mobile (unless tooltip--no-arrows is applied) */
   .tooltip--sidebar .tooltip__mask::after,
   .tooltip--upgrade .tooltip__mask::after {
     display: none;
@@ -210,5 +210,11 @@
     border-left-color: transparent;
     border-bottom-color: transparent;
   }
+}
+
+/* Hide arrows when tooltip--no-arrows class is applied */
+.tooltip--no-arrows .tooltip__mask::after,
+.tooltip--no-arrows .tooltip__mask::before {
+  display: none !important;
 }
 

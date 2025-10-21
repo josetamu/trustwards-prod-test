@@ -77,7 +77,7 @@ function treeReducer(state, action) {
     }
 }
 
-export const CanvasProvider = ({ children, siteData, CallContextMenu = null, setIsFirstTime }) => {
+export const CanvasProvider = ({ children, siteData, CallContextMenu = null, setIsFirstTime, fontOptions }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
     const defaultTree = {
         idsCSSData: [], /*for each id, stores its right panel properties*/
@@ -1269,7 +1269,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState}}>
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState, fontOptions}}>
             {children}
         </CanvasContext.Provider>
     );

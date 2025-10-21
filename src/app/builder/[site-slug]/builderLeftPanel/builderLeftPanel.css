@@ -396,6 +396,10 @@
     color: var(--tree-item-selected-color);
 }
 
+.tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-block-icon {
+    color: var(--tree-item-selected-color);
+}
+
 .tw-builder__tree-item-header--drag-over[data-position="inside"] .tw-builder__tree-item-image-icon {
     fill: var(--tree-item-selected-color);
 }
@@ -413,6 +417,11 @@
 
 .tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-text-icon,
 .tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-text-icon {
+    color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item-header--drag-over[data-position="before"] .tw-builder__tree-item-block-icon,
+.tw-builder__tree-item-header--drag-over[data-position="after"] .tw-builder__tree-item-block-icon {
     color: var(--tree-text-icon-color);
 }
 
@@ -566,6 +575,17 @@
     transform: rotate(-90deg);
 }
 
+/* Tree expand spacer for items without children */
+.tw-builder__tree-expand-spacer {
+    width: 8px;
+    height: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
 /* ==========================================================================
    TREE CHILDREN
    ========================================================================== */
@@ -614,6 +634,10 @@
     fill: var(--tree-text-icon-color);
 }
 
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-block-icon {
+    color: var(--tree-text-icon-color);
+}
+
 .tw-builder__tree-item--dragging-container .tw-builder__tree-expand-button {
     color: var(--tree-expand-button-color);
 }
@@ -652,6 +676,10 @@
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-divider-icon,
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-button-icon {
     background-color: var(--tree-text-icon-color);
+}
+
+.tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-item-block-icon {
+    color: var(--tree-text-icon-color);
 }
 
 .tw-builder__tree-item--dragging-container .tw-builder__tree-item-header .tw-builder__tree-expand-button {

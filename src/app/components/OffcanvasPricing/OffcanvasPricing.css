@@ -3,6 +3,7 @@
     flex-direction: column;
     height: 100%;
     position: relative;
+    
 }
 .offcanvas-pricing::before {
     content: '';
@@ -13,8 +14,8 @@
     height: 40%; 
     background-image: url('/assets/login-blur.png');
     background-repeat: no-repeat;
-    background-position: top center;
-    background-size: 100% auto;
+    background-position: top;
+    background-size: cover;
     transform: rotate(180deg);
     z-index: 0;
     pointer-events: none;
@@ -57,6 +58,7 @@
     position: absolute;
     top: 0;
     left: 0;
+    border: 3px solid var(--offcanvas-toggle-background);
  
 }
 
@@ -84,10 +86,10 @@ transform: translateX(50%) translateY(-50%);
 font-size: var(--font-size-extreme-mini);
 font-weight: var(--font-weight-semibold);
 color: var(--accent-bg-color);
+background-color: #0099FE1A;
 letter-spacing: var(--letter-spacing-negative);
-background-color: #1D2C36;
 border-radius: 100px;
-border: 1px solid #1E3747;
+border: 1px solid #0099FE5A;
 padding: 2px;
 }
 
@@ -124,8 +126,8 @@ padding: 2px;
     font-size: var(--font-size-extreme-mini);
     font-weight: var(--font-weight-semibold);
     color: var(--accent-bg-color);
-    letter-spacing: var(--letter-spacing-negative);
     background-color: #0099FE1A;
+    letter-spacing: var(--letter-spacing-negative);
     border-radius: 3px;
     padding: 2px;
 }
@@ -179,7 +181,7 @@ padding: 2px;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #404040;
+    background-color: var(--offcanvas-toggle-background);
     border-radius: 34px;
     transition: .2s;
     overflow: hidden;
@@ -228,7 +230,7 @@ padding: 2px;
 .offcanvas-pricing__content-plan-cta-text {
     font-size: var(--font-size-mini);
     font-weight: var(--font-weight-semibold);
-    color: var(--body-strong-color);
+    color: var(--accent-color);
     letter-spacing: var(--letter-spacing-negative);
 }
 
@@ -304,6 +306,7 @@ padding: 2px;
 
 .offcanvas-pricing__footer {
     padding: 16px 24px;
+    display: flex;
    
 } 
 
@@ -333,5 +336,25 @@ padding: 2px;
     font-weight: var(--font-weight-semibold);
     color: var(--body-strong-color);
     letter-spacing: var(--letter-spacing-negative);
+    width: fit-content;
 }
 
+@media (max-width: 767px) {
+    .offcanvas-pricing__footer{
+        align-items: center;
+        justify-content: center;
+    }
+    .offcanvas-pricing__footer-enterprise{
+        width: 100%;
+    }
+    .offcanvas-pricing__footer-enterprise-content{
+        flex-direction: column;
+        gap: 32px;
+    }
+    .offcanvas-pricing__footer-enterprise-block{
+        width: 100%;
+    }
+    .offcanvas-pricing__content{
+        grid-template-columns: repeat(1, 1fr);
+    }
+}

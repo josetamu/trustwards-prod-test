@@ -992,8 +992,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                     data-position={isDragOver ? dragPosition : null}
                     data-toolbar-position={isToolbarDragOver ? toolbarDragPosition : null}
                 >
-                    {/* Expand/collapse button for items with children */}
-                    {hasChildren && (
+                    {/* Expand/collapse button for items with children OR spacer for items without children */}
+                    {hasChildren ? (
                         <button 
                             className={`tw-builder__tree-expand-button ${isExpanded ? 'tw-builder__tree-expand-button--expanded' : ''}`}
                             onClick={(e) => {
@@ -1014,6 +1014,8 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                                 <path d="M0.206446 1.11705L2.00994 2.80896C2.07436 2.86952 2.15088 2.91756 2.23512 2.95035C2.31936 2.98313 2.40966 3 2.50086 3C2.59206 3 2.68236 2.98313 2.7666 2.95035C2.85083 2.91756 2.92735 2.86952 2.99177 2.80896L4.79527 1.11705C5.23396 0.705507 4.92061 0 4.30088 0H0.693878C0.0741433 0 -0.232242 0.705507 0.206446 1.11705Z" fill="currentColor"/>
                             </svg>
                         </button>
+                    ) : (
+                        <div className="tw-builder__tree-expand-spacer"></div>
                     )}
                     
                     {/* Item icon */}

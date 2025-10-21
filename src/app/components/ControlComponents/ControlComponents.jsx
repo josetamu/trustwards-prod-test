@@ -21,35 +21,24 @@ const applyOnEnter = (e,f) => {
 }
 
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-        const savedValue = savedJSONValue || savedCSSValue;
+        const savedValue = savedJSONValue ?? savedCSSValue;
 
-
-        //If nothing is saved, use the value.
-        if (!savedValue && value) {
-            //Set the value after 0ms to avoid infinite loop.
-            setTimeout(() => {
-                if (JSONProperty && applyGlobalJSONChange) {
-                    applyGlobalJSONChange(JSONProperty, value);
-                } else if (cssProperty && applyGlobalCSSChange) {
-                    applyGlobalCSSChange(cssProperty, value);
-                }
-            }, 0);
-        }
-        return savedValue || value || '';
+        
+        return savedValue ?? '';
     });
 
     //Update the value when the selected element changes
     useEffect(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-        const savedValue = savedJSONValue || savedCSSValue;
+        const savedValue = savedJSONValue ?? savedCSSValue;
       
-            setTextValue(savedValue || value || '');
+        setTextValue(savedValue ?? '');
         
     }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
 
@@ -73,7 +62,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     
 
     return (
-        <div className="tw-builder__settings-setting" key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={JSONProperty}/>
             </span>
@@ -93,8 +82,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         </div>
     )
 }
-
-const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, selectedElementData, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder}) => {
+const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, nextLine}) => {
     //function to get the correct value depending on the category
     const getCurrentSelectValue = () => {
         if (category === 'block') {
@@ -217,25 +205,7 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
         )}
         {(getCurrentSelectValue() === 'flex' || (getCurrentSelectValue() === '' && placeholder === 'flex')) && (
                     <>
-                    <SelectType
-                    name='Wrap'
-                   /*  value={selectedWrap} */
-                    placeholder='nowrap'
-                    cssProperty='flex-wrap'
-                    applyGlobalCSSChange={applyGlobalCSSChange}
-                    getGlobalCSSValue={getGlobalCSSValue}
-                    selectedId={selectedId}
-                    index={index}
-                    options={['nowrap', 'wrap', 'wrap-reverse']}
-                    />
-                    <ChooseType
-                        name="Direction"
-                        category="flex-direction"
-                        cssProperty="flex-direction"
-                        applyGlobalCSSChange={applyGlobalCSSChange}
-                        getGlobalCSSValue={getGlobalCSSValue}
-                        index={`${index}-direction`}
-                    />
+
                     <ChooseType
                         name="Justify"
                         category="super-justify"
@@ -252,6 +222,25 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
                         getGlobalCSSValue={getGlobalCSSValue}
                         index={`${index}-align`}
                     />
+                    <ChooseType
+                        name="Direction"
+                        category="flex-direction"
+                        cssProperty="flex-direction"
+                        applyGlobalCSSChange={applyGlobalCSSChange}
+                        getGlobalCSSValue={getGlobalCSSValue}
+                        index={`${index}-direction`}
+                    />
+                    <SelectType
+                    name='Wrap'
+                    placeholder='nowrap'
+                    cssProperty='flex-wrap'
+                    applyGlobalCSSChange={applyGlobalCSSChange}
+                    getGlobalCSSValue={getGlobalCSSValue}
+                    selectedId={selectedId}
+                    index={index}
+                    options={['nowrap', 'wrap', 'wrap-reverse']}
+                    />
+
                     <TextType 
                     name="Column Gap"
                     value=""
@@ -272,59 +261,25 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
                         selectedId={selectedId}
                         index="row-gap"
                     />
-                    <TextType 
-                        name="Flex grow"
-                        value=""
-                        placeholder="0"
-                        cssProperty="flex-grow"
-                        applyGlobalCSSChange={applyGlobalCSSChange}
-                        getGlobalCSSValue={getGlobalCSSValue}
-                        selectedId={selectedId}
-                        index="flex-grow"
-                    />
-                    <TextType 
-                        name="Flex shrink"
-                        value=""
-                        placeholder="1"
-                        cssProperty="flex-shrink"
-                        applyGlobalCSSChange={applyGlobalCSSChange}
-                        getGlobalCSSValue={getGlobalCSSValue}
-                        selectedId={selectedId}
-                        index="flex-shrink"
-                    />
-                    <TextType 
-                        name="Flex basis"
-                        value=""
-                        placeholder="auto"
-                        cssProperty="flex-basis"
-                        applyGlobalCSSChange={applyGlobalCSSChange}
-                        getGlobalCSSValue={getGlobalCSSValue}
-                        selectedId={selectedId}
-                        index="flex-basis"
-                    />
-                    <TextType 
-                        name="Order"
-                        value=""
-                        placeholder="0"
-                        cssProperty="order"
-                        applyGlobalCSSChange={applyGlobalCSSChange}
-                        getGlobalCSSValue={getGlobalCSSValue}
-                        selectedId={selectedId}
-                        index="order"
-                    />
                     </>
                 )}
         {getCurrentSelectValue() === 'grid' && (
             <>
-        <TextType 
-            name="Gap"
-            value=""
-            placeholder="0"
-            cssProperty="gap"
+        <ChooseType
+            name="Justify"
+            category="super-justify"
+            cssProperty="justify-content"
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
-            selectedId={selectedId}
-            index="gap"
+            index={`${index}-justify`}
+        />
+        <ChooseType
+            name="Align"
+            category="super-align"
+            cssProperty="align-items"
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            index={`${index}-align`}
         />
         <TextType 
             name="Template columns"
@@ -377,22 +332,7 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
             getGlobalCSSValue={getGlobalCSSValue}
             options={['row', 'column', 'dense',]}
             />
-            <ChooseType
-                name="Justify"
-                category="super-justify"
-                cssProperty="justify-content"
-                applyGlobalCSSChange={applyGlobalCSSChange}
-                getGlobalCSSValue={getGlobalCSSValue}
-                index={`${index}-justify`}
-            />
-            <ChooseType
-                name="Align"
-                category="super-align"
-                cssProperty="align-items"
-                applyGlobalCSSChange={applyGlobalCSSChange}
-                getGlobalCSSValue={getGlobalCSSValue}
-                index={`${index}-align`}
-            />
+
             <TextType 
             name="Order"
             value=""
@@ -403,6 +343,16 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
             selectedId={selectedId}
             index="grid-order"
             />
+            <TextType 
+            name="Gap"
+            value=""
+            placeholder="0"
+            cssProperty="gap"
+            applyGlobalCSSChange={applyGlobalCSSChange}
+            getGlobalCSSValue={getGlobalCSSValue}
+            selectedId={selectedId}
+            index="gap"
+        />
             </>
         )}
         {(getCurrentSelectValue() === 'block' || getCurrentSelectValue() === 'inline-block' || getCurrentSelectValue() === 'inline') && (
@@ -415,7 +365,8 @@ const SuperSelectType = ({name, index, value, category, cssProperty, applyGlobal
     )
 }
 
-const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine}) => {
+
     //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
         const saved = getGlobalCSSValue?.(`${cssProperty}-top`);
@@ -468,25 +419,23 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         
 
     return (
-    <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+    <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
         <span className="tw-builder__settings-subtitle">{name}
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} onChange={handleSideChange('left')} onBlur={handleSideBlur('left')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('left'))}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} placeholder={placeholder[3]} onChange={handleSideChange('left')} onBlur={handleSideBlur('left')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('left'))}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} onChange={handleSideChange('top')} onBlur={handleSideBlur('top')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('top'))}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} onChange={handleSideChange('bottom')} onBlur={handleSideBlur('bottom')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('bottom'))}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} placeholder={placeholder[0]} onChange={handleSideChange('top')} onBlur={handleSideBlur('top')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('top'))}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} placeholder={placeholder[2]} onChange={handleSideChange('bottom')} onBlur={handleSideBlur('bottom')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('bottom'))}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} onChange={handleSideChange('right')} onBlur={handleSideBlur('right')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('right'))}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} placeholder={placeholder[1]} onChange={handleSideChange('right')} onBlur={handleSideBlur('right')} onKeyDown={(e) => applyOnEnter(e, handleSideBlur('right'))}/>
         </div>
     </div>
     )
 }
 
-const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue}) => {
-
-   
+const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine}) => {
 
     //Function to convert rgb to hex
     const rgbToHex = (r, g, b) => {
@@ -682,7 +631,7 @@ const handlePercentageChange = (e) => {
     const finalColor = color && color !== '' ? hexToRgba(color, parseInt((percentage).replace('%', ''))) : 'transparent';
 
     return (
-        <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={color} cssProperty={cssProperty}/>
             </span>
@@ -704,7 +653,7 @@ const handlePercentageChange = (e) => {
     )
 }
 
-const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange}) => {
+const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, nextLine, nextLine2}) => {
     
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState('');
@@ -818,7 +767,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     };
     return (
         <>
-        <div className="tw-builder__settings-setting">
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}>
             <span className="tw-builder__settings-subtitle">Source
                 <StylesDeleter value={imageUrl} jsonEmptyValue="/assets/builder-default-image.svg" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
             </span>
@@ -833,7 +782,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             onKeyDown={(e) => applyOnEnter(e, handleUrlSubmit)}
             />
         </div>
-        <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine2 ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter value={imageUrl} JSONProperty={JSONProperty} jsonEmptyValue="/assets/builder-default-image.svg" applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
             </span>
@@ -859,7 +808,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     )
 }
 
-const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue}) => {
+const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, nextLine}) => {
 
     const [selectedChoose, setSelectedChoose] = useState(() => {
         if (category === 'flex-direction' && getGlobalCSSValue && cssProperty) {
@@ -968,7 +917,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     switch (category) {
         case 'direction':
             return (
-                <div className="tw-builder__settings-setting" key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1006,7 +955,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'flex-direction':
             return (
-                <div className="tw-builder__settings-setting" key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1056,7 +1005,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'justify':
             return (
-                <div className="tw-builder__settings-setting" key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1106,7 +1055,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'align':
             return (
-                <div className="tw-builder__settings-setting" key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1156,7 +1105,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'super-justify':
             return(
-            <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+            <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                 <span className="tw-builder__settings-subtitle">{name}
                     <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                 </span>
@@ -1250,7 +1199,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             );
         case 'super-align':
             return(
-                <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                         <span className="tw-builder__settings-subtitle">{name}
                             <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                         </span>
@@ -1314,7 +1263,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             )
         case 'text-align':
             return (
-                <div className="tw-builder__settings-setting" key={index}>
+                <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
                         <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
                     </span>
@@ -1446,7 +1395,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     }
 }
 
-const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value}) => {
+const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value, nextLine}) => {
     //Initial state with jsonTree
     const [textareaValue, setTextareaValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -1504,7 +1453,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
 
    
     return (
-        <div className="tw-builder__settings-setting tw-builder__settings-setting--column" key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter value={textareaValue} jsonEmptyValue="New Text 2" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
             </span>
@@ -1522,7 +1471,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     )
 }
 
-const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange}) =>{
+const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine}) =>{
     
     // ========================================
     // General states (for all types)
@@ -1536,7 +1485,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     // ========================================
     // Specific states and constants for font/weight
     // ========================================
-    const [fontOptions, setFontOptions] = useState([]);
+    const { fontOptions } = useCanvas();
     const [weightOptions, setWeightOptions] = useState([]);
     const [italicWeightOptions, setItalicWeightOptions] = useState([]);
     const [searchFilter, setSearchFilter] = useState('');
@@ -1547,7 +1496,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         'Thin': '100',
         'Extra Light': '200', 
         'Light': '300',
-        'Normal': '400',
+        'Regular': '400',
         'Medium': '500',
         'Semi Bold': '600',
         'Bold': '700',
@@ -1560,7 +1509,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
             Object.entries(fontWeightMap).map(([key, value]) => [value, key])
         );
     
-    const weightNameOrder = ['Thin','Extra Light','Light','Normal','Medium','Semi Bold','Bold','Extra Bold','Black'];
+    const weightNameOrder = ['Thin','Extra Light','Light','Regular','Medium','Semi Bold','Bold','Extra Bold','Black'];
     const reverseMap = fontWeightMapReverse();
     
     // ========================================
@@ -1603,7 +1552,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
         //Find the font options
         const entry = fontOptions.find(f => f.family === family);
         //Build the href
-        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=swap`;
+        let href = `https://fonts.googleapis.com/css2?family=${famParam}&display=block`;
     
         //If the family has variants, add the variants row
         if (entry && Array.isArray(entry.variants)) {
@@ -1631,10 +1580,10 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                 if (nList) parts.push(`0,${nList}`);
                 if (iList) parts.push(`1,${iList}`);
                 //Build the href with the variants italic
-                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=swap`;
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:ital,wght@${parts.join(';')}&display=block`;
             } else if (normal.size) {
                 //Build the href with the weights
-                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=swap`;
+                href = `https://fonts.googleapis.com/css2?family=${famParam}:wght@${sortNums(normal)}&display=block`;
             }
         }
         
@@ -1672,11 +1621,11 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
 
         entry.variants.forEach(v => {
             if (v === 'regular') {
-                weightsSet.add('Normal');
+                weightsSet.add('Regular');
                 return;
             }
             if (v === 'italic') {
-                italicsSet.add('Normal Italic');
+                italicsSet.add('Regular Italic');
                 return;
             }
             const m = v.match(/^(\d{3})(italic)?$/);
@@ -1705,13 +1654,13 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     // ========================================
     
     // Fetch font options from the API (only for Font and Weight)
-    useEffect(() => {
+/*     useEffect(() => {
         if (name !== 'Font' && name !== 'Weight') return;
         fetch('/api/fonts')
             .then(r => r.json())
             .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
             .catch(() => setFontOptions([]));
-    }, [name]);
+    }, [name]); */
     
     // Update weight options when the selected family changes (only for Weight)
     useEffect(() => {
@@ -1806,42 +1755,153 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     const handleSelectChange = (newValue) => {
         setSelected(newValue);
         
-        // Special case: Font
-        if (name === 'Font') {
-            const prev = extractPrimaryFamily(getGlobalCSSValue?.('font-family')) || '';
-            ensureFontLoaded(newValue);
+// Special case: Font
+if (name === 'Font') {
+    const prev = extractPrimaryFamily(getGlobalCSSValue?.('font-family')) || '';
+    
+    if (applyGlobalCSSChange) {
+        // Verificar si es una fuente del sistema
+        const isSystemFont = systemFontOptions.some(sf => 
+            sf.toLowerCase() === newValue?.toLowerCase()
+        );
         
-            if (applyGlobalCSSChange) {
-                const stack = prev && prev !== newValue
-                    ? `"${newValue}","${prev}",system-ui,sans-serif`
-                    : `"${newValue}",system-ui,sans-serif`;
+        // Obtener el peso y estilo actuales
+        const currentWeight = getGlobalCSSValue?.('font-weight') || '400';
+        const currentStyle = getGlobalCSSValue?.('font-style') || 'normal';
         
-                applyGlobalCSSChange({
-                    [cssProperty || 'font-family']: stack,
-                    'font-weight': '', 'font-style': ''
-                });
-            }
-            onChange && onChange(newValue);
-            return;
+        // Verificar si la nueva fuente soporta el peso actual
+        const { weights, italics } = computeWeightOptionsForFamily(newValue);
+        const currentWeightName = reverseMap[currentWeight] || 'Normal';
+        
+        let shouldKeepWeight = false;
+        if (currentStyle === 'italic') {
+            const italicLabel = `${currentWeightName} Italic`;
+            shouldKeepWeight = italics.includes(italicLabel);
+        } else {
+            shouldKeepWeight = weights.includes(currentWeightName);
         }
         
-        // Special case: Weight
-        if (name === 'Weight') {
-            const isItalic = newValue.includes('Italic');
-            const weightName = isItalic ? newValue.replace(' Italic', '') : newValue;
-            const fontWeight = fontWeightMap[weightName];
+        if (isSystemFont) {
+            // Fuentes del sistema: aplicar inmediatamente sin fallback
+            const stack = `"${newValue}",system-ui,sans-serif`;
+            applyGlobalCSSChange({
+                [cssProperty || 'font-family']: stack,
+                'font-weight': shouldKeepWeight ? currentWeight : '',
+                'font-style': shouldKeepWeight ? currentStyle : ''
+            });
+        } else {
+            // Fuentes de Google: enfoque de dos pasos para evitar flickering
             
-            if (applyGlobalCSSChange) {
+            // Paso 1: Aplicar con fallback temporal (prev) mientras carga
+            const stackWithFallback = prev && prev !== newValue
+                ? `"${newValue}","${prev}",system-ui,sans-serif`
+                : `"${newValue}",system-ui,sans-serif`;
+            
+            applyGlobalCSSChange({
+                [cssProperty || 'font-family']: stackWithFallback,
+                'font-weight': shouldKeepWeight ? currentWeight : '',
+                'font-style': shouldKeepWeight ? currentStyle : ''
+            });
+            
+            // Paso 2: Pre-cargar la fuente y luego actualizar sin fallback
+            ensureFontLoaded(newValue);
+            
+            const iframe = document.querySelector('.tw-builder__canvas iframe');
+            const targetDocument = iframe?.contentDocument || document;
+            
+            if (targetDocument.fonts) {
+                const weightToLoad = shouldKeepWeight ? currentWeight : '400';
+                const styleToLoad = shouldKeepWeight ? currentStyle : 'normal';
+                const fontDescriptor = `${styleToLoad} ${weightToLoad} 16px "${newValue}"`;
+                
+                Promise.race([
+                    targetDocument.fonts.load(fontDescriptor),
+                    new Promise((_, reject) => setTimeout(() => reject('timeout'), 3000))
+                ]).then(() => {
+                    // Esperar un frame adicional para asegurar que el navegador ha renderizado
+                    requestAnimationFrame(() => {
+                        // Actualizar sin el fallback
+                        const stackClean = `"${newValue}",system-ui,sans-serif`;
+                        applyGlobalCSSChange({
+                            [cssProperty || 'font-family']: stackClean,
+                            'font-weight': shouldKeepWeight ? currentWeight : '',
+                            'font-style': shouldKeepWeight ? currentStyle : ''
+                        });
+                    });
+                }).catch(() => {
+                    // Si falla, mantener el fallback
+                    console.log('Font loading timeout or failed, keeping fallback');
+                });
+            }
+        }
+    }
+    onChange && onChange(newValue);
+    return;
+}
+        
+// Special case: Weight
+if (name === 'Weight') {
+    const isItalic = newValue.includes('Italic');
+    const weightName = isItalic ? newValue.replace(' Italic', '') : newValue;
+    const fontWeight = fontWeightMap[weightName];
+    
+    if (applyGlobalCSSChange) {
+        const fam = extractPrimaryFamily(getGlobalCSSValue?.('font-family'));
+        const fontStyle = isItalic ? 'italic' : 'normal';
+        
+        // Verificar si es una fuente del sistema
+        const isSystemFont = systemFontOptions.some(sf => 
+            sf.toLowerCase() === fam?.toLowerCase()
+        );
+        
+        if (isSystemFont) {
+            // Fuentes del sistema: aplicar inmediatamente
+            applyGlobalCSSChange({
+                [cssProperty]: fontWeight,
+                "font-style": fontStyle
+            });
+        } else if (fam) {
+            // Fuentes de Google: pre-cargar antes de aplicar
+            ensureFontLoaded(fam);
+            
+            const iframe = document.querySelector('.tw-builder__canvas iframe');
+            const targetDocument = iframe?.contentDocument || document;
+            
+            if (targetDocument.fonts) {
+                const fontDescriptor = `${fontStyle} ${fontWeight} 16px "${fam}"`;
+                
+                // Forzar la carga del peso específico con timeout
+                Promise.race([
+                    targetDocument.fonts.load(fontDescriptor),
+                    new Promise((_, reject) => setTimeout(() => reject('timeout'), 1000))
+                ]).then(() => {
+                    applyGlobalCSSChange({
+                        [cssProperty]: fontWeight,
+                        "font-style": fontStyle
+                    });
+                }).catch(() => {
+                    // Si falla o timeout, aplicar de todas formas
+                    applyGlobalCSSChange({
+                        [cssProperty]: fontWeight,
+                        "font-style": fontStyle
+                    });
+                });
+            } else {
                 applyGlobalCSSChange({
                     [cssProperty]: fontWeight,
-                    "font-style": isItalic ? "italic" : "normal"
+                    "font-style": fontStyle
                 });
-                
-                const fam = extractPrimaryFamily(getGlobalCSSValue?.('font-family'));
-                if (fam) ensureFontLoaded(fam);
             }
-            return;
+        } else {
+            // Sin familia de fuente, aplicar inmediatamente
+            applyGlobalCSSChange({
+                [cssProperty]: fontWeight,
+                "font-style": fontStyle
+            });
         }
+    }
+    return;
+}
         
         // General case: other selects
         if (JSONProperty && applyGlobalJSONChange) {
@@ -1901,7 +1961,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     // ========================================
 
     return (
-        <div className="tw-builder__settings-setting" key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter
                     value={selected}
@@ -1927,7 +1987,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
                     tabIndex={-1}
                 >
                     {selected ? 
-                        <span className="tw-builder__settings-select-value">
+                        <span className={`tw-builder__settings-select-value ${name === 'Font' ? 'tw-builder__settings-select-value--font' : ''}`}>
                             {selected}
                         </span>
                         :
@@ -2005,7 +2065,7 @@ const SelectType = ({name, value, options, index, JSONProperty, getGlobalJSONVal
     );
 }
 
-const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified, setBwUnified, brUnified, setBrUnified}) => {
+const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified, setBwUnified, brUnified, setBrUnified, nextLine}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));
@@ -2401,7 +2461,7 @@ const parseRadius = useCallback((radiusStr) => {
     };
 
     return (
-        <div className="tw-builder__settings-setting" key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
         <span className="tw-builder__settings-subtitle">{name}
             <StylesDeleter 
                 value={currentBorderWidth || currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth || getGlobalCSSValue?.('border-style') || getGlobalCSSValue?.('border-color') || currentRadius || currentBorderTopLeftRadius || currentBorderTopRightRadius || currentBorderBottomRightRadius || currentBorderBottomLeftRadius}
@@ -2640,7 +2700,7 @@ const parseRadius = useCallback((radiusStr) => {
     )
 }
 
-const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData}) => {
+const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, nextLine}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));    
@@ -2905,7 +2965,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
         }, [open]);
     
     return (
-        <div className="tw-builder__settings-setting" key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
                 <StylesDeleter 
                 value={currentShadow} 
@@ -3101,6 +3161,13 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     const [selectedElementData, setSelectedElementData] = useState(null);
     const [activeClass, setActiveClass] = useState(null);
 
+    const defaultsValuesRef = useRef(new Set());
+    useEffect(() => {
+        defaultsValuesRef.current = new Set();
+    }, [selectedId]);
+
+
+
     //spreads the properties of the selected element and updates the selectedElementData 
     useEffect(() => {
         //Return early if required data is not available
@@ -3115,6 +3182,8 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
             setSelectedElementData(null);
             return;
         }
+
+        
 
         // Find the selected element in the JSON tree by ID
     const findElement = (node, targetId) => {
@@ -3152,6 +3221,8 @@ function ControlComponent({control, selectedId, showNotification, selectedLabel,
     // Update the selected element data state
     setSelectedElementData(elementData);
 }, [selectedId, JSONtree, activeRoot, getActiveBreakpoint]);
+
+
 
 // Apply CSS (writes in the dataset of the active breakpoint if not desktop)
 const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = {}) => {
@@ -3345,6 +3416,105 @@ const getEnterAnimationProps = useCallback(() => {
 
     },[JSONtree, selectedId, activeRoot]);
 
+/* // Initialize defaults (value) immediately for ALL controls once per element/control
+useEffect(() => {
+    if (!selectedId || !control) return;
+
+    const items = [];
+
+    // Collect all control items from header and body
+    if (Array.isArray(control.header)) {
+        items.push(...control.header);
+    }
+    if (Array.isArray(control.body)) {
+        control.body.forEach(section => {
+            if (Array.isArray(section?.controls)) {
+                items.push(...section.controls);
+            }
+        });
+    }
+
+    items.forEach((item) => {
+        if (!item) return;
+        
+        // Skip if no value is defined (this is the default value to apply)
+        if (item.value == null || item.value === '') return;
+
+        // Create unique key for this control instance
+        const key = `${selectedId}::${item.name}::${item.cssProperty || item.JSONProperty || ''}::${item.selector || ''}`;
+        
+        // Skip if already processed (prevents re-applying after user clears)
+        if (defaultsValuesRef.current.has(key)) return;
+
+        // Mark as processed to avoid re-applying after user clears
+        defaultsValuesRef.current.add(key);
+
+        // Special handling for panel type (applies to 4 sides: top, right, bottom, left)
+        if (item.type === 'panel' && Array.isArray(item.value) && item.cssProperty) {
+            const sides = ['top', 'right', 'bottom', 'left'];
+            let hasAnyCurr = false;
+
+            // Check if any side already has a value
+            sides.forEach((side, index) => {
+                const curr = getGlobalCSSValue?.(`${item.cssProperty}-${side}`, item.selector);
+                if (curr && curr.trim() !== '') {
+                    hasAnyCurr = true;
+                }
+            });
+
+            // If any side has a value, don't override
+            if (hasAnyCurr) return;
+
+            // Apply default values to all sides
+            sides.forEach((side, index) => {
+                if (item.value[index]) {
+                    applyGlobalCSSChange?.(`${item.cssProperty}-${side}`, item.value[index], item.selector);
+                }
+            });
+
+            return; // Skip the normal logic below
+        }
+
+        // Get current saved value (from CSS or JSON depending on control type)
+        const curr = item.JSONProperty
+            ? getGlobalJSONValue?.(item.JSONProperty)
+            : (item.cssProperty ? getGlobalCSSValue?.(item.cssProperty, item.selector) : null);
+
+        // Check if there's already a value set
+        const hasCurr = typeof curr === 'string' ? curr.trim() !== '' : Boolean(curr);
+        
+        // If value already exists, don't override it
+        if (hasCurr) return;
+
+        // Apply the default value based on control type
+        let valueToApply = item.value;
+
+        // Handle different value types
+        if (item.type === 'select' || item.type === 'super-select' || item.type === 'choose') {
+            // For select-type controls, ensure the value is a valid string
+            valueToApply = String(item.value);
+        } else if (item.type === 'color') {
+            // Color controls might need special handling if they have a value prop
+            // (currently ColorType doesn't use a simple value prop, but this future-proofs it)
+            valueToApply = String(item.value);
+        } else if (item.type === 'textarea') {
+            // TextArea already has its own default logic, but we can still support it here
+            valueToApply = String(item.value);
+        } else {
+            // For text, image, and other controls
+            valueToApply = String(item.value);
+        }
+
+        // Apply the value to JSON or CSS depending on the control configuration
+        if (item.JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(item.JSONProperty, valueToApply);
+        } else if (item.cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(item.cssProperty, valueToApply, item.selector);
+        }
+    });
+}, [selectedId, control, getGlobalCSSValue, getGlobalJSONValue, applyGlobalCSSChange, applyGlobalJSONChange]); */
+
+
 
      const globalControlProps = {
         selectedElementData,
@@ -3373,25 +3543,25 @@ const getEnterAnimationProps = useCallback(() => {
 
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} />;
+                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} nextLine={item.nextLine} />;
             case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty}/>;
+                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
             case 'panel':
-                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty}/>;
+                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
             case 'color':
-                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} opacity={item.opacity} index={index} cssProperty={item.cssProperty} />;
+                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
             case 'image':
-                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site}/>;
+                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site} nextLine={item.nextLine} nextLine2={item.nextLine2}/>;
             case 'choose':
-                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} category={item.category} cssProperty={item.cssProperty} />;
+                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} category={item.category} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
             case 'textarea':
-                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} />;
+                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
             case 'select':
-                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId}/>;
+                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} nextLine={item.nextLine}/>;
             case 'border':
-                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} setBwUnified={setBwUnified} setBrUnified={setBrUnified} />;
+                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
             case 'box-shadow':
-                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} />;
+                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
             case 'enter-animation':
                 return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
         }
