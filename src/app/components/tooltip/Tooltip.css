@@ -6,7 +6,7 @@
 
 /* Tooltip content mask */
 .tooltip__mask {
-  width: 100px;
+  width: var(--tooltip-width, 100px);
   position: relative;
   padding: 6px 8px;
   border-radius: 6px;
@@ -105,7 +105,7 @@
   top: 100%;
   width: var(--tooltip-width, 100px);
   left: calc(50% - var(--tooltip-width, 100px)/2);
-  margin-top: 8px;
+  padding-top: 8px;
 }
 
 .tooltip--bottom .tooltip__mask::after {
@@ -168,9 +168,13 @@
     font-size: var(--font-size-mini);
   }
 
-  /* Hide arrows for side positions on mobile */
+  /* Keep arrows for side positions on mobile (unless tooltip--no-arrows is applied) */
   .tooltip--right .tooltip__mask::after,
-  .tooltip--left .tooltip__mask::after,
+  .tooltip--left .tooltip__mask::after {
+    display: block;
+  }
+  
+  /* Hide arrows for sidebar and upgrade on mobile (unless tooltip--no-arrows is applied) */
   .tooltip--sidebar .tooltip__mask::after,
   .tooltip--upgrade .tooltip__mask::after {
     display: none;
@@ -206,5 +210,11 @@
     border-left-color: transparent;
     border-bottom-color: transparent;
   }
+}
+
+/* Hide arrows when tooltip--no-arrows class is applied */
+.tooltip--no-arrows .tooltip__mask::after,
+.tooltip--no-arrows .tooltip__mask::before {
+  display: none !important;
 }
 

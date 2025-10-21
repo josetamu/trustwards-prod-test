@@ -9,18 +9,170 @@ import { useState, useEffect } from 'react';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
 import { Tooltip } from '@components/tooltip/Tooltip';
 import { Dropdown } from '@components/dropdown/Dropdown';
+import { supabase } from '@/supabase/supabaseClient';
 
 function Analytics() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs, setUserSettings, setIsModalOpen, setModalType } = useDashboard();
+    const { webs, setUserSettings, setIsModalOpen, setModalType, setOffcanvasType, setIsOffcanvasOpen } = useDashboard();
     const [timeRange, setTimeRange] = useState("7d");
     const [timeRangeDropdownOpen, setTimeRangeDropdownOpen] = useState(false);
     const [activeTooltip, setActiveTooltip] = useState(null);
+    const [chartData, setChartData] = useState([]);
+    const [isLoadingChartData, setIsLoadingChartData] = useState(true);
+    const [chartKey, setChartKey] = useState(0);
 
     // Find the selected site based on the slug (using id like the main page)
     const selectedSite = webs.find(site => site.id === siteSlug);
 
+    // Function to fetch and process consent data from Supabase
+    useEffect(() => {
+        const fetchConsentData = async () => {
+            if (!selectedSite || !selectedSite.id || !selectedSite.Verified) return;
+            
+            setIsLoadingChartData(true);
+            
+            try {
+                // Calculate date range based on timeRange
+                const now = new Date();
+                let startDate = new Date();
+                
+                if (timeRange === "7d") {
+                    startDate.setDate(now.getDate() - 7);
+                } else if (timeRange === "1m") {
+                    startDate.setMonth(now.getMonth() - 1);
+                } else if (timeRange === "1y") {
+                    startDate.setFullYear(now.getFullYear() - 1);
+                }
+                
+                // Fetch consents from Supabase for this site
+                const { data: consents, error } = await supabase
+                    .from('Consents')
+                    .select('id, site_id, consent_data')
+                    .eq('site_id', selectedSite.id);
+                
+                if (error) {
+                    console.error('Error fetching consents:', error);
+                    setChartData([]);
+                    setIsLoadingChartData(false);
+                    return;
+                }
+                
+                // Filter consents by date range and keep only the latest consent per userip
+                const latestConsentsByIP = {};
+                
+                consents.forEach(consent => {
+                    console.log(consent);
+                    const consentData = consent.consent_data;
+                    if (!consentData || !consentData.userip || !consentData.ts) return;
+                    
+                    const userip = consentData.userip;
+                    const timestamp = new Date(consentData.ts);
+                    
+                    // Filter by date range
+                    if (timestamp < startDate || timestamp > now) return;
+                    
+                    // Keep only the latest consent for each userip
+                    if (!latestConsentsByIP[userip] || 
+                        new Date(latestConsentsByIP[userip].ts) < timestamp) {
+                        latestConsentsByIP[userip] = consentData;
+                    }
+                });
+                
+                // Group consents by date and classify them
+                const consentsByDate = {};
+                
+                Object.values(latestConsentsByIP).forEach(consentData => {
+                    const date = new Date(consentData.ts);
+                    let dateKey;
+                    
+                    // Format date based on time range
+                    if (timeRange === "7d") {
+                        dateKey = date.toISOString().split('T')[0];
+                    } else if (timeRange === "1m") {
+                        dateKey = date.toISOString().split('T')[0];
+                    } else if (timeRange === "1y") {
+                        // Group by month
+                        dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`;
+                    }
+                    
+                    if (!consentsByDate[dateKey]) {
+                        consentsByDate[dateKey] = {
+                            fullConsentGiven: 0,
+                            parseConsentGiven: 0,
+                            fullConsentRejected: 0
+                        };
+                    }
+                    
+                    // Classify consent based on categories (excluding Functional)
+                    const categories = consentData.categories || {};
+                    
+                    // Filter out Functional category
+                    const relevantCategories = Object.entries(categories)
+                        .filter(([key]) => key !== 'Functional')
+                        .map(([, value]) => value);
+                    
+                    if (relevantCategories.length === 0) {
+                        // No relevant categories, consider as rejected
+                        consentsByDate[dateKey].fullConsentRejected++;
+                    } else if (relevantCategories.every(val => val === true)) {
+                        // All relevant categories are true
+                        consentsByDate[dateKey].fullConsentGiven++;
+                    } else if (relevantCategories.every(val => val === false)) {
+                        // All relevant categories are false
+                        consentsByDate[dateKey].fullConsentRejected++;
+                    } else {
+                        // Mix of true and false
+                        consentsByDate[dateKey].parseConsentGiven++;
+                    }
+                });
+                
+                // Convert to array and fill missing dates
+                const dates = [];
+                const currentDate = new Date(startDate);
+                
+                while (currentDate <= now) {
+                    let dateKey;
+                    
+                    if (timeRange === "7d" || timeRange === "1m") {
+                        dateKey = currentDate.toISOString().split('T')[0];
+                    } else if (timeRange === "1y") {
+                        dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-01`;
+                    }
+                    
+                    dates.push({
+                        date: dateKey,
+                        fullConsentGiven: consentsByDate[dateKey]?.fullConsentGiven || 0,
+                        parseConsentGiven: consentsByDate[dateKey]?.parseConsentGiven || 0,
+                        fullConsentRejected: consentsByDate[dateKey]?.fullConsentRejected || 0
+                    });
+                    
+                    // Increment date
+                    if (timeRange === "7d" || timeRange === "1m") {
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    } else if (timeRange === "1y") {
+                        currentDate.setMonth(currentDate.getMonth() + 1);
+                    }
+                }
+                
+                // Remove duplicates for yearly view
+                const uniqueDates = timeRange === "1y" 
+                    ? Array.from(new Map(dates.map(item => [item.date, item])).values())
+                    : dates;
+                
+                setChartData(uniqueDates);
+                setIsLoadingChartData(false);
+                setChartKey(prev => prev + 1);
+                
+            } catch (error) {
+                console.error('Error processing consent data:', error);
+                setChartData([]);
+                setIsLoadingChartData(false);
+            }
+        };
+        
+        fetchConsentData();
+    }, [selectedSite, timeRange]);
 
     if(!webs || webs.length === 0) {
         return
@@ -38,73 +190,6 @@ function Analytics() {
             </div>
         );
     }
-
-
-    // Static data for each time range - returns different datasets based on selected time range
-    const getChartData = () => {
-        if (timeRange === "7d") {
-            return [
-                { date: "2024-10-09", fullConsentGiven: 222, parseConsentGiven: 150, fullConsentRejected: 100 },
-                { date: "2024-10-10", fullConsentGiven: 97, parseConsentGiven: 180, fullConsentRejected: 80 },
-                { date: "2024-10-11", fullConsentGiven: 167, parseConsentGiven: 120, fullConsentRejected: 90 },
-                { date: "2024-10-12", fullConsentGiven: 242, parseConsentGiven: 260, fullConsentRejected: 120 },
-                { date: "2024-10-13", fullConsentGiven: 373, parseConsentGiven: 290, fullConsentRejected: 150 },
-                { date: "2024-10-14", fullConsentGiven: 301, parseConsentGiven: 340, fullConsentRejected: 180 },
-                { date: "2024-10-15", fullConsentGiven: 245, parseConsentGiven: 180, fullConsentRejected: 110 },
-            ];
-        } else if (timeRange === "1m") {
-            return [
-                { date: "2024-09-01", fullConsentGiven: 222, parseConsentGiven: 150, fullConsentRejected: 100 },
-                { date: "2024-09-02", fullConsentGiven: 97, parseConsentGiven: 180, fullConsentRejected: 80 },
-                { date: "2024-09-03", fullConsentGiven: 167, parseConsentGiven: 120, fullConsentRejected: 90 },
-                { date: "2024-09-04", fullConsentGiven: 242, parseConsentGiven: 260, fullConsentRejected: 120 },
-                { date: "2024-09-05", fullConsentGiven: 373, parseConsentGiven: 290, fullConsentRejected: 150 },
-                { date: "2024-09-06", fullConsentGiven: 301, parseConsentGiven: 340, fullConsentRejected: 180 },
-                { date: "2024-09-07", fullConsentGiven: 245, parseConsentGiven: 180, fullConsentRejected: 110 },
-                { date: "2024-09-08", fullConsentGiven: 409, parseConsentGiven: 320, fullConsentRejected: 200 },
-                { date: "2024-09-09", fullConsentGiven: 59, parseConsentGiven: 110, fullConsentRejected: 60 },
-                { date: "2024-09-10", fullConsentGiven: 261, parseConsentGiven: 190, fullConsentRejected: 130 },
-                { date: "2024-09-11", fullConsentGiven: 327, parseConsentGiven: 350, fullConsentRejected: 180 },
-                { date: "2024-09-12", fullConsentGiven: 292, parseConsentGiven: 210, fullConsentRejected: 140 },
-                { date: "2024-09-13", fullConsentGiven: 342, parseConsentGiven: 380, fullConsentRejected: 190 },
-                { date: "2024-09-14", fullConsentGiven: 137, parseConsentGiven: 220, fullConsentRejected: 100 },
-                { date: "2024-09-15", fullConsentGiven: 120, parseConsentGiven: 170, fullConsentRejected: 90 },
-                { date: "2024-09-16", fullConsentGiven: 138, parseConsentGiven: 190, fullConsentRejected: 95 },
-                { date: "2024-09-17", fullConsentGiven: 446, parseConsentGiven: 360, fullConsentRejected: 220 },
-                { date: "2024-09-18", fullConsentGiven: 364, parseConsentGiven: 410, fullConsentRejected: 180 },
-                { date: "2024-09-19", fullConsentGiven: 243, parseConsentGiven: 180, fullConsentRejected: 120 },
-                { date: "2024-09-20", fullConsentGiven: 89, parseConsentGiven: 150, fullConsentRejected: 70 },
-                { date: "2024-09-21", fullConsentGiven: 137, parseConsentGiven: 200, fullConsentRejected: 100 },
-                { date: "2024-09-22", fullConsentGiven: 224, parseConsentGiven: 170, fullConsentRejected: 110 },
-                { date: "2024-09-23", fullConsentGiven: 138, parseConsentGiven: 230, fullConsentRejected: 115 },
-                { date: "2024-09-24", fullConsentGiven: 387, parseConsentGiven: 290, fullConsentRejected: 190 },
-                { date: "2024-09-25", fullConsentGiven: 215, parseConsentGiven: 250, fullConsentRejected: 125 },
-                { date: "2024-09-26", fullConsentGiven: 75, parseConsentGiven: 130, fullConsentRejected: 65 },
-                { date: "2024-09-27", fullConsentGiven: 383, parseConsentGiven: 420, fullConsentRejected: 200 },
-                { date: "2024-09-28", fullConsentGiven: 122, parseConsentGiven: 180, fullConsentRejected: 90 },
-                { date: "2024-09-29", fullConsentGiven: 315, parseConsentGiven: 240, fullConsentRejected: 150 },
-                { date: "2024-09-30", fullConsentGiven: 454, parseConsentGiven: 380, fullConsentRejected: 220 },
-            ];
-        } else if (timeRange === "1y") {
-            return [
-                { date: "2024-01-01", fullConsentGiven: 222, parseConsentGiven: 150, fullConsentRejected: 100 },
-                { date: "2024-02-01", fullConsentGiven: 97, parseConsentGiven: 180, fullConsentRejected: 80 },
-                { date: "2024-03-01", fullConsentGiven: 167, parseConsentGiven: 120, fullConsentRejected: 90 },
-                { date: "2024-04-01", fullConsentGiven: 242, parseConsentGiven: 260, fullConsentRejected: 120 },
-                { date: "2024-05-01", fullConsentGiven: 373, parseConsentGiven: 290, fullConsentRejected: 150 },
-                { date: "2024-06-01", fullConsentGiven: 301, parseConsentGiven: 340, fullConsentRejected: 180 },
-                { date: "2024-07-01", fullConsentGiven: 245, parseConsentGiven: 180, fullConsentRejected: 110 },
-                { date: "2024-08-01", fullConsentGiven: 409, parseConsentGiven: 320, fullConsentRejected: 200 },
-                { date: "2024-09-01", fullConsentGiven: 59, parseConsentGiven: 110, fullConsentRejected: 60 },
-                { date: "2024-10-01", fullConsentGiven: 261, parseConsentGiven: 190, fullConsentRejected: 130 },
-                { date: "2024-11-01", fullConsentGiven: 327, parseConsentGiven: 350, fullConsentRejected: 180 },
-                { date: "2024-12-01", fullConsentGiven: 292, parseConsentGiven: 210, fullConsentRejected: 140 },
-            ];
-        }
-        return [];
-    };
-
-    const chartData = getChartData();
 
     // Chart configuration for the area chart - defines colors and labels for each consent type
     const chartConfig = {
@@ -134,38 +219,20 @@ function Analytics() {
 
     // Data for radial charts with max values (raw values; proportion handled by axis domain)
     // Pages chart data - tracks total pages on the website
-    const pagesValue = 8;
+    const pagesValue = selectedSite.Pages || 0;
     const pagesMax = 12;
     const pagesData = [{ label: "pages", value: pagesValue }];
 
     // Scans chart data - tracks security scans performed
-    const scansValue = 2;
-    const scansMax = 3;
+    const scansValue = selectedSite.Scans || 0;
+    const scansMax = 50;
     const scansData = [{ label: "scans", value: scansValue }];
 
     // PoC chart data - tracks Proof of Concept implementations
-    const pocValue = 1;
-    const pocMax = 3;
+    const pocValue = selectedSite["Monthly proof"] || 0;
+    const pocMax = 50;
     const pocData = [{ label: "poc", value: pocValue }];
 
-    // Custom tooltip component for radial charts
-    const RadialTooltip = ({ active, payload, currentValue, maxValue, unit }) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="analytics__radial-tooltip">
-                    <div className="analytics__radial-tooltip-content">
-                        <div className="analytics__radial-tooltip-current">
-                            {currentValue} {unit}
-                        </div>
-                        <div className="analytics__radial-tooltip-max">
-                            {maxValue} {unit} Max
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        return null;
-    };
 
 
     return (
@@ -177,8 +244,8 @@ function Analytics() {
                     <p className="analytics__description">
                         Get detailed analytics and insights. <span 
                             className="analytics__upgrade-link" 
-                            onClick={() => { setUserSettings('Billing'); setModalType('Billing'); setIsModalOpen(true); }} 
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserSettings('Billing'); setModalType('Billing'); setIsModalOpen(true); }}}
+                            onClick={() => { setOffcanvasType('Pricing'); setIsOffcanvasOpen(true); }} 
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOffcanvasType('Pricing'); setIsOffcanvasOpen(true); }}}
                             tabIndex={0}
                             aria-label="Upgrade this site to pro"
                             style={{ cursor: 'pointer' }}
@@ -186,7 +253,7 @@ function Analytics() {
                     </p>
                     <button 
                         className="analytics__upgrade-button" 
-                        onClick={() => { setUserSettings('Billing'); setModalType('Billing'); setIsModalOpen(true); }}
+                        onClick={() => { setOffcanvasType('Pricing'); setIsOffcanvasOpen(true); }}
                         aria-label="Upgrade to pro plan"
                     >
                         Upgrade
@@ -198,7 +265,7 @@ function Analytics() {
             <div className="analytics__chart">
                 <div className="analytics__chart-content">
                     <div className="analytics__chart-content-left-wrapper">
-                        <h2 className="analytics__chart-title">Visitor Analytics</h2>
+                        <h2 className="analytics__chart-title">Consent Analytics</h2>
                         <p className="analytics__chart-subtitle">
                             Showing consent data for the {getTimeRangeLabel()}.
                         </p>
@@ -394,15 +461,20 @@ function Analytics() {
                                             <div className="analytics__tooltip">
                                                 <p className="analytics__tooltip-label">{formattedDate}</p>
                                                 {payload.map((entry, index) => (
-                                                    <p key={index} className="analytics__tooltip-value">
-                                                        <span 
-                                                            className="analytics__tooltip-dot" 
-                                                            style={{ backgroundColor: entry.color }}
-                                                        ></span>
-                                                        {entry.dataKey === 'fullConsentGiven' ? 'Full Consent Given' :
-                                                         entry.dataKey === 'parseConsentGiven' ? 'Parse Consent Given' :
-                                                         'Full Consent Rejected'} {entry.value}
-                                                    </p>
+                                                    <div key={index} className="analytics__tooltip-value-content">
+                                                        <div className="analytics__tooltip-left">
+                                                            <span 
+                                                                className="analytics__tooltip-dot" 
+                                                                style={{ backgroundColor: entry.color }}
+                                                            ></span>
+                                                            <span className="analytics__tooltip-value">
+                                                                {entry.dataKey === 'fullConsentGiven' ? 'Full Consent Given' :
+                                                                entry.dataKey === 'parseConsentGiven' ? 'Parse Consent Given' :
+                                                                'Full Consent Rejected'}
+                                                            </span>
+                                                        </div>
+                                                        <span className="analytics__tooltip-value">{entry.value}</span>
+                                                    </div>
                                                 ))}
                                             </div>
                                         );
@@ -459,22 +531,24 @@ function Analytics() {
                                     <path d="M12 8.01172V8.00172" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                                 </svg>
                                 <Tooltip
-                                    message="Total number of pages tracked on your website"
+                                    message="Total number of pages tracked on your website (12 max)"
                                     open={activeTooltip === 'pages'}
-                                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                    width="auto"
+                                    responsivePosition={{ desktop: 'top', tablet: 'right', mobile: 'right' }}
+                                    responsiveAnimation={{ desktop: 'SCALE_BOTTOM', tablet: 'SCALE_LEFT', mobile: 'SCALE_LEFT' }}
+                                    width="200px"
                                 />
                             </span>
                     </div>
 
                     <div className="analytics__radial-chart-container">
-                        <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pagesData} startAngle={90} endAngle={450}>
+                        <RadialBarChart key={`pages-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pagesData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, pagesMax]} tick={false} />
-                            <ChartTooltip 
-                                content={<RadialTooltip currentValue={pagesValue} maxValue={pagesMax} unit="Pages" />}
-                                cursor={false}
+                            <RadialBar 
+                                dataKey="value" 
+                                cornerRadius={10} 
+                                fill="var(--analytics-radial-chart-fill)" 
+                                background={{ fill: "var(--analytics-radial-chart-background)" }}
                             />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{pagesValue}</span>
@@ -502,22 +576,24 @@ function Analytics() {
                                     <path d="M12 8.01172V8.00172" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                                 </svg>
                                 <Tooltip
-                                    message="Number of security scans performed on your website"
+                                    message="Number of security scans performed on your website (3 max)"
                                     open={activeTooltip === 'scans'}
-                                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                    width="auto"
+                                    responsivePosition={{ desktop: 'top', tablet: 'right', mobile: 'right' }}
+                                    responsiveAnimation={{ desktop: 'SCALE_BOTTOM', tablet: 'SCALE_LEFT', mobile: 'SCALE_LEFT' }}
+                                    width="200px"
                                 />
                             </span>
                     </div>
 
                     <div className="analytics__radial-chart-container">
-                        <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={scansData} startAngle={90} endAngle={450}>
+                        <RadialBarChart key={`scans-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={scansData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, scansMax]} tick={false} />
-                            <ChartTooltip 
-                                content={<RadialTooltip currentValue={scansValue} maxValue={scansMax} unit="Scans" />}
-                                cursor={false}
+                            <RadialBar 
+                                dataKey="value" 
+                                cornerRadius={10} 
+                                fill="var(--analytics-radial-chart-fill)" 
+                                background={{ fill: "var(--analytics-radial-chart-background)" }}
                             />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{scansValue}</span>
@@ -545,22 +621,24 @@ function Analytics() {
                                     <path d="M12 8.01172V8.00172" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                                 </svg>
                                 <Tooltip
-                                    message="Proof of Concept implementations for your website"
+                                    message="Proof of Concept implementations for your website (3 max)"
                                     open={activeTooltip === 'poc'}
-                                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                    width="auto"
+                                    responsivePosition={{ desktop: 'top', tablet: 'right', mobile: 'right' }}
+                                    responsiveAnimation={{ desktop: 'SCALE_BOTTOM', tablet: 'SCALE_LEFT', mobile: 'SCALE_LEFT' }}
+                                    width="200px"
                                 />
                             </span>
                     </div>
 
                     <div className="analytics__radial-chart-container">
-                        <RadialBarChart width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pocData} startAngle={90} endAngle={450}>
+                        <RadialBarChart key={`poc-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pocData} startAngle={90} endAngle={450}>
                             <PolarAngleAxis type="number" domain={[0, pocMax]} tick={false} />
-                            <ChartTooltip 
-                                content={<RadialTooltip currentValue={pocValue} maxValue={pocMax} unit="PoC" />}
-                                cursor={false}
+                            <RadialBar 
+                                dataKey="value" 
+                                cornerRadius={10} 
+                                fill="var(--analytics-radial-chart-fill)" 
+                                background={{ fill: "var(--analytics-radial-chart-background)" }}
                             />
-                            <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
                         </RadialBarChart>
                         <div className="analytics__radial-chart-center">
                             <span className="analytics__radial-chart-value">{pocValue}</span>

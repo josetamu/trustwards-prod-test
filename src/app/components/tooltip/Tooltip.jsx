@@ -10,32 +10,66 @@ export function Tooltip({
   className = '',
   responsivePosition,
   open = false,
-  width = '100px',
-  animationType = 'SCALE_TOP',
+  width,
+  animationType = 'SCALE_TOOLTIP_TOP',
+  responsiveAnimation,
+  showArrows = true,
 }) {
   const tooltipId = useId();
   const tooltipRef = useRef(null);
   const [fixedStyle, setFixedStyle] = useState(null);
   const defaultPosition = responsivePosition ? null : 'right';
   const [finalPosition, setFinalPosition] = useState(defaultPosition || (responsivePosition && responsivePosition.desktop));
+  const [finalAnimation, setFinalAnimation] = useState(animationType);
+  const [finalShowArrows, setFinalShowArrows] = useState(showArrows);
 
-  // Handle responsive position adjustment
+  // Handle responsive position and animation adjustment
   useEffect(() => {
     if (!responsivePosition) {
       setFinalPosition('right');
+      setFinalAnimation(animationType);
+      // Handle arrow visibility for non-responsive case
+      if (typeof showArrows === 'boolean') {
+        setFinalShowArrows(showArrows);
+      } else {
+        setFinalShowArrows(showArrows.desktop ?? true);
+      }
       return;
     }
     const handleResize = () => {
       if (window.innerWidth <= 467) {
         setFinalPosition(responsivePosition.mobile);
+        setFinalAnimation(responsiveAnimation?.mobile || animationType);
+        // Set arrow visibility for mobile
+        if (typeof showArrows === 'boolean') {
+          setFinalShowArrows(showArrows);
+        } else {
+          setFinalShowArrows(showArrows.mobile ?? true);
+        }
+      } else if (window.innerWidth <= 1100) {
+        setFinalPosition(responsivePosition.tablet || responsivePosition.mobile);
+        setFinalAnimation(responsiveAnimation?.tablet || responsiveAnimation?.mobile || animationType);
+        // Set arrow visibility for tablet
+        if (typeof showArrows === 'boolean') {
+          setFinalShowArrows(showArrows);
+        } else {
+          setFinalShowArrows(showArrows.tablet ?? showArrows.mobile ?? true);
+        }
       } else {
         setFinalPosition(responsivePosition.desktop);
+        setFinalAnimation(responsiveAnimation?.desktop || animationType);
+        // Set arrow visibility for desktop
+        if (typeof showArrows === 'boolean') {
+          setFinalShowArrows(showArrows);
+        } else {
+          setFinalShowArrows(showArrows.desktop ?? true);
+        }
       }
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [responsivePosition]);
+  }, [responsivePosition, responsiveAnimation, animationType, showArrows]);
 
   // Positioning logic for sidebar
   /*
@@ -72,13 +106,13 @@ export function Tooltip({
       {open && (
         <motion.div
           key="tooltip"
-          className={`tooltip tooltip--${finalPosition} ${className}`}
+          className={`tooltip tooltip--${finalPosition} ${!finalShowArrows ? 'tooltip--no-arrows' : ''} ${className}`}
           role="tooltip"
           aria-live="polite"
           id={tooltipId}
           ref={tooltipRef}
           style={finalPosition === 'sidebar' && fixedStyle ? { ...fixedStyle, ...(width ? { '--tooltip-width': width } : {}) } : (width ? { '--tooltip-width': width } : {})}
-          {...getAnimTypes().find(anim => anim.name === animationType)}
+          {...getAnimTypes().find(anim => anim.name === finalAnimation)}
         >
           <div className="tooltip__mask">
             <span className="tooltip__message">{message}</span>

@@ -26,13 +26,33 @@ export const getAnimTypes = () => [
       ease: "easeOut" 
     }
   },
+  {
+    name: 'SCALE_TOOLTIP_TOP',
+    initial: { opacity: 0, transform: 'scale(0.7) translateY(-5px)' },
+    animate: { opacity: 1, transform: 'scale(1) translateY(0px)' },
+    exit: { opacity: 0, transform: 'scale(0.7) translateY(-5px)' },
+    transition: { 
+      duration: getAnimationDuration(0.2), 
+      ease: "easeOut" 
+    }
+  },
 
-  // Sidebar tooltip animation
+  // Side tooltip animations
   {
     name: 'SCALE_LEFT',
     initial: { opacity: 0, transform: 'scale(0.9) translateX(-20px)' },
     animate: { opacity: 1, transform: 'scale(1) translateX(0px)' },
     exit: { opacity: 0, transform: 'scale(0.9) translateX(-20px)' },
+    transition: { 
+      duration: getAnimationDuration(0.2), 
+      ease: "easeOut" 
+    }
+  },
+  {
+    name: 'SCALE_RIGHT',
+    initial: { opacity: 0, transform: 'scale(0.9) translateX(20px)' },
+    animate: { opacity: 1, transform: 'scale(1) translateX(0px)' },
+    exit: { opacity: 0, transform: 'scale(0.9) translateX(20px)' },
     transition: { 
       duration: getAnimationDuration(0.2), 
       ease: "easeOut" 

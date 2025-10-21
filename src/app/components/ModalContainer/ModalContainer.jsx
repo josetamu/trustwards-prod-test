@@ -208,7 +208,11 @@ export function ModalContainer({ isOpen, onClose, children, onBackdropClick, mod
     if (e.target.className.includes('modal__backdrop')) {
       // Prevent sidebar from closing when clicking on modal backdrop
       e.stopPropagation();
-      onBackdropClick?.(e) || onClose();
+      if (onBackdropClick) {
+        onBackdropClick(e);
+      } else {
+        onClose();
+      }
     }
   }, [onBackdropClick, onClose]);
 

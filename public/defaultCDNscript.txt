@@ -734,7 +734,6 @@ class TrustwardsConsentManager {
         }
 
         async function storeConsentInSupabase(consentData) {
-            console.log(consentData.siteid);
             const res = await fetch('https://hvtufjcqfqnlottuhhzz.supabase.co/functions/v1/store-consent-endpoint',
                 {
                   method: "POST",

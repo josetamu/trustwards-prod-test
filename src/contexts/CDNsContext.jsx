@@ -27,7 +27,7 @@ export const createCDN = async (siteId) => {
         .upload(`${siteId}.js`, new Blob([bytes], { type: "application/javascript" }), {
         upsert: true,
         contentType: "application/javascript",
-        cacheControl: "3600",
+        cacheControl: "no-cache, no-store, must-revalidate",
         });
   
     if (uploadErr){
