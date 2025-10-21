@@ -2065,7 +2065,7 @@ if (name === 'Weight') {
     );
 }
 
-const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified, setBwUnified, brUnified, setBrUnified, inline}) => {
+const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified, setBwUnified, brUnified, setBrUnified, nextLine}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));
@@ -2461,7 +2461,7 @@ const parseRadius = useCallback((radiusStr) => {
     };
 
     return (
-        <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
         <span className="tw-builder__settings-subtitle">{name}
             <StylesDeleter 
                 value={currentBorderWidth || currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth || getGlobalCSSValue?.('border-style') || getGlobalCSSValue?.('border-color') || currentRadius || currentBorderTopLeftRadius || currentBorderTopRightRadius || currentBorderBottomRightRadius || currentBorderBottomLeftRadius}
@@ -2517,7 +2517,7 @@ const parseRadius = useCallback((radiusStr) => {
                                     name={'Border Color'}
                                 />
                             
-                            <div className={`tw-builder__settings-setting ${inline ? 'tw-builder__settings-setting--column' : ''}`}>
+                            <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Width
                                         <StylesDeleter 
                                             value={currentBorderWidth || currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth}
@@ -2700,7 +2700,7 @@ const parseRadius = useCallback((radiusStr) => {
     )
 }
 
-const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, inline}) => {
+const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, nextLine}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));    
