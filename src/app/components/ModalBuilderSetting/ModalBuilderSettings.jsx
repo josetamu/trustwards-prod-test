@@ -144,6 +144,7 @@ export const ModalBuilderSettings = ({onClose, showNotification}) => {
                                     message="May not work with bot blockers or anti-automation tools. Be patient, it may take a few seconds" 
                                     open={activeTooltip === 'liveWebsite'} 
                                     responsivePosition={{ desktop: 'left', mobile: 'left' }}
+                                    animationType="SCALE_RIGHT"
                                     width="auto"
                                     />
                                 </label>

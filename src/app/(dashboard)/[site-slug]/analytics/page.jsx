@@ -533,8 +533,9 @@ function Analytics() {
                                 <Tooltip
                                     message="Total number of pages tracked on your website (12 max)"
                                     open={activeTooltip === 'pages'}
-                                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                    width="auto"
+                                    responsivePosition={{ desktop: 'top', tablet: 'right', mobile: 'right' }}
+                                    responsiveAnimation={{ desktop: 'SCALE_BOTTOM', tablet: 'SCALE_LEFT', mobile: 'SCALE_LEFT' }}
+                                    width="200px"
                                 />
                             </span>
                     </div>
@@ -577,8 +578,9 @@ function Analytics() {
                                 <Tooltip
                                     message="Number of security scans performed on your website (3 max)"
                                     open={activeTooltip === 'scans'}
-                                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                    width="auto"
+                                    responsivePosition={{ desktop: 'top', tablet: 'right', mobile: 'right' }}
+                                    responsiveAnimation={{ desktop: 'SCALE_BOTTOM', tablet: 'SCALE_LEFT', mobile: 'SCALE_LEFT' }}
+                                    width="200px"
                                 />
                             </span>
                     </div>
@@ -621,8 +623,9 @@ function Analytics() {
                                 <Tooltip
                                     message="Proof of Concept implementations for your website (3 max)"
                                     open={activeTooltip === 'poc'}
-                                    responsivePosition={{ desktop: 'top', mobile: 'top' }}
-                                    width="auto"
+                                    responsivePosition={{ desktop: 'top', tablet: 'right', mobile: 'right' }}
+                                    responsiveAnimation={{ desktop: 'SCALE_BOTTOM', tablet: 'SCALE_LEFT', mobile: 'SCALE_LEFT' }}
+                                    width="200px"
                                 />
                             </span>
                     </div>

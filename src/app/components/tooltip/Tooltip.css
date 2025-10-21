@@ -6,7 +6,7 @@
 
 /* Tooltip content mask */
 .tooltip__mask {
-  width: 100px;
+  width: var(--tooltip-width, 100px);
   position: relative;
   padding: 6px 8px;
   border-radius: 6px;
@@ -168,9 +168,13 @@
     font-size: var(--font-size-mini);
   }
 
-  /* Hide arrows for side positions on mobile */
+  /* Keep arrows for side positions on mobile */
   .tooltip--right .tooltip__mask::after,
-  .tooltip--left .tooltip__mask::after,
+  .tooltip--left .tooltip__mask::after {
+    display: block;
+  }
+  
+  /* Hide arrows for sidebar and upgrade on mobile */
   .tooltip--sidebar .tooltip__mask::after,
   .tooltip--upgrade .tooltip__mask::after {
     display: none;

@@ -32,11 +32,17 @@ export function SitesList({ openChangeModal, setIsModalOpen, setModalType, showN
   if(!allUserDataResource) return <SitesSkeleton/>;
 
   const { appearance } = allUserDataResource.read();
-  const view = appearance['View Sites'] || 'grid'; // Default to grid if not set
+  // Use appearanceSettings from context for immediate updates, fallback to resource data
+  const currentView = appearanceSettings?.['View Sites'] || appearance?.['View Sites'] || 'grid';
+  const view = currentView.toString().trim().toLowerCase();
+  
+  // Normalize 'cards' to 'grid' for backward compatibility
+  const normalizedView = view === 'cards' ? 'grid' : view;
+  
 
     return (
         <>
-        <div className={`sites__grid ${view === 'grid' ? 'sites__grid--grid' : 'sites__grid--list'}`}> 
+        <div className={`sites__grid ${normalizedView === 'grid' ? 'sites__grid--grid' : 'sites__grid--list'}`}> 
         {sortedSites.map(site => (
           user && site.userid === user.id && (
             <Site
@@ -52,7 +58,7 @@ export function SitesList({ openChangeModal, setIsModalOpen, setModalType, showN
               setIsDropdownOpen={setIsDropdownOpen}
               setSiteData={setSiteData}
               siteData={site}
-              view={view}
+              view={normalizedView}
               checkSitePicture={checkSitePicture}
               SiteStyle={SiteStyle}
               openChangeModalSettings={openChangeModalSettings}

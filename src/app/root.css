@@ -240,7 +240,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --analytics-area-chart-rejected-gradient-end: #4B5563;
   --analytics-area-chart-rejected-stroke: #6B7280;
 
-  --analytics-radial-chart-icon-color: #5E5E5E;
+  --analytics-radial-chart-icon-color: #494E58;
   --analytics-chart-tooltip: #494E58;
   --analytics-chart-tooltip-color: #FFFFFF;
   --analytics-chart-tooltip-value-color: #e0e0e0;
@@ -494,7 +494,7 @@ html[data-theme="dark"] {
   --analytics-area-chart-rejected-gradient-end: #4B5563;
   --analytics-area-chart-rejected-stroke: #6B7280;
 
-  --analytics-radial-chart-icon-color: #666666;
+  --analytics-radial-chart-icon-color: #9B9B9B;
   --analytics-area-chart-tooltip: #444444;
   --analytics-area-chart-tooltip-color: #FFFFFF;
   --analytics-area-chart-tooltip-value-color: #e0e0e0;

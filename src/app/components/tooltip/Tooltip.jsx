@@ -10,32 +10,40 @@ export function Tooltip({
   className = '',
   responsivePosition,
   open = false,
-  width = '100px',
+  width,
   animationType = 'SCALE_TOP',
+  responsiveAnimation,
 }) {
   const tooltipId = useId();
   const tooltipRef = useRef(null);
   const [fixedStyle, setFixedStyle] = useState(null);
   const defaultPosition = responsivePosition ? null : 'right';
   const [finalPosition, setFinalPosition] = useState(defaultPosition || (responsivePosition && responsivePosition.desktop));
+  const [finalAnimation, setFinalAnimation] = useState(animationType);
 
-  // Handle responsive position adjustment
+  // Handle responsive position and animation adjustment
   useEffect(() => {
     if (!responsivePosition) {
       setFinalPosition('right');
+      setFinalAnimation(animationType);
       return;
     }
     const handleResize = () => {
       if (window.innerWidth <= 467) {
         setFinalPosition(responsivePosition.mobile);
+        setFinalAnimation(responsiveAnimation?.mobile || animationType);
+      } else if (window.innerWidth <= 1100) {
+        setFinalPosition(responsivePosition.tablet || responsivePosition.mobile);
+        setFinalAnimation(responsiveAnimation?.tablet || responsiveAnimation?.mobile || animationType);
       } else {
         setFinalPosition(responsivePosition.desktop);
+        setFinalAnimation(responsiveAnimation?.desktop || animationType);
       }
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [responsivePosition]);
+  }, [responsivePosition, responsiveAnimation, animationType]);
 
   // Positioning logic for sidebar
   /*
@@ -78,7 +86,7 @@ export function Tooltip({
           id={tooltipId}
           ref={tooltipRef}
           style={finalPosition === 'sidebar' && fixedStyle ? { ...fixedStyle, ...(width ? { '--tooltip-width': width } : {}) } : (width ? { '--tooltip-width': width } : {})}
-          {...getAnimTypes().find(anim => anim.name === animationType)}
+          {...getAnimTypes().find(anim => anim.name === finalAnimation)}
         >
           <div className="tooltip__mask">
             <span className="tooltip__message">{message}</span>
