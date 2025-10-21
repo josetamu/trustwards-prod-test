@@ -11,7 +11,7 @@ export function Tooltip({
   responsivePosition,
   open = false,
   width,
-  animationType = 'SCALE_TOP',
+  animationType = 'SCALE_TOOLTIP_TOP',
   responsiveAnimation,
 }) {
   const tooltipId = useId();

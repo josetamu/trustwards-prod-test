@@ -47,6 +47,8 @@
     max-width: 100%; /* Handlebars will change this to fixed px */ 
 
     overflow: auto;
+    position: relative;
+    transform: translate(0);
 }
 .tw-builder__canvas::-webkit-scrollbar {
     width: 4px;
@@ -62,7 +64,7 @@
     border: 1px solid var(--border-fresco-color);
     box-shadow: var(--fancy-shadow);
 
-    margin: 10px 0;
+ 
 
     height: 100%;
     max-height: fit-content;
