@@ -36,6 +36,16 @@ export const getAnimTypes = () => [
       ease: "easeOut" 
     }
   },
+  {
+    name: 'SCALE_TOOLTIP_BOTTOM',
+    initial: { opacity: 0, transform: 'scale(0.7) translateY(5px)' },
+    animate: { opacity: 1, transform: 'scale(1) translateY(0px)' },
+    exit: { opacity: 0, transform: 'scale(0.7) translateY(5px)' },
+    transition: { 
+      duration: getAnimationDuration(0.2), 
+      ease: "easeOut" 
+    }
+  },
 
   // Side tooltip animations
   {

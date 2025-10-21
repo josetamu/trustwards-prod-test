@@ -107,7 +107,7 @@
     width: 16px;
     height: 16px;
     background-color: transparent;
-    color: var(--analytics-radial-chart-icon-color);
+    color: var(--tooltip-info-color);
     cursor: help;
     position: relative;
 }

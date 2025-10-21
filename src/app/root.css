@@ -190,6 +190,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   /*Tooltip*/
   --tooltip-background: #494E58;
   --tooltip-color: #FFFFFF;
+  --tooltip-info-color: #494E58;
 
   /*Notification*/
   --notification-color: #FFFFFF;
@@ -248,7 +249,6 @@ System selected: will fallback to root or html[data-theme="dark"]
   --analytics-area-chart-rejected-gradient-end: #4B5563;
   --analytics-area-chart-rejected-stroke: #6B7280;
 
-  --analytics-radial-chart-icon-color: #494E58;
   --analytics-chart-tooltip: #494E58;
   --analytics-chart-tooltip-color: #FFFFFF;
   --analytics-chart-tooltip-value-color: #e0e0e0;
@@ -468,6 +468,7 @@ html[data-theme="dark"] {
   /*Tooltip*/
   --tooltip-background: #444444;
   --tooltip-color: #FFFFFF;
+  --tooltip-info-color: #9B9B9B;
 
   /*Notification*/
 
@@ -515,7 +516,6 @@ html[data-theme="dark"] {
   --analytics-area-chart-rejected-gradient-end: #4B5563;
   --analytics-area-chart-rejected-stroke: #6B7280;
 
-  --analytics-radial-chart-icon-color: #9B9B9B;
   --analytics-area-chart-tooltip: #444444;
   --analytics-area-chart-tooltip-color: #FFFFFF;
   --analytics-area-chart-tooltip-value-color: #e0e0e0;
@@ -633,6 +633,8 @@ html[data-theme="dark"] {
 
   --states-background: #505050;
   --states-active-color: #FFFFFF;
+
+  --tooltip-right-panel-color: #666;
 }
 
 html[data-theme="dark"] .sidebar__logo-img{

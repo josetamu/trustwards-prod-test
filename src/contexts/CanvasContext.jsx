@@ -845,6 +845,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 children: [],
                 classList: ["tw-block"],
                 nestable: true,
+                defaultCSS: {'display': 'flex' },
             },
             'image': {
                 elementType: "image",
@@ -866,7 +867,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 tagName: "div",
                 label: "Divider",
                 classList: ["tw-divider"],
-                defaultCSS: { 'width': '100%', 'height': '2px', 'background-color': '#E6E6E6' }
+                defaultCSS: { 'background-color': '#E6E6E6' }
             },
             'text': {
                 elementType: "text",
@@ -875,7 +876,6 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Text",
                 text: "New Text 2",
                 classList: ["tw-text"],
-                defaultCSS: {'width': 'fit-content', 'min-width': 'fit-content' },
             },
             'accept-all': {
                 elementType: "button",
