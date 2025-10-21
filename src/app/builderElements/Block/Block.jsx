@@ -10,8 +10,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
     const RealTag = (anchorAncestor && Tag === 'a') ? 'div' : Tag;
 
     const dataAttributes = node.attributes;
-    console.log(Tag);
-    console.log(RealTag);
+
     /*
     dataAttributes format: { 'data-text': 'New Text 2' }
     we can now check for a especific attribute to do conditional HTML rendering
