@@ -19,7 +19,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
 
     const groupControls =  {
             header: [
-                {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span'], placeholder: 'h3', JSONProperty: 'tagName'},
+                {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span','a'], placeholder: 'h3', JSONProperty: 'tagName'},
                 { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
                 { name: 'Text', type: 'textarea', placeholder: 'Text goes here...', JSONProperty: 'text', nextLine: true},
             ],
