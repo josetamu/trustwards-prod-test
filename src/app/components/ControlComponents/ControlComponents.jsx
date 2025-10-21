@@ -195,12 +195,13 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
            <TextType
            name="Link to"
            value=""
-           placeholder="URL..."
+           placeholder="https://trustwards.io"
            JSONProperty="href"
            applyGlobalJSONChange={applyGlobalJSONChange}
            getGlobalJSONValue={getGlobalJSONValue}
            selectedId={selectedId}
            index="href"
+           nextLine={true}
         />
         )}
         {(getCurrentSelectValue() === 'flex' || (getCurrentSelectValue() === '' && placeholder === 'flex')) && (
@@ -213,6 +214,7 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                         applyGlobalCSSChange={applyGlobalCSSChange}
                         getGlobalCSSValue={getGlobalCSSValue}
                         index={`${index}-justify`}
+                        nextLine={true}
                     />
                     <ChooseType
                         name="Align"
@@ -221,6 +223,7 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                         applyGlobalCSSChange={applyGlobalCSSChange}
                         getGlobalCSSValue={getGlobalCSSValue}
                         index={`${index}-align`}
+                        nextLine={true}
                     />
                     <ChooseType
                         name="Direction"
@@ -244,7 +247,6 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                     <TextType 
                     name="Column Gap"
                     value=""
-                    placeholder="normal"
                     cssProperty="column-gap"      
                     applyGlobalCSSChange={applyGlobalCSSChange}
                     getGlobalCSSValue={getGlobalCSSValue}
@@ -254,7 +256,6 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                     <TextType 
                         name="Row Gap"
                         value=""
-                        placeholder="normal"
                         cssProperty="row-gap"
                         applyGlobalCSSChange={applyGlobalCSSChange}
                         getGlobalCSSValue={getGlobalCSSValue}
@@ -272,6 +273,7 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
             index={`${index}-justify`}
+            nextLine={true}
         />
         <ChooseType
             name="Align"
@@ -280,31 +282,32 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
             index={`${index}-align`}
+            nextLine={true}
         />
         <TextType 
             name="Template columns"
             value=""
-            placeholder="none"
             cssProperty="grid-template-columns"
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
             selectedId={selectedId}
             index="grid-template-columns"
+            nextLine={true}
         />
         <TextType 
             name="Template rows"
             value=""
-            placeholder="none"
             cssProperty="grid-template-rows"
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
             selectedId={selectedId}
             index="grid-template-rows"
+            nextLine={true}
         />
         <TextType 
             name="Auto columns"
             value=""
-            placeholder="none"
+            placeholder="auto"
             cssProperty="grid-auto-columns"
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
@@ -314,7 +317,7 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
         <TextType 
             name="Auto rows"
             value=""
-            placeholder="none"
+            placeholder="auto"
             cssProperty="grid-auto-rows"
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
@@ -334,19 +337,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             />
 
             <TextType 
-            name="Order"
-            value=""
-            placeholder="0"
-            cssProperty="order"
-            applyGlobalCSSChange={applyGlobalCSSChange}
-            getGlobalCSSValue={getGlobalCSSValue}
-            selectedId={selectedId}
-            index="grid-order"
-            />
-            <TextType 
             name="Gap"
             value=""
-            placeholder="0"
             cssProperty="gap"
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
@@ -354,12 +346,6 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             index="gap"
         />
             </>
-        )}
-        {(getCurrentSelectValue() === 'block' || getCurrentSelectValue() === 'inline-block' || getCurrentSelectValue() === 'inline') && (
-            <div className="tw-builder__settings-setting">
-                <span className="tw-builder__settings-subtitle">Order</span>
-                <input type="text" className="tw-builder__settings-input" placeholder="0" />
-            </div>
         )}
         </React.Fragment>
     )
@@ -774,7 +760,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             <input 
             type="text" 
             className="tw-builder__settings-input tw-builder__settings-input--link" 
-            placeholder="URL..." 
+            placeholder="https://stock.io/default.png" 
             ref={imageUrlRef}
             value={imageUrl}
             onChange={handleUrlChange}
@@ -3123,6 +3109,7 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
                             <span className="tw-builder__settings-properties-span">Property</span>
                             <input
                             className="tw-builder__settings-properties-input"
+                            placeholder="top"
                             value={prop.property}
                             onFocus={() => { prevPropsRef.current[i] = prop.property; }}
                             onChange={(e)=>handlePropertyChange(i, 'property', e.target.value)}

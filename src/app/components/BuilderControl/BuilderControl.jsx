@@ -171,6 +171,7 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 							responsivePosition={{ desktop: 'top', mobile: 'top' }}
 							width="auto"
 							animationType='SCALE_TOOLTIP_BOTTOM'
+							showArrows={false}
 							/>
 						</span>
 					)}

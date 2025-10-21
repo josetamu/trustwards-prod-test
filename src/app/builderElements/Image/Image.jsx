@@ -19,32 +19,25 @@ export const Image = (node, nodeProps = {}) => {
     const groupControls =  {
         header: [
             { name: 'Tag', type: 'select', placeholder: 'img', options: ['img', 'figure', 'div'], JSONProperty: 'tagName'},
-            { name: 'Image', type: 'image', JSONProperty: 'src', nextLine: false, nextLine2: true},
+            { name: 'Image', type: 'image', JSONProperty: 'src', nextLine: true, nextLine2: true},
 
         ],
         body: [
             {
-                label: 'Layout',
-                controls: [
-                    { name: 'Direction', type: 'choose', category: 'direction', cssProperty: 'flex-direction'},
-                    { name: 'Justify', type: 'choose', category: 'justify', cssProperty: 'justify-content'},
-                    { name: 'Align', type: 'choose', category: 'align', cssProperty: 'align-items'},
-                    { name: 'Wrap', type: 'select', placeholder: 'Wrap', options: ['Wrap', 'No Wrap'], cssProperty: 'flex-wrap'},
-                    { name: 'Gap', type: 'text', placeholder: '0', cssProperty: 'gap', autoUnit: 'px'},
-                ]
-            },
-            {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
                     { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
+                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                 ]
             },
             {
                 label: 'Size',
                 controls: [
+                    { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px'},
                     { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
                     { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                    { name: 'Min. Height', type: 'text', cssProperty: 'min-height', autoUnit: 'px'},
                     { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
                     { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
                 ]
@@ -52,21 +45,27 @@ export const Image = (node, nodeProps = {}) => {
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true},
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color', nextLine: true },
                 ]
             },
             {
                 label: 'Styles',
                 controls: [
-                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                     { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
                     { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
                     { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                    {
+                        name: 'Mix blend mode',
+                        type: 'select',
+                        placeholder: 'normal',
+                        options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
+                        cssProperty: 'mix-blend-mode'
+                    },
                     {name: 'Border', type: 'border'},
                     {name: 'Shadow', type: 'box-shadow'},
-                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
                 ]
-            }
+            },
         ]
     }
 

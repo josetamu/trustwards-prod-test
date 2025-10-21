@@ -10,8 +10,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
     const RealTag = (anchorAncestor && Tag === 'a') ? 'div' : Tag;
 
     const dataAttributes = node.attributes;
-    console.log(Tag);
-    console.log(RealTag);
+
     /*
     dataAttributes format: { 'data-text': 'New Text 2' }
     we can now check for a especific attribute to do conditional HTML rendering
@@ -27,8 +26,8 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
-                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
                     { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                 ]
             },
@@ -46,7 +45,7 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color' },
+                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color', nextLine: true },
                 ]
             },
             {
@@ -58,13 +57,13 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
                     {
                         name: 'Mix blend mode',
                         type: 'select',
-                        defaultValue: 'normal',
+                        placeholder: 'normal',
                         options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
                         cssProperty: 'mix-blend-mode'
                     },
                     {name: 'Border', type: 'border'},
                     {name: 'Shadow', type: 'box-shadow'},
-                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
                 ]
             },
         ]
