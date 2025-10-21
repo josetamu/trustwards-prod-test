@@ -90,6 +90,9 @@ function Builder() {
   //Context menu state
   const [clipboard, setClipboard] = useState(null);
 
+  //Fonts ready state
+  const [fontsReady, setFontsReady] = useState(false);
+  const [fontOptions, setFontOptions] = useState([]);
 
   // Set userSettings based on modalType
   useEffect(() => {
@@ -237,6 +240,14 @@ function Builder() {
     return () => {
       authListener?.subscription.unsubscribe();
     };
+  }, []);
+
+  useEffect(() => {
+    // Cargar las opciones de fuentes lo antes posible
+    fetch('/api/fonts')
+      .then(r => r.json())
+      .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
+      .catch(() => setFontOptions([]));
   }, []);
 
   // Set the accent color of the builder
@@ -524,6 +535,12 @@ const renderOffcanvas = () => {
       document.documentElement.classList.remove('trustwards-builder')
     }
   }, [])
+ // Pre-cargar fuentes de Google en document.head para tenerlas en caché
+useEffect(() => {
+   if (fontOptions.length > 0) {
+    setFontsReady(true);
+  }
+}, [site?.JSON, fontOptions]);
 
   // State to control both panels (left and right)
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true)
@@ -552,10 +569,10 @@ const renderOffcanvas = () => {
   const isMobile = useMediaQuery('(max-width: 820px)');
 
   return (
-  <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime}>
+  <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime} fontOptions={fontOptions}>
  <Loader isVisible={isLoading || isScreenshotLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading}/>
     {isMobile && <MobileWarning/>}
-    {!isMobile && !isLoading && ( 
+    {!isMobile && !isLoading && fontsReady && ( 
     <div className="tw-builder">
       <BuilderThemes isFirstTime={isFirstTime} setIsFirstTime={setIsFirstTime} isManualThemesOpen={isManualThemesOpen} setIsManualThemesOpen={setIsManualThemesOpen} showNotification={showNotification} siteSlug={siteSlug}/>
 

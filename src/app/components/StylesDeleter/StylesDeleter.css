@@ -23,13 +23,12 @@
     display: flex;
 }
 .tw-builder__settings-deleter-cross{
-
     display: none;
     cursor: pointer;
     font-size: 8px;
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
-    color: #000;
+    color: red;
 }
  .tw-builder__settings-deleter:hover .tw-builder__settings-deleter-cross{
     display: block;
