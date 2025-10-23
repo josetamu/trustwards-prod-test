@@ -10,6 +10,8 @@ import './ControlComponents.css';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAnimTypes } from '@animations/animations';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { getAllIconNames, getIconByName, formatIconName } from '@/lib/hugeicons';
 
 
 //Apply the control on enter(applying the blur function)
@@ -21,12 +23,14 @@ const applyOnEnter = (e,f) => {
 }
 
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, dataAttribute, nextLine}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
+        // Support dataAttribute (for nested attributes like data-icon-size)
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-        const savedValue = savedJSONValue ?? savedCSSValue;
+        const savedValue = dataAttrValue ?? savedJSONValue ?? savedCSSValue;
 
         
         return savedValue ?? '';
@@ -34,19 +38,24 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
 
     //Update the value when the selected element changes
     useEffect(() => {
+        // Support dataAttribute (for nested attributes like data-icon-size)
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-        const savedValue = savedJSONValue ?? savedCSSValue;
+        const savedValue = dataAttrValue ?? savedJSONValue ?? savedCSSValue;
       
         setTextValue(savedValue ?? '');
         
-    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
+    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, dataAttribute, value]);
 
 
     //Permit change input value
     const handleChange = (e) => {
         const inputValue = e.target.value;
-        if(JSONProperty && applyGlobalJSONChange) {
+        // Priority: dataAttribute > JSONProperty > cssProperty
+        if(dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, inputValue);
+        } else if(JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, inputValue);
         } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, inputValue);
@@ -54,12 +63,14 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     
     };
 
+    // Determine which property to use for StylesDeleter
+    const effectiveJSONProperty = dataAttribute ? `attributes.${dataAttribute}` : JSONProperty;
 
     
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={JSONProperty}/>
+            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={effectiveJSONProperty}/>
             </span>
            
             <input 
@@ -587,7 +598,6 @@ const handlePercentageChange = (e) => {
 const perc = parseInt((percentage??'').replace('%', ''));
 const effectivePerc = (isNaN(perc) || perc === 0) ? 100 : perc;
 const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'transparent';
-console.log(finalColor);
 
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
@@ -3079,6 +3089,220 @@ const wrappedApplyCSS = useCallback((prop, val) => {
     )
 }
 
+const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, placeholder, nextLine}) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [open, setOpen] = useState(false);
+    const [selected, setSelected] = useState('');
+    const containerRef = useRef(null);
+    const { preloadedIcons } = useCanvas();
+    
+    // Lazy loading state - renderizar solo los primeros iconos y cargar más al hacer scroll
+    const [displayedCount, setDisplayedCount] = useState(50); // Mostrar solo 50 iconos inicialmente
+    const gridRef = useRef(null);
+
+    // Usar iconos precargados del contexto en lugar de calcularlos cada vez
+    const iconOptions = useMemo(() => {
+        if (options && options.length > 0) {
+            return options; // Usar opciones proporcionadas si existen
+        }
+        
+        // Usar iconos precargados del contexto (ya calculados una sola vez al cargar el builder)
+        if (preloadedIcons && preloadedIcons.length > 0) {
+            return preloadedIcons;
+        }
+        
+        // Fallback: calcular si no hay iconos precargados (solo para compatibilidad)
+        const allIconNames = getAllIconNames();
+        return allIconNames.map(iconName => ({
+            value: iconName,
+            label: formatIconName(iconName)
+        }));
+    }, [options, preloadedIcons]);
+
+    // Get saved value from dataAttribute (using nested path)
+    useEffect(() => {
+        const savedValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
+        setSelected(savedValue || '');
+    }, [getGlobalJSONValue, dataAttribute]);
+
+
+    // Filter options based on search term
+    const filteredOptions = useMemo(() => {
+        if (!searchTerm) return iconOptions;
+        const lowerSearch = searchTerm.toLowerCase();
+        return iconOptions.filter(opt =>
+            opt.label.toLowerCase().includes(lowerSearch) ||
+            opt.value.toLowerCase().includes(lowerSearch)
+        );
+    }, [iconOptions, searchTerm]);
+    
+    // Reset displayed count when search changes or dropdown opens
+    useEffect(() => {
+        if (open) {
+            setDisplayedCount(50);
+        }
+    }, [open, searchTerm]);
+    
+    // Lazy loading: cargar más iconos al hacer scroll
+    useEffect(() => {
+        const handleScroll = (e) => {
+            const element = e.target;
+            const scrolledToBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 100;
+            
+            if (scrolledToBottom && displayedCount < filteredOptions.length) {
+                // Cargar 50 iconos más
+                setDisplayedCount(prev => Math.min(prev + 50, filteredOptions.length));
+            }
+        };
+        
+        const gridElement = gridRef.current;
+        if (gridElement && open) {
+            gridElement.addEventListener('scroll', handleScroll);
+            return () => gridElement.removeEventListener('scroll', handleScroll);
+        }
+    }, [open, displayedCount, filteredOptions.length]);
+
+
+    // Handle option selection (save to nested path)
+    const handleSelect = (value) => {
+        setSelected(value);
+        if (dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, value);
+        }
+        setOpen(false);
+        setSearchTerm('');
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setOpen(false);
+                setSearchTerm('');
+            }
+        };
+
+        if (open) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [open]);
+
+    // Get display label for selected value
+    const selectedLabel = useMemo(() => {
+        if (!selected) return '';
+        const option = iconOptions.find(opt => opt.value === selected);
+        return option ? option.label : formatIconName(selected);
+    }, [selected, iconOptions]);
+
+    // Get selected icon for preview
+    const selectedIcon = useMemo(() => {
+        if (!selected) return null;
+        return getIconByName(selected);
+    }, [selected]);
+
+    return (
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+            <span className="tw-builder__settings-subtitle">{name}
+                <StylesDeleter 
+                    applyGlobalJSONChange={applyGlobalJSONChange} 
+                    getGlobalJSONValue={getGlobalJSONValue} 
+                    value={selected} 
+                    JSONProperty={`attributes.${dataAttribute}`}
+                    onDelete={() => setSelected('')}
+                />
+            </span>
+            
+            <div className="tw-builder__settings-select-container" tabIndex={0} role="button" aria-label="Select icon" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setOpen(!open); } }} ref={containerRef}>
+                {/* Main button */}
+                <button
+                    onClick={() => setOpen(!open)}
+                    className="tw-builder__settings-select"
+                    tabIndex={-1}
+                >
+                    {selected && selectedIcon ? (
+                        <span className="tw-builder__settings-select-value">
+                            <HugeiconsIcon icon={selectedIcon} size={15} color="currentColor"/>
+                            <span className="tw-builder__settings-select-value--icon">
+                                {selectedLabel}
+                            </span>
+                        </span>
+                    ) : (
+                        <span className="tw-builder__settings-select-placeholder">
+                            {placeholder || 'Select an icon...'}
+                        </span>
+                    )}
+                </button>
+                
+                <span className="tw-builder__settings-arrow">
+                    <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                        <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+                    </svg>
+                </span>
+        
+                {/* Dropdown list */}
+                <AnimatePresence>
+                {open && (
+                    <motion.div 
+                        className="tw-builder__settings-options tw-builder__settings-options--icons" 
+                        {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}
+                        style={{ maxHeight: '320px', overflowY: 'auto' }}
+                        ref={gridRef}
+                    >
+                        {/* Search input inside dropdown */}
+                        <div className="tw-builder__settings-search">
+                            <input
+                                type="text"
+                                placeholder="Search icon..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="tw-builder__settings-search-input"
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => e.stopPropagation()}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="tw-builder__settings-divider"></div>
+                        
+                        {/* Icons grid - Solo renderiza los primeros displayedCount iconos */}
+                        {filteredOptions.length > 0 ? (
+                            <div className="tw-builder__settings-icons-grid">
+                                {filteredOptions.slice(0, displayedCount).map((option) => {
+                                    const icon = getIconByName(option.value);
+                                    const isSelected = selected === option.value;
+                                    
+                                    return (
+                                        <button
+                                            key={option.value}
+                                            onClick={() => handleSelect(option.value)}
+                                            className={`tw-builder__settings-icon-option ${isSelected ? 'tw-builder__settings-icon-option--selected' : ''}`}
+                                            title={option.label}
+                                        >
+                                            {icon && (
+                                                <HugeiconsIcon 
+                                                    icon={icon} 
+                                                    size={21} 
+                                                    strokeWidth={1.5} 
+                                                />
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="tw-builder__settings-icons-grid-empty">
+                                No icons found
+                            </div>
+                        )}
+                    </motion.div>
+                )}
+                </AnimatePresence>
+            </div>
+        </div>
+    );
+};
+
 const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
     const [properties, setProperties] = useState([ { property: '', value: '' } ]);
 
@@ -3432,7 +3656,25 @@ const getEnterAnimationProps = useCallback(() => {
         if(!activeRootNode) return null;
 
         const selectedElement = findElement(activeRootNode, selectedId);
-        return selectedElement?.[JSONProperty] || null;
+        if(!selectedElement) return null;
+
+        // Support nested properties with dot notation (e.g., "attributes.data-icon-name")
+        if (JSONProperty.includes('.')) {
+            const keys = JSONProperty.split('.');
+            let current = selectedElement;
+            
+            for (const key of keys) {
+                if (current && typeof current === 'object' && key in current) {
+                    current = current[key];
+                } else {
+                    return null;
+                }
+            }
+            
+            return current;
+        }
+
+        return selectedElement[JSONProperty] || null;
 
     },[JSONtree, selectedId, activeRoot]);
 
@@ -3563,9 +3805,11 @@ useEffect(() => {
 
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} nextLine={item.nextLine} />;
+                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine} />;
             case 'super-select':
                 return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
+            case 'icons':
+                return <IconType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine}/>;
             case 'panel':
                 return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
             case 'color':

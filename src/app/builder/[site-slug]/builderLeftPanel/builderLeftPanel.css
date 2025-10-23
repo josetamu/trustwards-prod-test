@@ -532,7 +532,7 @@
     width: 4px;
     height: 1px;
     border-radius: 100px;
-    background-color: var(--square-icon-background);
+    background-color: white;
 }
 
 /* ==========================================================================

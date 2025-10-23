@@ -85,19 +85,19 @@
     height: auto;
     background-color: var(--right-panel-dropdown-background);
     z-index: 2;
-    border-radius: 5px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
 }
 .tw-builder__settings-classes-adder {
     width: 100%;
-    height: 25px;
+    height: fit-content;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 5px 10px 5px;
-
+    padding: 10px;
+    padding-bottom: 7px;
+    gap: 12px;
 }
 
 .tw-builder__settings-classes-add-input {
@@ -105,7 +105,6 @@
     height: 100%;
     border-radius: 5px;
     border: none;
-    padding: 10px 5px;
     background-color: transparent;
     color: #FFFFFF;
     font-size: var(--font-size-small);
@@ -126,7 +125,7 @@
 }
 .tw-builder__settings-classes-add-span{
     color: #FFFFFF;
-    font-size: 11px;
+    font-size: var(--font-size-mini);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
@@ -140,6 +139,8 @@
     width: 100%;
     height: 1px;
     background-color: #363636;
+    margin-top: 5px;
+    margin-bottom: 7px;
 }
 
 .tw-builder__settings-classes-searcher {
@@ -169,16 +170,18 @@
 }
 .tw-builder__settings-classes-list{
     padding: 7px;
+    padding-top: 0px;
+    margin-top: 7px;
+
     display: flex;
     flex-direction: column;
     max-height: 150px;
     overflow-y: auto;
     scrollbar-color: #444 transparent;
     scrollbar-width: thin;
-    width: 98%;
+    width: 100%;
     scrollbar-arrow-color: transparent;
     gap: 5px;
-  
 }
 
 
@@ -194,9 +197,8 @@
 }
 .tw-builder__settings-classes-item:has(.tw-builder__settings-classes-item-name){
     cursor: pointer;
-    padding: 5px;
+    padding: 4px 5px;
     border-radius: 5px;
-    height: 20px;
     display: flex;
     align-items: center;
 }

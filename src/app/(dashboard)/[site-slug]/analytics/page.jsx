@@ -62,7 +62,6 @@ function Analytics() {
                 const latestConsentsByIP = {};
                 
                 consents.forEach(consent => {
-                    console.log(consent);
                     const consentData = consent.consent_data;
                     if (!consentData || !consentData.userip || !consentData.ts) return;
                     
