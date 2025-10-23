@@ -65,7 +65,7 @@
     letter-spacing: var(--letter-spacing-negative);
     appearance: none;
     cursor: pointer;
-    max-width: 75px;
+    max-width: 95px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -594,7 +594,7 @@
 }
 .tw-builder__settings-select-value--icon{
     display: block;
-    max-width: 75px;
+    max-width: 95px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -817,6 +817,10 @@
 }
 
 /*Icons control*/
+.tw-builder__settings-select-value svg{
+    min-width: 17px;
+    min-height: 17px;
+}
 .tw-builder__settings-icons-grid{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;

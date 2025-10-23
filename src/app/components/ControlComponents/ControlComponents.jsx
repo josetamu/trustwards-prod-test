@@ -23,7 +23,7 @@ const applyOnEnter = (e,f) => {
 }
 
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, dataAttribute, notDelete}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
         // Support dataAttribute (for nested attributes like data-icon-size)
@@ -3349,7 +3349,7 @@ const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, g
                 >
                     {selected && selectedIcon ? (
                         <span className="tw-builder__settings-select-value">
-                            <HugeiconsIcon icon={selectedIcon} size={15} color="currentColor"/>
+                            <HugeiconsIcon icon={selectedIcon} size={17} color="currentColor"/>
                             <span className="tw-builder__settings-select-value--icon">
                                 {selectedLabel}
                             </span>
