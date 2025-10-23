@@ -20,7 +20,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
 
     const groupControls =  {
             header: [
-                {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span','a'], placeholder: 'h3', JSONProperty: 'tagName'},
+                {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span', 'a'], placeholder: 'h3', JSONProperty: 'tagName'},
                 { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
                 { name: 'Text', type: 'textarea', placeholder: 'Text goes here...', JSONProperty: 'text', nextLine: true},
             ],
@@ -47,7 +47,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                 {
                     label: 'Background',
                     controls: [
-                        { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true},
+                        { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color', nextLine: true },
                     ]
                 },
                 {
@@ -72,16 +72,16 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                         {
                             name: 'Mix blend mode',
                             type: 'select',
-                            defaultValue: 'normal',
+                            placeholder: 'normal',
                             options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
                             cssProperty: 'mix-blend-mode',
                             placeholder: 'normal',
                         },
                         {name: 'Border', type: 'border'},
                         {name: 'Shadow', type: 'box-shadow'},
-                        {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                        {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
                     ]
-                }
+                },
             ]
     }
 

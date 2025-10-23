@@ -17,14 +17,14 @@ export const Divider = (node, nodeProps = {}) => {
 
     const groupControls =  {
         header: [
-            { name: 'Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color' },
+            { name: 'Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color', nextLine: true },
         ],
         body: [
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
-                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
                     { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                 ]
             },
@@ -48,13 +48,13 @@ export const Divider = (node, nodeProps = {}) => {
                     {
                         name: 'Mix blend mode',
                         type: 'select',
-                        defaultValue: 'normal',
+                        placeholder: 'normal',
                         options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
                         cssProperty: 'mix-blend-mode'
                     },
                     {name: 'Border', type: 'border'},
                     {name: 'Shadow', type: 'box-shadow'},
-                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
                 ]
             },
         ]

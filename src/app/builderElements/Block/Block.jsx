@@ -57,13 +57,13 @@ export const Block = (node, nodeProps = {}, children, anchorAncestor = false) =>
                     {
                         name: 'Mix blend mode',
                         type: 'select',
-                        defaultValue: 'normal',
+                        placeholder: 'normal',
                         options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
                         cssProperty: 'mix-blend-mode'
                     },
                     {name: 'Border', type: 'border'},
                     {name: 'Shadow', type: 'box-shadow'},
-                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
                 ]
             },
         ]

@@ -873,15 +873,15 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             'text': {
                 elementType: "text",
                 icon: "text",
-                tagName: "h3",
+                tagName: "span",
                 label: "Text",
-                text: "New Text 2",
+                text: "Text",
                 classList: ["tw-text"],
             },
             'accept-all': {
                 elementType: "button",
                 icon: "button",
-                tagName: "div",
+                tagName: "button",
                 label: "Accept all",
                 text: "Accept all",
                 classList: ["tw-accept-all"],
@@ -890,11 +890,12 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                     'color': '#fff',
                     'text-align': 'center',
                     'font-weight': '600',
-                    'letter-spacing': '-0.02em',
                     'border-radius': '8px',
                     'background': '#19D85C',
-                    'width': 'fit-content',
-                    'padding': '6px 12px'
+                    'padding-top': '6px',
+                    'padding-bottom': '6px',
+                    'padding-left': '12px',
+                    'padding-right': '12px',
                 }
             },
             'reject-all': {

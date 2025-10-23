@@ -373,7 +373,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --states-background: #ddd;
   --states-active-color: #333;
 
-  
+  --tooltip-right-panel-color: #aaa;
 }
 
 .sidebar__logo-img{

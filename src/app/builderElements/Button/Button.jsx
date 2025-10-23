@@ -16,21 +16,26 @@ export const Button = (node, nodeProps = {}) => {
 
     const groupControls =  {
         header: [
-            {name: 'Tag', type: 'select', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6','p', 'span','a'], placeholder: 'h3', JSONProperty: 'tagName'},
             { name: 'Link to', type: 'text', placeholder: 'URL...', JSONProperty: 'href'},
         ],
         body: [
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
-                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
                     { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                 ]
             },
             {
                 label: 'Size',
                 controls: [
+                    { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px'},
+                    { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+                    { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                    { name: 'Min. Height', type: 'text', cssProperty: 'min-height', autoUnit: 'px'},
+                    { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+                    { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
                     { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px'},
                     { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
                     { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
@@ -46,6 +51,19 @@ export const Button = (node, nodeProps = {}) => {
                 ]
             },
             {
+                label: 'Text',
+                controls: [
+                    { name: 'Color', type: 'color', cssProperty: 'color', nextLine: true},
+                    { name: 'Font', type: 'select', cssProperty: 'font-family', placeholder: 'Inter'},
+                    { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
+                    { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
+                    { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
+                    { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
+                    { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},
+                    
+                ]
+            },
+            {
                 label: 'Styles',
                 controls: [
                     { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
@@ -54,13 +72,13 @@ export const Button = (node, nodeProps = {}) => {
                     {
                         name: 'Mix blend mode',
                         type: 'select',
-                        defaultValue: 'normal',
+                        placeholder: 'normal',
                         options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
                         cssProperty: 'mix-blend-mode'
                     },
                     {name: 'Border', type: 'border'},
                     {name: 'Shadow', type: 'box-shadow'},
-                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
                 ]
             },
         ]

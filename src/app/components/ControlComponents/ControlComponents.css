@@ -95,7 +95,7 @@
 
 .tw-builder__settings-input{
     width: 60px;
-    height: 22px;
+    height: 25px;
     padding: 5px;
     border-radius: 5px;
     border: none;
@@ -111,6 +111,9 @@
 }
 .tw-builder__settings-input--link{
     width: 90px;
+}
+.tw-builder__settings-setting--column .tw-builder__settings-input{
+    width: 100%;
 }
 .tw-builder__settings-input:focus{
     outline: none;
@@ -363,7 +366,7 @@
 .tw-builder__settings-options {
     position: absolute;
     top: calc(100% + 6px);
-    right: 5%;
+    right: 0;
     width: fit-content;
     background: var(--right-panel-dropdown-background);
     color: white;
@@ -429,7 +432,7 @@
     background-color: transparent;
     color: #FFFFFF;
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
   }
   .tw-builder__settings-search-input:focus{
@@ -642,7 +645,7 @@
     background-color: transparent !important;
     text-align: center;
     font-size: var(--font-size-mini) !important;
-    font-weight: var(--font-weight) !important;
+    font-weight: var(--font-weight-medium) !important;
     letter-spacing: var(--letter-spacing-negative) !important;
 }
 .tw-builder__settings-units-directions{
@@ -765,33 +768,37 @@
     justify-content: center;
     flex-direction: row;
     width: 100%;
-    border: 2px dotted var(--border-fresco-color);
+    border: 1px dotted var(--border-strong-color);
     border-radius: 5px;
     padding: 5px 20px;
     cursor: pointer;
 }
+.tw-builder__settings-add-property:hover{
+    border: 1px solid transparent;
+    background-color: var(--control-background);
+}
 .tw-builder__settings-add-property-label{
     color: var(--placeholder-color);
-    font-size: 11px;
-    font-weight: var(--font-weight);
+    font-size: 12px;
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-properties-span{
     color: var(--subtitle-color);
-    font-size: 11px;
-    font-weight: var(--font-weight);
+    font-size: 12px;
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
 }
 .tw-builder__settings-properties-input{
     
-    height: 22px;
+    height: 25px;
     padding: 5px;
     border-radius: 5px;
     border: none;
     background-color: var(--control-background);
     color: var(--value-color);
     font-size: var(--font-size-mini);
-    font-weight: var(--font-weight);
+    font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-negative);
     cursor: text;
     &::placeholder{
