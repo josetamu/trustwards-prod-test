@@ -77,7 +77,7 @@ function treeReducer(state, action) {
     }
 }
 
-export const CanvasProvider = ({ children, siteData, CallContextMenu = null, setIsFirstTime, fontOptions }) => {
+export const CanvasProvider = ({ children, siteData, CallContextMenu = null, setIsFirstTime, fontOptions, preloadedIcons = [] }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
     const defaultTree = {
         idsCSSData: [], /*for each id, stores its right panel properties*/
@@ -507,12 +507,36 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     const addJSONProperty = (id, property, value) => {
         const findAndUpdateElement = (node) => { // Find the element with the given id and update its property
             if (node.id === id) {
-                // If value is empty string, remove the property
-                if (value === "") {
-                    delete node[property];
+                // Support nested properties with dot notation (for HugeIcons attributes.e.g., "attributes.data-icon-name")
+                if (property.includes('.')) {
+                    const keys = property.split('.');
+                    let current = node;
+                    
+                    // Navigate to the parent object
+                    for (let i = 0; i < keys.length - 1; i++) {
+                        if (!current[keys[i]]) {
+                            current[keys[i]] = {}; // Create nested object if it doesn't exist
+                        }
+                        current = current[keys[i]];
+                    }
+                    
+                    const lastKey = keys[keys.length - 1];
+                    // If value is empty string, remove the property
+                    if (value === "") {
+                        delete current[lastKey];
+                    } else {
+                        // Update the nested property with the new value
+                        current[lastKey] = value;
+                    }
                 } else {
-                    // Update the property with the new value
-                    node[property] = value;
+                    // Handle simple property (no nesting)
+                    // If value is empty string, remove the property
+                    if (value === "") {
+                        delete node[property];
+                    } else {
+                        // Update the property with the new value
+                        node[property] = value;
+                    }
                 }
                 runElementScript(node); //re-run the javascript function of the node if it has one
                 return true; // Element found and updated
@@ -887,11 +911,10 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 classList: ["tw-accept-all"],
                 defaultCSS: { 
                     'font-size': '14px',
-                    'color': '#fff',
-                    'text-align': 'center',
-                    'font-weight': '600',
+                    'color': '#ffffff',
+                    'font-weight': '500',
                     'border-radius': '8px',
-                    'background': '#19D85C',
+                    'background-color': '#19D85C',
                     'padding-top': '6px',
                     'padding-bottom': '6px',
                     'padding-left': '12px',
@@ -901,96 +924,96 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             'reject-all': {
                 elementType: "button",
                 icon: "button",
-                tagName: "div",
+                tagName: "button",
                 label: "Reject all",
                 text: "Reject all",
                 classList: ["tw-reject-all"],
-                defaultCSS: { 
+                defaultCSS: {
                     'font-size': '14px',
-                    'color': '#fff',
-                    'text-align': 'center',
-                    'font-weight': '600',
-                    'letter-spacing': '-0.02em',
+                    'color': '#ffffff',
+                    'font-weight': '500',
                     'border-radius': '8px',
-                    'background': '#FA243B',
-                    'width': 'fit-content',
-                    'padding': '6px 12px'
+                    'background-color': '#FA243B',
+                    'padding-top': '6px',
+                    'padding-bottom': '6px',
+                    'padding-left': '12px',
+                    'padding-right': '12px',
                 }
             },
             'open-modal': {
                 elementType: "button",
                 icon: "button",
-                tagName: "div",
+                tagName: "button",
                 label: "Open Modal",
                 text: "Settings",
                 classList: ["tw-open-modal"],
                 defaultCSS: { 
                     'font-size': '14px',
-                    'color': '#fff',
-                    'text-align': 'center',
-                    'font-weight': '600',
-                    'letter-spacing': '-0.02em',
+                    'color': '#ffffff',
+                    'font-weight': '500',
                     'border-radius': '8px',
-                    'background': '#111111',
-                    'width': 'fit-content',
-                    'padding': '6px 12px'
+                    'background-color': '#111111',
+                    'padding-top': '6px',
+                    'padding-bottom': '6px',
+                    'padding-left': '12px',
+                    'padding-right': '12px',
                 }
             },
             'enable-categories': {
                 elementType: "button",
                 icon: "button",
-                tagName: "div",
+                tagName: "button",
                 label: "Enable Categories",
                 text: "Enable all",
                 classList: ["tw-enable-categories"],
                 defaultCSS: { 
                     'font-size': '14px',
-                    'color': '#fff',
-                    'text-align': 'center',
-                    'font-weight': '600',
-                    'letter-spacing': '-0.02em',
+                    'color': '#ffffff',
+                    'font-weight': '500',
                     'border-radius': '8px',
-                    'background': '#111111',
-                    'width': 'fit-content',
-                    'padding': '6px 12px'
+                    'background-color': '#111111',
+                    'padding-top': '6px',
+                    'padding-bottom': '6px',
+                    'padding-left': '12px',
+                    'padding-right': '12px',
                 }
             },
             'disable-categories': {
                 elementType: "button",
                 icon: "button",
-                tagName: "div",
+                tagName: "button",
                 label: "Disable Categories",
                 text: "Disable all",
                 classList: ["tw-disable-categories"],
                 defaultCSS: { 
                     'font-size': '14px',
-                    'color': '#fff',
-                    'text-align': 'center',
-                    'font-weight': '600',
-                    'letter-spacing': '-0.02em',
+                    'color': '#ffffff',
+                    'font-weight': '500',
                     'border-radius': '8px',
-                    'background': '#111111',
-                    'width': 'fit-content',
-                    'padding': '6px 12px'
+                    'background-color': '#111111',
+                    'padding-top': '6px',
+                    'padding-bottom': '6px',
+                    'padding-left': '12px',
+                    'padding-right': '12px',
                 }
             },
             'save-categories': {
                 elementType: "button",
                 icon: "button",
-                tagName: "div",
+                tagName: "button",
                 label: "Save Categories",
                 text: "Save",
                 classList: ["tw-save-categories"],
                 defaultCSS: { 
                     'font-size': '14px',
-                    'color': '#fff',
-                    'text-align': 'center',
-                    'font-weight': '600',
-                    'letter-spacing': '-0.02em',
+                    'color': '#ffffff',
+                    'font-weight': '500',
                     'border-radius': '8px',
-                    'background': '#0099FE',
-                    'width': 'fit-content',
-                    'padding': '6px 12px'
+                    'background-color': '#0099FE',
+                    'padding-top': '6px',
+                    'padding-bottom': '6px',
+                    'padding-left': '12px',
+                    'padding-right': '12px',
                 }
             },
             'categories': {
@@ -1051,13 +1074,13 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                                                 tagName: "div", //Expander Header Label Icon
                                                 label: "Icon",
                                                 classList: ["tw-categories__expander-icon"],
+                                                attributes: {
+                                                    'data-icon-name': 'AddIcon',
+                                                    'data-icon-size': '24',
+                                                    'data-stroke-width': '1.5',
+                                                },
                                                 defaultCSS: {
-                                                    'width': "14px",
-                                                    'height': "14px",
-                                                    'color': "#000",
-                                                    'display': "flex",
-                                                    'align-items': "center",
-                                                    'justify-content': "center"
+                                                    'color': "#000000",
                                                 }
                                             },
                                             {
@@ -1271,7 +1294,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState, fontOptions}}>
+            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState, fontOptions, preloadedIcons}}>
             {children}
         </CanvasContext.Provider>
     );

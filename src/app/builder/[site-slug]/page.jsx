@@ -23,8 +23,8 @@ import BuilderThemes from '@components/BuilderThemes/BuilderThemes';
 import { ModalBuilderSettings } from '@components/ModalBuilderSetting/ModalBuilderSettings';
 import { OffcanvasContainer } from '@components/OffcanvasContainer/OffcanvasContainer'
 import  OffcanvasPricing  from '@components/OffcanvasPricing/OffcanvasPricing'
-import BuilderSave from '@components/BuilderSave/BuilderSave';
 import { ModalCheckout } from '@components/ModalCheckout/ModalCheckout';
+import { getAllIconNames } from '@/lib/hugeicons';
 
 function Builder() {
   const params = useParams();
@@ -86,6 +86,7 @@ function Builder() {
   const [loaderCompleted, setLoaderCompleted] = useState(false);
   const [screenshotUrl, setScreenshotUrl] = useState(null);
   const [isScreenshotLoading, setIsScreenshotLoading] = useState(false);
+  const [isHugeIconsLoading, setIsHugeIconsLoading] = useState(false);
 
   //Context menu state
   const [clipboard, setClipboard] = useState(null);
@@ -93,6 +94,9 @@ function Builder() {
   //Fonts ready state
   const [fontsReady, setFontsReady] = useState(false);
   const [fontOptions, setFontOptions] = useState([]);
+  
+  //Preloaded icons state
+  const [preloadedIcons, setPreloadedIcons] = useState([]);
 
   // Set userSettings based on modalType
   useEffect(() => {
@@ -248,6 +252,32 @@ function Builder() {
       .then(r => r.json())
       .then(d => setFontOptions(d.items?.map(i => ({family: i.family, variants: i.variants})) || []))
       .catch(() => setFontOptions([]));
+  }, []);
+
+  // Preload HugeIcons al cargar el builder
+  useEffect(() => {
+    setIsHugeIconsLoading(true);
+    
+    // Simular precarga - en realidad los iconos ya están en el bundle
+    // pero necesitamos inicializar getAllIconNames() para que esté listo
+    setTimeout(() => {
+      try {
+        const iconNames = getAllIconNames();
+        const iconOptions = iconNames.map(iconName => ({
+          value: iconName,
+          label: iconName
+            .replace(/Icon$/, '') // Remove "Icon" suffix
+            .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+            .trim()
+        }));
+        setPreloadedIcons(iconOptions);
+        console.log(`HugeIcons precargados: ${iconOptions.length} iconos disponibles`);
+        setIsHugeIconsLoading(false);
+      } catch (error) {
+        console.error('Error precargando HugeIcons:', error);
+        setIsHugeIconsLoading(false);
+      }
+    }, 100); // Pequeño delay para no bloquear el thread principal
   }, []);
 
   // Set the accent color of the builder
@@ -567,8 +597,8 @@ useEffect(() => {
   const isMobile = useMediaQuery('(max-width: 820px)');
 
   return (
-  <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime} fontOptions={fontOptions}>
- <Loader isVisible={isLoading || isScreenshotLoading ||!fontsReady} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading}/>
+  <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime} fontOptions={fontOptions} preloadedIcons={preloadedIcons}>
+<Loader isVisible={isLoading || isScreenshotLoading || isHugeIconsLoading ||!fontsReady} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading} isHugeIconsLoading={isHugeIconsLoading}/>
     {isMobile && <MobileWarning/>}
     {!isMobile && !isLoading && fontsReady && ( 
     <div className="tw-builder">
