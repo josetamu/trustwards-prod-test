@@ -23,7 +23,7 @@ const applyOnEnter = (e,f) => {
 }
 
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, dataAttribute, nextLine}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
         // Support dataAttribute (for nested attributes like data-icon-size)
@@ -70,7 +70,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={effectiveJSONProperty}/>
+            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={effectiveJSONProperty} notDelete={notDelete}/>
             </span>
            
             <input 
@@ -420,37 +420,55 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     };
 
-    //Function to get the color from jsonTree
-    const getSavedValue = useCallback(() => {
-        //Store the color
-        const savedValue = getGlobalCSSValue?.(cssProperty);
-        //If there is no color return blank
-        if(!savedValue) return { color: ``, hex: ``, percentage: `` };
+    //Function to convert any color format to hex
+const anyColorToHex = (color) => {
+    // Create a temporary element to leverage browser's color parsing
+    const tempDiv = document.createElement('div');
+    tempDiv.style.color = color;
+    document.body.appendChild(tempDiv);
+    const computedColor = window.getComputedStyle(tempDiv).color;
+    document.body.removeChild(tempDiv);
+    
+    // Parse the computed RGB/RGBA value
+    const rgbMatch = computedColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+    if(rgbMatch) {
+        const [, r, g, b] = rgbMatch;
+        return rgbToHex(parseInt(r), parseInt(g), parseInt(b));
+    }
+    return null;
+};
 
-        //If the color start with rgba, parse it and transform to hexadecimal
-        if(savedValue.startsWith('rgba(')) {
-            const rgbaMatch = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
-            if(rgbaMatch) {
-                const [, r, g, b, a] = rgbaMatch;
-                const hexColor = rgbToHex(parseInt(r), parseInt(g), parseInt(b));
-                const opacityPercent = Math.round(parseFloat(a) * 100);
-        
-                return {
-                    color: hexColor,
-                    hex: hexColor.toUpperCase().replace('#', ''),
-                    percentage: `${opacityPercent}%`
-                };
-            }
-            //If it is in hex format, just uppercase the color and remove #
-        } else if(savedValue.startsWith('#')) {
-            return {
-                color: savedValue,
-                hex: savedValue.toUpperCase().replace('#', ''),
-                percentage: '100%'
-            };
+//Function to get the color from jsonTree
+const getSavedValue = useCallback(() => {
+    const savedValue = getGlobalCSSValue?.(cssProperty);
+    if (!savedValue || savedValue === 'transparent') return { color: '', hex: '', percentage: '' };
+
+    if (savedValue.startsWith('rgba(')) {
+        const m = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+        if (m) {
+            const [, r, g, b, a] = m;
+            const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
+            return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: `${Math.round(parseFloat(a)*100)}%` };
         }
-        return { color: ``, hex: ``, percentage: `` };
-    }, [getGlobalCSSValue, cssProperty]);
+    } else if (savedValue.startsWith('rgb(')) {
+        const m = savedValue.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (m) {
+            const [, r, g, b] = m;
+            const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
+            return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: '100%' };
+        }
+    } else if (savedValue.startsWith('#')) {
+        const hexNoHash = savedValue.replace('#', '').toUpperCase();
+        return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
+    } else {
+        const any = anyColorToHex(savedValue);
+        if (any) {
+            const hexNoHash = any.replace('#', '').toUpperCase();
+            return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
+        }
+    }
+    return { color: '', hex: '', percentage: '' };
+}, [getGlobalCSSValue, cssProperty]);
     
 
     // Initialize states with saved values
@@ -458,10 +476,17 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
     const [color, setColor] = useState(initialValues.color);
     const [hex, setHex] = useState(initialValues.hex);
     const [percentage, setPercentage] = useState(initialValues.percentage);
+    const [appliedPercentage, setAppliedPercentage] = useState(initialValues.percentage);
 
     const colorInputRef = useRef(null);
     // Timeout ref for the color
     const colorTimeoutRef = useRef(null);
+
+    const lastOpacityRef = useRef(initialValues.percentage && initialValues.percentage !== '' ? initialValues.percentage : '100%');
+    const lastColorRef = useRef({
+        withHash: initialValues.color || '',
+        noHash: (initialValues.color || '').replace('#','').toUpperCase()
+      });
 
     // Effect to update the values when the element is selected
     useEffect(() => {
@@ -469,7 +494,13 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         setColor(newValues.color);
         setHex(newValues.hex);
         setPercentage(newValues.percentage);
-    }, [selectedElementData,getSavedValue]); 
+        setAppliedPercentage?.(newValues.percentage); 
+        lastOpacityRef.current = (newValues.percentage && newValues.percentage !== '') ? newValues.percentage : '100%';
+        lastColorRef.current = {
+          withHash: newValues.color || '',
+          noHash: (newValues.color || '').replace('#','').toUpperCase()
+        };
+      }, [selectedElementData]);
 
     //Function to convert hex to rgba with opacity
    
@@ -488,19 +519,16 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
      // Function to apply the CSS style
      const applyCSSChange = (newColor, newOpacity) => {
         if (!cssProperty) return;
-
-        const opacityValue = parseInt(newOpacity.replace('%', ''));
-        let finalValue;
-        
-        if (opacityValue < 100) {
-            // If there is transparency, use rgba
-            finalValue = hexToRgba(newColor, opacityValue);
-        } else {
-            // If there is no transparency, use hex
-            finalValue = newColor;
-        }
-        
-        // Apply the change using global function
+    
+        const effectiveOpacity = (newOpacity === '' || newOpacity == null)
+            ? (lastOpacityRef.current || '100%')
+            : newOpacity;
+    
+        const opacityValue = parseInt(String(effectiveOpacity).replace('%', ''));
+        const finalValue = (opacityValue < 100)
+            ? hexToRgba(newColor, opacityValue)
+            : newColor;
+    
         if (applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, finalValue);
         }
@@ -538,66 +566,123 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         }
     };
 
-    //Function to change the color with the text input
     const handleHexChange = (e) => {
-        let hexValue = e.target.value.toUpperCase().replace('#', '');
-    
-        //If the hex value is longer than 6, cut it to 6
-        if(hexValue.length > 6){
-            hexValue = hexValue.slice(0, 6);
-        }
-        setHex(hexValue);
-    
-        //Check if the hex value is valid
-        const hexPattern = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-    
-        //If the hex value is valid, set the color
-        if(hexPattern.test(hexValue)) {
-            const formattedHex = `#${hexValue}`;
-            setColor(formattedHex);
-            applyCSSChange(formattedHex, percentage);
-        }
+        setHex(e.target.value);
     };
-    //Function to change the color when the user is not typing
+    
     const handleHexBlur = (e) => {
-        const hexValue = e.target.value.trim();
-        if(hexValue === ''){
-            setHex('');
-            setColor('');
-            applyCSSChange('', '');
-        } 
+        const raw = (e.target.value || '').trim();
+    
+        // If empty, restore last visible color; no apply CSS
+        if (raw === '') {
+            setHex(lastColorRef.current.noHash);
+            setColor(lastColorRef.current.withHash);
+            return;
+        }
+    
+        // Helpers
+        const expandShortHex = (v) => {
+            if (/^[0-9a-f]{3}$/i.test(v)) return v.split('').map(c => c + c).join(''); // 3 -> 6
+            if (/^[0-9a-f]{4}$/i.test(v)) return v.split('').map(c => c + c).join(''); // 4 -> 8
+            return v;
+        };
+    
+        //HEX without '#'
+        if (/^[0-9a-f]{3,8}$/i.test(raw)) {
+            const expanded = expandShortHex(raw).toUpperCase(); // 6 or 8 digits
+            const hex6 = expanded.slice(0, 6);
+            const alpha2 = expanded.length === 8 ? expanded.slice(6) : null;
+    
+            setHex(hex6);               // without '#'
+            setColor(`#${hex6}`);       // with '#'
+            lastColorRef.current = { withHash: `#${hex6}`, noHash: hex6 };
+    
+            let p;
+            if (alpha2) {
+                const aPct = Math.round(parseInt(alpha2, 16) / 255 * 100);
+                p = `${aPct}%`;
+                setPercentage(p);
+                if (typeof setAppliedPercentage === 'function') setAppliedPercentage(p);
+                if (lastOpacityRef) lastOpacityRef.current = p;
+            } else {
+                p = (typeof appliedPercentage !== 'undefined' && appliedPercentage !== '')
+                    ? appliedPercentage
+                    : (lastOpacityRef?.current || '100%');
+            }
+    
+            applyCSSChange(`#${hex6}`, p);
+            return;
+        }
+    
+        // other formats (rgba/hsla/named/#hex with '#', etc.)
+        const tmp = document.createElement('div');
+        tmp.style.color = '';
+        tmp.style.color = raw;
+        if (tmp.style.color === '') return; // invalid: don't change anything
+    
+        document.body.appendChild(tmp);
+        const computed = window.getComputedStyle(tmp).color; // rgb(a,...) or other color format
+        document.body.removeChild(tmp);
+    
+        const m = computed.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+        if (!m) return;
+    
+        const [, r, g, b, a] = m;
+        const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase(); // "#AABBCC"
+        const hexNoHash = hexWithHash.slice(1);                                            // "AABBCC"
+        setHex(hexNoHash);
+        setColor(hexWithHash);
+        lastColorRef.current = { withHash: hexWithHash, noHash: hexNoHash };
+    
+        let p;
+        if (typeof a !== 'undefined') {
+            const aPct = `${Math.round(parseFloat(a) * 100)}%`;
+            p = aPct;
+            setPercentage(aPct);
+            if (typeof setAppliedPercentage === 'function') setAppliedPercentage(aPct);
+            if (lastOpacityRef) lastOpacityRef.current = aPct;
+        } else {
+            p = (typeof appliedPercentage !== 'undefined' && appliedPercentage !== '')
+                ? appliedPercentage
+                : (lastOpacityRef?.current || '100%');
+        }
+    
+        applyCSSChange(hexWithHash, p);
     };
 
-//Function to change the transparency with the percentage input
-const handlePercentageChange = (e) => {
-    let raw = (e.target.value || '').replace('%', '').trim();
+const handlePercentageInput = (e) => {
+    setPercentage(e.target.value);
+};
 
-    // Allow to delete the field
-    if (raw === '') {
-        setPercentage('');
-        // Aplicar transparencia al máximo (100%) cuando está vacío
-        applyCSSChange(color, '100%');
+// onBlur – if empty, revert to last value; if not, normalize and apply
+const handlePercentageBlur = (e) => {
+    if (percentage === '') {
+        const restored = lastOpacityRef.current || '100%';
+        setPercentage(restored);
+        setAppliedPercentage(restored);
+        e.target.value = restored;
+        if (color && color.trim() !== '') {
+            applyCSSChange(color, restored);
+        }
         return;
     }
-
-    // Normalizar el número entre 0 y 100
-    let num = Number(raw);
-    if (Number.isNaN(num)) num = 0;
-    if (num < 0) num = 0;
-    if (num > 100) num = 100;
-
-    const finalValue = `${num}%`;
+    // Ensure format and apply
+    const percNum = Math.max(0, Math.min(100, parseInt(String(percentage).replace('%','')) || 0));
+    const finalValue = `${percNum}%`;
     setPercentage(finalValue);
+    setAppliedPercentage(finalValue);
     e.target.value = finalValue;
-
-    // Aplica siempre el cambio, incluso cuando es 0
-    applyCSSChange(color, finalValue);
+    lastOpacityRef.current = finalValue;
+    if (color && color.trim() !== '') {
+        applyCSSChange(color, finalValue);
+    }
 };
 
 //Function to get the final color. This is used to mix the color with the transparency
 const perc = parseInt((percentage??'').replace('%', ''));
 const effectivePerc = (isNaN(perc) || perc === 0) ? 100 : perc;
 const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'transparent';
+console.log(finalColor);
 
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
@@ -612,10 +697,10 @@ const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'tr
                         backgroundColor: finalColor, 
                     }}>
                 </div>
-                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} onKeyDown={(e) => applyOnEnter(e, handleHexBlur)} placeholder="Hex here..."/>
+                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} onKeyDown={(e) => applyOnEnter(e, handleHexBlur)}/>
             </div>
             <div className="tw-builder__settings-percentages">
-                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} onKeyDown={(e) => applyOnEnter(e, handlePercentageChange)} />
+                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageBlur} onChange={handlePercentageInput} onKeyDown={(e) => applyOnEnter(e, handlePercentageBlur)} />
             </div>
         </div>
     </div>
@@ -1364,67 +1449,54 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     }
 }
 
-const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value, nextLine}) => {
-    //Initial state with jsonTree
+const TextAreaType = ({
+    name, 
+    index, 
+    placeholder, 
+    JSONProperty, 
+    applyGlobalJSONChange, 
+    getGlobalJSONValue, 
+    value, 
+    nextLine
+}) => {
     const [textareaValue, setTextareaValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
-        
-        if (!savedJSONValue && value) {
-            setTimeout(() => {
-                if (JSONProperty && applyGlobalJSONChange) {
-                    applyGlobalJSONChange(JSONProperty, value);
-                } 
-            }, 0);
-        }
-        return savedJSONValue || value || '';
-
+        return savedJSONValue ?? '';
     });
 
-    //State to check if the text is default
-    const [hasDefaultText, setHasDefaultText] = useState(false);
-
-    //Update the value when the selected element changes
+    // Sync value with external changes (when selected element, property, etc. changes)
     useEffect(() => {
-        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;    
-        
-            if (savedJSONValue) {
-                setTextareaValue(savedJSONValue || value || '');
-            }
-        
-    }, [getGlobalJSONValue, JSONProperty, value]);
-    
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        // update state always (even if "")
+        setTextareaValue(savedJSONValue ?? '');
+    }, [getGlobalJSONValue, JSONProperty]);
+
+    // Listen for deletion from StylesDeleter, so textarea is cleared visually as well
+    useEffect(() => {
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        if (savedJSONValue === '' && textareaValue !== '') {
+            setTextareaValue('');
+        }
+    // Run when underlying value changes, or our input just became empty!
+    }, [JSONProperty, getGlobalJSONValue, textareaValue]);
+
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextareaValue(newValue);
-        if (newValue.trim() !== '') {
-            setHasDefaultText(false);
-        }
-        
-        
-        const finalValue = newValue.trim() === '' ? '' : newValue;
-        
         if(JSONProperty && applyGlobalJSONChange) {
-            applyGlobalJSONChange(JSONProperty, finalValue);
-        } 
-    };
-    const handleBlur = (e) => {
-        const inputValue = e.target.value;
-        
-        //If the text is empty, use the default text
-        if (inputValue.trim() === '') {
-            const defaultText = "New Text 2";
-            setHasDefaultText(true);
-            if(JSONProperty && applyGlobalJSONChange) {
-                applyGlobalJSONChange(JSONProperty, defaultText);
-            } 
+            applyGlobalJSONChange(JSONProperty, newValue);
         }
     };
 
-   
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-                <StylesDeleter value={textareaValue} jsonEmptyValue="New Text 2" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
+                <StylesDeleter 
+                    value={textareaValue} 
+                    JSONProperty={JSONProperty} 
+                    applyGlobalJSONChange={applyGlobalJSONChange} 
+                    getGlobalJSONValue={getGlobalJSONValue} 
+                />
             </span>
             <textarea 
                 name={name} 
@@ -1432,12 +1504,10 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
                 placeholder={placeholder}
                 value={textareaValue}
                 onChange={handleChange}
-                onBlur={handleBlur}
-                onKeyDown={(e) => applyOnEnter(e, handleBlur)}
                 className="tw-builder__settings-textarea"
             />
         </div>
-    )
+    );
 }
 
 const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine}) =>{
@@ -1481,6 +1551,59 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     const weightNameOrder = ['Thin','Extra Light','Light','Regular','Medium','Semi Bold','Bold','Extra Bold','Black'];
     const reverseMap = fontWeightMapReverse();
     
+    const getDisplayFromValue = (value) => {
+        if (!value) return '';
+        
+        // Search in the options to find the corresponding display
+        const allOptions = (() => {
+            if (name === 'Font') {
+                return [...(fontOptions || []), ...systemFontOptions];
+            }
+            if (name === 'Weight') {
+                // Check if current font style is italic
+                const currentFontStyle = getGlobalCSSValue?.('font-style');
+                const isWeightItalic = currentFontStyle === 'italic';
+                
+                return isWeightItalic 
+                    ? [...(weightOptions || []), '---', ...italicWeightOptions]
+                    : (weightOptions || []);
+            }
+            return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
+        })();
+        
+        
+        for (const opt of allOptions) {
+            if (typeof opt === 'object') {
+                if (opt.family && opt.family === value) {
+                    return opt.family;
+                } else if (!opt.family) {
+                    const key = Object.keys(opt)[0];
+                    const val = Object.values(opt)[0];
+                    if (val === value) {
+                        return key;
+                    }
+                }
+            } else if (opt === value) {
+                return opt;
+            }
+        }
+        
+        return value; // Fallback if not found
+    };
+
+    const getDisplayAndValue = (opt) => {
+        if (typeof opt === 'object') {
+            if (opt.family) {
+                return { display: opt.family, value: opt.family };
+            } else {
+                const key = Object.keys(opt)[0];
+                const value = Object.values(opt)[0];
+                return { display: key, value: value };
+            }
+        }
+        return { display: opt, value: opt };
+    };
+
     // ========================================
     // Specific functions for font/weight
     // ========================================
@@ -1920,8 +2043,8 @@ if (name === 'Weight') {
         const filterLower = searchFilter.toLowerCase();
         return allOptions.filter(opt => {
             if (opt === '---') return true;
-            const displayValue = typeof opt === 'object' ? opt.family : opt;
-            return displayValue.toLowerCase().includes(filterLower);
+            const { display } = getDisplayAndValue(opt);
+            return display.toLowerCase().includes(filterLower);
         });
     })();
     
@@ -1957,7 +2080,7 @@ if (name === 'Weight') {
                 >
                     {selected ? 
                         <span className={`tw-builder__settings-select-value ${name === 'Font' ? 'tw-builder__settings-select-value--font' : ''}`}>
-                            {selected}
+                            {getDisplayFromValue(selected)}
                         </span>
                         :
                         <span className="tw-builder__settings-select-placeholder">
@@ -1976,7 +2099,7 @@ if (name === 'Weight') {
             {/* Dropdown list */}
             <AnimatePresence>
             {open && (
-                <motion.ul className="tw-builder__settings-options" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
+                <motion.ul className={`tw-builder__settings-options ${name === 'Font' ? 'tw-builder__settings-options--font' : ''}`} {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                     {/* Search for Font - inside the options container */}
                     {name === 'Font' && (
                         <>
@@ -1996,8 +2119,10 @@ if (name === 'Weight') {
                         </>
                     )}
                 {filteredOptions.map((opt, index) => {
-                    const displayValue = typeof opt === 'object' ? opt.family : opt;
-                    const optionValue = typeof opt === 'object' ? opt.family : opt;
+                    const displayValue = typeof opt === 'object' ? 
+                    (opt.family ? opt.family : Object.keys(opt)[0]) : opt;
+                    const optionValue = typeof opt === 'object' ? 
+                    (opt.family ? opt.family : Object.values(opt)[0]) : opt;
                     
                     return (
                         <li
@@ -2005,7 +2130,8 @@ if (name === 'Weight') {
                             role="button"
                             aria-label={`Select ${optionValue}`}
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleSelectChange(optionValue); setOpen(false); setSearchFilter(''); } }}    
-                            key={typeof opt === 'object' ? opt.family : `${opt}-${index}`}
+                            key={typeof opt === 'object' ? 
+                                (opt.family ? opt.family : Object.keys(opt)[0]) : `${opt}-${index}`}
                             onClick={() => {
                                 if (opt === '---') return;
                                 handleSelectChange(optionValue);
@@ -2015,7 +2141,10 @@ if (name === 'Weight') {
                             }}
                             className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
                         >
-                            {optionValue === selected ? 
+                            {(() => {
+                                const { value } = getDisplayAndValue(opt);
+                                return value === selected;
+                            })() ? 
                                 <span className={`tw-builder__settings-check ${name === 'Font' ? 'tw-builder__settings-check--font' : ''}`}> 
                                     <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
@@ -2034,7 +2163,7 @@ if (name === 'Weight') {
     );
 }
 
-const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified, setBwUnified, brUnified, setBrUnified, nextLine}) => {
+const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified = '', setBwUnified, brUnified = '', setBrUnified, nextLine}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));
@@ -2569,10 +2698,10 @@ const parseRadius = useCallback((radiusStr) => {
                                         <input 
                                             type="text" 
                                             className={`tw-builder__settings-input`}
-                                            value={isWidthLinked ? bwLinked : bwUnified}
+                                            value={isWidthLinked ? bwLinked : (bwUnified ?? '')}
                                             onChange={(e) => handleBorderWidthChange(e.target.value)}
-                                              
-                                        />
+                                            
+                                        />  
                                         <div className="tw-builder__settings-actions">
                                             <div className="tw-builder__settings-slider-width"
                                             style={{
@@ -2659,10 +2788,8 @@ const parseRadius = useCallback((radiusStr) => {
                                         <input 
                                             type="text" 
                                             className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`} 
-                                            value={isRadiusLinked ? brLinked : brUnified}
-                                            onChange={(e) => handleRadiusChange(e.target.value)}
-          
-                                            
+                                            value={isRadiusLinked ? brLinked : (brUnified ?? '')}
+                                            onChange={(e) => handleRadiusChange(e.target.value)}  
                                         />
                                         <div className="tw-builder__settings-actions">
                                         <div className="tw-builder__settings-slider-width"
@@ -3303,11 +3430,8 @@ const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, g
     );
 };
 
-const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
+const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementData, savedProps, styleDeleter}) => {
     const [properties, setProperties] = useState([ { property: '', value: '' } ]);
-
-    const prevPropsRef = useRef([]);
-    
 
     //Update the properties when the selected element changes
     useEffect(() => {
@@ -3341,21 +3465,14 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
         });
     };
 
-    const handlePropertyBlur = useCallback((i) => {
-        const prev = prevPropsRef.current[i];
-        const now = (properties[i]?.property || '').trim();
-        const val = (properties[i]?.value ?? '').trim();
-        //If the property is empty, remove it
-        if (prev && !now) {
-            applyEnterAnimationChange(prev, "");
-            setProperties(prevList => prevList.filter((_, idx) => idx !== i));
-		return;
+    // Remove a specific property/value pair only via styleDeleter
+    const handleRemoveProperty = (i) => {
+        const propKey = (properties[i]?.property || '').trim();
+        if (propKey && typeof styleDeleter === 'function') {
+            styleDeleter(propKey);
         }
-        //If the property is not empty, apply the value
-        if (now && val) {
-            applyEnterAnimationChange(now, val);
-        }
-    }, [applyEnterAnimationChange, properties]);
+        setProperties(prevList => prevList.filter((_, idx) => idx !== i));
+    };
 
     return (
         <div className="tw-builder__settings-animation" key={index}>
@@ -3368,10 +3485,9 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
                             className="tw-builder__settings-properties-input"
                             placeholder="top"
                             value={prop.property}
-                            onFocus={() => { prevPropsRef.current[i] = prop.property; }}
                             onChange={(e)=>handlePropertyChange(i, 'property', e.target.value)}
-                            onBlur={()=>handlePropertyBlur(i)}
-                              onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
+                            onBlur={()=>{/* no auto-delete; removal only via styleDeleter */}}
+                            onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
                             />
                         </div>
                         <div className="tw-builder__settings-properties-pair">
@@ -3382,6 +3498,13 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
                                 onChange={(e)=>handlePropertyChange(i, 'value', e.target.value)}
                                 onBlur={()=> { if (prop.property) applyEnterAnimationChange(prop.property, prop.value || ''); }}
                                 onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'value', e.target.value))}
+                            />
+                        </div>
+
+                        <div className="tw-builder__settings-properties-actions">
+                            <StylesDeleter
+                                value={prop.value || prop.property}
+                                onDelete={() => handleRemoveProperty(i)}
                             />
                         </div>
                 </div>
@@ -3512,6 +3635,8 @@ const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
     applyGlobalCSSChange(cssPropertyOrObject, value, { enterScope: scope });
 }, [activeRoot, applyGlobalCSSChange]);
 
+
+
 /// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
 const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
     if (!selectedId) return null;
@@ -3602,7 +3727,7 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return getCSSValueWithState(entry.states, entry.properties);
     };
     
-    // Try breakpoint first, then fallback to desktop
+    // Try breakpoint first, then fallback logic
     const bpEntry = getEntry(bp);
     const result = readFromEntry(bpEntry);
     
@@ -3610,8 +3735,21 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return result;
     }
     
-    // Fallback to desktop if not found in breakpoint
-    if (bp !== 'desktop') {
+    // Enhanced fallback logic based on breakpoint
+    if (bp === 'mobile') {
+        // For mobile: try tablet first, then desktop
+        const tabletEntry = getEntry('tablet');
+        const tabletResult = readFromEntry(tabletEntry);
+        
+        if (tabletResult !== null && (returnAll ? Object.keys(tabletResult).length > 0 : true)) {
+            return tabletResult;
+        }
+        
+        // If no tablet value, fallback to desktop
+        const desktopEntry = getEntry('desktop');
+        return readFromEntry(desktopEntry);
+    } else if (bp === 'tablet') {
+        // For tablet: fallback to desktop
         const desktopEntry = getEntry('desktop');
         return readFromEntry(desktopEntry);
     }
@@ -3626,7 +3764,26 @@ const getEnterAnimationProps = useCallback(() => {
     return getGlobalCSSValue(null, { enterScope: scope, returnAll: true });
 }, [selectedId, activeRoot, getGlobalCSSValue]);
 
+const styleDeleter = useCallback((prop) => {
+    if (!prop) return;
+    applyEnterAnimationChange(prop, '');
+}, [applyEnterAnimationChange]);
 
+const clearAllEnterAnimations = useCallback(() => {
+    const enterProps = getEnterAnimationProps();
+    console.log('Clearing all enter animations:', enterProps);
+    
+    // Create an object with all properties to delete
+    const clearBatch = {};
+    Object.keys(enterProps).forEach(prop => {
+        console.log('Clearing prop:', prop);
+        clearBatch[prop] = '';
+    });
+    
+    // Delete all properties at once using applyGlobalCSSChange
+    const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    applyGlobalCSSChange(clearBatch, undefined, { enterScope: scope });
+}, [getEnterAnimationProps, applyGlobalCSSChange, activeRoot]);
     //Function to apply the json to the element and save it in jsonTree
     const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
 
@@ -3805,7 +3962,7 @@ useEffect(() => {
 
         switch(item.type) {
             case 'text':
-                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine} />;
+                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine} notDelete={item.notDelete} />;
             case 'super-select':
                 return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
             case 'icons':
@@ -3823,11 +3980,11 @@ useEffect(() => {
             case 'select':
                 return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} nextLine={item.nextLine}/>;
             case 'border':
-                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
+                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} bwUnified={bwUnified} brUnified={brUnified} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
             case 'box-shadow':
                 return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
             case 'enter-animation':
-                return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
+                return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()} styleDeleter={styleDeleter}/>;
         }
     }
 
@@ -3851,7 +4008,7 @@ useEffect(() => {
                     setBrUnified={setBrUnified}
                     />
                 ))}
-               <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} setBwUnified={setBwUnified} setBrUnified={setBrUnified} />
+                <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} setBwUnified={setBwUnified} setBrUnified={setBrUnified} styleDeleter={styleDeleter} getEnterAnimationProps={getEnterAnimationProps} clearAllEnterAnimations={clearAllEnterAnimations}/>
             </div>
         </div>
     )

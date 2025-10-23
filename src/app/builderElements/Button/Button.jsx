@@ -4,7 +4,7 @@ export const Button = (node, nodeProps = {}) => {
     // nodeProps adds HTML id and classList
 
     const id = node.id;
-    const Tag = node.tagName;
+    const Tag = node.tagName || 'button';
     const text = node.text;
 
     const dataAttributes = node.attributes;

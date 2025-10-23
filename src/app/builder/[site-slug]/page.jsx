@@ -598,7 +598,7 @@ useEffect(() => {
 
   return (
   <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime} fontOptions={fontOptions} preloadedIcons={preloadedIcons}>
-<Loader isVisible={isLoading || isScreenshotLoading || isHugeIconsLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading} isHugeIconsLoading={isHugeIconsLoading}/>
+<Loader isVisible={isLoading || isScreenshotLoading || isHugeIconsLoading ||!fontsReady} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading} isHugeIconsLoading={isHugeIconsLoading}/>
     {isMobile && <MobileWarning/>}
     {!isMobile && !isLoading && fontsReady && ( 
     <div className="tw-builder">
