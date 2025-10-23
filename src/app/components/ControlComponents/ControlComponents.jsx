@@ -3520,7 +3520,7 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return getCSSValueWithState(entry.states, entry.properties);
     };
     
-    // Try breakpoint first, then fallback to desktop
+    // Try breakpoint first, then fallback logic
     const bpEntry = getEntry(bp);
     const result = readFromEntry(bpEntry);
     
@@ -3528,8 +3528,21 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return result;
     }
     
-    // Fallback to desktop if not found in breakpoint
-    if (bp !== 'desktop') {
+    // Enhanced fallback logic based on breakpoint
+    if (bp === 'mobile') {
+        // For mobile: try tablet first, then desktop
+        const tabletEntry = getEntry('tablet');
+        const tabletResult = readFromEntry(tabletEntry);
+        
+        if (tabletResult !== null && (returnAll ? Object.keys(tabletResult).length > 0 : true)) {
+            return tabletResult;
+        }
+        
+        // If no tablet value, fallback to desktop
+        const desktopEntry = getEntry('desktop');
+        return readFromEntry(desktopEntry);
+    } else if (bp === 'tablet') {
+        // For tablet: fallback to desktop
         const desktopEntry = getEntry('desktop');
         return readFromEntry(desktopEntry);
     }

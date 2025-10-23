@@ -337,6 +337,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         let currentClasses = getClassesArr();
         let updatedIdsCSSData = currentIds;
         let updatedClassesCSSData = currentClasses;
+        
     
         // Normalize to object
         const propertiesToAdd =
