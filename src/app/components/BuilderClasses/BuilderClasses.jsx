@@ -141,16 +141,20 @@ useEffect(() => {
     }
 }, [JSONtree, selectedId, activeClass]);
 
-//filter All classes to see in the pool. These are all the classes user has ever created
-    const AllClasses = JSONtree.classesCSSData
-    .map(item => item.className)
-    .filter(className => className.includes(search));
+// Get all classes (array of objects {className, ...}) created by the user
+const allClasses = JSONtree.classesCSSData || [];
 
-    //filter element's classes, excluding those that are not in AllClasses(classes that are being applied to the element)
-    const filteredClasses = selectedElement
-        ? selectedElement.classList
-            .filter(className => AllClasses.includes(className))
-        : [];
+// Filter all classes to show in the pool, using the search text
+const poolClasses = allClasses
+    .map(item => item.className)
+    .filter(className => className.toLowerCase().includes((search || "").toLowerCase()));
+
+// Filter the classes that the selected element has, but only if they really exist in allClasses
+const allClassNames = allClasses.map(item => item.className);
+
+const selectedClasses = selectedElement
+    ? selectedElement.classList.filter(className => allClassNames.includes(className))
+    : [];
 
     
 
@@ -163,19 +167,11 @@ useEffect(() => {
                 aria-label="Classes"
                 onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                        if (activeClass) {
-                            setActiveClass(null);
-                        } else {
-                            setIsOpen(!isOpen);
-                        }
+                        setIsOpen(!isOpen);
                     }
                 }}
                 onClick={() => {
-					if (activeClass) {
-						setActiveClass(null);
-					} else {
-						setIsOpen(!isOpen);
-					}
+					setIsOpen(!isOpen);
 				}}>
                     {/*take the id or the class. Also if state is active, show it*/}
 					{activeClass ? (
@@ -243,7 +239,7 @@ useEffect(() => {
                         </div>
                     )}
                     {/*List of classes selected*/}
-                    {filteredClasses
+                    {selectedClasses
                         .filter((className) => className !== activeClass)
                         .map((className, index) => (
                             <div
@@ -284,8 +280,8 @@ useEffect(() => {
                             <input className="tw-builder__settings-classes-search" tabIndex={0} type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}/>
                         </div>
                         <div className="tw-builder__settings-classes-list">
-                            {AllClasses.map((className, index) => {
-                                const isLastItem = index === AllClasses.length - 1;
+                            {poolClasses.map((className, index) => {
+                                const isLastItem = index === poolClasses.length - 1;
                                 
                                 return (
                                     <div 
@@ -293,7 +289,7 @@ useEffect(() => {
                                         key={index} 
                                         tabIndex={0} 
                                         role="button" 
-                                        aria-label={`Añadir clase ${className}`}
+                                        aria-label={`Add class ${className}`}
                                         onKeyDown={(e) => {
                                             // Si presiona Tab en el último elemento
                                             if (e.key === 'Tab' && !e.shiftKey && isLastItem) {

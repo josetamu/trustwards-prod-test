@@ -443,56 +443,34 @@ const anyColorToHex = (color) => {
 
 //Function to get the color from jsonTree
 const getSavedValue = useCallback(() => {
-    //Store the color
     const savedValue = getGlobalCSSValue?.(cssProperty);
-    //If there is no color return blank
-    if(!savedValue || savedValue === 'transparent') return { color: ``, hex: ``, percentage: `` };
+    if (!savedValue || savedValue === 'transparent') return { color: '', hex: '', percentage: '' };
 
-    //If the color starts with rgba, parse it
-    if(savedValue.startsWith('rgba(')) {
-        const rgbaMatch = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
-        if(rgbaMatch) {
-            const [, r, g, b, a] = rgbaMatch;
-            const hexColor = rgbToHex(parseInt(r), parseInt(g), parseInt(b));
-            const opacityPercent = Math.round(parseFloat(a) * 100);
-    
-            return {
-                color: hexColor,
-                hex: savedValue, // Store the original format
-                percentage: `${opacityPercent}%`
-            };
+    if (savedValue.startsWith('rgba(')) {
+        const m = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+        if (m) {
+            const [, r, g, b, a] = m;
+            const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
+            return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: `${Math.round(parseFloat(a)*100)}%` };
         }
-    //If the color starts with rgb, parse it
-    } else if(savedValue.startsWith('rgb(')) {
-        const rgbMatch = savedValue.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-        if(rgbMatch) {
-            const [, r, g, b] = rgbMatch;
-            const hexColor = rgbToHex(parseInt(r), parseInt(g), parseInt(b));
-            return {
-                color: hexColor,
-                hex: savedValue, // Store the original format
-                percentage: '100%'
-            };
+    } else if (savedValue.startsWith('rgb(')) {
+        const m = savedValue.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (m) {
+            const [, r, g, b] = m;
+            const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
+            return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: '100%' };
         }
-    //If it is in hex format
-    } else if(savedValue.startsWith('#')) {
-        return {
-            color: savedValue,
-            hex: savedValue.toUpperCase(), // Keep the # for display
-            percentage: '100%'
-        };
-    //For named colors or any other valid CSS color
+    } else if (savedValue.startsWith('#')) {
+        const hexNoHash = savedValue.replace('#', '').toUpperCase();
+        return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
     } else {
-        const hexColor = anyColorToHex(savedValue);
-        if(hexColor) {
-            return {
-                color: hexColor,
-                hex: savedValue, // Store the original format
-                percentage: '100%'
-            };
+        const any = anyColorToHex(savedValue);
+        if (any) {
+            const hexNoHash = any.replace('#', '').toUpperCase();
+            return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
         }
     }
-    return { color: ``, hex: ``, percentage: `` };
+    return { color: '', hex: '', percentage: '' };
 }, [getGlobalCSSValue, cssProperty]);
     
 
@@ -501,10 +479,17 @@ const getSavedValue = useCallback(() => {
     const [color, setColor] = useState(initialValues.color);
     const [hex, setHex] = useState(initialValues.hex);
     const [percentage, setPercentage] = useState(initialValues.percentage);
+    const [appliedPercentage, setAppliedPercentage] = useState(initialValues.percentage);
 
     const colorInputRef = useRef(null);
     // Timeout ref for the color
     const colorTimeoutRef = useRef(null);
+
+    const lastOpacityRef = useRef(initialValues.percentage && initialValues.percentage !== '' ? initialValues.percentage : '100%');
+    const lastColorRef = useRef({
+        withHash: initialValues.color || '',
+        noHash: (initialValues.color || '').replace('#','').toUpperCase()
+      });
 
     // Effect to update the values when the element is selected
     useEffect(() => {
@@ -512,7 +497,13 @@ const getSavedValue = useCallback(() => {
         setColor(newValues.color);
         setHex(newValues.hex);
         setPercentage(newValues.percentage);
-    }, [selectedElementData,getSavedValue]); 
+        setAppliedPercentage?.(newValues.percentage); 
+        lastOpacityRef.current = (newValues.percentage && newValues.percentage !== '') ? newValues.percentage : '100%';
+        lastColorRef.current = {
+          withHash: newValues.color || '',
+          noHash: (newValues.color || '').replace('#','').toUpperCase()
+        };
+      }, [selectedElementData]);
 
     //Function to convert hex to rgba with opacity
    
@@ -531,19 +522,16 @@ const getSavedValue = useCallback(() => {
      // Function to apply the CSS style
      const applyCSSChange = (newColor, newOpacity) => {
         if (!cssProperty) return;
-
-        const opacityValue = parseInt(newOpacity.replace('%', ''));
-        let finalValue;
-        
-        if (opacityValue < 100) {
-            // If there is transparency, use rgba
-            finalValue = hexToRgba(newColor, opacityValue);
-        } else {
-            // If there is no transparency, use hex
-            finalValue = newColor;
-        }
-        
-        // Apply the change using global function
+    
+        const effectiveOpacity = (newOpacity === '' || newOpacity == null)
+            ? (lastOpacityRef.current || '100%')
+            : newOpacity;
+    
+        const opacityValue = parseInt(String(effectiveOpacity).replace('%', ''));
+        const finalValue = (opacityValue < 100)
+            ? hexToRgba(newColor, opacityValue)
+            : newColor;
+    
         if (applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, finalValue);
         }
@@ -581,81 +569,128 @@ const getSavedValue = useCallback(() => {
         }
     };
 
-//Function to change the color with the text input
-const handleHexChange = (e) => {
-    let inputValue = e.target.value;
-    setHex(inputValue);
-};
-
-//Function to validate and apply the color when the user is not typing
-const handleHexBlur = (e) => {
-    const inputValue = e.target.value.trim();
+    const handleHexChange = (e) => {
+        setHex(e.target.value);
+    };
     
-    if(inputValue === ''){
-        setHex('');
-        setColor('');
-        applyCSSChange('', '');
-        return;
-    }
+    const handleHexBlur = (e) => {
+        const raw = (e.target.value || '').trim();
     
-    // Try to convert to hex for the color picker
-    const tempDiv = document.createElement('div');
-    tempDiv.style.color = inputValue;
-    document.body.appendChild(tempDiv);
-    const computedColor = window.getComputedStyle(tempDiv).color;
-    document.body.removeChild(tempDiv);
-    
-    // Check if it's a valid color (browser will return 'rgb(0, 0, 0)' or similar if valid)
-    if(computedColor /* && computedColor !== 'rgba(0, 0, 0, 0)' */) {
-        // Parse the computed RGB value to hex for the color picker
-        const rgbMatch = computedColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-        if(rgbMatch) {
-            const [, r, g, b] = rgbMatch;
-            const hexColor = rgbToHex(parseInt(r), parseInt(g), parseInt(b));
-            setColor(hexColor);
-            
-            // Apply the original input value directly (preserves the user's preferred format)
-            applyGlobalCSSChange(cssProperty, inputValue);
+        // If empty, restore last visible color; no apply CSS
+        if (raw === '') {
+            setHex(lastColorRef.current.noHash);
+            setColor(lastColorRef.current.withHash);
+            return;
         }
-    } else {
-        // If invalid, revert to the previous valid color
-        const savedValues = getSavedValue();
-        setHex(savedValues.hex);
-        setColor(savedValues.color);
-    }
+    
+        // Helpers
+        const expandShortHex = (v) => {
+            if (/^[0-9a-f]{3}$/i.test(v)) return v.split('').map(c => c + c).join(''); // 3 -> 6
+            if (/^[0-9a-f]{4}$/i.test(v)) return v.split('').map(c => c + c).join(''); // 4 -> 8
+            return v;
+        };
+    
+        //HEX without '#'
+        if (/^[0-9a-f]{3,8}$/i.test(raw)) {
+            const expanded = expandShortHex(raw).toUpperCase(); // 6 or 8 digits
+            const hex6 = expanded.slice(0, 6);
+            const alpha2 = expanded.length === 8 ? expanded.slice(6) : null;
+    
+            setHex(hex6);               // without '#'
+            setColor(`#${hex6}`);       // with '#'
+            lastColorRef.current = { withHash: `#${hex6}`, noHash: hex6 };
+    
+            let p;
+            if (alpha2) {
+                const aPct = Math.round(parseInt(alpha2, 16) / 255 * 100);
+                p = `${aPct}%`;
+                setPercentage(p);
+                if (typeof setAppliedPercentage === 'function') setAppliedPercentage(p);
+                if (lastOpacityRef) lastOpacityRef.current = p;
+            } else {
+                p = (typeof appliedPercentage !== 'undefined' && appliedPercentage !== '')
+                    ? appliedPercentage
+                    : (lastOpacityRef?.current || '100%');
+            }
+    
+            applyCSSChange(`#${hex6}`, p);
+            return;
+        }
+    
+        // other formats (rgba/hsla/named/#hex with '#', etc.)
+        const tmp = document.createElement('div');
+        tmp.style.color = '';
+        tmp.style.color = raw;
+        if (tmp.style.color === '') return; // invalid: don't change anything
+    
+        document.body.appendChild(tmp);
+        const computed = window.getComputedStyle(tmp).color; // rgb(a,...) or other color format
+        document.body.removeChild(tmp);
+    
+        const m = computed.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+        if (!m) return;
+    
+        const [, r, g, b, a] = m;
+        const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase(); // "#AABBCC"
+        const hexNoHash = hexWithHash.slice(1);                                            // "AABBCC"
+        setHex(hexNoHash);
+        setColor(hexWithHash);
+        lastColorRef.current = { withHash: hexWithHash, noHash: hexNoHash };
+    
+        let p;
+        if (typeof a !== 'undefined') {
+            const aPct = `${Math.round(parseFloat(a) * 100)}%`;
+            p = aPct;
+            setPercentage(aPct);
+            if (typeof setAppliedPercentage === 'function') setAppliedPercentage(aPct);
+            if (lastOpacityRef) lastOpacityRef.current = aPct;
+        } else {
+            p = (typeof appliedPercentage !== 'undefined' && appliedPercentage !== '')
+                ? appliedPercentage
+                : (lastOpacityRef?.current || '100%');
+        }
+    
+        applyCSSChange(hexWithHash, p);
+    };
+
+const handlePercentageInput = (e) => {
+    setPercentage(e.target.value);
 };
 
-
-//Function to change the transparency with the percentage input
-const handlePercentageChange = (e) => {
-    let raw = (e.target.value || '').replace('%', '').trim();
-
-    // Allow to delete the field
-    if (raw === '') {
-        setPercentage('');
-        // Aplicar transparencia al máximo (100%) cuando está vacío
-        applyCSSChange(color, '');
+// onBlur – if empty, revert to last value; if not, normalize and apply
+const handlePercentageBlur = (e) => {
+    if (percentage === '') {
+        const restored = lastOpacityRef.current || '100%';
+        setPercentage(restored);
+        setAppliedPercentage(restored);
+        e.target.value = restored;
+        if (color && color.trim() !== '') {
+            applyCSSChange(color, restored);
+        }
         return;
     }
-
-    // Normalizar el número entre 0 y 100
-    let num = Number(raw);
-    if (Number.isNaN(num)) num = 0;
-    if (num < 0) num = 0;
-    if (num > 100) num = 100;
-
-    const finalValue = `${num}%`;
+    // Ensure format and apply
+    const percNum = Math.max(0, Math.min(100, parseInt(String(percentage).replace('%','')) || 0));
+    const finalValue = `${percNum}%`;
     setPercentage(finalValue);
+    setAppliedPercentage(finalValue);
     e.target.value = finalValue;
-
-    // Aplica siempre el cambio, incluso cuando es 0
-    applyCSSChange(color, finalValue);
+    lastOpacityRef.current = finalValue;
+    if (color && color.trim() !== '') {
+        applyCSSChange(color, finalValue);
+    }
 };
 
 //Function to get the final color. This is used to mix the color with the transparency
-const perc = parseInt((percentage??'').replace('%', ''));
-const effectivePerc = (isNaN(perc) || perc === 0) ? '' : perc;
-const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'transparent';
+const perc = parseInt((appliedPercentage ?? '').replace('%', ''));
+const effectivePerc = (isNaN(perc) ? '' : perc);
+
+let finalColor;
+if (!color || color.trim() === '' || appliedPercentage === '') {
+    finalColor = 'transparent';
+} else {
+    finalColor = hexToRgba(color, effectivePerc);
+}
 
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
@@ -673,7 +708,7 @@ const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'tr
                 <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} onKeyDown={(e) => applyOnEnter(e, handleHexBlur)}/>
             </div>
             <div className="tw-builder__settings-percentages">
-                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} onKeyDown={(e) => applyOnEnter(e, handlePercentageChange)} />
+                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageBlur} onChange={handlePercentageInput} onKeyDown={(e) => applyOnEnter(e, handlePercentageBlur)} />
             </div>
         </div>
     </div>
@@ -2136,7 +2171,7 @@ if (name === 'Weight') {
     );
 }
 
-const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified, setBwUnified, brUnified, setBrUnified, nextLine}) => {
+const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified = '', setBwUnified, brUnified = '', setBrUnified, nextLine}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));
@@ -2671,10 +2706,10 @@ const parseRadius = useCallback((radiusStr) => {
                                         <input 
                                             type="text" 
                                             className={`tw-builder__settings-input`}
-                                            value={isWidthLinked ? (bwLinked || '') : (bwUnified || '')}
+                                            value={isWidthLinked ? bwLinked : (bwUnified ?? '')}
                                             onChange={(e) => handleBorderWidthChange(e.target.value)}
-                                              
-                                        />
+                                            
+                                        />  
                                         <div className="tw-builder__settings-actions">
                                             <div className="tw-builder__settings-slider-width"
                                             style={{
@@ -2761,10 +2796,8 @@ const parseRadius = useCallback((radiusStr) => {
                                         <input 
                                             type="text" 
                                             className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`} 
-                                            value={isRadiusLinked ? (brLinked || '') : (brUnified || '')}
-                                            onChange={(e) => handleRadiusChange(e.target.value)}
-          
-                                            
+                                            value={isRadiusLinked ? brLinked : (brUnified ?? '')}
+                                            onChange={(e) => handleRadiusChange(e.target.value)}  
                                         />
                                         <div className="tw-builder__settings-actions">
                                         <div className="tw-builder__settings-slider-width"
@@ -3707,7 +3740,7 @@ useEffect(() => {
             case 'select':
                 return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} nextLine={item.nextLine}/>;
             case 'border':
-                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
+                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} bwUnified={bwUnified} brUnified={brUnified} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
             case 'box-shadow':
                 return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
             case 'enter-animation':

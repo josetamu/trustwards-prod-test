@@ -94,67 +94,77 @@ function Home() {
     const isValidRange = range?.from && range?.to && rangeLength > 0 && rangeLength <= 8;
 
         // Fetch consents and build CSV from consent_data
-        const fetchConsentsForRange = async (siteId, fromDate, toDate) => {
-            // Intenta por columna site_id si existe
+        const fetchConsentsForRange = async (siteId) => {
             let { data, error } = await supabase
                 .from('Consents')
-                .select('consent_data')
+                .select('consent_data, site_id')
                 .eq('site_id', siteId);
-    
-            // Fallback: si no hay site_id o vacío, busca por JSON contains
+        
             if ((!data || data.length === 0) && !error) {
                 const res = await supabase
                     .from('Consents')
-                    .select('consent_data')
+                    .select('consent_data, site_id')
                     .contains('consent_data', { siteid: siteId });
                 data = res.data; error = res.error;
             }
-    
+        
             if (error) throw error;
+        
+            const items = (data || [])
+                .map(r => {
+                    const cd = r?.consent_data;
+                    if (!cd) return null;
+                    if (typeof cd === 'string') {
+                        try { return JSON.parse(cd); } catch { return null; }
+                    }
+                    return cd;
+                })
+                .filter(Boolean);
+               
+            return items;
+        };
     
-            const inRange = (ts) => {
-                const d = new Date(ts);
-                return d >= fromDate && d <= toDate;
+    const buildCSVFromConsents = (items) => {
+        
+        const headers = ['Date','User IP','Analytics','Marketing','Functional'];
+        const rows = items.map(cd => {
+            const dateStr = format(new Date(cd.ts), 'yyyy-MM-dd');
+            const cat = cd?.categories || {};
+            const get = (k) => {
+                if (k in cat) return !!cat[k];
+                const mk = Object.keys(cat).find(kk => kk.toLowerCase() === k.toLowerCase());
+                return mk ? !!cat[mk] : false;
             };
-    
-            return (data || [])
-                .map(r => r?.consent_data)
-                .filter(Boolean)
-                .filter(cd => cd.siteid === siteId && cd.ts && inRange(cd.ts));
-        };
-    
-        const buildCSVFromConsents = (items) => {
-            const headers = ['Date','Analytics','Marketing','Functional'];
-            const rows = items.map(cd => {
-                const dateStr = format(new Date(cd.ts), 'yyyy-MM-dd');
-                const cat = cd?.categories || {};
-                return [
-                    dateStr,
-                    cat.Analytics ? 'true' : 'false',
-                    cat.Marketing ? 'true' : 'false',
-                    cat.Functional ? 'true' : 'false'
-                ].join(',');
-            });
-            return [headers.join(','), ...rows].join('\n');
-        };
+            const row = [
+                dateStr,
+                cd.userip || 'N/A', 
+                get('Analytics') ? 'true' : 'false',
+                get('Marketing') ? 'true' : 'false',
+                get('Functional') ? 'true' : 'false'
+            ].join(',');
+            return row;
+        });
+        
+        const result = [headers.join(','), ...rows].join('\n');
+        return result;
+    };
     
 
-const handleCreate = async () => {
-    if (!isValidRange) return;
-    if (monthlyUsed >= monthlyLimit) return;
-
-    try {   
+    const handleCreate = async () => {
+        if (!isValidRange) return;
+        if (monthlyUsed >= monthlyLimit) return;
+    
+        try {   
             // 1 Generate CSV
-            // Get consents for the range for this site
             const fromStart = new Date(range.from); fromStart.setHours(0,0,0,0);
             const toEnd = new Date(range.to); toEnd.setHours(23,59,59,999);
     
-            const items = await fetchConsentsForRange(siteSlug, fromStart, toEnd);
-    
+            const items = await fetchConsentsForRange(siteSlug);
+            
             // Generate CSV from consent_data
             const csv = buildCSVFromConsents(items);
-    
-            // 2 Upload to Supabase Storage (bucket 'proofs')
+            
+            // 2 Upload to Supabase Storage...
             const bucket = 'Consents';
             const fromIso = format(range.from, 'yyyy-MM-dd');
             const toIso = format(range.to, 'yyyy-MM-dd');
@@ -166,7 +176,6 @@ const handleCreate = async () => {
                 { upsert: true, contentType: 'text/csv', cacheControl: '3600' }
             );
             if (uploadRes?.error) {
-                console.error('Upload error:', uploadRes.error);
                 showNotification(`Error uploading proof file`);
                 return;
             }

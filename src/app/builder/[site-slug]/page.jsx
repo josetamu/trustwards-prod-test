@@ -568,7 +568,7 @@ useEffect(() => {
 
   return (
   <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime} fontOptions={fontOptions}>
- <Loader isVisible={isLoading || isScreenshotLoading} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading}/>
+ <Loader isVisible={isLoading || isScreenshotLoading ||!fontsReady} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading}/>
     {isMobile && <MobileWarning/>}
     {!isMobile && !isLoading && fontsReady && ( 
     <div className="tw-builder">
