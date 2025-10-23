@@ -2,7 +2,9 @@ import './StylesDeleter.css';
 
 import React, { useCallback } from 'react';
 //This component is used to delete the styles of the selected element.(Point with ancent color)
-export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, getGlobalCSSValue, getGlobalJSONValue, value, cssProperty, JSONProperty, cssPropertyGroup, jsonEmptyValue, cssDeleteBatch, onDelete, defaultValue}) => {
+export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, getGlobalCSSValue, getGlobalJSONValue, value, cssProperty, JSONProperty, cssPropertyGroup, jsonEmptyValue, cssDeleteBatch, onDelete, defaultValue, notDelete}) => {
+    
+
     //Check if the control has any group side(padding, margin, etc.)
     const hasAnyGroupSide = cssPropertyGroup
         ? (Boolean(getGlobalCSSValue?.(cssPropertyGroup)) ||
@@ -32,6 +34,7 @@ export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, get
 
 //Function to delete the styles
 const handleDelete = useCallback(() => {
+    if (notDelete) return;
     //If jsonProperty is set, apply the empty marker to it
     if (JSONProperty && applyGlobalJSONChange) applyGlobalJSONChange(JSONProperty, effectiveEmptyMarker);
 
@@ -83,7 +86,7 @@ const handleDelete = useCallback(() => {
                         }}>
 
                 </div>
-                <span className="tw-builder__settings-deleter-cross" onClick={handleDelete}>X</span>
+                <span className={`tw-builder__settings-deleter-cross ${notDelete ? 'tw-builder__settings-deleter-cross--not-delete' : ''}`} onClick={handleDelete}>X</span>
         </div>
     )
 }

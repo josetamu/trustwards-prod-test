@@ -63,7 +63,12 @@
     letter-spacing: var(--letter-spacing-negative);
     appearance: none;
     cursor: pointer;
+    max-width: 75px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+
 .tw-builder__settings-select:focus{
     outline: none;
 }
@@ -372,6 +377,9 @@
     scrollbar-width: none;
     
   }
+  .tw-builder__settings-options--font{
+    right: -10%;
+  }
   .tw-builder__settings-options:has(.tw-builder__settings-search){
     min-width: 177px;
   }
@@ -380,7 +388,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
+    padding: 5px 12px;
     cursor: pointer;
     font-size: var(--font-size-mini);
     position: relative;
@@ -388,9 +396,8 @@
     font-weight: var(--font-weight-medium);
   }
   .tw-builder__settings-option--font {
-    padding: 8px 1px;
+    padding: 5px 10px;
     font-size: var(--font-size-extreme-mini);
-    margin-left: 5px;
   }
   
   .tw-builder__settings-option:hover {
@@ -404,7 +411,7 @@
     left: 2px;
   }
   .tw-builder__settings-check--font{
-    left: -7.5px;
+    left: 2px;
   }
   .tw-builder__settings-search{
     width: 100%;
@@ -649,7 +656,6 @@
 }
 .tw-builder__settings-units-direction{
     width: 25px !important;
-    height: 25px;
     border-radius: 5px;
     border: none;
     background-color: transparent !important;
@@ -796,3 +802,9 @@
     }
 }
 
+.tw-builder__settings-properties-actions{
+    position: absolute;
+}
+.tw-builder__settings-properties-actions .tw-builder__settings-deleter{
+    top: -4px;
+}

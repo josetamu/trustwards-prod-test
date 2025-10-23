@@ -49,11 +49,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--tooltip-right-panel-color);
+    color: #666666;
     font-size: 8px;
     font-weight: 900;
     letter-spacing: var(--letter-spacing-negative);
-    border: 1px solid var(--tooltip-right-panel-color);
+    border: 1px solid #666666;
     border-radius: 2px;
     position: relative;
 }

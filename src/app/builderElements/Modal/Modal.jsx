@@ -6,7 +6,7 @@ export const Modal = (node, nodeProps = {}, children) => {
     // nodeProps adds HTML id and classList
 
     const id = node.id;
-    const Tag = node.tagName;
+    const Tag = node.tagName || 'div';
 
     const dataAttributes = node.attributes;
     /*

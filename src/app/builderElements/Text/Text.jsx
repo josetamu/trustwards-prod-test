@@ -7,6 +7,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
 
     const id = node.id;
     const Tag = node.tagName || 'h3';
+    const RealTag = (anchorAncestor && Tag === 'a') ? 'div' : Tag;
     const text = node.text;
 
 
@@ -27,15 +28,15 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                 {
                     label: 'Spacing',
                     controls: [
-                        { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px'},
-                        { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px'},
+                        { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
+                        { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
                         { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                     ]
                 },
                 {
                     label: 'Size',
                     controls: [
-                        { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px'},
+                        { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px', notDelete: true},
                         { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
                         { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
                         { name: 'Min. Height', type: 'text', cssProperty: 'min-height', autoUnit: 'px'},
@@ -52,7 +53,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                 {
                     label: 'Text',
                     controls: [
-                        { name: 'Color', type: 'color', cssProperty: 'color', nextLine: true},
+                        { name: 'Color', type: 'color', cssProperty: 'color', nextLine: true, value: '000000', opacity: '100%'},
                         { name: 'Font', type: 'select', cssProperty: 'font-family', placeholder: 'Inter'},
                         { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
                         { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
@@ -67,13 +68,14 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                     controls: [
                         { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
                         { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
-                        { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                        { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', {'Not Allowed': 'not-allowed'}, 'Grab'], cssProperty: 'cursor' },
                         {
                             name: 'Mix blend mode',
                             type: 'select',
                             defaultValue: 'normal',
                             options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
-                            cssProperty: 'mix-blend-mode'
+                            cssProperty: 'mix-blend-mode',
+                            placeholder: 'normal',
                         },
                         {name: 'Border', type: 'border'},
                         {name: 'Shadow', type: 'box-shadow'},
@@ -212,13 +214,13 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
         const containsHTML = /<[^>]*>/g.test(text);
         
         return (
-            <Tag
+            <RealTag
               key={id}
               {...nodeProps}
               {...dataAttributes}
-              {...(Tag === 'a' && node.href ? { href: node.href } : {})}
+              {...(RealTag === 'a' && node.href ? { href: node.href } : {})}
             >
-              {node.href && Tag !== 'a' && !anchorAncestor
+              {node.href && Tag === 'a'
                 ? (
                     <a
                       style={{ textDecoration: 'none', color: 'inherit' }}
@@ -238,7 +240,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                     ? <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(text) }} />
                     : text
               }
-            </Tag>
+            </RealTag>
           )
     }
 
