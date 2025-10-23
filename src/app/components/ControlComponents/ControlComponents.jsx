@@ -21,7 +21,7 @@ const applyOnEnter = (e,f) => {
 }
 
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, notDelete}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, notDelete, getPlaceholderValue}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -31,6 +31,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         
         return savedValue ?? '';
     });
+    const bpPlaceholder = cssProperty ? getPlaceholderValue?.(cssProperty) : null;
 
     //Update the value when the selected element changes
     useEffect(() => {
@@ -69,7 +70,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             type="text" 
             className="tw-builder__settings-input" 
             value={textValue} 
-            placeholder={placeholder} 
+            placeholder={bpPlaceholder || placeholder} 
             onChange={handleChange}
             />
         </div>
@@ -344,7 +345,10 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
     )
 }
 
-const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine, getPlaceholderValue}) => {
+
+
+
 
     //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
@@ -366,6 +370,19 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         const saved = getGlobalCSSValue?.(`${cssProperty}-left`);
         return saved || '';
     });
+
+    const getSidePlaceholder = (side) => {
+        if(!cssProperty || !getPlaceholderValue) return '';
+        return getPlaceholderValue(`${cssProperty}-${side}`) || '';
+    }
+
+    const bpPlaceholder = {
+        top: getSidePlaceholder('top'),
+        right: getSidePlaceholder('right'),
+        bottom: getSidePlaceholder('bottom'),
+        left: getSidePlaceholder('left'),
+    }
+
 
     //Update values when dependencies changes, like the element selected
     useEffect(() => {
@@ -391,12 +408,12 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
             <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} placeholder={placeholder[3]} onChange={handleSideChange('left')}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} placeholder={bpPlaceholder.left || placeholder[3]} onChange={handleSideChange('left')}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} placeholder={placeholder[0]} onChange={handleSideChange('top')}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} placeholder={placeholder[2]} onChange={handleSideChange('bottom')}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} placeholder={bpPlaceholder.top || placeholder[0]} onChange={handleSideChange('top')}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} placeholder={bpPlaceholder.bottom || placeholder[2]} onChange={handleSideChange('bottom')}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} placeholder={placeholder[1]} onChange={handleSideChange('right')}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} placeholder={bpPlaceholder.right || placeholder[1]} onChange={handleSideChange('right')}/>
         </div>
     </div>
     )
@@ -790,6 +807,12 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     };
     //Function to change the image url
     const handleUrlChange = (e) => {
+        if (e.target.value.trim() === '') {
+            setImage('');
+            setImageUrl('');
+            applyGlobalJSONChange?.(JSONProperty, '/assets/builder-default-image.svg');
+            return;
+        }
         const url = e.target.value;
         setImageUrl(url);
     };
@@ -822,7 +845,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             <input 
             type="text" 
             className="tw-builder__settings-input tw-builder__settings-input--link" 
-            placeholder="https://stock.io/default.png" 
+            placeholder="Source URL" 
             ref={imageUrlRef}
             value={imageUrl}
             onChange={handleUrlChange}
@@ -2077,9 +2100,7 @@ if (name === 'Weight') {
                             {getDisplayFromValue(selected)}
                         </span>
                         :
-                        <span className="tw-builder__settings-select-placeholder">
-                            {placeholder}
-                        </span>
+                        <span className="tw-builder__settings-select-placeholder">{placeholder}</span>
                     }
                 </button>
                 
@@ -3507,7 +3528,7 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return getCSSValueWithState(entry.states, entry.properties);
     };
     
-    // Try breakpoint first, then fallback logic
+    // Only return the value of the current breakpoint, no fallback
     const bpEntry = getEntry(bp);
     const result = readFromEntry(bpEntry);
     
@@ -3515,17 +3536,98 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return result;
     }
     
-    // Enhanced fallback logic based on breakpoint
+    // If there's nothing in the current breakpoint, return null or empty
+    return returnAll ? {} : null;
+}, [JSONtree, selectedId, activeClass, activeRoot, getActiveBreakpoint, activeState]);
+
+// Get placeholder value from previous breakpoint (for display only, not applied)
+const getPlaceholderValue = useCallback((cssProperty, options = {}) => {
+    if (!selectedId || !cssProperty) return null;
+    
+    const { nestedSelector = null, enterScope = null } = options;
+    const bp = getActiveBreakpoint?.() || 'desktop';
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    // Special handling for enter animations on root elements
+    if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+        const isRoot = selectedId === activeRoot;
+        if (isRoot) {
+            type = 'class';
+            selector = enterScope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        }
+    }
+    
+    // Get the appropriate data arrays
+    const getEntry = (breakpoint) => {
+        const isResponsive = breakpoint !== 'desktop';
+        
+        if (type === 'class') {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.classesCSSData || []
+                : JSONtree?.classesCSSData || [];
+            return arr.find(item => item.className === selector);
+        } else {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.idsCSSData || []
+                : JSONtree?.idsCSSData || [];
+            return arr.find(item => item.id === selector);
+        }
+    };
+    
+    // Read from entry (same logic as getGlobalCSSValue but for placeholder)
+    const readFromEntry = (entry) => {
+        if (!entry) return null;
+        
+        // ENTER ANIMATION SCOPE
+        if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+            const enterData = entry.enter?.[enterScope];
+            return cssProperty ? (enterData?.[cssProperty] ?? null) : null;
+        }
+        
+        // Helper to get CSS value with state support
+        const getCSSValueWithState = (states, properties) => {
+            if (!cssProperty) return null;
+
+            // If there is an active state, try state value first, then fallback to base property
+            if (activeState) {
+                const stVal = states?.[activeState]?.[cssProperty];
+                if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+                const baseVal = properties?.[cssProperty];
+                return typeof baseVal !== 'undefined' && baseVal !== null ? baseVal : null;
+            }
+            
+            return properties?.[cssProperty] ?? null;
+        };
+
+        // NESTED SELECTOR
+        if (nestedSelector && nestedSelector.trim()) {
+            const node = entry.nested?.[nestedSelector.trim()];
+            if (!node) return null;
+            return getCSSValueWithState(node.states, node.properties);
+        }
+        
+        // NORMAL (with optional state)
+        return getCSSValueWithState(entry.states, entry.properties);
+    };
+    
+    // Try current breakpoint first
+    const bpEntry = getEntry(bp);
+    const result = readFromEntry(bpEntry);
+    
+    if (result !== null) {
+        return result;
+    }
+    
+    // Fallback logic for placeholders
     if (bp === 'mobile') {
         // For mobile: try tablet first, then desktop
         const tabletEntry = getEntry('tablet');
         const tabletResult = readFromEntry(tabletEntry);
+        if (tabletResult !== null) return tabletResult;
         
-        if (tabletResult !== null && (returnAll ? Object.keys(tabletResult).length > 0 : true)) {
-            return tabletResult;
-        }
-        
-        // If no tablet value, fallback to desktop
         const desktopEntry = getEntry('desktop');
         return readFromEntry(desktopEntry);
     } else if (bp === 'tablet') {
@@ -3534,9 +3636,8 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return readFromEntry(desktopEntry);
     }
     
-    return returnAll ? {} : null;
+    return null;
 }, [JSONtree, selectedId, activeClass, activeRoot, getActiveBreakpoint, activeState]);
-
 
 const getEnterAnimationProps = useCallback(() => {
     if (!selectedId) return {};
@@ -3704,6 +3805,7 @@ useEffect(() => {
         applyGlobalJSONChange,
         getGlobalJSONValue,
         selectedId,
+        getPlaceholderValue,
      };
 
      const whatType = (item, index) => {

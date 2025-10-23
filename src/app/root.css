@@ -352,6 +352,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --drop-indicator-background: #0099FE15;
 
   /*Builder - Right Panel*/
+  --upload-image-background: #E3E3E3;
   --title-right-panel-color: #F5F5F5;
   --subtitle-right-panel-color: #666666;
   --value-color: #000000;
@@ -616,6 +617,7 @@ html[data-theme="dark"] {
   --drop-indicator-background: #0099FE15;
 
   /*Builder - Right Panel*/
+  --upload-image-background: #555555;
   --value-color: #FFFFFF;
   --subtitle-right-panel-color: #AAAAAA;
   --placeholder-color: #999999;

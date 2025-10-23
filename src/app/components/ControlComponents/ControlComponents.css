@@ -56,6 +56,7 @@
     padding: 5px;
     padding-right: 20px;
     min-width: 40px;
+    min-height: 25px;
     border: none;
     color: var(--value-color);
     font-size: var(--font-size-mini);
@@ -687,7 +688,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--header-plan-background);
+    background-color: var(--upload-image-background);
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
