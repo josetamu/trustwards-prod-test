@@ -67,7 +67,7 @@ export const Text = (node, nodeProps = {}, anchorAncestor = false) => {
                     label: 'Styles',
                     controls: [
                         { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
-                        { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                        { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow', notDelete: true},
                         { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', {'Not Allowed': 'not-allowed'}, 'Grab'], cssProperty: 'cursor' },
                         {
                             name: 'Mix blend mode',

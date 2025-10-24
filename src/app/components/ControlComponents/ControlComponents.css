@@ -194,6 +194,7 @@
     align-items: flex-end;
 }
 
+
 .tw-builder__settings-spacing{
     display: flex;
     align-items: center;
@@ -847,4 +848,8 @@
     letter-spacing: var(--letter-spacing-negative);
 
     padding: 8px 12px;
+}
+.tw-builder__settings-action--placeholder {
+    opacity: 0.5;
+    border: 1px dashed currentColor;
 }

@@ -17,7 +17,7 @@ export const Checkbox = (node, nodeProps = {}) => {
 
     const groupControls =  {
         header: [
-            { name: 'Image', type: 'image'},
+            { name: 'Image', type: 'image', nextLine2: true},
             { name: 'Tag', type: 'select', value: 'div', options: ['div', 'figure', 'img']},
             { name: 'Link to', type: 'text', placeholder: 'URL...'},
             { name: 'Alt', type: 'text', placeholder: 'Alt...'},
