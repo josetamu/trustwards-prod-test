@@ -58,6 +58,7 @@
     padding: 5px;
     padding-right: 20px;
     min-width: 40px;
+    min-height: 25px;
     border: none;
     color: var(--value-color);
     font-size: var(--font-size-mini);
@@ -192,6 +193,7 @@
 .tw-builder__settings-action--end{
     align-items: flex-end;
 }
+
 
 .tw-builder__settings-spacing{
     display: flex;
@@ -694,7 +696,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--header-plan-background);
+    background-color: var(--upload-image-background);
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
@@ -846,4 +848,8 @@
     letter-spacing: var(--letter-spacing-negative);
 
     padding: 8px 12px;
+}
+.tw-builder__settings-action--placeholder {
+    opacity: 0.5;
+    border: 1px dashed currentColor;
 }

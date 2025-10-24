@@ -687,6 +687,15 @@ useEffect(() => {
             '.tw-builder__canvas[data-bp="tablet"] '
         );
         if (tbScoped.trim()) cssContent += `${tbScoped}`;
+
+        // Also apply tablet styles when data-bp="mobile" (so mobile inherits tablet before mobile overrides)
+        const tbInsideMobile = writeBlock(
+            JSONtree?.responsive?.tablet?.idsCSSData,
+            JSONtree?.responsive?.tablet?.classesCSSData,
+            '.tw-builder__canvas[data-bp="mobile"] '
+        );
+        if (tbInsideMobile.trim()) cssContent += `${tbInsideMobile}`;
+
         const moScoped = writeBlock(
             JSONtree?.responsive?.mobile?.idsCSSData,
             JSONtree?.responsive?.mobile?.classesCSSData,
