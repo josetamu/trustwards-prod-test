@@ -757,6 +757,7 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
+    position: relative;
     
 }
 .tw-builder__settings-properties-pair{
@@ -849,7 +850,14 @@
 
     padding: 8px 12px;
 }
-.tw-builder__settings-action--placeholder {
+.tw-builder__settings-action--placeholder{
     opacity: 0.5;
     border: 1px dashed currentColor;
+}
+
+.tw-builder__settings-properties-actions{
+    position: absolute;
+}
+.tw-builder__settings-properties-actions .tw-builder__settings-deleter{
+    top: -4px;
 }
