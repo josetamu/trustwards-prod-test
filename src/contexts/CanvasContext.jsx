@@ -2,6 +2,7 @@
 
 import React, { createContext, useReducer, useContext, useEffect, useState, useCallback } from "react";
 import { JSfunctions } from '@contexts/JSfunctionsContext'; //Used by runElementScript() eval
+import { checkboxGroupControls } from '@app/builderElements/Checkbox/Checkbox';
 
 const CanvasContext = createContext(null);
 
@@ -319,7 +320,17 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             ? { nestedSelector: options } 
             : options;
         
-        const { nestedSelector = null, enterScope = null } = normalizedOptions;
+        let { nestedSelector = null, enterScope = null } = normalizedOptions;
+        
+        // Process '&' character in nestedSelector to reference current element selector
+        // Keep original selector to also update defaults that may have '&' unprocessed
+        const originalNestedSelector = nestedSelector;
+        // '&' will be replaced with the current element's ID or class selector
+        // Example: '&[data-type="switch"]' becomes '#tw-tnkhhx[data-type="switch"]'
+        if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.includes('&')) {
+            const currentSelector = type === 'id' ? `#${selector}` : `.${selector}`;
+            nestedSelector = nestedSelector.replace(/&/g, currentSelector);
+        }
        
         const bp = getActiveBreakpoint();
         const isResponsive = bp !== 'desktop';
@@ -392,7 +403,18 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.trim() !== '') {
                 const key = nestedSelector.trim();
                 const nest = { ...(entry.nested || {}) };
-                const node = { ...(nest[key] || {}) };
+                
+                // Try to get existing node with processed selector first
+                let node = { ...(nest[key] || {}) };
+                
+                // If node doesn't exist and we have an original selector with '&', check if that exists
+                // This handles the case where defaults were saved with '&' unprocessed
+                const originalKey = originalNestedSelector?.trim();
+                if ((!nest[key] || Object.keys(nest[key]).length === 0) && originalKey && originalKey !== key && nest[originalKey]) {
+                    // Migrate from original key to processed key
+                    node = { ...nest[originalKey] };
+                    delete nest[originalKey];
+                }
                 
                 if (activeState) {
                     const st = { ...(node.states || {}) };
@@ -629,8 +651,26 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 
         const idsCSSDataToMerge = [];
         const addDefaultCSSProperties = (node) => {
-            if(node.defaultCSS) {
-                idsCSSDataToMerge.push({ id: node.id, properties: node.defaultCSS }); //Add default width and height auto to img
+            // Build the entry for this node's default CSS
+            const entry = { id: node.id };
+            
+            // Add root-level CSS properties
+            if (node.defaultCSS) {
+                entry.properties = node.defaultCSS;
+            }
+            
+            // Add nested selector CSS properties
+            // Note: '&' character is kept as-is and will be processed dynamically when reading/writing
+            if (node.defaultNested) {
+                entry.nested = {};
+                Object.entries(node.defaultNested).forEach(([selector, props]) => {
+                    entry.nested[selector] = { properties: props };
+                });
+            }
+            
+            // Only push if there's something to merge
+            if (entry.properties || entry.nested) {
+                idsCSSDataToMerge.push(entry);
             }
         }
 
@@ -854,6 +894,74 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     };   
 
 
+
+    /*
+    * Helper function to extract defaults from groupControls
+    * Supports both simple values and complex objects (for border, box-shadow, etc.)
+    * Also supports nested selectors
+    */
+    const extractDefaultsFromControls = (controls) => {
+        const defaults = {
+            css: {},
+            nested: {},
+            attributes: {},
+            json: {}
+        };
+
+        const processControl = (control) => {
+            if (!control.default) return;
+
+            // Check if default is an object (for complex controls like border, box-shadow, panel)
+            const isObjectDefault = typeof control.default === 'object' && !Array.isArray(control.default);
+
+            // If control has a selector, defaults go to nested structure
+            if (control.selector) {
+                if (!defaults.nested[control.selector]) {
+                    defaults.nested[control.selector] = {};
+                }
+
+                if (isObjectDefault) {
+                    // Object default: merge all properties
+                    Object.assign(defaults.nested[control.selector], control.default);
+                } else if (control.cssProperty) {
+                    // Simple default with cssProperty
+                    defaults.nested[control.selector][control.cssProperty] = control.default;
+                }
+            }
+            // No selector: defaults go to root element
+            else {
+                if (isObjectDefault) {
+                    // Object default: merge all CSS properties
+                    Object.assign(defaults.css, control.default);
+                } else if (control.cssProperty) {
+                    // Simple default with cssProperty
+                    defaults.css[control.cssProperty] = control.default;
+                } else if (control.dataAttribute) {
+                    // dataAttribute default
+                    defaults.attributes[control.dataAttribute] = control.default;
+                } else if (control.JSONProperty) {
+                    // JSONProperty default
+                    defaults.json[control.JSONProperty] = control.default;
+                }
+            }
+        };
+
+        // Process header controls
+        if (controls.header) {
+            controls.header.forEach(processControl);
+        }
+
+        // Process body controls
+        if (controls.body) {
+            controls.body.forEach(section => {
+                if (section.controls) {
+                    section.controls.forEach(processControl);
+                }
+            });
+        }
+
+        return defaults;
+    };
 
     /*
     * Elements creation
@@ -1094,33 +1202,26 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                                             },
                                         ],
                                     },
-                                    {
-                                        elementType: "checkbox",
-                                        icon: "block",
-                                        tagName: "div", //Expander Switch
-                                        label: "Checkbox",
-                                        classList: ["tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
-                                        attributes: {
-                                            'data-type': "switch",
-                                        },
-                                        defaultCSS: {
-                                            'width': "26px",
-                                            'height': "16px",
-                                            'border-top-radius': "100px",
-                                            'cursor': "pointer", /**/
-                                            '--disabled-color': "#555", /**/
-                                            "--enabled-color": "#0099FE", /**/
-                                            "--transition-duration": "0.2s", /**/
-                                            "--transition-easing": "ease", /**/
-                                            "--checked-left": "12px",
-                                            "--switch-spacing": "2px",
-                                            "--switch-size": "12px",
-                                            "--switch-background": "#FFFFFF",
-                                            "--switch-radius": "100px",
-                                            "--switch-shadow": "0 4px 4px #00000020",
-                                            "--switch-duration": "0.2s"
-                                        }
-                                    },
+                                    (() => {
+                                        // Extract defaults from checkboxGroupControls
+                                        const defaults = extractDefaultsFromControls(checkboxGroupControls);
+                                        return {
+                                            elementType: "checkbox",
+                                            icon: "block",
+                                            tagName: "div", //Expander Switch
+                                            label: "Checkbox",
+                                            classList: ["tw-checkbox", "tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
+                                            attributes: {
+                                                ...defaults.attributes,
+                                            },
+                                            defaultCSS: {
+                                                ...defaults.css,
+                                            },
+                                            ...(Object.keys(defaults.nested).length > 0 && {
+                                                defaultNested: defaults.nested
+                                            })
+                                        };
+                                    })(),
                                 ],
                             },
                             {
