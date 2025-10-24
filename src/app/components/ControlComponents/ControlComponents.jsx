@@ -747,6 +747,8 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             if (savedValue === defaultImage) {
                 setImage(null);
                 setImageUrl('');
+                if (imageRef.current) imageRef.current.value = '';
+                if (imageUrlRef.current) imageUrlRef.current.value = '';
                 return;
             }
             //If the image is an url, set it to the url
