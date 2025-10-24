@@ -1,24 +1,68 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import './BuilderControl.css';
 import {Tooltip} from '@components/tooltip/Tooltip';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 
 // Component to render the control(label with + and -) Pass the label(title) and the control to render
-export default function BuilderControl({label, controls, whatType, activeRoot, globalControlProps, setBwUnified, setBrUnified, styleDeleter, getEnterAnimationProps, clearAllEnterAnimations}) 	{
+export default function BuilderControl({label, controls, whatType, activeRoot, globalControlProps, setBwUnified, setBrUnified, styleDeleter, getEnterAnimationProps, clearAllEnterAnimations, required, checkRequired, allControls}) 	{
 	const [isOpen, setIsOpen] = useState(false);
 	const [activeTooltip, setActiveTooltip] = useState(null);
+	
+	// State to track if this group should be shown based on required condition
+	const [shouldShow, setShouldShow] = useState(() => {
+		if (!required || !checkRequired) return true;
+		return checkRequired(required);
+	});
 
 	//Get the global control props to know when a group of controls has a value and show the delete button.
 	const applyGlobalCSSChange = globalControlProps?.applyGlobalCSSChange;
 	const getGlobalCSSValue = globalControlProps?.getGlobalCSSValue;
 	const applyGlobalJSONChange = globalControlProps?.applyGlobalJSONChange;
 	const getGlobalJSONValue = globalControlProps?.getGlobalJSONValue;
+	const selectedElementData = globalControlProps?.selectedElementData;
 
 	//get the name of the active root to show in the tooltip
 	const activeRootName = {
 		'tw-root--banner': 'Banner',
 		'tw-root--modal': 'Modal',
 	}
+
+	// Get the control name from required condition
+	const getRequiredControlName = (required) => {
+		if (!required) return null;
+		if (typeof required === 'string') {
+			return required.split('=')[0].trim();
+		} else if (typeof required === 'object') {
+			return required.control;
+		}
+		return null;
+	};
+
+	const requiredControlName = getRequiredControlName(required);
+
+	// Find the control that this group depends on
+	const dependentControl = useMemo(() => {
+		if (!requiredControlName || !allControls) return null;
+		return allControls.find(ctrl => ctrl?.name === requiredControlName);
+	}, [requiredControlName, allControls]);
+
+	// Get the current value of the dependent control
+	const dependentJsonValue = dependentControl?.JSONProperty ? getGlobalJSONValue?.(dependentControl.JSONProperty) : null;
+	const dependentAttrValue = dependentControl?.dataAttribute ? getGlobalJSONValue?.(`attributes.${dependentControl.dataAttribute}`) : null;
+	const dependentCssValue = dependentControl?.cssProperty ? getGlobalCSSValue?.(dependentControl.cssProperty) : null;
+	const elementId = selectedElementData?.id;
+
+	// Listen to changes in the dependent control's value
+	useEffect(() => {
+		if (!required || !checkRequired) {
+			setShouldShow(true);
+			return;
+		}
+
+		// Re-evaluate the required condition
+		const isConditionMet = checkRequired(required);
+		setShouldShow(isConditionMet);
+	}, [dependentJsonValue, dependentAttrValue, dependentCssValue, elementId, required, checkRequired]);
 
 	//check if a value is non-empty
 	const isNonEmpty = (v) => {
@@ -168,6 +212,11 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 			}
 		}
 	}, [applyGlobalCSSChange, applyGlobalJSONChange, selectorBatches, jsonProps]);
+
+	// Check if required condition is met for this group (after all hooks)
+	if (!shouldShow) {
+		return null; // Don't render the group if required condition is not met
+	}
 
 	return (
 		<div className="tw-builder__control">

@@ -1,3 +1,15 @@
+.tw-categories__expander-checkbox{
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    width: 26px;
+    height: 16px;
+    border-radius: 100px;
+
+    background-color: var(--disabled-color);
+    transition: background var(--transition-duration) var(--transition-easing);
+}
 .tw-categories__expander-input--category{
     opacity: 0;
     width: 100%;
@@ -22,7 +34,7 @@
     transition: left var(--switch-duration);
 }
 .tw-categories__expander-checkbox:has(input:checked) {
-    background: var(--checked-color) !important;
+    background: var(--enabled-color) !important;
 }
 .tw-categories__expander-checkbox input:checked + span {
     left: var(--checked-left) !important;

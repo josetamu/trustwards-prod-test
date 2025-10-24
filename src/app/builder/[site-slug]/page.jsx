@@ -271,7 +271,6 @@ function Builder() {
             .trim()
         }));
         setPreloadedIcons(iconOptions);
-        console.log(`HugeIcons precargados: ${iconOptions.length} iconos disponibles`);
         setIsHugeIconsLoading(false);
       } catch (error) {
         console.error('Error precargando HugeIcons:', error);

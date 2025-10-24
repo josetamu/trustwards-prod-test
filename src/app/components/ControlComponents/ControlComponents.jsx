@@ -22,8 +22,64 @@ const applyOnEnter = (e,f) => {
     }
 }
 
+/**
+ * Helper function to evaluate if a 'required' condition is met
+ * @param {string|object} required - The required condition. Can be a string like "Type=switch" or object like {control: "Type", value: "switch"}
+ * @param {object} allControls - All controls from header and body to search for the referenced control
+ * @param {function} getGlobalJSONValue - Function to get JSON values
+ * @param {function} getGlobalCSSValue - Function to get CSS values
+ * @returns {boolean} - True if the condition is met, false otherwise
+ */
+const evaluateRequired = (required, allControls, getGlobalJSONValue, getGlobalCSSValue) => {
+    if (!required) return true; // No required means always show
+    
+    // Parse the required condition
+    let controlName, expectedValue;
+    
+    if (typeof required === 'string') {
+        // Format: "ControlName=value"
+        const parts = required.split('=');
+        if (parts.length !== 2) return true; // Invalid format, show by default
+        controlName = parts[0].trim();
+        expectedValue = parts[1].trim();
+    } else if (typeof required === 'object') {
+        // Format: {control: "ControlName", value: "expectedValue"}
+        controlName = required.control;
+        expectedValue = required.value;
+    } else {
+        return true; // Invalid format, show by default
+    }
+    
+    // Find the referenced control in allControls
+    const referencedControl = allControls.find(ctrl => ctrl?.name === controlName);
+    if (!referencedControl) return false; // Control not found, don't show
+    
+    // Get the current value of the referenced control
+    let currentValue = null;
+    
+    // Check JSONProperty first
+    if (referencedControl.JSONProperty && getGlobalJSONValue) {
+        currentValue = getGlobalJSONValue(referencedControl.JSONProperty);
+    } 
+    // Then check dataAttribute
+    else if (referencedControl.dataAttribute && getGlobalJSONValue) {
+        currentValue = getGlobalJSONValue(`attributes.${referencedControl.dataAttribute}`);
+    }
+    // Then check cssProperty
+    else if (referencedControl.cssProperty && getGlobalCSSValue) {
+        currentValue = getGlobalCSSValue(referencedControl.cssProperty, referencedControl.selector);
+    }
+    
+    // Normalize values for comparison (trim whitespace, handle empty/null)
+    const normalizedCurrent = currentValue ? String(currentValue).trim() : '';
+    const normalizedExpected = String(expectedValue).trim();
+    
+    // Return true if values match
+    return normalizedCurrent === normalizedExpected;
+}
+
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, dataAttribute, notDelete}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, dataAttribute, notDelete, required, allControls, checkRequired}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
         // Support dataAttribute (for nested attributes like data-icon-size)
@@ -52,6 +108,12 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     //Permit change input value
     const handleChange = (e) => {
         const inputValue = e.target.value;
+        
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
+        
         // Priority: dataAttribute > JSONProperty > cssProperty
         if(dataAttribute && applyGlobalJSONChange) {
             applyGlobalJSONChange(`attributes.${dataAttribute}`, inputValue);
@@ -86,9 +148,14 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         </div>
     )
 }
-const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, nextLine}) => {
+const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, nextLine, required, allControls, checkRequired, dataAttribute}) => {
     //function to get the correct value depending on the category
     const getCurrentSelectValue = () => {
+        // Priority: dataAttribute > JSONProperty > cssProperty
+        if (dataAttribute && getGlobalJSONValue) {
+            const savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`);
+            return savedValue || '';
+        }
         if (category === 'block') {
             const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
             return savedJSONValue || '';
@@ -98,7 +165,15 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
     };
 
     const handleSuperSelectChange = (newValue) => {
-        if(JSONProperty && applyGlobalJSONChange){
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
+        
+        // Priority: dataAttribute > JSONProperty > cssProperty
+        if(dataAttribute && applyGlobalJSONChange){
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, newValue);
+        } else if(JSONProperty && applyGlobalJSONChange){
             applyGlobalJSONChange(JSONProperty,newValue);
         }else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
@@ -355,26 +430,28 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
     )
 }
 
-const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue}) => {
 
     //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
-        const saved = getGlobalCSSValue?.(`${cssProperty}-top`);
+        // For panel with dataAttribute, we would need to store as JSON object
+        // For now, panel typically only uses CSS, so we keep it simple
+        const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-top`) : null;
         return saved || '';
     });
     
     const [rightValue, setRightValue] = useState(() => {
-        const saved = getGlobalCSSValue?.(`${cssProperty}-right`);
+        const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-right`) : null;
         return saved || '';
     });
     
     const [bottomValue, setBottomValue] = useState(() => {
-        const saved = getGlobalCSSValue?.(`${cssProperty}-bottom`);
+        const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-bottom`) : null;
         return saved || '';
     });
     
     const [leftValue, setLeftValue] = useState(() => {
-        const saved = getGlobalCSSValue?.(`${cssProperty}-left`);
+        const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-left`) : null;
         return saved || '';
     });
 
@@ -391,6 +468,12 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         // Combine handlers for each side into two generic functions
         const handleSideChange = (side) => (e) => {
             const inputValue = e.target.value;
+            
+            // Check if required condition is met before applying
+            if (checkRequired && !checkRequired(required)) {
+                return; // Don't apply if required condition is not met
+            }
+            
             if (cssProperty && applyGlobalCSSChange) {
                 applyGlobalCSSChange(`${cssProperty}-${side}`, inputValue);
             }
@@ -413,7 +496,7 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     )
 }
 
-const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine}) => {
+const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue}) => {
 
     //Function to convert rgb to hex
     const rgbToHex = (r, g, b) => {
@@ -440,7 +523,14 @@ const anyColorToHex = (color) => {
 
 //Function to get the color from jsonTree
 const getSavedValue = useCallback(() => {
-    const savedValue = getGlobalCSSValue?.(cssProperty);
+    // Priority: dataAttribute > cssProperty
+    let savedValue;
+    if (dataAttribute && getGlobalJSONValue) {
+        savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`);
+    } else if (cssProperty && getGlobalCSSValue) {
+        savedValue = getGlobalCSSValue(cssProperty);
+    }
+    
     if (!savedValue || savedValue === 'transparent') return { color: '', hex: '', percentage: '' };
 
     if (savedValue.startsWith('rgba(')) {
@@ -468,7 +558,7 @@ const getSavedValue = useCallback(() => {
         }
     }
     return { color: '', hex: '', percentage: '' };
-}, [getGlobalCSSValue, cssProperty]);
+}, [getGlobalCSSValue, cssProperty, dataAttribute, getGlobalJSONValue]);
     
 
     // Initialize states with saved values
@@ -518,7 +608,12 @@ const getSavedValue = useCallback(() => {
 
      // Function to apply the CSS style
      const applyCSSChange = (newColor, newOpacity) => {
-        if (!cssProperty) return;
+        if (!cssProperty && !dataAttribute) return;
+        
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
     
         const effectiveOpacity = (newOpacity === '' || newOpacity == null)
             ? (lastOpacityRef.current || '100%')
@@ -529,7 +624,10 @@ const getSavedValue = useCallback(() => {
             ? hexToRgba(newColor, opacityValue)
             : newColor;
     
-        if (applyGlobalCSSChange) {
+        // Priority: dataAttribute > cssProperty
+        if (dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, finalValue);
+        } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, finalValue);
         }
     };
@@ -707,7 +805,7 @@ console.log(finalColor);
     )
 }
 
-const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, nextLine, nextLine2}) => {
+const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, nextLine, nextLine2, required, allControls, checkRequired}) => {
     
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState('');
@@ -785,6 +883,12 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             //Set the image and the image url
             setImage(publicUrl);
             setImageUrl(publicUrl);
+            
+            // Check if required condition is met before applying
+            if (checkRequired && !checkRequired(required)) {
+                return; // Don't apply if required condition is not met
+            }
+            
             applyGlobalJSONChange?.(JSONProperty, publicUrl);
     
         } catch (error) {
@@ -813,6 +917,11 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             }
     
             setErrors({});
+            
+            // Check if required condition is met before applying
+            if (checkRequired && !checkRequired(required)) {
+                return; // Don't apply if required condition is not met
+            }
             
             setImage(url);
             setImageUrl(url);
@@ -862,15 +971,22 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     )
 }
 
-const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, nextLine}) => {
+const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue}) => {
 
     const [selectedChoose, setSelectedChoose] = useState(() => {
-        if (category === 'flex-direction' && getGlobalCSSValue && cssProperty) {
-            const savedValue = getGlobalCSSValue(cssProperty) || '';
+        // Priority: dataAttribute > cssProperty
+        let savedValue = '';
+        if (dataAttribute && getGlobalJSONValue) {
+            savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`) || '';
+        } else if (cssProperty && getGlobalCSSValue) {
+            savedValue = getGlobalCSSValue(cssProperty) || '';
+        }
+        
+        if (category === 'flex-direction' && savedValue) {
             // Strip -reverse suffix to get base direction
             return savedValue.replace('-reverse', '');
         }
-        return getGlobalCSSValue?.(cssProperty) || '';
+        return savedValue;
     });
     
     const [isReverse, setIsReverse] = useState(() => {
@@ -886,9 +1002,15 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 
     // Update when selected element changes
     useEffect(() => {
-        if (getGlobalCSSValue && cssProperty) {
-            const savedValue = getGlobalCSSValue(cssProperty) || '';
-            
+        // Priority: dataAttribute > cssProperty
+        let savedValue = '';
+        if (dataAttribute && getGlobalJSONValue) {
+            savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`) || '';
+        } else if (cssProperty && getGlobalCSSValue) {
+            savedValue = getGlobalCSSValue(cssProperty) || '';
+        }
+        
+        if (savedValue) {
             if (category === 'flex-direction') {
                 // Parse reverse state and base direction
                 const isCurrentlyReverse = savedValue.includes('-reverse');
@@ -902,7 +1024,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                 setSelectedChoose(savedValue);
             }
         }
-    }, [getGlobalCSSValue, cssProperty, category]);
+    }, [getGlobalCSSValue, cssProperty, category, dataAttribute, getGlobalJSONValue]);
 
     // Tooltip hover trigger with delay
     const hoverTimeoutRef = useRef(null);
@@ -923,30 +1045,50 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 
         const newValue = selectedChoose === choose ? '' : choose;
         setSelectedChoose(newValue);
-        if (cssProperty && applyGlobalCSSChange) {
-            let finalValue = newValue;
-            //If reverse is active row === row-reverse, and column === column-reverse
-            if(category === 'flex-direction' && isReverse) {
-                finalValue = newValue === 'row'? 'row-reverse' : 'column-reverse';
-            }
-            //Global function to apply and saved css
+        
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
+        
+        let finalValue = newValue;
+        //If reverse is active row === row-reverse, and column === column-reverse
+        if(category === 'flex-direction' && isReverse) {
+            finalValue = newValue === 'row'? 'row-reverse' : 'column-reverse';
+        }
+        
+        // Priority: dataAttribute > cssProperty
+        if (dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, finalValue);
+        } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, finalValue);
         }
-    }, [cssProperty, applyGlobalCSSChange, category, isReverse, selectedChoose]);
+    }, [cssProperty, applyGlobalCSSChange, category, isReverse, selectedChoose, required, checkRequired, dataAttribute, applyGlobalJSONChange]);
 
     //Handle the reverse choose
     const handleReverseToggle = useCallback(() => {
         const newReverse = !isReverse;
         setIsReverse(newReverse);
         
-        // Apply reverse to CSS immediately if we have a direction selected
-        if (cssProperty && applyGlobalCSSChange && selectedChoose) {
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
+        
+        // Apply reverse immediately if we have a direction selected
+        if (selectedChoose) {
             const finalValue = newReverse 
                 ? (selectedChoose === 'row' ? 'row-reverse' : 'column-reverse')
                 : selectedChoose;
-            applyGlobalCSSChange(cssProperty, finalValue);
+            
+            // Priority: dataAttribute > cssProperty
+            if (dataAttribute && applyGlobalJSONChange) {
+                applyGlobalJSONChange(`attributes.${dataAttribute}`, finalValue);
+            } else if (cssProperty && applyGlobalCSSChange) {
+                applyGlobalCSSChange(cssProperty, finalValue);
+            }
         }
-    }, [isReverse, cssProperty, applyGlobalCSSChange, selectedChoose]);
+    }, [isReverse, cssProperty, applyGlobalCSSChange, selectedChoose, required, checkRequired, dataAttribute, applyGlobalJSONChange]);
 
 
     //Calc the transform and the width of the slider
@@ -1457,7 +1599,10 @@ const TextAreaType = ({
     applyGlobalJSONChange, 
     getGlobalJSONValue, 
     value, 
-    nextLine
+    nextLine,
+    required,
+    allControls,
+    checkRequired
 }) => {
     const [textareaValue, setTextareaValue] = useState(() => {
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
@@ -1483,6 +1628,12 @@ const TextAreaType = ({
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextareaValue(newValue);
+        
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
+        
         if(JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
         }
@@ -1510,7 +1661,7 @@ const TextAreaType = ({
     );
 }
 
-const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine}) =>{
+const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine, required, allControls, checkRequired, dataAttribute}) =>{
     
     // ========================================
     // General states (for all types)
@@ -1801,6 +1952,13 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     useEffect(() => {
         if (!selectedId) return;
     
+        // Priority: dataAttribute > JSONProperty > cssProperty
+        if (dataAttribute && getGlobalJSONValue) {
+            const next = getGlobalJSONValue(`attributes.${dataAttribute}`) ?? '';
+            if (next !== selected) setSelected(next);
+            return;
+        }
+        
         // If using JSON, respect that flow
         if (JSONProperty && getGlobalJSONValue) {
             const next = getGlobalJSONValue(JSONProperty) ?? '';
@@ -1837,7 +1995,7 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
                 if (next !== selected) setSelected(next);
             }
         }
-    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue]);
+    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue, dataAttribute]);
     
     // ========================================
     // Handler
@@ -1846,6 +2004,11 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     // Handle changes in the select
     const handleSelectChange = (newValue) => {
         setSelected(newValue);
+        
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
         
 // Special case: Font
 if (name === 'Font') {
@@ -1995,8 +2158,10 @@ if (name === 'Weight') {
     return;
 }
         
-        // General case: other selects
-        if (JSONProperty && applyGlobalJSONChange) {
+        // General case: other selects - Priority: dataAttribute > JSONProperty > cssProperty
+        if (dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, newValue);
+        } else if (JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
         } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
@@ -3216,7 +3381,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
     )
 }
 
-const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, placeholder, nextLine}) => {
+const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, placeholder, nextLine, required, allControls, checkRequired}) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState('');
@@ -3293,6 +3458,12 @@ const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, g
     // Handle option selection (save to nested path)
     const handleSelect = (value) => {
         setSelected(value);
+        
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
+        
         if (dataAttribute && applyGlobalJSONChange) {
             applyGlobalJSONChange(`attributes.${dataAttribute}`, value);
         }
@@ -3944,6 +4115,76 @@ useEffect(() => {
         selectedId,
      };
 
+     // Collect all controls from header and body for required evaluation
+     const allControls = useMemo(() => {
+        const controls = [];
+        if (control.header) {
+            controls.push(...control.header);
+        }
+        if (control.body) {
+            control.body.forEach(section => {
+                if (section.controls) {
+                    controls.push(...section.controls);
+                }
+            });
+        }
+        return controls;
+     }, [control]);
+
+     // Function to check if a required condition is met
+     // Don't use useCallback here to ensure it always uses the latest values from JSONtree
+     const checkRequired = (required) => {
+        return evaluateRequired(required, allControls, getGlobalJSONValue, getGlobalCSSValue);
+     };
+
+     // Wrapper component that handles required condition reactively
+     const RequiredWrapper = ({ item, index, children }) => {
+        const [shouldShow, setShouldShow] = useState(() => {
+            if (!item.required) return true;
+            return checkRequired(item.required);
+        });
+
+        // Get the control name from required condition
+        const getRequiredControlName = (required) => {
+            if (!required) return null;
+            if (typeof required === 'string') {
+                return required.split('=')[0].trim();
+            } else if (typeof required === 'object') {
+                return required.control;
+            }
+            return null;
+        };
+
+        const requiredControlName = getRequiredControlName(item.required);
+
+        // Find the control that this depends on
+        const dependentControl = useMemo(() => {
+            if (!requiredControlName) return null;
+            return allControls.find(ctrl => ctrl?.name === requiredControlName);
+        }, [requiredControlName]);
+
+        // Get the current value of the dependent control
+        const dependentJsonValue = dependentControl?.JSONProperty ? getGlobalJSONValue(dependentControl.JSONProperty) : null;
+        const dependentAttrValue = dependentControl?.dataAttribute ? getGlobalJSONValue(`attributes.${dependentControl.dataAttribute}`) : null;
+        const dependentCssValue = dependentControl?.cssProperty ? getGlobalCSSValue(dependentControl.cssProperty) : null;
+        const elementId = selectedElementData?.id;
+
+        // Listen to changes in the dependent control's value
+        useEffect(() => {
+            if (!item.required) {
+                setShouldShow(true);
+                return;
+            }
+
+            // Re-evaluate the required condition
+            const isConditionMet = checkRequired(item.required);
+            setShouldShow(isConditionMet);
+        }, [dependentJsonValue, dependentAttrValue, dependentCssValue, elementId, item.required]);
+
+        if (!shouldShow) return null;
+        return children;
+     };
+
      const whatType = (item, index) => {
         // If the control defines a selector, override helpers to use it
         const overrideProps = item.selector ? {
@@ -3955,37 +4196,52 @@ useEffect(() => {
             ...item,
             elementId: selectedId,
             ...globalControlProps,
-            
+            required: item.required,
+            allControls,
+            checkRequired,
         };
 
         
 
-        switch(item.type) {
-            case 'text':
-                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine} notDelete={item.notDelete} />;
-            case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
-            case 'icons':
-                return <IconType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine}/>;
-            case 'panel':
-                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
-            case 'color':
-                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
-            case 'image':
-                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site} nextLine={item.nextLine} nextLine2={item.nextLine2}/>;
-            case 'choose':
-                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} category={item.category} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
-            case 'textarea':
-                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
-            case 'select':
-                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} nextLine={item.nextLine}/>;
-            case 'border':
-                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} bwUnified={bwUnified} brUnified={brUnified} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
-            case 'box-shadow':
-                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
-            case 'enter-animation':
-                return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()} styleDeleter={styleDeleter}/>;
+        const renderControl = () => {
+            switch(item.type) {
+                case 'text':
+                    return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine} notDelete={item.notDelete} />;
+                case 'super-select':
+                    return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
+                case 'icons':
+                    return <IconType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine}/>;
+                case 'panel':
+                    return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
+                case 'color':
+                    return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
+                case 'image':
+                    return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site} nextLine={item.nextLine} nextLine2={item.nextLine2}/>;
+                case 'choose':
+                    return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} category={item.category} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
+                case 'textarea':
+                    return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
+                case 'select':
+                    return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} nextLine={item.nextLine} dataAttribute={item.dataAttribute}/>;
+                case 'border':
+                    return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} bwUnified={bwUnified} brUnified={brUnified} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
+                case 'box-shadow':
+                    return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
+                case 'enter-animation':
+                    return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()} styleDeleter={styleDeleter}/>;
+            }
+        };
+
+        // Wrap with RequiredWrapper if item has required condition
+        if (item.required) {
+            return (
+                <RequiredWrapper key={index} item={item} index={index}>
+                    {renderControl()}
+                </RequiredWrapper>
+            );
         }
+
+        return renderControl();
     }
 
     return (
@@ -3999,13 +4255,16 @@ useEffect(() => {
                 {/* Map the controls */}
                 {control.body && control.body.map((section, sectionIndex) => (
                     <BuilderControl 
-                    key={sectionIndex} 
+                    key={sectionIndex}
                     label={section.label} 
                     controls={section.controls} 
                     whatType={whatType}
                     globalControlProps={globalControlProps}
                     setBwUnified={setBwUnified}
                     setBrUnified={setBrUnified}
+                    required={section.required}
+                    checkRequired={checkRequired}
+                    allControls={allControls}
                     />
                 ))}
                 <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} setBwUnified={setBwUnified} setBrUnified={setBrUnified} styleDeleter={styleDeleter} getEnterAnimationProps={getEnterAnimationProps} clearAllEnterAnimations={clearAllEnterAnimations}/>

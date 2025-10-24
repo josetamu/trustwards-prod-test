@@ -17,71 +17,50 @@ export const Checkbox = (node, nodeProps = {}) => {
 
     const groupControls =  {
         header: [
-            { name: 'Image', type: 'image'},
-            { name: 'Tag', type: 'select', value: 'div', options: ['div', 'figure', 'img']},
-            { name: 'Link to', type: 'text', placeholder: 'URL...'},
-            { name: 'Alt', type: 'text', placeholder: 'Alt...'},
-            { name: 'Height', type: 'text'},
-            { name: 'Width', type: 'text'},
-            { name: 'Object Fit', type: 'select', value: 'fill', options: ['Fill', 'Contain', 'Cover', 'Scale-down', 'None']},
-
+            { name: 'Type', type: 'select', options: ['switch', 'checkbox'], dataAttribute: 'data-type', notDelete: true},
+            { name: 'Disabled Color', type: 'color', cssProperty: '--disabled-color', nextLine: true },
+            { name: 'Enabled Color', type: 'color', cssProperty: '--enabled-color', nextLine: true },
+            { name: 'Duration', type: 'text', cssProperty: '--transition-duration', placeholder: '0.2s' },
+            { name: 'CSS Easing', type: 'text', cssProperty: '--transition-easing', placeholder: 'ease' },
         ],
         body: [
             {
-                label: 'Layout',
+                label: 'Switch Styles',
                 controls: [
-                    { name: 'Direction', type: 'choose', category: 'direction'},
-                    { name: 'Justify', type: 'choose', category: 'justify'},
-                    { name: 'Align', type: 'choose', category: 'align'},
-                    { name: 'Wrap', type: 'select', value: 'wrap', options: ['Wrap', 'No Wrap']},
-                    { name: 'Gap', type: 'text', placeholder: '0'},
-                ]
+                    {name: 'Switch Border', type: 'border'},
+                    {name: 'Ball Border', type: 'border', selector: '.tw-categories__expander-switch', defaultCSS: { 'border-top-radius': '100px' }},
+                ],
+                required: { control: 'Type', value: 'switch' }
             },
             {
                 label: 'Spacing',
                 controls: [
-                    { name: 'Padding', type: 'panel'},
-                    { name: 'Margin', type: 'panel'},
-                ]
-            },
-            {
-                label: 'Size',
-                controls: [
-                    { name: 'Width', type: 'text'},
-                    { name: 'Max. Width', type: 'text'},
-                    { name: 'Height', type: 'text'},
-                    { name: 'Max. Height', type: 'text'},
+                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
+                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
+                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                 ]
             },
             {
                 label: 'Background',
                 controls: [
-                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color' },
-                ]
-            },
-            {
-                label: 'Text',
-                controls: [
-                    { name: 'Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'color' },
-                    { name: 'Font', type: 'select', cssProperty: 'font-family' },
-                    { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
-                    { name: 'Weight', type: 'select', value: '500', options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], cssProperty: 'font-weight' },
-                    { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
-                    { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
-                    { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},
-                    
+                    { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true },
                 ]
             },
             {
                 label: 'Styles',
                 controls: [
-                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
                     { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
                     { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
                     { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
-                    {name: 'Border', type: 'border'},
+                    {
+                        name: 'Mix blend mode',
+                        type: 'select',
+                        placeholder: 'normal',
+                        options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
+                        cssProperty: 'mix-blend-mode'
+                    },
                     {name: 'Shadow', type: 'box-shadow'},
-                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
                 ]
             },
         ]

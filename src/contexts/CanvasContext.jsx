@@ -1100,17 +1100,18 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                                         tagName: "div", //Expander Switch
                                         label: "Checkbox",
                                         classList: ["tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
+                                        attributes: {
+                                            'data-type': "switch",
+                                        },
                                         defaultCSS: {
-                                            'position': "relative",
                                             'width': "26px",
                                             'height': "16px",
-                                            'background-color': "#555",
-                                            'border-radius': "100px",
-                                            'cursor': "pointer",
-                                            'display': "flex",
-                                            'align-items': "center",
-                                            'transition': "background 0.2s",
-                                            "--checked-color": "#0099FE",
+                                            'border-top-radius': "100px",
+                                            'cursor': "pointer", /**/
+                                            '--disabled-color': "#555", /**/
+                                            "--enabled-color": "#0099FE", /**/
+                                            "--transition-duration": "0.2s", /**/
+                                            "--transition-easing": "ease", /**/
                                             "--checked-left": "12px",
                                             "--switch-spacing": "2px",
                                             "--switch-size": "12px",
