@@ -345,7 +345,6 @@ export function ContextMenu({
 
     // Tree context menu content - completely self-contained
     const TreeContextMenu = () => {
-        console.log('TreeContextMenu');
         return (
             <>
                 {/* Copy */}

@@ -9,7 +9,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    border-bottom: 1px solid var(--border-fresco-color);
     padding-bottom: 10px;
 }
 
@@ -27,6 +26,8 @@
     display:flex;
     justify-content:space-between;
     align-items: center;
+
+    gap: 12px;
 }
 .tw-builder__settings-setting--column{
     flex-direction: column;
@@ -56,6 +57,7 @@
     padding: 5px;
     padding-right: 20px;
     min-width: 40px;
+    min-height: 25px;
     border: none;
     color: var(--value-color);
     font-size: var(--font-size-mini);
@@ -63,7 +65,12 @@
     letter-spacing: var(--letter-spacing-negative);
     appearance: none;
     cursor: pointer;
+    max-width: 95px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+
 .tw-builder__settings-select:focus{
     outline: none;
 }
@@ -185,6 +192,7 @@
 .tw-builder__settings-action--end{
     align-items: flex-end;
 }
+
 
 .tw-builder__settings-spacing{
     display: flex;
@@ -342,15 +350,16 @@
     width: 100%;
     min-height: 80px;
     padding: 8px 12px;
-    border-radius: 4px;
+    border-radius: 8px;
     font-family: inherit;
     font-size: 12px;
     resize: vertical;
     background-color: var(--control-background);
     color: var(--value-color);
-    &::placeholder{
-        color: var(--placeholder-color);
-    }
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
 }
 
 .tw-builder__settings-textarea:focus {
@@ -363,17 +372,18 @@
     top: calc(100% + 6px);
     right: 0;
     width: fit-content;
+    max-width: calc(var(--panels-width) - 22px);
     background: var(--right-panel-dropdown-background);
     color: white;
-    border-radius: 5px;
+    border-radius: 8px;
     list-style: none;
     margin: 0;
-    padding: 4px 5px;
+    padding: 5px;
     z-index: 20;
     max-height: 330px;
     overflow-y: auto;
     scrollbar-width: none;
-    
+    cursor: default;
   }
   .tw-builder__settings-options:has(.tw-builder__settings-search){
     min-width: 177px;
@@ -383,22 +393,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
+    padding: 5px 12px;
     cursor: pointer;
     font-size: var(--font-size-mini);
     position: relative;
     white-space: nowrap;
     font-weight: var(--font-weight-medium);
-  }
-  .tw-builder__settings-option--font {
-    padding: 8px 1px;
-    font-size: var(--font-size-extreme-mini);
-    margin-left: 5px;
+    border-radius: 5px;
   }
   
   .tw-builder__settings-option:hover {
     background: var(--accent-bg-color); 
-    border-radius: 3px;
   }
   .tw-builder__settings-check {
     display: flex;
@@ -407,21 +412,19 @@
     left: 2px;
   }
   .tw-builder__settings-check--font{
-    left: -7.5px;
+    left: 2px;
   }
   .tw-builder__settings-search{
     width: 100%;
     height: 100%;
-    border-radius: 5px;
     border: none;
-    padding: 5px 0;
+    padding: 8px 12px;
   }
   .tw-builder__settings-search-input{
     width: 100%;
     height: 100%;
     border-radius: 5px;
     border: none;
-    padding: 5px 10px;
     background-color: transparent;
     color: #FFFFFF;
     font-size: var(--font-size-small);
@@ -434,7 +437,7 @@
   .tw-builder__settings-divider {
     height: 1px;
     background-color: #333;
-    margin: 4px 0;
+    margin: 5px 0;
     cursor: default;
     padding: 0 12px;
 }
@@ -508,8 +511,6 @@
 }
 
 
-
-
 .tw-builder__settings-inset-container {
     display: flex;
     align-items: center;
@@ -552,10 +553,16 @@
 .tw-builder__settings-checkbox:checked + .tw-builder__settings-inset {
     background-color: var(--accent-bg-color);
 }
+.tw-builder__settings-inset--placeholder {
+    background-color: var(--placeholder-color);
+}
 .tw-builder__settings-checkbox:checked + .tw-builder__settings-inset:before {
     transform: translateX(10px);
 }
 
+.tw-builder__settings-inset--placeholder:before {
+    transform: translateX(10px);
+}
 .tw-builder__settings-pen-body .tw-builder__settings-select {
     background-color: var(--control-background);
     color:  #000000;
@@ -585,6 +592,19 @@
    
 }
 
+.tw-builder__settings-select-value{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+}
+.tw-builder__settings-select-value--icon{
+    display: block;
+    max-width: 95px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 .tw-builder__settings-select-value--font{
     display: block;
     max-width: 55px;
@@ -652,7 +672,6 @@
 }
 .tw-builder__settings-units-direction{
     width: 25px !important;
-    height: 25px;
     border-radius: 5px;
     border: none;
     background-color: transparent !important;
@@ -681,7 +700,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--header-plan-background);
+    background-color: var(--upload-image-background);
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
@@ -742,6 +761,7 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
+    position: relative;
     
 }
 .tw-builder__settings-properties-pair{
@@ -803,3 +823,151 @@
     }
 }
 
+/*Icons control*/
+.tw-builder__settings-select-value svg{
+    min-width: 17px;
+    min-height: 17px;
+}
+.tw-builder__settings-icons-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    justify-items: center;
+
+    gap: 12px;
+    padding: 8px;
+}
+.tw-builder__settings-icon-option{
+    width: fit-content;
+    color: #666;
+}
+.tw-builder__settings-icon-option:hover{
+    color: #aaa;
+}
+.tw-builder__settings-icon-option--selected{
+    color: white;
+}
+.tw-builder__settings-icons-grid-empty{
+    color: var(--placeholder-color);
+    font-size: var(--font-size-mini);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+
+    padding: 8px 12px;
+}
+.tw-builder__settings-action--placeholder{
+    opacity: 0.5;
+    border: 1px dashed currentColor;
+}
+
+.tw-builder__settings-properties-actions{
+    position: absolute;
+}
+.tw-builder__settings-properties-actions .tw-builder__settings-deleter{
+    top: -4px;
+}
+
+.tw-builder__settings-width > .tw-builder__settings-input:focus::placeholder { color: transparent; }
+
+.tw-builder__settings-width .tw-builder__settings-input:focus::placeholder { color: transparent; }
+
+/*Separator control*/
+.tw-builder__separator-control{
+    width: calc(100% + 20px);
+    height: 1px;
+    background-color: var(--border-fresco-color);
+    margin-top: 2px;
+    margin-bottom: 10px;
+    margin-left: -10px;
+}
+
+/*Label control*/
+.tw-builder__label-control{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--value-color);
+
+    margin-bottom: 10px;
+    margin-top: 2px;
+}
+.tw-builder__label-control + .tw-builder__control{
+    border: none !important;
+}
+
+/*Repeater control*/
+.tw-builder__repeater-control{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tw-builder__repeater-item{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-fresco-color);
+    border-radius: 8px;
+    background-color: var(--control-background);
+}
+
+.tw-builder__repeater-item-header{
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.tw-builder__repeater-item-header:hover{
+    background-color: var(--border-fresco-color);
+}
+
+.tw-builder__repeater-item-deleter{
+    position: absolute;
+    right: calc(100% + 1px);
+    top: 12%;
+    height: 26px;
+}
+
+.tw-builder__repeater-item-label{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--value-color);
+    flex: 1;
+}
+
+.tw-builder__repeater-item-icons{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tw-builder__repeater-item-icon{
+    display: none;
+    color: var(--placeholder-color);
+}
+
+.tw-builder__repeater-item-icon--active{
+    display: block;
+    color: var(--value-color);
+}
+
+.tw-builder__repeater-item-content{
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: transparent;
+
+    border-top: 1px solid #555555;
+}
+.tw-builder__repeater-item-content input,
+.tw-builder__repeater-item-content textarea{
+    background: var(--control-background-repeater);
+}

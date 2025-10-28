@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import './Loader.css';
 
-const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted, isLiveWebsiteLoading }) => {
+const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted, isLiveWebsiteLoading, isHugeIconsLoading }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [progressWidth, setProgressWidth] = useState(0);
 
@@ -16,12 +16,20 @@ const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted, isLiveWebsiteL
 
     // if the live website is loading, the progress bar will advance to a random width between 100 and 150 after 2 seconds
     if(isLiveWebsiteLoading){
-    setTimeout(() => {
-      const nextWidth = 100 + Math.floor(Math.random() * 50); 
+      setTimeout(() => {
+        const nextWidth = 100 + Math.floor(Math.random() * 50); 
         setProgressWidth(nextWidth);
       }, 2000);
     }
-  }, [isLiveWebsiteLoading]);
+
+    // if HugeIcons are loading, advance progress to 75-90 range (before the final 100%)
+    if(isHugeIconsLoading){
+      setTimeout(() => {
+        const nextWidth = 75 + Math.floor(Math.random() * 15); 
+        setProgressWidth(nextWidth);
+      }, 50);
+    }
+  }, [isLiveWebsiteLoading, isHugeIconsLoading]);
 
   // Data available - Fade out animation
   useEffect(() => {

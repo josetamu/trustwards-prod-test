@@ -1,24 +1,69 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import './BuilderControl.css';
 import {Tooltip} from '@components/tooltip/Tooltip';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 
 // Component to render the control(label with + and -) Pass the label(title) and the control to render
-export default function BuilderControl({label, controls, whatType, activeRoot, globalControlProps, setBwUnified, setBrUnified}) {
+export default function BuilderControl({label, controls, whatType, activeRoot, globalControlProps, setBwUnified, setBrUnified, styleDeleter, getEnterAnimationProps, clearAllEnterAnimations, required, checkRequired, allControls}) 	{
 	const [isOpen, setIsOpen] = useState(false);
 	const [activeTooltip, setActiveTooltip] = useState(null);
+	
+	// State to track if this group should be shown based on required condition
+	const [shouldShow, setShouldShow] = useState(() => {
+		if (!required || !checkRequired) return true;
+		return checkRequired(required);
+	});
 
 	//Get the global control props to know when a group of controls has a value and show the delete button.
 	const applyGlobalCSSChange = globalControlProps?.applyGlobalCSSChange;
 	const getGlobalCSSValue = globalControlProps?.getGlobalCSSValue;
 	const applyGlobalJSONChange = globalControlProps?.applyGlobalJSONChange;
 	const getGlobalJSONValue = globalControlProps?.getGlobalJSONValue;
+	const selectedElementData = globalControlProps?.selectedElementData;
+	const getPlaceholderValue = globalControlProps?.getPlaceholderValue;
 
 	//get the name of the active root to show in the tooltip
 	const activeRootName = {
 		'tw-root--banner': 'Banner',
 		'tw-root--modal': 'Modal',
 	}
+
+	// Get the control name from required condition
+	const getRequiredControlName = (required) => {
+		if (!required) return null;
+		if (typeof required === 'string') {
+			return required.split('=')[0].trim();
+		} else if (typeof required === 'object') {
+			return required.control;
+		}
+		return null;
+	};
+
+	const requiredControlName = getRequiredControlName(required);
+
+	// Find the control that this group depends on
+	const dependentControl = useMemo(() => {
+		if (!requiredControlName || !allControls) return null;
+		return allControls.find(ctrl => ctrl?.name === requiredControlName);
+	}, [requiredControlName, allControls]);
+
+	// Get the current value of the dependent control
+	const dependentJsonValue = dependentControl?.JSONProperty ? getGlobalJSONValue?.(dependentControl.JSONProperty) : null;
+	const dependentAttrValue = dependentControl?.dataAttribute ? getGlobalJSONValue?.(`attributes.${dependentControl.dataAttribute}`) : null;
+	const dependentCssValue = dependentControl?.cssProperty ? getGlobalCSSValue?.(dependentControl.cssProperty) : null;
+	const elementId = selectedElementData?.id;
+
+	// Listen to changes in the dependent control's value
+	useEffect(() => {
+		if (!required || !checkRequired) {
+			setShouldShow(true);
+			return;
+		}
+
+		// Re-evaluate the required condition
+		const isConditionMet = checkRequired(required);
+		setShouldShow(isConditionMet);
+	}, [dependentJsonValue, dependentAttrValue, dependentCssValue, elementId, required, checkRequired]);
 
 	//check if a value is non-empty
 	const isNonEmpty = (v) => {
@@ -27,106 +72,129 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 		return Boolean(v);
 	};
 
-	// Compute if any control has a value and prepare CSS/JSON 
-	const { hasAnyValue, selectorBatches, jsonProps } = useMemo(() => {
-		// Return empty state if no controls are provided
-		if (!Array.isArray(controls) || controls.length === 0) {
-			return { hasAnyValue: false, selectorBatches: new Map(), jsonProps: new Set() };
-		}
+		// Compute if any control has a value and prepare CSS/JSON 
+		const { hasAnyValue, selectorBatches, jsonProps, hasDeletableValue, hasPlaceholder} = useMemo(() => {
+			// Return empty state if no controls are provided
+			if (!Array.isArray(controls) || controls.length === 0) {
+				return { hasAnyValue: false, selectorBatches: new Map(), jsonProps: new Set(), hasDeletableValue: false };
+			}
+	
+			const batches = new Map(); // Map of selector -> { cssKey: '' }
+			const jsonSet = new Set(); // Set of JSON properties 
+			let any = false;  // Flag to track if any control has a value
+	
+			// Function to ensure a batch exists for a selector
+			const ensureBatchFor = (selector) => {
+				if (!batches.has(selector)) batches.set(selector, {});
+				return batches.get(selector);
+			};
+	
+			//check if a css property has a value
+			const hasCSS = (prop, selector) => {
+				if (!getGlobalCSSValue || !prop) return false;
+				const v = getGlobalCSSValue(prop, selector);
+				return isNonEmpty(v);
+			};
+	
+			//check if a group of css properties has a value
+			const checkGroup = (group, selector) => {
+				if (!group) return false;
+				if (hasCSS(group, selector)) return true;
+				return ['top','right','bottom','left'].some(side => hasCSS(`${group}-${side}`, selector));
+			};
+	
+			//add a group of css properties to the batch
+			const addGroupToBatch = (batch, group) => {
+				batch[group] = '';
+				['top','right','bottom','left'].forEach(side => {
+					batch[`${group}-${side}`] = '';
+				});
+			};
+	
+			const borderKeys = [
+				'border-width','border-top-width','border-right-width','border-bottom-width','border-left-width',
+				'border-style','border-color','border-radius',
+				'border-top-left-radius','border-top-right-radius','border-bottom-right-radius','border-bottom-left-radius'
+			];
 
-		const batches = new Map(); // Map of selector -> { cssKey: '' }
-		const jsonSet = new Set(); // Set of JSON properties 
-		let any = false;  // Flag to track if any control has a value
+									//iterate through the controls
+			let hasDeletableValue = false; // if there is any value present that is deletable
+			for (const ctrl of controls) {
+				const selector = ctrl?.selector;
+				const batch = ensureBatchFor(selector);
 
-		// Function to ensure a batch exists for a selector
-		const ensureBatchFor = (selector) => {
-			if (!batches.has(selector)) batches.set(selector, {});
-			return batches.get(selector);
-		};
-
-		//check if a css property has a value
-		const hasCSS = (prop, selector) => {
-			if (!getGlobalCSSValue || !prop) return false;
-			const v = getGlobalCSSValue(prop, selector);
-			return isNonEmpty(v);
-		};
-
-		//check if a group of css properties has a value
-		const checkGroup = (group, selector) => {
-			if (!group) return false;
-			// use the hasCSS function to check if the group has a value
-			if (hasCSS(group, selector)) return true;
-			// check if any side of the group has a value
-			return ['top','right','bottom','left'].some(side => hasCSS(`${group}-${side}`, selector));
-		};
-
-		//add a group of css properties to the batch
-		const addGroupToBatch = (batch, group) => {
-			//add the group to the batch
-			batch[group] = '';
-			//add each side of the group to the batch
-			['top','right','bottom','left'].forEach(side => {
-				batch[`${group}-${side}`] = '';
-			});
-		};
-
-		//list of border related css properties
-		const borderKeys = [
-			'border-width',
-			'border-top-width',
-			'border-right-width',
-			'border-bottom-width',
-			'border-left-width',
-			'border-style',
-			'border-color',
-			'border-radius',
-			'border-top-left-radius',
-			'border-top-right-radius',
-			'border-bottom-right-radius',
-			'border-bottom-left-radius'
-		];
-
-		//iterate through the controls
-		for (const ctrl of controls) {
-			const selector = ctrl?.selector;
-			const batch = ensureBatchFor(selector);
-
-			// JSON properties
-			if (ctrl?.JSONProperty) {
-				jsonSet.add(ctrl.JSONProperty);
-				if (getGlobalJSONValue) {
-					const v = getGlobalJSONValue(ctrl.JSONProperty);
-					if (isNonEmpty(v)) any = true;
+				// Special controls like enter-animation
+				if (ctrl?.type === 'enter-animation') {
+					// Check if there are actually saved animation properties
+					if (getEnterAnimationProps) {
+						const enterProps = getEnterAnimationProps();
+						const hasEnterProps = Object.keys(enterProps).length > 0;
+						if (hasEnterProps) {
+							any = true;
+							hasDeletableValue = true;
+						}
+					}
+					continue;
 				}
-			}
+			
+							// JSON properties: count value, add to deletion only if notDelete is false
+							if (ctrl?.JSONProperty) {
+								if (getGlobalJSONValue) {
+									const v = getGlobalJSONValue(ctrl.JSONProperty);
+									const hasVal = isNonEmpty(v);
+									if (hasVal) any = true;
+									if (!ctrl?.notDelete && hasVal) hasDeletableValue = true;
+								}
+								if (!ctrl?.notDelete) {
+									jsonSet.add(ctrl.JSONProperty);
+								}
+							}
+			
+							// CSS by group
+							if (ctrl?.cssPropertyGroup) {
+								const hasGroupVal = checkGroup(ctrl.cssPropertyGroup, selector);
+								if (hasGroupVal) any = true;
+								if (!ctrl?.notDelete) {
+									addGroupToBatch(batch, ctrl.cssPropertyGroup);
+									if (hasGroupVal) hasDeletableValue = true;
+								}
+							}
+			
+							// CSS by property
+							if (ctrl?.cssProperty) {
+								const hasPropVal = hasCSS(ctrl.cssProperty, selector);
+								if (hasPropVal) any = true;
+								if (!ctrl?.notDelete) {
+									batch[ctrl.cssProperty] = '';
+									if (hasPropVal) hasDeletableValue = true;
+								}
+							}
+			
+							// Added by type
+							if (ctrl?.type === 'border') {
+								const anyBorderVal = borderKeys.some(k => hasCSS(k, selector));
+								if (anyBorderVal) any = true;
+								if (!ctrl?.notDelete) {
+									borderKeys.forEach(k => { batch[k] = ''; });
+									if (anyBorderVal) hasDeletableValue = true;
+								}
+							}
+							if (ctrl?.type === 'box-shadow') {
+								const hasBox = hasCSS('box-shadow', selector);
+								if (hasBox) any = true;
+								if (!ctrl?.notDelete) {
+									batch['box-shadow'] = '';
+									if (hasBox) hasDeletableValue = true;
+								}
+							}
+						}
+	
 
-			// CSS by property group
-			if (ctrl?.cssPropertyGroup) {
-				if (checkGroup(ctrl.cssPropertyGroup, selector)) any = true;
-				addGroupToBatch(batch, ctrl.cssPropertyGroup);
-			}
-
-			// CSS by single property
-			if (ctrl?.cssProperty) {
-				if (hasCSS(ctrl.cssProperty, selector)) any = true;
-				batch[ctrl.cssProperty] = '';
-			}
-
-			// Type-specific aggregates
-			if (ctrl?.type === 'border') {
-				// If any border-related exists
-				if (borderKeys.some(k => hasCSS(k, selector))) any = true;
-				borderKeys.forEach(k => { batch[k] = ''; });
-			}
-			if (ctrl?.type === 'box-shadow') {
-				if (hasCSS('box-shadow', selector)) any = true;
-				batch['box-shadow'] = '';
-			}
-		}
-
-		return { hasAnyValue: any, selectorBatches: batches, jsonProps: jsonSet };
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [controls, getGlobalCSSValue, getGlobalJSONValue]);
+	
+			// check if there is any deletable value (not by possible keys)
+			return { hasAnyValue: any, selectorBatches: batches, jsonProps: jsonSet, hasDeletableValue };
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+			}, [controls, getGlobalCSSValue, getGlobalJSONValue]);
 
 	const handleSectionClear = useCallback(() => {
 		// Apply CSS clears grouped by selector
@@ -146,23 +214,36 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 		}
 	}, [applyGlobalCSSChange, applyGlobalJSONChange, selectorBatches, jsonProps]);
 
+	// Check if required condition is met for this group (after all hooks)
+	if (!shouldShow) {
+		return null; // Don't render the group if required condition is not met
+	}
+
 	return (
 		<div className="tw-builder__control">
 			<div className="tw-builder__control-header" onClick={() => setIsOpen(!isOpen)}>
                 {/* Section deleter: stop click from toggling accordion */}
                 <span  className="tw-builder__control-deleter" onClick={(e) => e.stopPropagation()}>
-						<StylesDeleter
+					<StylesDeleter
 							value={hasAnyValue}
+							notDelete={hasAnyValue && !hasDeletableValue}
 							onDelete={() => {
-								handleSectionClear();
+								if (clearAllEnterAnimations) {
+									console.log('Clearing all enter animations');
+									// For Enter Animation, delete all properties at once
+									clearAllEnterAnimations();
+								} else {
+									// For other sections, use handleSectionClear
+									handleSectionClear();
+								}
 								setBwUnified('');
 								setBrUnified('');
 							}}
 						/>
-					</span>
+				</span>
 				<span className="tw-builder__control-label">{label}
 					{/*if the label is Enter Animation, show the tooltip */}
-					{label === 'Enter Animation' && isOpen && (
+					{label === 'Enter Animation' && (
 						<span className="tw-builder__control-info" onMouseEnter={() => setActiveTooltip('enter-animation')} onMouseLeave={() => setActiveTooltip(null)}>
 							i
 							<Tooltip

@@ -36,7 +36,19 @@
 .tw-builder__settings-deleter:hover .tw-builder__settings-deleter-point{
     display: none;
 } 
-
-/* .tw-builder__settings-pen-body .tw-builder__settings-deleter{
+.tw-builder__settings-deleter:hover .tw-builder__settings-deleter-cross--not-delete{
     display: none;
-} */
+}
+.tw-builder__settings-deleter:hover:has(.tw-builder__settings-deleter-cross--not-delete) .tw-builder__settings-deleter-point{
+    display: block;
+ }
+
+ .tw-builder__settings-deleter--placeholder {
+    display: flex;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.tw-builder__settings-deleter--placeholder .tw-builder__settings-deleter-point {
+    background-color: #888;
+}

@@ -4,6 +4,8 @@ import { Dropdown } from '@components/dropdown/Dropdown'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCanvas } from "@contexts/CanvasContext";
+import { HugeiconsIcon } from '@hugeicons/react';
+import { getIconByName } from '@/lib/hugeicons';
 
 import BuilderThemes from '@components/BuilderThemes/BuilderThemes'
 
@@ -1040,6 +1042,25 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                                     return <div className="tw-builder__tree-item-divider-icon"></div>;
                                 case 'button':
                                     return <div className="tw-builder__tree-item-button-icon"></div>;
+                                case 'icon':
+                                    try {
+                                        const selectedIcon = getIconByName(item.icon);
+                                        if (selectedIcon) {
+                                            return <HugeiconsIcon
+                                                className="tw-builder__tree-item-hugeicons"
+                                                icon={selectedIcon} 
+                                                size={10} 
+                                                color="currentColor" 
+                                                strokeWidth={1.5} 
+                                            />;
+                                        }
+                                    } catch (e) {
+                                        // If icon not found, fall through to default
+                                    }
+                                    // Default fallback icon (block)
+                                    return  <svg className="tw-builder__tree-item-block-icon" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect width="8" height="8" rx="2" fill="currentColor"/>
+                                            </svg>;
                                 default:
                                     return <svg className="tw-builder__tree-item-block-icon" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <rect width="8" height="8" rx="2" fill="currentColor"/>

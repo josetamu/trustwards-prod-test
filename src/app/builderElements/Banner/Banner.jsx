@@ -2,11 +2,69 @@
 
 import './Banner.css';
 
+// Export groupControls separately for use in CanvasContext
+export const bannerGroupControls = {
+    header: [
+        { name: 'Tag', type: 'super-select', category: 'block', JSONProperty: 'tagName', placeholder: 'div'},
+        { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'block'},
+    ],
+    body: [
+        {
+            label: 'Spacing',
+            controls: [
+                { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
+                { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
+            ]
+        },
+        {
+            label: 'Size',
+            controls: [
+                { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
+                { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
+                { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
+            ]
+        },
+        {
+            label: 'Background',
+            controls: [
+                { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true},
+            ]
+        },
+        {
+            
+                label: 'Text',
+                controls: [
+                    { name: 'Color', type: 'color', cssProperty: 'color', nextLine: true},
+                    { name: 'Font', type: 'select', cssProperty: 'font-family', placeholder: 'Inter'},
+                    { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
+                    { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
+                    { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
+                    { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
+                    { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},
+                    
+                ]
+            },
+            {   
+                label: 'Styles',
+                controls: [
+                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
+                    { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
+                    { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                    { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                    {name: 'Border', type: 'border'},
+                    {name: 'Shadow', type: 'box-shadow'},
+                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
+                ]
+            }
+    ]
+};
+
 export const Banner = (node, nodeProps = {}, children) => {
     // nodeProps adds HTML id and classList
 
     const id = node.id;
-    const Tag = node.tagName;
+    const Tag = node.tagName || 'div';
 
     const dataAttributes = node.attributes;
     /*
@@ -15,62 +73,7 @@ export const Banner = (node, nodeProps = {}, children) => {
     any html attribute (tag, text, data-attribute) is changed on the JSONtree by right panel controls
     */
 
-    const groupControls =  {
-        header: [
-            { name: 'Tag', type: 'super-select', category: 'block', JSONProperty: 'tagName', placeholder: 'div'},
-            { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'block'},
-        ],
-        body: [
-            {
-                label: 'Spacing',
-                controls: [
-                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
-                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
-                ]
-            },
-            {
-                label: 'Size',
-                controls: [
-                    { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
-                    { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
-                    { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
-                    { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
-                ]
-            },
-            {
-                label: 'Background',
-                controls: [
-                    { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true},
-                ]
-            },
-            {
-                
-                    label: 'Text',
-                    controls: [
-                        { name: 'Color', type: 'color', cssProperty: 'color', nextLine: true},
-                        { name: 'Font', type: 'select', cssProperty: 'font-family', placeholder: 'Inter'},
-                        { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
-                        { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
-                        { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
-                        { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
-                        { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},
-                        
-                    ]
-                },
-                {   
-                    label: 'Styles',
-                    controls: [
-                        { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
-                        { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
-                        { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
-                        { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
-                        {name: 'Border', type: 'border'},
-                        {name: 'Shadow', type: 'box-shadow'},
-                        {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
-                    ]
-                }
-        ]
-    }
+    const groupControls = bannerGroupControls;
 
     const render = () => {
         return (

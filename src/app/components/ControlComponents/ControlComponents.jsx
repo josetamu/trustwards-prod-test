@@ -10,6 +10,8 @@ import './ControlComponents.css';
 import { StylesDeleter } from '@components/StylesDeleter/StylesDeleter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAnimTypes } from '@animations/animations';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { getAllIconNames, getIconByName, formatIconName } from '@/lib/hugeicons';
 
 
 //Apply the control on enter(applying the blur function)
@@ -20,46 +22,123 @@ const applyOnEnter = (e,f) => {
     }
 }
 
+/**
+ * Helper function to evaluate if a 'required' condition is met
+ * @param {string|object} required - The required condition. Can be a string like "Type=switch" or object like {control: "Type", value: "switch"}
+ * @param {object} allControls - All controls from header and body to search for the referenced control
+ * @param {function} getGlobalJSONValue - Function to get JSON values
+ * @param {function} getGlobalCSSValue - Function to get CSS values
+ * @returns {boolean} - True if the condition is met, false otherwise
+ */
+const evaluateRequired = (required, allControls, getGlobalJSONValue, getGlobalCSSValue) => {
+    if (!required) return true; // No required means always show
+    
+    // Parse the required condition
+    let controlName, expectedValue;
+    
+    if (typeof required === 'string') {
+        // Format: "ControlName=value"
+        const parts = required.split('=');
+        if (parts.length !== 2) return true; // Invalid format, show by default
+        controlName = parts[0].trim();
+        expectedValue = parts[1].trim();
+    } else if (typeof required === 'object') {
+        // Format: {control: "ControlName", value: "expectedValue"}
+        controlName = required.control;
+        expectedValue = required.value;
+    } else {
+        return true; // Invalid format, show by default
+    }
+    
+    // Find the referenced control in allControls
+    const referencedControl = allControls.find(ctrl => ctrl?.name === controlName);
+    if (!referencedControl) return false; // Control not found, don't show
+    
+    // Get the current value of the referenced control
+    let currentValue = null;
+    
+    // Check JSONProperty first
+    if (referencedControl.JSONProperty && getGlobalJSONValue) {
+        currentValue = getGlobalJSONValue(referencedControl.JSONProperty);
+    } 
+    // Then check dataAttribute
+    else if (referencedControl.dataAttribute && getGlobalJSONValue) {
+        currentValue = getGlobalJSONValue(`attributes.${referencedControl.dataAttribute}`);
+    }
+    // Then check cssProperty
+    else if (referencedControl.cssProperty && getGlobalCSSValue) {
+        currentValue = getGlobalCSSValue(referencedControl.cssProperty, referencedControl.selector);
+    }
+    
+    // Normalize values for comparison (trim whitespace, handle empty/null)
+    const normalizedCurrent = currentValue ? String(currentValue).trim() : '';
+    const normalizedExpected = String(expectedValue).trim();
+    
+    // Return true if values match
+    return normalizedCurrent === normalizedExpected;
+}
+
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, dataAttribute, notDelete, required, allControls, checkRequired,getPlaceholderValue, default: defaultValue}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
+        // Support dataAttribute (for nested attributes like data-icon-size)
+        // NOTE: defaultValue is NOT used as fallback here - it's only for visual reference
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-        const savedValue = savedJSONValue ?? savedCSSValue;
+        const savedValue = dataAttrValue ?? savedJSONValue ?? savedCSSValue;
 
         
         return savedValue ?? '';
     });
+    const bpPlaceholder = cssProperty ? getPlaceholderValue?.(cssProperty) : null;
 
     //Update the value when the selected element changes
     useEffect(() => {
+        // Support dataAttribute (for nested attributes like data-icon-size)
+        // NOTE: defaultValue is NOT used as fallback here - it's only for visual reference
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
-        const savedValue = savedJSONValue ?? savedCSSValue;
-      
+        const savedValue = dataAttrValue ?? savedJSONValue ?? savedCSSValue;
+
         setTextValue(savedValue ?? '');
         
-    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, value]);
+    }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, dataAttribute, value]);
 
 
     //Permit change input value
     const handleChange = (e) => {
         const inputValue = e.target.value;
-        if(JSONProperty && applyGlobalJSONChange) {
+        
+        //local state update
+        setTextValue(inputValue);
+        
+        // Check if required condition is met before applying
+        if (checkRequired && !checkRequired(required)) {
+            return; // Don't apply if required condition is not met
+        }
+        
+        // Priority: dataAttribute > JSONProperty > cssProperty
+        if(dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, inputValue);
+        } else if(JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, inputValue);
         } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, inputValue);
         }
-    
     };
+    
 
+    // Determine which property to use for StylesDeleter
+    const effectiveJSONProperty = dataAttribute ? `attributes.${dataAttribute}` : JSONProperty;
 
     
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={JSONProperty}/>
+            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={textValue} cssProperty={cssProperty} JSONProperty={effectiveJSONProperty} notDelete={notDelete} isPlaceholder={!textValue && !!bpPlaceholder}/>
             </span>
            
             <input 
@@ -69,15 +148,21 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             type="text" 
             className="tw-builder__settings-input" 
             value={textValue} 
-            placeholder={placeholder} 
+            placeholder={bpPlaceholder || placeholder} 
             onChange={handleChange}
             />
         </div>
     )
 }
-const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, nextLine}) => {
+const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, nextLine, required, allControls, checkRequired, dataAttribute, getPlaceholderValue, notDelete, default: defaultValue}) => {
     //function to get the correct value depending on the category
     const getCurrentSelectValue = () => {
+        // Priority: dataAttribute > JSONProperty > cssProperty
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        if (dataAttribute && getGlobalJSONValue) {
+            const savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`);
+            return savedValue || '';
+        }
         if (category === 'block') {
             const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
             return savedJSONValue || '';
@@ -86,8 +171,13 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
         return savedCSSValue || '';
     };
 
+    const dynamicPlaceholder = cssProperty ? getPlaceholderValue?.(cssProperty) : placeholder;
+
     const handleSuperSelectChange = (newValue) => {
-        if(JSONProperty && applyGlobalJSONChange){
+        // Priority: dataAttribute > JSONProperty > cssProperty
+        if(dataAttribute && applyGlobalJSONChange){
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, newValue);
+        } else if(JSONProperty && applyGlobalJSONChange){
             applyGlobalJSONChange(JSONProperty,newValue);
         }else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
@@ -100,7 +190,7 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
         <SelectType
         name={name}
         value={getCurrentSelectValue()}
-        placeholder={placeholder}
+        placeholder={dynamicPlaceholder || placeholder}
         onChange={handleSuperSelectChange}
         JSONProperty={JSONProperty}
         applyGlobalJSONChange={applyGlobalJSONChange}
@@ -108,13 +198,15 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
         selectedId={selectedId}
         index={index}
         options={['div','a','section','article','aside','nav']}
+        notDelete={notDelete}
+        getPlaceholderValue={getPlaceholderValue}
         />
        )}
         {category === 'display' && (
         <SelectType
         name={name}
         value={getCurrentSelectValue()}
-        placeholder={placeholder}
+        placeholder={dynamicPlaceholder || placeholder}
         cssProperty={cssProperty}  
         applyGlobalCSSChange={applyGlobalCSSChange}  
         getGlobalCSSValue={getGlobalCSSValue}  
@@ -126,13 +218,15 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
         options={['flex','grid', 'block', 'inline-block', 'inline', 'none']}
         onChange={handleSuperSelectChange}
         defaultValue={placeholder}
+        notDelete={notDelete}
+        getPlaceholderValue={getPlaceholderValue}
         />
       )}
       {category === 'position' && (
         <SelectType
         name={name}
         value={getCurrentSelectValue()}
-        placeholder={placeholder}
+        placeholder={dynamicPlaceholder || placeholder}
         cssProperty={cssProperty}
         applyGlobalCSSChange={applyGlobalCSSChange}
         getGlobalCSSValue={getGlobalCSSValue}
@@ -140,47 +234,56 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
         index={index}
         options={['static','relative','absolute','fixed','sticky']}
         onChange={handleSuperSelectChange}
-        defaultValue={placeholder}
+        defaultValue={dynamicPlaceholder || placeholder}
+        notDelete={notDelete}
+        getPlaceholderValue={getPlaceholderValue}
         />
       )}
                
-        {(category === 'position' && (getCurrentSelectValue() === 'absolute' || getCurrentSelectValue() === 'relative' || getCurrentSelectValue() === 'fixed')) && (
+        {(category === 'position' && (getCurrentSelectValue() === 'absolute' || getCurrentSelectValue() === 'relative' || getCurrentSelectValue() === 'fixed' || (getCurrentSelectValue() === '' && (dynamicPlaceholder || placeholder) === 'absolute' || (dynamicPlaceholder || placeholder) === 'relative' || (dynamicPlaceholder || placeholder) === 'fixed'))) && (
             <>
                 <TextType
                     name="Top"
-                    placeholder="0"
+                    placeholder=""
                     cssProperty="top"
                     applyGlobalCSSChange={applyGlobalCSSChange}
                     getGlobalCSSValue={getGlobalCSSValue}
                     selectedId={selectedId}
                     index={`${index}-top`}
+                    getPlaceholderValue={getPlaceholderValue}
+                    notDelete={notDelete}
                 />
                 <TextType
                     name="Right"
-                    placeholder="0"
+                    placeholder=""
                     cssProperty="right"
                     applyGlobalCSSChange={applyGlobalCSSChange}
                     getGlobalCSSValue={getGlobalCSSValue}
                     selectedId={selectedId}
                     index={`${index}-right`}
+                    getPlaceholderValue={getPlaceholderValue}
+                    notDelete={notDelete}
                 />
                 <TextType
                     name="Bottom"
-                    placeholder="0"
+                    placeholder=""
                     cssProperty="bottom"
                     applyGlobalCSSChange={applyGlobalCSSChange}
                     getGlobalCSSValue={getGlobalCSSValue}
                     selectedId={selectedId}
                     index={`${index}-bottom`}
+                    getPlaceholderValue={getPlaceholderValue}
                 />
                 <TextType
                     name="Left"
-                    placeholder="0"
+                    placeholder=""
                     cssProperty="left"
                     applyGlobalCSSChange={applyGlobalCSSChange}
                     getGlobalCSSValue={getGlobalCSSValue}
                     selectedId={selectedId}
                     index={`${index}-left`}
+                    getPlaceholderValue={getPlaceholderValue}
+                    notDelete={notDelete}
                 />
             </>
         )}
@@ -195,9 +298,10 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
            selectedId={selectedId}
            index="href"
            nextLine={true}
+           getPlaceholderValue={getPlaceholderValue}
         />
         )}
-        {(getCurrentSelectValue() === 'flex' || (getCurrentSelectValue() === '' && placeholder === 'flex')) && (
+        {(getCurrentSelectValue() === 'flex' || (getCurrentSelectValue() === '' && (dynamicPlaceholder || placeholder) === 'flex')) && (
                     <>
 
                     <ChooseType
@@ -208,6 +312,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                         getGlobalCSSValue={getGlobalCSSValue}
                         index={`${index}-justify`}
                         nextLine={true}
+                        getPlaceholderValue={getPlaceholderValue}
+                        notDelete={notDelete}
                     />
                     <ChooseType
                         name="Align"
@@ -217,6 +323,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                         getGlobalCSSValue={getGlobalCSSValue}
                         index={`${index}-align`}
                         nextLine={true}
+                        getPlaceholderValue={getPlaceholderValue}
+                        notDelete={notDelete}
                     />
                     <ChooseType
                         name="Direction"
@@ -225,16 +333,20 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                         applyGlobalCSSChange={applyGlobalCSSChange}
                         getGlobalCSSValue={getGlobalCSSValue}
                         index={`${index}-direction`}
+                        notDelete={notDelete}
+                        getPlaceholderValue={getPlaceholderValue}
                     />
                     <SelectType
                     name='Wrap'
-                    placeholder='nowrap'
+                    placeholder={'nowrap'}
                     cssProperty='flex-wrap'
                     applyGlobalCSSChange={applyGlobalCSSChange}
                     getGlobalCSSValue={getGlobalCSSValue}
                     selectedId={selectedId}
                     index={index}
                     options={['nowrap', 'wrap', 'wrap-reverse']}
+                    notDelete={notDelete}             
+                    getPlaceholderValue={getPlaceholderValue}
                     />
 
                     <TextType 
@@ -245,6 +357,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                     getGlobalCSSValue={getGlobalCSSValue}
                     selectedId={selectedId}
                     index="column-gap"
+                    getPlaceholderValue={getPlaceholderValue}
+                    notDelete={notDelete}
                     />
                     <TextType 
                         name="Row Gap"
@@ -254,10 +368,12 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
                         getGlobalCSSValue={getGlobalCSSValue}
                         selectedId={selectedId}
                         index="row-gap"
+                        getPlaceholderValue={getPlaceholderValue}
+                        notDelete={notDelete}
                     />
                     </>
                 )}
-        {getCurrentSelectValue() === 'grid' && (
+        {(getCurrentSelectValue() === 'grid' || (getCurrentSelectValue() === '' && (dynamicPlaceholder || placeholder) === 'grid')) && (
             <>
         <ChooseType
             name="Justify"
@@ -267,6 +383,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             getGlobalCSSValue={getGlobalCSSValue}
             index={`${index}-justify`}
             nextLine={true}
+            getPlaceholderValue={getPlaceholderValue}
+            notDelete={notDelete}
         />
         <ChooseType
             name="Align"
@@ -276,6 +394,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             getGlobalCSSValue={getGlobalCSSValue}
             index={`${index}-align`}
             nextLine={true}
+            getPlaceholderValue={getPlaceholderValue}
+            notDelete={notDelete}
         />
         <TextType 
             name="Template columns"
@@ -286,6 +406,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             selectedId={selectedId}
             index="grid-template-columns"
             nextLine={true}
+            getPlaceholderValue={getPlaceholderValue}
+            notDelete={notDelete}
         />
         <TextType 
             name="Template rows"
@@ -296,6 +418,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             selectedId={selectedId}
             index="grid-template-rows"
             nextLine={true}
+            getPlaceholderValue={getPlaceholderValue}
+            notDelete={notDelete}
         />
         <TextType 
             name="Auto columns"
@@ -306,6 +430,7 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             getGlobalCSSValue={getGlobalCSSValue}
             selectedId={selectedId}
             index="grid-auto-columns"
+            getPlaceholderValue={getPlaceholderValue}
         />
         <TextType 
             name="Auto rows"
@@ -316,17 +441,20 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             getGlobalCSSValue={getGlobalCSSValue}
             selectedId={selectedId}
             index="grid-auto-rows"
+            getPlaceholderValue={getPlaceholderValue}
+            notDelete={notDelete}
         />
             <SelectType
             name='Auto flow'
-            /* value={selectedFlow} */
-            placeholder='row'
+            placeholder={'row'}
             cssProperty='grid-auto-flow'
             selectedId={selectedId}
             index='grid-auto-flow'
             applyGlobalCSSChange={applyGlobalCSSChange}
             getGlobalCSSValue={getGlobalCSSValue}
             options={['row', 'column', 'dense',]}
+            notDelete={notDelete}
+            getPlaceholderValue={getPlaceholderValue}
             />
 
             <TextType 
@@ -337,6 +465,8 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
             getGlobalCSSValue={getGlobalCSSValue}
             selectedId={selectedId}
             index="gap"
+            getPlaceholderValue={getPlaceholderValue}
+            notDelete={notDelete}
         />
             </>
         )}
@@ -344,32 +474,49 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
     )
 }
 
-const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, getPlaceholderValue, notDelete, default: defaultValue}) => {
 
     //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
-        const saved = getGlobalCSSValue?.(`${cssProperty}-top`);
+        // For panel with dataAttribute, we would need to store as JSON object
+        // For now, panel typically only uses CSS, so we keep it simple
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-top`) : null;
         return saved || '';
     });
     
     const [rightValue, setRightValue] = useState(() => {
-        const saved = getGlobalCSSValue?.(`${cssProperty}-right`);
+        const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-right`) : null;
         return saved || '';
     });
     
     const [bottomValue, setBottomValue] = useState(() => {
-        const saved = getGlobalCSSValue?.(`${cssProperty}-bottom`);
+        const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-bottom`) : null;
         return saved || '';
     });
     
     const [leftValue, setLeftValue] = useState(() => {
-        const saved = getGlobalCSSValue?.(`${cssProperty}-left`);
+        const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-left`) : null;
         return saved || '';
     });
+
+    const getSidePlaceholder = (side) => {
+        if(!cssProperty || !getPlaceholderValue) return '';
+        return getPlaceholderValue(`${cssProperty}-${side}`) || '';
+    }
+
+    const bpPlaceholder = {
+        top: getSidePlaceholder('top'),
+        right: getSidePlaceholder('right'),
+        bottom: getSidePlaceholder('bottom'),
+        left: getSidePlaceholder('left'),
+    }
+
 
     //Update values when dependencies changes, like the element selected
     useEffect(() => {
         if(!getGlobalCSSValue || !cssProperty) return;
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         setTopValue(getGlobalCSSValue?.(`${cssProperty}-top`) || '');
         setRightValue(getGlobalCSSValue?.(`${cssProperty}-right`) || '');
         setBottomValue(getGlobalCSSValue?.(`${cssProperty}-bottom`) || '');
@@ -380,6 +527,28 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
         // Combine handlers for each side into two generic functions
         const handleSideChange = (side) => (e) => {
             const inputValue = e.target.value;
+            
+            // Update local state immediately based on side
+            switch(side) {
+                case 'top':
+                    setTopValue(inputValue);
+                    break;
+                case 'right':
+                    setRightValue(inputValue);
+                    break;
+                case 'bottom':
+                    setBottomValue(inputValue);
+                    break;
+                case 'left':
+                    setLeftValue(inputValue);
+                    break;
+            }
+            
+            // Check if required condition is met before applying
+            if (checkRequired && !checkRequired(required)) {
+                return; // Don't apply if required condition is not met
+            }
+            
             if (cssProperty && applyGlobalCSSChange) {
                 applyGlobalCSSChange(`${cssProperty}-${side}`, inputValue);
             }
@@ -388,69 +557,140 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     return (
     <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
         <span className="tw-builder__settings-subtitle">{name}
-            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty}/>
+            <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={leftValue || topValue || bottomValue || rightValue} cssPropertyGroup={cssProperty} notDelete={notDelete} isPlaceholder={!leftValue && !topValue && !bottomValue && !rightValue && Object.values(bpPlaceholder).some(v => !!v)}/>
         </span>
         <div className="tw-builder__settings-spacing">
-            <input type="text" className="tw-builder__spacing-input" value={leftValue} placeholder={placeholder[3]} onChange={handleSideChange('left')}/>
+            <input type="text" className="tw-builder__spacing-input" value={leftValue} placeholder={bpPlaceholder.left || placeholder[3]} onChange={handleSideChange('left')}/>
             <div className="tw-builder__settings-spacing-mid">
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} placeholder={placeholder[0]} onChange={handleSideChange('top')}/>
-                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} placeholder={placeholder[2]} onChange={handleSideChange('bottom')}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={topValue} placeholder={bpPlaceholder.top || placeholder[0]} onChange={handleSideChange('top')}/>
+                <input type="text" className="tw-builder__spacing-input tw-builder__spacing-input--mid" value={bottomValue} placeholder={bpPlaceholder.bottom || placeholder[2]} onChange={handleSideChange('bottom')}/>
             </div>
-            <input type="text" className="tw-builder__spacing-input" value={rightValue} placeholder={placeholder[1]} onChange={handleSideChange('right')}/>
+            <input type="text" className="tw-builder__spacing-input" value={rightValue} placeholder={bpPlaceholder.right || placeholder[1]} onChange={handleSideChange('right')}/>
         </div>
     </div>
     )
 }
 
-const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine}) => {
+const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, notDelete, getPlaceholderValue, default: defaultValue}) => {
 
     //Function to convert rgb to hex
     const rgbToHex = (r, g, b) => {
         return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     };
 
-    //Function to get the color from jsonTree
-    const getSavedValue = useCallback(() => {
-        //Store the color
-        const savedValue = getGlobalCSSValue?.(cssProperty);
-        //If there is no color return blank
-        if(!savedValue) return { color: ``, hex: ``, percentage: `` };
+    //Function to convert any color format to hex
+const anyColorToHex = (color) => {
+    // Create a temporary element to leverage browser's color parsing
+    const tempDiv = document.createElement('div');
+    tempDiv.style.color = color;
+    document.body.appendChild(tempDiv);
+    const computedColor = window.getComputedStyle(tempDiv).color;
+    document.body.removeChild(tempDiv);
+    
+    // Parse the computed RGB/RGBA value
+    const rgbMatch = computedColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+    if(rgbMatch) {
+        const [, r, g, b] = rgbMatch;
+        return rgbToHex(parseInt(r), parseInt(g), parseInt(b));
+    }
+    return null;
+};
 
-        //If the color start with rgba, parse it and transform to hexadecimal
-        if(savedValue.startsWith('rgba(')) {
-            const rgbaMatch = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
-            if(rgbaMatch) {
-                const [, r, g, b, a] = rgbaMatch;
-                const hexColor = rgbToHex(parseInt(r), parseInt(g), parseInt(b));
-                const opacityPercent = Math.round(parseFloat(a) * 100);
-        
-                return {
-                    color: hexColor,
-                    hex: hexColor.toUpperCase().replace('#', ''),
-                    percentage: `${opacityPercent}%`
-                };
-            }
-            //If it is in hex format, just uppercase the color and remove #
-        } else if(savedValue.startsWith('#')) {
-            return {
-                color: savedValue,
-                hex: savedValue.toUpperCase().replace('#', ''),
-                percentage: '100%'
-            };
+//Function to get the color from jsonTree
+const getSavedValue = useCallback(() => {
+    // Priority: dataAttribute > cssProperty
+    // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+    let savedValue;
+    if (dataAttribute && getGlobalJSONValue) {
+        savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`);
+    } else if (cssProperty && getGlobalCSSValue) {
+        savedValue = getGlobalCSSValue(cssProperty);
+    }
+    
+    if (!savedValue || savedValue === 'transparent') return { color: '', hex: '', percentage: '' };
+
+    if (savedValue.startsWith('rgba(')) {
+        const m = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+        if (m) {
+            const [, r, g, b, a] = m;
+            const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
+            return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: `${Math.round(parseFloat(a)*100)}%` };
         }
-        return { color: ``, hex: ``, percentage: `` };
-    }, [getGlobalCSSValue, cssProperty]);
+    } else if (savedValue.startsWith('rgb(')) {
+        const m = savedValue.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (m) {
+            const [, r, g, b] = m;
+            const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
+            return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: '100%' };
+        }
+    } else if (savedValue.startsWith('#')) {
+        const hexNoHash = savedValue.replace('#', '').toUpperCase();
+        return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
+    } else {
+        const any = anyColorToHex(savedValue);
+        if (any) {
+            const hexNoHash = any.replace('#', '').toUpperCase();
+            return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
+        }
+    }
+    return { color: '', hex: '', percentage: '' };
+}, [getGlobalCSSValue, cssProperty, dataAttribute, getGlobalJSONValue]);
     
 
+const getPlaceholderColor = () => {
+    // Priority: dataAttribute > cssProperty
+    let placeholderValue;
+    if (dataAttribute && getPlaceholderValue) {
+        placeholderValue = getPlaceholderValue(`attributes.${dataAttribute}`);
+    } else if (cssProperty && getPlaceholderValue) {
+        placeholderValue = getPlaceholderValue(cssProperty);
+    }
+    
+    if (!placeholderValue || placeholderValue === 'transparent') return { color: '', hex: '', percentage: '' };
+
+    if (placeholderValue.startsWith('rgba(')) {
+        const m = placeholderValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+        if (m) {
+            const [, r, g, b, a] = m;
+            const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
+            return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: `${Math.round(parseFloat(a)*100)}%` };
+        }
+    } else if (placeholderValue.startsWith('rgb(')) {
+        const m = placeholderValue.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (m) {
+            const [, r, g, b] = m;
+            const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
+            return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: '100%' };
+        }
+    } else if (placeholderValue.startsWith('#')) {
+        const hexNoHash = placeholderValue.replace('#', '').toUpperCase();
+        return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
+    } else {
+        const any = anyColorToHex(placeholderValue);
+        if (any) {
+            const hexNoHash = any.replace('#', '').toUpperCase();
+            return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
+        }
+    }
+    return { color: '', hex: '', percentage: '' };
+}
     // Initialize states with saved values
     const initialValues = getSavedValue();
+    const placeholderValues = getPlaceholderColor();
     const [color, setColor] = useState(initialValues.color);
     const [hex, setHex] = useState(initialValues.hex);
     const [percentage, setPercentage] = useState(initialValues.percentage);
+    const [appliedPercentage, setAppliedPercentage] = useState(initialValues.percentage);
 
     const colorInputRef = useRef(null);
     // Timeout ref for the color
     const colorTimeoutRef = useRef(null);
+
+    const lastOpacityRef = useRef(initialValues.percentage && initialValues.percentage !== '' ? initialValues.percentage : '100%');
+    const lastColorRef = useRef({
+        withHash: initialValues.color || '',
+        noHash: (initialValues.color || '').replace('#','').toUpperCase()
+      });
 
     // Effect to update the values when the element is selected
     useEffect(() => {
@@ -458,7 +698,13 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         setColor(newValues.color);
         setHex(newValues.hex);
         setPercentage(newValues.percentage);
-    }, [selectedElementData,getSavedValue]); 
+        setAppliedPercentage?.(newValues.percentage); 
+        lastOpacityRef.current = (newValues.percentage && newValues.percentage !== '') ? newValues.percentage : '100%';
+        lastColorRef.current = {
+          withHash: newValues.color || '',
+          noHash: (newValues.color || '').replace('#','').toUpperCase()
+        };
+      }, [selectedElementData, getSavedValue]);
 
     //Function to convert hex to rgba with opacity
    
@@ -476,21 +722,21 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
 
      // Function to apply the CSS style
      const applyCSSChange = (newColor, newOpacity) => {
-        if (!cssProperty) return;
-
-        const opacityValue = parseInt(newOpacity.replace('%', ''));
-        let finalValue;
-        
-        if (opacityValue < 100) {
-            // If there is transparency, use rgba
-            finalValue = hexToRgba(newColor, opacityValue);
-        } else {
-            // If there is no transparency, use hex
-            finalValue = newColor;
-        }
-        
-        // Apply the change using global function
-        if (applyGlobalCSSChange) {
+        if (!cssProperty && !dataAttribute) return;
+    
+        const effectiveOpacity = (newOpacity === '' || newOpacity == null)
+            ? (lastOpacityRef.current || '100%')
+            : newOpacity;
+    
+        const opacityValue = parseInt(String(effectiveOpacity).replace('%', ''));
+        const finalValue = (opacityValue < 100)
+            ? hexToRgba(newColor, opacityValue)
+            : newColor;
+    
+        // Priority: dataAttribute > cssProperty
+        if (dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, finalValue);
+        } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, finalValue);
         }
     };
@@ -527,72 +773,127 @@ const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCS
         }
     };
 
-    //Function to change the color with the text input
     const handleHexChange = (e) => {
-        let hexValue = e.target.value.toUpperCase().replace('#', '');
-    
-        //If the hex value is longer than 6, cut it to 6
-        if(hexValue.length > 6){
-            hexValue = hexValue.slice(0, 6);
-        }
-        setHex(hexValue);
-    
-        //Check if the hex value is valid
-        const hexPattern = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-    
-        //If the hex value is valid, set the color
-        if(hexPattern.test(hexValue)) {
-            const formattedHex = `#${hexValue}`;
-            setColor(formattedHex);
-            applyCSSChange(formattedHex, percentage);
-        }
+        setHex(e.target.value);
     };
-    //Function to change the color when the user is not typing
+    
     const handleHexBlur = (e) => {
-        const hexValue = e.target.value.trim();
-        if(hexValue === ''){
-            setHex('');
-            setColor('');
-            applyCSSChange('', '');
-        } 
+        const raw = (e.target.value || '').trim();
+    
+        // If empty, restore last visible color; no apply CSS
+        if (raw === '') {
+            setHex(lastColorRef.current.noHash);
+            setColor(lastColorRef.current.withHash);
+            return;
+        }
+    
+        // Helpers
+        const expandShortHex = (v) => {
+            if (/^[0-9a-f]{3}$/i.test(v)) return v.split('').map(c => c + c).join(''); // 3 -> 6
+            if (/^[0-9a-f]{4}$/i.test(v)) return v.split('').map(c => c + c).join(''); // 4 -> 8
+            return v;
+        };
+    
+        //HEX without '#'
+        if (/^[0-9a-f]{3,8}$/i.test(raw)) {
+            const expanded = expandShortHex(raw).toUpperCase(); // 6 or 8 digits
+            const hex6 = expanded.slice(0, 6);
+            const alpha2 = expanded.length === 8 ? expanded.slice(6) : null;
+    
+            setHex(hex6);               // without '#'
+            setColor(`#${hex6}`);       // with '#'
+            lastColorRef.current = { withHash: `#${hex6}`, noHash: hex6 };
+    
+            let p;
+            if (alpha2) {
+                const aPct = Math.round(parseInt(alpha2, 16) / 255 * 100);
+                p = `${aPct}%`;
+                setPercentage(p);
+                if (typeof setAppliedPercentage === 'function') setAppliedPercentage(p);
+                if (lastOpacityRef) lastOpacityRef.current = p;
+            } else {
+                p = (typeof appliedPercentage !== 'undefined' && appliedPercentage !== '')
+                    ? appliedPercentage
+                    : (lastOpacityRef?.current || '100%');
+            }
+    
+            applyCSSChange(`#${hex6}`, p);
+            return;
+        }
+    
+        // other formats (rgba/hsla/named/#hex with '#', etc.)
+        const tmp = document.createElement('div');
+        tmp.style.color = '';
+        tmp.style.color = raw;
+        if (tmp.style.color === '') return; // invalid: don't change anything
+    
+        document.body.appendChild(tmp);
+        const computed = window.getComputedStyle(tmp).color; // rgb(a,...) or other color format
+        document.body.removeChild(tmp);
+    
+        const m = computed.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+        if (!m) return;
+    
+        const [, r, g, b, a] = m;
+        const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase(); // "#AABBCC"
+        const hexNoHash = hexWithHash.slice(1);                                            // "AABBCC"
+        setHex(hexNoHash);
+        setColor(hexWithHash);
+        lastColorRef.current = { withHash: hexWithHash, noHash: hexNoHash };
+    
+        let p;
+        if (typeof a !== 'undefined') {
+            const aPct = `${Math.round(parseFloat(a) * 100)}%`;
+            p = aPct;
+            setPercentage(aPct);
+            if (typeof setAppliedPercentage === 'function') setAppliedPercentage(aPct);
+            if (lastOpacityRef) lastOpacityRef.current = aPct;
+        } else {
+            p = (typeof appliedPercentage !== 'undefined' && appliedPercentage !== '')
+                ? appliedPercentage
+                : (lastOpacityRef?.current || '100%');
+        }
+    
+        applyCSSChange(hexWithHash, p);
     };
 
-//Function to change the transparency with the percentage input
-const handlePercentageChange = (e) => {
-    let raw = (e.target.value || '').replace('%', '').trim();
+const handlePercentageInput = (e) => {
+    setPercentage(e.target.value);
+};
 
-    // Allow to delete the field
-    if (raw === '') {
-        setPercentage('');
-        // Aplicar transparencia al máximo (100%) cuando está vacío
-        applyCSSChange(color, '100%');
+// onBlur – if empty, revert to last value; if not, normalize and apply
+const handlePercentageBlur = (e) => {
+    if (percentage === '') {
+        const restored = lastOpacityRef.current || '100%';
+        setPercentage(restored);
+        setAppliedPercentage(restored);
+        e.target.value = restored;
+        if (color && color.trim() !== '') {
+            applyCSSChange(color, restored);
+        }
         return;
     }
-
-    // Normalizar el número entre 0 y 100
-    let num = Number(raw);
-    if (Number.isNaN(num)) num = 0;
-    if (num < 0) num = 0;
-    if (num > 100) num = 100;
-
-    const finalValue = `${num}%`;
+    // Ensure format and apply
+    const percNum = Math.max(0, Math.min(100, parseInt(String(percentage).replace('%','')) || 0));
+    const finalValue = `${percNum}%`;
     setPercentage(finalValue);
+    setAppliedPercentage(finalValue);
     e.target.value = finalValue;
-
-    // Aplica siempre el cambio, incluso cuando es 0
-    applyCSSChange(color, finalValue);
+    lastOpacityRef.current = finalValue;
+    if (color && color.trim() !== '') {
+        applyCSSChange(color, finalValue);
+    }
 };
 
 //Function to get the final color. This is used to mix the color with the transparency
 const perc = parseInt((percentage??'').replace('%', ''));
 const effectivePerc = (isNaN(perc) || perc === 0) ? 100 : perc;
 const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'transparent';
-console.log(finalColor);
 
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-                <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={color} cssProperty={cssProperty}/>
+                <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={color} cssProperty={cssProperty} notDelete={notDelete} isPlaceholder={!color && !!(placeholderValues?.color)}/>
             </span>
             
         <div className="tw-builder__settings-background">
@@ -602,17 +903,17 @@ console.log(finalColor);
                         backgroundColor: finalColor, 
                     }}>
                 </div>
-                <input type="text" className="tw-builder__settings-hex" value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} onKeyDown={(e) => applyOnEnter(e, handleHexBlur)} placeholder="Hex here..."/>
+                <input type="text" className="tw-builder__settings-hex" placeholder={placeholderValues.hex} value={hex} onChange={handleHexChange} onBlur={handleHexBlur} onInput={handleHexChange} onKeyDown={(e) => applyOnEnter(e, handleHexBlur)}/>
             </div>
             <div className="tw-builder__settings-percentages">
-                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" onBlur={handlePercentageChange} onChange={handlePercentageChange} onKeyDown={(e) => applyOnEnter(e, handlePercentageChange)} />
+                <input type="text" value={percentage} min={0} max={100} className="tw-builder__settings-percentage" placeholder={placeholderValues.percentage} onBlur={handlePercentageBlur} onChange={handlePercentageInput} onKeyDown={(e) => applyOnEnter(e, handlePercentageBlur)} />
             </div>
         </div>
     </div>
     )
 }
 
-const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, nextLine, nextLine2}) => {
+const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, nextLine, nextLine2, required, allControls, checkRequired, notDelete, default: defaultValue}) => {
     
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState('');
@@ -626,6 +927,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
 
     //Update the image when the selected element changes
     useEffect(() => {
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         const savedValue = getGlobalJSONValue?.(JSONProperty);
         //Store the default image source
         const defaultImage = "/assets/builder-default-image.svg";
@@ -635,6 +937,8 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             if (savedValue === defaultImage) {
                 setImage(null);
                 setImageUrl('');
+                if (imageRef.current) imageRef.current.value = '';
+                if (imageUrlRef.current) imageUrlRef.current.value = '';
                 return;
             }
             //If the image is an url, set it to the url
@@ -690,6 +994,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             //Set the image and the image url
             setImage(publicUrl);
             setImageUrl(publicUrl);
+            
             applyGlobalJSONChange?.(JSONProperty, publicUrl);
     
         } catch (error) {
@@ -701,6 +1006,12 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     };
     //Function to change the image url
     const handleUrlChange = (e) => {
+        if (e.target.value.trim() === '') {
+            setImage('');
+            setImageUrl('');
+            applyGlobalJSONChange?.(JSONProperty, '/assets/builder-default-image.svg');
+            return;
+        }
         const url = e.target.value;
         setImageUrl(url);
     };
@@ -728,12 +1039,12 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
         <>
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}>
             <span className="tw-builder__settings-subtitle">Source
-                <StylesDeleter value={imageUrl} jsonEmptyValue="/assets/builder-default-image.svg" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
+                <StylesDeleter value={imageUrl} jsonEmptyValue="/assets/builder-default-image.svg" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} notDelete={notDelete}/>
             </span>
             <input 
             type="text" 
             className="tw-builder__settings-input tw-builder__settings-input--link" 
-            placeholder="https://stock.io/default.png" 
+            placeholder="Source URL" 
             ref={imageUrlRef}
             value={imageUrl}
             onChange={handleUrlChange}
@@ -743,7 +1054,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
         </div>
         <div className={`tw-builder__settings-setting ${nextLine2 ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-                <StylesDeleter value={imageUrl} JSONProperty={JSONProperty} jsonEmptyValue="/assets/builder-default-image.svg" applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
+                <StylesDeleter value={imageUrl} JSONProperty={JSONProperty} jsonEmptyValue="/assets/builder-default-image.svg" applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} notDelete={notDelete}/>
             </span>
             <div
                 className="tw-builder__settings-image"
@@ -767,15 +1078,23 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     )
 }
 
-const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, nextLine}) => {
+const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, getPlaceholderValue, notDelete, default: defaultValue}) => {
 
     const [selectedChoose, setSelectedChoose] = useState(() => {
-        if (category === 'flex-direction' && getGlobalCSSValue && cssProperty) {
-            const savedValue = getGlobalCSSValue(cssProperty) || '';
+        // Priority: dataAttribute > cssProperty
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        let savedValue = '';
+        if (dataAttribute && getGlobalJSONValue) {
+            savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`) || '';
+        } else if (cssProperty && getGlobalCSSValue) {
+            savedValue = getGlobalCSSValue(cssProperty) || '';
+        }
+        
+        if (category === 'flex-direction' && savedValue) {
             // Strip -reverse suffix to get base direction
             return savedValue.replace('-reverse', '');
         }
-        return getGlobalCSSValue?.(cssProperty) || '';
+        return savedValue;
     });
     
     const [isReverse, setIsReverse] = useState(() => {
@@ -787,27 +1106,38 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     });
     
     const [activeTooltip, setActiveTooltip] = useState(null);
- 
 
+    //Get the placeholder value
+    const placeholderValue = cssProperty ? getPlaceholderValue?.(cssProperty) : '';
+    const placeholderReverse = placeholderValue?.includes('-reverse') || false;
+    const placeholderBase = placeholderValue?.replace('-reverse', '') || '';
+ 
     // Update when selected element changes
     useEffect(() => {
-        if (getGlobalCSSValue && cssProperty) {
-            const savedValue = getGlobalCSSValue(cssProperty) || '';
-            
-            if (category === 'flex-direction') {
-                // Parse reverse state and base direction
-                const isCurrentlyReverse = savedValue.includes('-reverse');
-                const baseDirection = isCurrentlyReverse 
-                    ? savedValue.replace('-reverse', '') 
-                    : savedValue;
-                
-                setIsReverse(isCurrentlyReverse);
-                setSelectedChoose(baseDirection);
-            } else {
-                setSelectedChoose(savedValue);
-            }
+        // Priority: dataAttribute > cssProperty
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        let savedValue = '';
+        if (dataAttribute && getGlobalJSONValue) {
+            savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`) || '';
+        } else if (cssProperty && getGlobalCSSValue) {
+            savedValue = getGlobalCSSValue(cssProperty) || '';
         }
-    }, [getGlobalCSSValue, cssProperty, category]);
+        
+        
+        if (category === 'flex-direction') {
+            // Parse reverse state and base direction
+            const isCurrentlyReverse = savedValue.includes('-reverse');
+            const baseDirection = isCurrentlyReverse 
+                ? savedValue.replace('-reverse', '') 
+                : savedValue;
+            
+            setIsReverse(isCurrentlyReverse);
+            setSelectedChoose(baseDirection);
+        } else {
+            setSelectedChoose(savedValue);
+        }
+        
+    }, [getGlobalCSSValue, cssProperty, category, dataAttribute, getGlobalJSONValue]);
 
     // Tooltip hover trigger with delay
     const hoverTimeoutRef = useRef(null);
@@ -828,30 +1158,40 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 
         const newValue = selectedChoose === choose ? '' : choose;
         setSelectedChoose(newValue);
-        if (cssProperty && applyGlobalCSSChange) {
-            let finalValue = newValue;
-            //If reverse is active row === row-reverse, and column === column-reverse
-            if(category === 'flex-direction' && isReverse) {
-                finalValue = newValue === 'row'? 'row-reverse' : 'column-reverse';
-            }
-            //Global function to apply and saved css
+        
+        let finalValue = newValue;
+        //If reverse is active row === row-reverse, and column === column-reverse
+        if(category === 'flex-direction' && isReverse) {
+            finalValue = newValue === 'row'? 'row-reverse' : 'column-reverse';
+        }
+        
+        // Priority: dataAttribute > cssProperty
+        if (dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, finalValue);
+        } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, finalValue);
         }
-    }, [cssProperty, applyGlobalCSSChange, category, isReverse, selectedChoose]);
+    }, [cssProperty, applyGlobalCSSChange, category, isReverse, selectedChoose, required, checkRequired, dataAttribute, applyGlobalJSONChange]);
 
     //Handle the reverse choose
     const handleReverseToggle = useCallback(() => {
         const newReverse = !isReverse;
         setIsReverse(newReverse);
         
-        // Apply reverse to CSS immediately if we have a direction selected
-        if (cssProperty && applyGlobalCSSChange && selectedChoose) {
+        // Apply reverse immediately if we have a direction selected
+        if (selectedChoose) {
             const finalValue = newReverse 
                 ? (selectedChoose === 'row' ? 'row-reverse' : 'column-reverse')
                 : selectedChoose;
-            applyGlobalCSSChange(cssProperty, finalValue);
+            
+            // Priority: dataAttribute > cssProperty
+            if (dataAttribute && applyGlobalJSONChange) {
+                applyGlobalJSONChange(`attributes.${dataAttribute}`, finalValue);
+            } else if (cssProperty && applyGlobalCSSChange) {
+                applyGlobalCSSChange(cssProperty, finalValue);
+            }
         }
-    }, [isReverse, cssProperty, applyGlobalCSSChange, selectedChoose]);
+    }, [isReverse, cssProperty, applyGlobalCSSChange, selectedChoose, required, checkRequired, dataAttribute, applyGlobalJSONChange]);
 
 
     //Calc the transform and the width of the slider
@@ -878,14 +1218,14 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             return (
                 <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
-                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} notDelete={notDelete} isPlaceholder={!selectedChoose && !!placeholderBase}/>
                     </span>
                     <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, directionOptions)})`, width: `${getSliderWidth(directionOptions)}` } }
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose || placeholderBase, directionOptions)})`, width: `${getSliderWidth(directionOptions)}` } }
                         >
                         </div>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'column' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('column')} onMouseEnter={() => handleMouseEnter('column')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'column' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'column' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('column')} onMouseEnter={() => handleMouseEnter('column')} onMouseLeave={handleMouseLeave}>
                             <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.00134172 2C-0.00151758 1.78086 -0.00630757 1.37951 0.0645315 1.1168C0.156314 0.776369 0.384806 0.417969 0.917786 0.185477C1.16804 0.0763693 1.43357 0.0356924 1.70173 0.0173539C1.95531 9.16995e-08 2.26431 0 2.62258 0H8.37743C8.7357 0 9.04469 9.16995e-08 9.29828 0.0173539C9.56645 0.0356924 9.83193 0.0763693 10.0822 0.185477C10.6152 0.417969 10.8437 0.776369 10.9355 1.1168C11.0063 1.37951 11.0016 1.78086 10.9986 2C11.0016 2.21914 11.0063 2.62049 10.9355 2.8832C10.8437 3.22363 10.6152 3.58203 10.0822 3.81452C9.83193 3.92363 9.56645 3.96431 9.29828 3.98265C9.04469 4 8.7357 4 8.37743 4H2.62258C2.26431 4 1.95531 4 1.70173 3.98265C1.43357 3.96431 1.16804 3.92363 0.917786 3.81452C0.384806 3.58203 0.156314 3.22363 0.0645315 2.8832C-0.00630757 2.62049 -0.00151758 2.21914 0.00134172 2Z" fill="currentColor"/>
                                 <path d="M0.00134172 7C-0.00151758 6.78086 -0.00630757 6.37951 0.0645315 6.1168C0.156314 5.77637 0.384806 5.41797 0.917786 5.18548C1.16804 5.07637 1.43357 5.03569 1.70173 5.01735C1.95531 5 2.26431 5 2.62258 5H8.37743C8.7357 5 9.04469 5 9.29828 5.01735C9.56645 5.03569 9.83193 5.07637 10.0822 5.18548C10.6152 5.41797 10.8437 5.77637 10.9355 6.1168C11.0063 6.37951 11.0016 6.78086 10.9986 7C11.0016 7.21914 11.0063 7.62049 10.9355 7.8832C10.8437 8.22363 10.6152 8.58203 10.0822 8.81452C9.83193 8.92363 9.56645 8.96431 9.29828 8.98265C9.04469 9 8.7357 9 8.37743 9H2.62258C2.26431 9 1.95531 9 1.70173 8.98265C1.43357 8.96431 1.16804 8.92363 0.917786 8.81452C0.384806 8.58203 0.156314 8.22363 0.0645315 7.8832C-0.00630757 7.62049 -0.00151758 7.21914 0.00134172 7Z" fill="currentColor"/>
@@ -897,7 +1237,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'row' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('row')} onMouseEnter={() => handleMouseEnter('row')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'row' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'row' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('row')} onMouseEnter={() => handleMouseEnter('row')} onMouseLeave={handleMouseLeave}>
                             <svg width="9" height="8" viewBox="0 0 9 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7 0.000975796C7.21914 -0.0011037 7.62049 -0.00458732 7.8832 0.046932C8.22363 0.113683 8.58203 0.279859 8.81452 0.66748C8.92363 0.849487 8.96431 1.0426 8.98265 1.23762C9 1.42205 9 1.64677 9 1.90733V6.09268C9 6.35324 9 6.57795 8.98265 6.76238C8.96431 6.95742 8.92363 7.1505 8.81452 7.3325C8.58203 7.72014 8.22363 7.88632 7.8832 7.95309C7.62049 8.00457 7.21914 8.00113 7 7.999C6.78086 8.00113 6.37951 8.00457 6.1168 7.95309C5.77637 7.88632 5.41797 7.72014 5.18548 7.3325C5.07637 7.1505 5.03569 6.95742 5.01735 6.76238C5 6.57795 5 6.35324 5 6.09268V1.90733C5 1.64677 5 1.42204 5.01735 1.23762C5.03569 1.0426 5.07637 0.849487 5.18548 0.66748C5.41797 0.279859 5.77637 0.113683 6.1168 0.046932C6.37951 -0.00458732 6.78086 -0.0011037 7 0.000975796Z" fill="currentColor"/>
                                 <path d="M2 0.000975796C2.21914 -0.0011037 2.62049 -0.00458732 2.8832 0.046932C3.22363 0.113683 3.58203 0.279859 3.81452 0.66748C3.92363 0.849487 3.96431 1.0426 3.98265 1.23762C4 1.42205 4 1.64677 4 1.90733V6.09268C4 6.35324 4 6.57795 3.98265 6.76238C3.96431 6.95742 3.92363 7.1505 3.81452 7.3325C3.58203 7.72014 3.22363 7.88632 2.8832 7.95309C2.62049 8.00457 2.21914 8.00113 2 7.999C1.78086 8.00113 1.37951 8.00457 1.1168 7.95309C0.776369 7.88632 0.417969 7.72014 0.185476 7.3325C0.0763686 7.1505 0.0356922 6.95742 0.0173538 6.76238C0 6.57795 0 6.35324 0 6.09268V1.90733C0 1.64677 0 1.42204 0.0173538 1.23762C0.0356922 1.0426 0.0763686 0.849487 0.185476 0.66748C0.417969 0.279859 0.776369 0.113683 1.1168 0.046932C1.37951 -0.00458732 1.78086 -0.0011037 2 0.000975796Z" fill="currentColor"/>
@@ -916,14 +1256,14 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             return (
                 <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
-                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} notDelete={notDelete} isPlaceholder={!selectedChoose && !!placeholderBase}/>
                     </span>
                     <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, flexDirectionOptions)})`, width: `${getSliderWidth(flexDirectionOptions)}` } }
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose || placeholderBase,flexDirectionOptions)})`, width: `${getSliderWidth(flexDirectionOptions)}` } }
                         >
                         </div>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'column' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('column')} onMouseEnter={() => handleMouseEnter('column')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'column' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'column' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('column')} onMouseEnter={() => handleMouseEnter('column')} onMouseLeave={handleMouseLeave}>
                             <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.00134172 2C-0.00151758 1.78086 -0.00630757 1.37951 0.0645315 1.1168C0.156314 0.776369 0.384806 0.417969 0.917786 0.185477C1.16804 0.0763693 1.43357 0.0356924 1.70173 0.0173539C1.95531 9.16995e-08 2.26431 0 2.62258 0H8.37743C8.7357 0 9.04469 9.16995e-08 9.29828 0.0173539C9.56645 0.0356924 9.83193 0.0763693 10.0822 0.185477C10.6152 0.417969 10.8437 0.776369 10.9355 1.1168C11.0063 1.37951 11.0016 1.78086 10.9986 2C11.0016 2.21914 11.0063 2.62049 10.9355 2.8832C10.8437 3.22363 10.6152 3.58203 10.0822 3.81452C9.83193 3.92363 9.56645 3.96431 9.29828 3.98265C9.04469 4 8.7357 4 8.37743 4H2.62258C2.26431 4 1.95531 4 1.70173 3.98265C1.43357 3.96431 1.16804 3.92363 0.917786 3.81452C0.384806 3.58203 0.156314 3.22363 0.0645315 2.8832C-0.00630757 2.62049 -0.00151758 2.21914 0.00134172 2Z" fill="currentColor"/>
                                 <path d="M0.00134172 7C-0.00151758 6.78086 -0.00630757 6.37951 0.0645315 6.1168C0.156314 5.77637 0.384806 5.41797 0.917786 5.18548C1.16804 5.07637 1.43357 5.03569 1.70173 5.01735C1.95531 5 2.26431 5 2.62258 5H8.37743C8.7357 5 9.04469 5 9.29828 5.01735C9.56645 5.03569 9.83193 5.07637 10.0822 5.18548C10.6152 5.41797 10.8437 5.77637 10.9355 6.1168C11.0063 6.37951 11.0016 6.78086 10.9986 7C11.0016 7.21914 11.0063 7.62049 10.9355 7.8832C10.8437 8.22363 10.6152 8.58203 10.0822 8.81452C9.83193 8.92363 9.56645 8.96431 9.29828 8.98265C9.04469 9 8.7357 9 8.37743 9H2.62258C2.26431 9 1.95531 9 1.70173 8.98265C1.43357 8.96431 1.16804 8.92363 0.917786 8.81452C0.384806 8.58203 0.156314 8.22363 0.0645315 7.8832C-0.00630757 7.62049 -0.00151758 7.21914 0.00134172 7Z" fill="currentColor"/>
@@ -935,7 +1275,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'row' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('row')} onMouseEnter={() => handleMouseEnter('row')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'row' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'row' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('row')} onMouseEnter={() => handleMouseEnter('row')} onMouseLeave={handleMouseLeave}>
                             <svg width="9" height="8" viewBox="0 0 9 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7 0.000975796C7.21914 -0.0011037 7.62049 -0.00458732 7.8832 0.046932C8.22363 0.113683 8.58203 0.279859 8.81452 0.66748C8.92363 0.849487 8.96431 1.0426 8.98265 1.23762C9 1.42205 9 1.64677 9 1.90733V6.09268C9 6.35324 9 6.57795 8.98265 6.76238C8.96431 6.95742 8.92363 7.1505 8.81452 7.3325C8.58203 7.72014 8.22363 7.88632 7.8832 7.95309C7.62049 8.00457 7.21914 8.00113 7 7.999C6.78086 8.00113 6.37951 8.00457 6.1168 7.95309C5.77637 7.88632 5.41797 7.72014 5.18548 7.3325C5.07637 7.1505 5.03569 6.95742 5.01735 6.76238C5 6.57795 5 6.35324 5 6.09268V1.90733C5 1.64677 5 1.42204 5.01735 1.23762C5.03569 1.0426 5.07637 0.849487 5.18548 0.66748C5.41797 0.279859 5.77637 0.113683 6.1168 0.046932C6.37951 -0.00458732 6.78086 -0.0011037 7 0.000975796Z" fill="currentColor"/>
                                 <path d="M2 0.000975796C2.21914 -0.0011037 2.62049 -0.00458732 2.8832 0.046932C3.22363 0.113683 3.58203 0.279859 3.81452 0.66748C3.92363 0.849487 3.96431 1.0426 3.98265 1.23762C4 1.42205 4 1.64677 4 1.90733V6.09268C4 6.35324 4 6.57795 3.98265 6.76238C3.96431 6.95742 3.92363 7.1505 3.81452 7.3325C3.58203 7.72014 3.22363 7.88632 2.8832 7.95309C2.62049 8.00457 2.21914 8.00113 2 7.999C1.78086 8.00113 1.37951 8.00457 1.1168 7.95309C0.776369 7.88632 0.417969 7.72014 0.185476 7.3325C0.0763686 7.1505 0.0356922 6.95742 0.0173538 6.76238C0 6.57795 0 6.35324 0 6.09268V1.90733C0 1.64677 0 1.42204 0.0173538 1.23762C0.0356922 1.0426 0.0763686 0.849487 0.185476 0.66748C0.417969 0.279859 0.776369 0.113683 1.1168 0.046932C1.37951 -0.00458732 1.78086 -0.0011037 2 0.000975796Z" fill="currentColor"/>
@@ -947,7 +1287,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--reverse' : ''}`} onClick={handleReverseToggle} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${isReverse ? 'tw-builder__settings-action--reverse' : ''} ${(!isReverse && placeholderReverse) ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={handleReverseToggle} onMouseEnter={() => handleMouseEnter('reverse')} onMouseLeave={handleMouseLeave}>
                                 <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1 3.5C0.723858 3.5 0.5 3.72386 0.5 4C0.5 4.27614 0.723858 4.5 1 4.5V4V3.5ZM13.1936 4.35355C13.3889 4.15829 13.3889 3.84171 13.1936 3.64645L10.0117 0.464466C9.81641 0.269204 9.49982 0.269204 9.30456 0.464466C9.1093 0.659728 9.1093 0.976311 9.30456 1.17157L12.133 4L9.30456 6.82843C9.1093 7.02369 9.1093 7.34027 9.30456 7.53553C9.49982 7.7308 9.81641 7.7308 10.0117 7.53553L13.1936 4.35355ZM1 4V4.5H12.8401V4V3.5H1V4Z" fill="currentColor"/>
                                     <path d="M12.8398 11.5C13.116 11.5 13.3398 11.2761 13.3398 11C13.3398 10.7239 13.116 10.5 12.8398 10.5V11V11.5ZM0.646195 10.6464C0.450933 10.8417 0.450933 11.1583 0.646195 11.3536L3.82818 14.5355C4.02344 14.7308 4.34002 14.7308 4.53528 14.5355C4.73054 14.3403 4.73054 14.0237 4.53528 13.8284L1.70686 11L4.53528 8.17157C4.73054 7.97631 4.73054 7.65973 4.53528 7.46447C4.34002 7.2692 4.02344 7.2692 3.82818 7.46447L0.646195 10.6464ZM12.8398 11V10.5L0.999749 10.5V11V11.5L12.8398 11.5V11Z" fill="currentColor"/>
@@ -966,14 +1306,14 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             return (
                 <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
-                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} notDelete={notDelete} isPlaceholder={!selectedChoose && !!placeholderBase}/>
                     </span>
                     <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, justifyOptions)})`, width: `${getSliderWidth(justifyOptions)}` } }
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose || placeholderBase, justifyOptions)})`, width: `${getSliderWidth(justifyOptions)}` } }
                         >
                         </div>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'flex-start' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
                             <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
                                 <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0C0.22386 0 0 0.244211 0 0.545455V11.4545C0 11.7558 0.22386 12 0.5 12C0.77614 12 1 11.7558 1 11.4545V0.545455C1 0.244211 0.77614 0 0.5 0Z" fill="currentColor"/>
@@ -985,7 +1325,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'center' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
                             <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
                                 <path fillRule="evenodd" clipRule="evenodd" d="M3.5 0C3.22386 0 3 0.244211 3 0.545455V11.4545C3 11.7558 3.22386 12 3.5 12C3.77614 12 4 11.7558 4 11.4545V0.545455C4 0.244211 3.77614 0 3.5 0Z" fill="currentColor"/>
@@ -997,7 +1337,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('end')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'flex-end' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('end')} onMouseLeave={handleMouseLeave}>
                             <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
                                 <path fillRule="evenodd" clipRule="evenodd" d="M8.5 0C8.22386 0 8 0.244211 8 0.545455V11.4545C8 11.7558 8.22386 12 8.5 12C8.77614 12 9 11.7558 9 11.4545V0.545455C9 0.244211 8.77614 0 8.5 0Z" fill="currentColor"/>
@@ -1016,14 +1356,14 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             return (
                 <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
-                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} notDelete={notDelete} isPlaceholder={!selectedChoose && !!placeholderBase}/>
                     </span>
                     <div className="tw-builder__settings-actions">
                         <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, alignOptions)})`, width: `${getSliderWidth(alignOptions)}` } }
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose || placeholderBase, alignOptions)})`, width: `${getSliderWidth(alignOptions)}` } }
                         >
                         </div>
-                        <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'flex-start' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
                             <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
                                 <path fillRule="evenodd" clipRule="evenodd" d="M12 0.5C12 0.22386 11.7558 0 11.4545 0H0.545454C0.2442 0 0 0.22386 0 0.5C0 0.77614 0.2442 1 0.545454 1H11.4545C11.7558 1 12 0.77614 12 0.5Z" fill="currentColor"/>
@@ -1035,7 +1375,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'center' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
                             <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.00098 2.5C1.9989 2.22608 1.99541 1.72438 2.04693 1.396C2.11368 0.970462 2.27986 0.522462 2.66748 0.231846C2.84949 0.0954617 3.0426 0.0446155 3.23762 0.0216924C3.42205 1.14624e-07 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 1.14624e-07 8.76238 0.0216924C8.95742 0.0446155 9.1505 0.0954617 9.3325 0.231846C9.72014 0.522462 9.88632 0.970462 9.95309 1.396C10.0046 1.72438 10.0011 2.22608 9.999 2.5C10.0011 2.77392 10.0046 3.27562 9.95309 3.604C9.88632 4.02954 9.72014 4.47754 9.3325 4.76815C9.1505 4.90454 8.95742 4.95538 8.76238 4.97831C8.57795 5 8.35324 5 8.09268 5H3.90733C3.64677 5 3.42204 5 3.23762 4.97831C3.0426 4.95538 2.84949 4.90454 2.66748 4.76815C2.27986 4.47754 2.11368 4.02954 2.04693 3.604C1.99541 3.27562 1.9989 2.77392 2.00098 2.5Z" fill="currentColor"/>
                                 <path fillRule="evenodd" clipRule="evenodd" d="M12 2.5C12 2.22386 11.7558 2 11.4545 2H0.545454C0.2442 2 0 2.22386 0 2.5C0 2.77614 0.2442 3 0.545454 3H11.4545C11.7558 3 12 2.77614 12 2.5Z" fill="currentColor"/>
@@ -1047,7 +1387,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('flex-end')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'flex-end' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('flex-end')} onMouseLeave={handleMouseLeave}>
                             <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.00098 2C1.9989 1.78086 1.99541 1.37951 2.04693 1.1168C2.11368 0.776369 2.27986 0.417969 2.66748 0.185477C2.84949 0.0763693 3.0426 0.0356924 3.23762 0.0173539C3.42205 9.16995e-08 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 9.16995e-08 8.76238 0.0173539C8.95742 0.0356924 9.1505 0.0763693 9.3325 0.185477C9.72014 0.417969 9.88632 0.776369 9.95309 1.1168C10.0046 1.37951 10.0011 1.78086 9.999 2C10.0011 2.21914 10.0046 2.62049 9.95309 2.8832C9.88632 3.22363 9.72014 3.58203 9.3325 3.81452C9.1505 3.92363 8.95742 3.96431 8.76238 3.98265C8.57795 4 8.35324 4 8.09268 4H3.90733C3.64677 4 3.42204 4 3.23762 3.98265C3.0426 3.96431 2.84949 3.92363 2.66748 3.81452C2.27986 3.58203 2.11368 3.22363 2.04693 2.8832C1.99541 2.62049 1.9989 2.21914 2.00098 2Z" fill="currentColor"/>
                                 <path fillRule="evenodd" clipRule="evenodd" d="M12 5.5C12 5.22386 11.7558 5 11.4545 5H0.545454C0.2442 5 0 5.22386 0 5.5C0 5.77614 0.2442 6 0.545454 6H11.4545C11.7558 6 12 5.77614 12 5.5Z" fill="currentColor"/>
@@ -1066,14 +1406,14 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             return(
             <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                 <span className="tw-builder__settings-subtitle">{name}
-                    <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                    <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} notDelete={notDelete} isPlaceholder={!selectedChoose && !!placeholderBase}/>
                 </span>
                 <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
                     <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, superJustifyOptions)})`, width: `${getSliderWidth(superJustifyOptions)}` } }
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose || placeholderBase, superJustifyOptions)})`, width: `${getSliderWidth(superJustifyOptions)}` } }
                         >
                         </div>
-                    <button className={`tw-builder__settings-action ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
+                    <button className={`tw-builder__settings-action ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'flex-start' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
                         <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2.00085 6C1.99903 5.78086 1.99599 5.37951 2.04107 5.1168C2.09947 4.77637 2.24488 4.41797 2.58405 4.18548C2.7433 4.07637 2.91227 4.03569 3.08292 4.01735C3.24429 4 3.44092 4 3.66891 4H7.33109C7.55908 4 7.75571 4 7.91709 4.01735C8.08774 4.03569 8.25668 4.07637 8.41593 4.18548C8.75512 4.41797 8.90053 4.77637 8.95895 5.1168C9.004 5.37951 9.00099 5.78086 8.99913 6C9.00099 6.21914 9.004 6.62049 8.95895 6.8832C8.90053 7.22363 8.75512 7.58203 8.41593 7.81452C8.25668 7.92363 8.08774 7.96431 7.91709 7.98265C7.75571 8 7.55908 8 7.33109 8H3.66891C3.44092 8 3.24429 8 3.08292 7.98265C2.91227 7.96431 2.7433 7.92363 2.58405 7.81452C2.24488 7.58203 2.09947 7.22363 2.04107 6.8832C1.99599 6.62049 1.99903 6.21914 2.00085 6Z" fill="currentColor"/>
                             <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0C0.22386 0 0 0.244211 0 0.545455V11.4545C0 11.7558 0.22386 12 0.5 12C0.77614 12 1 11.7558 1 11.4545V0.545455C1 0.244211 0.77614 0 0.5 0Z" fill="currentColor"/>
@@ -1085,7 +1425,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                         width="auto"
                         />
                     </button>
-                    <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
+                    <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'center' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
                         <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
                             <path fillRule="evenodd" clipRule="evenodd" d="M3.5 0C3.22386 0 3 0.244211 3 0.545455V11.4545C3 11.7558 3.22386 12 3.5 12C3.77614 12 4 11.7558 4 11.4545V0.545455C4 0.244211 3.77614 0 3.5 0Z" fill="currentColor"/>
@@ -1097,7 +1437,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                         width="auto"
                         />
                     </button>
-                    <button className={`tw-builder__settings-action ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('flex-end')} onMouseLeave={handleMouseLeave}>
+                    <button className={`tw-builder__settings-action ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'flex-end' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('flex-end')} onMouseLeave={handleMouseLeave}>
                         <svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0.000853822 6C-0.000965736 5.78086 -0.00401391 5.37951 0.0410655 5.1168C0.0994728 4.77637 0.244877 4.41797 0.584045 4.18548C0.743301 4.07637 0.912271 4.03569 1.08292 4.01735C1.24429 4 1.44092 4 1.66891 4H5.33109C5.55908 4 5.75571 4 5.91709 4.01735C6.08774 4.03569 6.25668 4.07637 6.41593 4.18548C6.75512 4.41797 6.90053 4.77637 6.95895 5.1168C7.004 5.37951 7.00099 5.78086 6.99913 6C7.00099 6.21914 7.004 6.62049 6.95895 6.8832C6.90053 7.22363 6.75512 7.58203 6.41593 7.81452C6.25668 7.92363 6.08774 7.96431 5.91709 7.98265C5.75571 8 5.55908 8 5.33109 8H1.66891C1.44092 8 1.24429 8 1.08292 7.98265C0.912271 7.96431 0.743301 7.92363 0.584045 7.81452C0.244877 7.58203 0.0994728 7.22363 0.0410655 6.8832C-0.00401391 6.62049 -0.000965736 6.21914 0.000853822 6Z" fill="currentColor"/>
                             <path fillRule="evenodd" clipRule="evenodd" d="M8.5 0C8.22386 0 8 0.244211 8 0.545455V11.4545C8 11.7558 8.22386 12 8.5 12C8.77614 12 9 11.7558 9 11.4545V0.545455C9 0.244211 8.77614 0 8.5 0Z" fill="currentColor"/>
@@ -1109,7 +1449,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                         width="auto"
                         />
                     </button>
-                    <button className={`tw-builder__settings-action ${selectedChoose === 'space-between' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('space-between')} onMouseEnter={() => handleMouseEnter('space-between')} onMouseLeave={handleMouseLeave}>
+                    <button className={`tw-builder__settings-action ${selectedChoose === 'space-between' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'space-between' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('space-between')} onMouseEnter={() => handleMouseEnter('space-between')} onMouseLeave={handleMouseLeave}>
                         <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3.08581 10.0201C2.86671 10.0246 2.46541 10.0324 2.20217 9.98366C1.86104 9.92057 1.50087 9.75826 1.26422 9.37317C1.15316 9.19234 1.11041 8.99968 1.08998 8.80486C1.07064 8.62064 1.06822 8.39593 1.06542 8.13539L1.0204 3.95028C1.0176 3.68973 1.01518 3.46503 1.03055 3.28042C1.04679 3.0852 1.08539 2.8917 1.19253 2.70853C1.42084 2.31842 1.77743 2.14839 2.11712 2.07796C2.37926 2.02366 2.78063 2.02278 2.99978 2.02255C3.21888 2.01806 3.62018 2.01031 3.88342 2.05896C4.22455 2.12207 4.58472 2.28438 4.82137 2.6695C4.93243 2.85031 4.97518 3.04294 4.99561 3.23777C5.01495 3.422 5.01737 3.64671 5.02017 3.90725L5.06519 8.09236C5.06799 8.3529 5.07041 8.57762 5.05504 8.76221C5.0388 8.95743 5.0002 9.15096 4.89306 9.33413C4.66475 9.72423 4.30816 9.89425 3.96847 9.96466C3.70633 10.019 3.30496 10.0198 3.08581 10.0201Z" fill="currentColor"/>
                             <path fillRule="evenodd" clipRule="evenodd" d="M0.499971 0.00536387C0.223847 0.00833421 0.00262689 0.254939 0.00586725 0.556165L0.123212 11.4646C0.126453 11.7659 0.352927 12.0076 0.629051 12.0047C0.905175 12.0017 1.12639 11.7551 1.12315 11.4539L1.00581 0.545409C1.00257 0.244182 0.776095 0.00239353 0.499971 0.00536387Z" fill="currentColor"/>
@@ -1124,7 +1464,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                         width="auto"
                         />
                     </button>
-                    <button className={`tw-builder__settings-action ${selectedChoose === 'space-around' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('space-around')} onMouseEnter={() => handleMouseEnter('space-around')} onMouseLeave={handleMouseLeave}>
+                    <button className={`tw-builder__settings-action ${selectedChoose === 'space-around' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'space-around' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('space-around')} onMouseEnter={() => handleMouseEnter('space-around')} onMouseLeave={handleMouseLeave}>
                         <svg width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 9.99902C3.78086 10.0011 3.37951 10.0046 3.1168 9.95307C2.77637 9.88632 2.41797 9.72014 2.18548 9.33252C2.07637 9.15051 2.03569 8.9574 2.01735 8.76238C2 8.57795 2 8.35323 2 8.09267L2 3.90732C2 3.64676 2 3.42205 2.01735 3.23762C2.03569 3.04258 2.07637 2.8495 2.18548 2.6675C2.41797 2.27986 2.77637 2.11368 3.1168 2.04691C3.37951 1.99543 3.78086 1.99887 4 2.001C4.21914 1.99887 4.62049 1.99543 4.8832 2.04691C5.22363 2.11368 5.58203 2.27986 5.81452 2.6675C5.92363 2.8495 5.96431 3.04258 5.98265 3.23762C6 3.42205 6 3.64676 6 3.90732L6 8.09267C6 8.35323 6 8.57796 5.98265 8.76238C5.96431 8.9574 5.92363 9.15051 5.81452 9.33252C5.58203 9.72014 5.22363 9.88632 4.8832 9.95307C4.62049 10.0046 4.21914 10.0011 4 9.99902Z" fill="currentColor"/>
                             <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0.00500488C0.22386 0.00500488 0 0.249216 0 0.550459L0 11.4596C0 11.7608 0.22386 12.005 0.5 12.005C0.77614 12.005 1 11.7608 1 11.4596V0.550459C1 0.249216 0.77614 0.00500488 0.5 0.00500488Z" fill="currentColor"/>
@@ -1138,7 +1478,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                         width="auto"
                         />
                     </button>
-                    <button className={`tw-builder__settings-action ${selectedChoose === 'space-evenly' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('space-evenly')} onMouseEnter={() => handleMouseEnter('space-evenly')} onMouseLeave={handleMouseLeave}>
+                    <button className={`tw-builder__settings-action ${selectedChoose === 'space-evenly' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'space-evenly' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('space-evenly')} onMouseEnter={() => handleMouseEnter('space-evenly')} onMouseLeave={handleMouseLeave}>
                         <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5 9.99902C4.78086 10.0011 4.37951 10.0046 4.1168 9.95307C3.77637 9.88632 3.41797 9.72014 3.18548 9.33252C3.07637 9.15051 3.03569 8.9574 3.01735 8.76238C3 8.57795 3 8.35323 3 8.09267L3 3.90732C3 3.64676 3 3.42205 3.01735 3.23762C3.03569 3.04258 3.07637 2.8495 3.18548 2.6675C3.41797 2.27986 3.77637 2.11368 4.1168 2.04691C4.37951 1.99543 4.78086 1.99887 5 2.001C5.21914 1.99887 5.62049 1.99543 5.8832 2.04691C6.22363 2.11368 6.58203 2.27986 6.81452 2.6675C6.92363 2.8495 6.96431 3.04258 6.98265 3.23762C7 3.42205 7 3.64676 7 3.90732L7 8.09267C7 8.35323 7 8.57796 6.98265 8.76238C6.96431 8.9574 6.92363 9.15051 6.81452 9.33252C6.58203 9.72014 6.22363 9.88632 5.8832 9.95307C5.62049 10.0046 5.21914 10.0011 5 9.99902Z" fill="currentColor"/>
                             <path fillRule="evenodd" clipRule="evenodd" d="M0.5 0.00500488C0.22386 0.00500488 0 0.249216 0 0.550459L0 11.4596C0 11.7608 0.22386 12.005 0.5 12.005C0.77614 12.005 1 11.7608 1 11.4596V0.550459C1 0.249216 0.77614 0.00500488 0.5 0.00500488Z" fill="currentColor"/>
@@ -1160,14 +1500,14 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             return(
                 <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                         <span className="tw-builder__settings-subtitle">{name}
-                            <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                            <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} notDelete={notDelete} isPlaceholder={!selectedChoose && !!placeholderBase}/>
                         </span>
                         <div className="tw-builder__settings-actions tw-builder__settings-actions--column">
                         <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose || placeholderBase, superAlignOptions)})`, width: `${getSliderWidth(superAlignOptions)}` } }
                         >
                         </div>
-                            <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action tw-builder__settings-action--start ${selectedChoose === 'flex-start' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'flex-start' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('flex-start')} onMouseEnter={() => handleMouseEnter('flex-start')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 4C1.9989 3.78086 1.99541 3.37951 2.04693 3.1168C2.11368 2.77637 2.27986 2.41797 2.66748 2.18548C2.84949 2.07637 3.0426 2.03569 3.23762 2.01735C3.42205 2 3.64677 2 3.90733 2H8.09268C8.35324 2 8.57795 2 8.76238 2.01735C8.95742 2.03569 9.1505 2.07637 9.3325 2.18548C9.72014 2.41797 9.88632 2.77637 9.95309 3.1168C10.0046 3.37951 10.0011 3.78086 9.999 4C10.0011 4.21914 10.0046 4.62049 9.95309 4.8832C9.88632 5.22363 9.72014 5.58203 9.3325 5.81452C9.1505 5.92363 8.95742 5.96431 8.76238 5.98265C8.57795 6 8.35324 6 8.09268 6H3.90733C3.64677 6 3.42204 6 3.23762 5.98265C3.0426 5.96431 2.84949 5.92363 2.66748 5.81452C2.27986 5.58203 2.11368 5.22363 2.04693 4.8832C1.99541 4.62049 1.9989 4.21914 2.00098 4Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 0.5C12 0.22386 11.7558 0 11.4545 0H0.545454C0.2442 0 0 0.22386 0 0.5C0 0.77614 0.2442 1 0.545454 1H11.4545C11.7558 1 12 0.77614 12 0.5Z" fill="currentColor"/>
@@ -1179,7 +1519,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'center' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 2.5C1.9989 2.22608 1.99541 1.72438 2.04693 1.396C2.11368 0.970462 2.27986 0.522462 2.66748 0.231846C2.84949 0.0954617 3.0426 0.0446155 3.23762 0.0216924C3.42205 1.14624e-07 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 1.14624e-07 8.76238 0.0216924C8.95742 0.0446155 9.1505 0.0954617 9.3325 0.231846C9.72014 0.522462 9.88632 0.970462 9.95309 1.396C10.0046 1.72438 10.0011 2.22608 9.999 2.5C10.0011 2.77392 10.0046 3.27562 9.95309 3.604C9.88632 4.02954 9.72014 4.47754 9.3325 4.76815C9.1505 4.90454 8.95742 4.95538 8.76238 4.97831C8.57795 5 8.35324 5 8.09268 5H3.90733C3.64677 5 3.42204 5 3.23762 4.97831C3.0426 4.95538 2.84949 4.90454 2.66748 4.76815C2.27986 4.47754 2.11368 4.02954 2.04693 3.604C1.99541 3.27562 1.9989 2.77392 2.00098 2.5Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 2.5C12 2.22386 11.7558 2 11.4545 2H0.545454C0.2442 2 0 2.22386 0 2.5C0 2.77614 0.2442 3 0.545454 3H11.4545C11.7558 3 12 2.77614 12 2.5Z" fill="currentColor"/>
@@ -1191,7 +1531,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('flex-end')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action tw-builder__settings-action--end ${selectedChoose === 'flex-end' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'flex-end' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('flex-end')} onMouseEnter={() => handleMouseEnter('flex-end')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.00098 2C1.9989 1.78086 1.99541 1.37951 2.04693 1.1168C2.11368 0.776369 2.27986 0.417969 2.66748 0.185477C2.84949 0.0763693 3.0426 0.0356924 3.23762 0.0173539C3.42205 9.16995e-08 3.64677 0 3.90733 0H8.09268C8.35324 0 8.57795 9.16995e-08 8.76238 0.0173539C8.95742 0.0356924 9.1505 0.0763693 9.3325 0.185477C9.72014 0.417969 9.88632 0.776369 9.95309 1.1168C10.0046 1.37951 10.0011 1.78086 9.999 2C10.0011 2.21914 10.0046 2.62049 9.95309 2.8832C9.88632 3.22363 9.72014 3.58203 9.3325 3.81452C9.1505 3.92363 8.95742 3.96431 8.76238 3.98265C8.57795 4 8.35324 4 8.09268 4H3.90733C3.64677 4 3.42204 4 3.23762 3.98265C3.0426 3.96431 2.84949 3.92363 2.66748 3.81452C2.27986 3.58203 2.11368 3.22363 2.04693 2.8832C1.99541 2.62049 1.9989 2.21914 2.00098 2Z" fill="currentColor"/>
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 5.5C12 5.22386 11.7558 5 11.4545 5H0.545454C0.2442 5 0 5.22386 0 5.5C0 5.77614 0.2442 6 0.545454 6H11.4545C11.7558 6 12 5.77614 12 5.5Z" fill="currentColor"/>
@@ -1203,7 +1543,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                                 width="auto"
                                 />
                             </button>
-                            <button className={`tw-builder__settings-action ${selectedChoose === 'stretch' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('stretch')} onMouseEnter={() => handleMouseEnter('stretch')} onMouseLeave={handleMouseLeave}>
+                            <button className={`tw-builder__settings-action ${selectedChoose === 'stretch' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'stretch' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('stretch')} onMouseEnter={() => handleMouseEnter('stretch')} onMouseLeave={handleMouseLeave}>
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 11.5C12 11.2239 11.7558 11 11.4545 11H0.545454C0.2442 11 -3.57628e-07 11.2239 -3.57628e-07 11.5C-3.57628e-07 11.7761 0.2442 12 0.545454 12H11.4545C11.7558 12 12 11.7761 12 11.5Z" fill="currentColor"/>
                                     <path d="M10.0098 5.95261C10.013 6.3857 10.0187 7.1789 9.96855 7.69823C9.90363 8.37122 9.73938 9.07999 9.35301 9.54052C9.17159 9.75665 8.9787 9.83757 8.78377 9.87434C8.59944 9.90914 8.37472 9.90975 8.11416 9.91046L3.92883 9.92183C3.66827 9.92254 3.44355 9.92315 3.25903 9.88935C3.0639 9.85364 2.8706 9.77377 2.68802 9.55863C2.29913 9.10021 2.13103 8.39234 2.06243 7.71972C2.00953 7.20066 2.01082 6.40744 2.01177 5.97435C2.00846 5.54126 2.00287 4.74806 2.05294 4.22873C2.11788 3.55574 2.28214 2.84697 2.66853 2.38644C2.84994 2.17031 3.0428 2.08939 3.23774 2.05262C3.42207 2.01782 3.64679 2.01721 3.90735 2.0165L8.09268 2.00513C8.35324 2.00442 8.57797 2.00381 8.76248 2.03761C8.9576 2.07332 9.15093 2.15319 9.33352 2.36833C9.72239 2.82675 9.89049 3.53462 9.95907 4.20724C10.012 4.7263 10.0107 5.51952 10.0098 5.95261Z" fill="currentColor"/>
@@ -1224,14 +1564,14 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
             return (
                 <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
                     <span className="tw-builder__settings-subtitle">{name}
-                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} />
+                        <StylesDeleter value={selectedChoose} cssProperty={cssProperty} getGlobalCSSValue={getGlobalCSSValue} applyGlobalCSSChange={applyGlobalCSSChange} notDelete={notDelete} isPlaceholder={!selectedChoose && !!placeholderBase}/>
                     </span>
                     <div className="tw-builder__settings-actions">
                     <div className="tw-builder__settings-slider"
-                            style={{ transform: `translateX(${getSliderPosition(selectedChoose, textAlignOptions)})`, width: `${getSliderWidth(textAlignOptions)}` } }
+                            style={{ transform: `translateX(${getSliderPosition(selectedChoose || placeholderBase, textAlignOptions)})`, width: `${getSliderWidth(textAlignOptions)}` } }
                         >
                         </div>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'left' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('left')} onMouseEnter={() => handleMouseEnter('left')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'left' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'left' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('left')} onMouseEnter={() => handleMouseEnter('left')} onMouseLeave={handleMouseLeave}>
                             <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g filter="url(#filter0_d_0_1)">
                                 <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
@@ -1270,7 +1610,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'center' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'center' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('center')} onMouseEnter={() => handleMouseEnter('center')} onMouseLeave={handleMouseLeave}>
                             <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g filter="url(#filter0_d_0_1)">
                                 <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
@@ -1309,7 +1649,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
                             width="auto"
                             />
                         </button>
-                        <button className={`tw-builder__settings-action ${selectedChoose === 'right' ? 'tw-builder__settings-action--active' : ''}`} onClick={() => handleChooseChange('right')} onMouseEnter={() => handleMouseEnter('right')} onMouseLeave={handleMouseLeave}>
+                        <button className={`tw-builder__settings-action ${selectedChoose === 'right' ? 'tw-builder__settings-action--active' : ''} ${!selectedChoose && placeholderBase === 'right' ? 'tw-builder__settings-action--placeholder' : ''}`} onClick={() => handleChooseChange('right')} onMouseEnter={() => handleMouseEnter('right')} onMouseLeave={handleMouseLeave}>
                             <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g filter="url(#filter0_d_0_1)">
                                 <rect x="4" y="2" width="12" height="3" rx="1" fill="currentColor"/>
@@ -1354,67 +1694,54 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     }
 }
 
-const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value, nextLine}) => {
-    //Initial state with jsonTree
-    const [textareaValue, setTextareaValue] = useState(() => {
-        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
-        
-        if (!savedJSONValue && value) {
-            setTimeout(() => {
-                if (JSONProperty && applyGlobalJSONChange) {
-                    applyGlobalJSONChange(JSONProperty, value);
-                } 
-            }, 0);
-        }
-        return savedJSONValue || value || '';
+const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value, nextLine,
+    required,
+    allControls,
+    checkRequired,notDelete, default: defaultValue}) => {
 
+    const [textareaValue, setTextareaValue] = useState(() => {
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        return savedJSONValue ?? '';
     });
 
-    //State to check if the text is default
-    const [hasDefaultText, setHasDefaultText] = useState(false);
-
-    //Update the value when the selected element changes
+    // Sync value with external changes (when selected element, property, etc. changes)
     useEffect(() => {
-        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;    
-        
-            if (savedJSONValue) {
-                setTextareaValue(savedJSONValue || value || '');
-            }
-        
-    }, [getGlobalJSONValue, JSONProperty, value]);
-    
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        // update state always (even if "")
+        setTextareaValue(savedJSONValue ?? '');
+    }, [getGlobalJSONValue, JSONProperty]);
+
+    // Listen for deletion from StylesDeleter, so textarea is cleared visually as well
+    useEffect(() => {
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        if (savedJSONValue === '' && textareaValue !== '') {
+            setTextareaValue('');
+        }
+    // Run when underlying value changes, or our input just became empty!
+    }, [JSONProperty, getGlobalJSONValue, textareaValue]);
+
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextareaValue(newValue);
-        if (newValue.trim() !== '') {
-            setHasDefaultText(false);
-        }
-        
-        
-        const finalValue = newValue.trim() === '' ? '' : newValue;
         
         if(JSONProperty && applyGlobalJSONChange) {
-            applyGlobalJSONChange(JSONProperty, finalValue);
-        } 
-    };
-    const handleBlur = (e) => {
-        const inputValue = e.target.value;
-        
-        //If the text is empty, use the default text
-        if (inputValue.trim() === '') {
-            const defaultText = "New Text 2";
-            setHasDefaultText(true);
-            if(JSONProperty && applyGlobalJSONChange) {
-                applyGlobalJSONChange(JSONProperty, defaultText);
-            } 
+            applyGlobalJSONChange(JSONProperty, newValue);
         }
     };
 
-   
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-                <StylesDeleter value={textareaValue} jsonEmptyValue="New Text 2" JSONProperty={JSONProperty} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalJSONValue={getGlobalJSONValue} />
+                <StylesDeleter 
+                    value={textareaValue} 
+                    JSONProperty={JSONProperty} 
+                    applyGlobalJSONChange={applyGlobalJSONChange} 
+                    getGlobalJSONValue={getGlobalJSONValue} 
+                    notDelete={notDelete}
+                    isPlaceholder={!textareaValue && !!placeholder}
+                />
             </span>
             <textarea 
                 name={name} 
@@ -1422,15 +1749,14 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
                 placeholder={placeholder}
                 value={textareaValue}
                 onChange={handleChange}
-                onBlur={handleBlur}
-                onKeyDown={(e) => applyOnEnter(e, handleBlur)}
+                spellCheck={false}
                 className="tw-builder__settings-textarea"
             />
         </div>
-    )
+    );
 }
 
-const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine}) =>{
+const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine, required, allControls, checkRequired, dataAttribute, notDelete, getPlaceholderValue, default: defaultValue}) =>{
     
     // ========================================
     // General states (for all types)
@@ -1440,7 +1766,7 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     const [open, setOpen] = useState(false);
     const containerRef = useRef(null);
     
-    
+    const placeholderValue = cssProperty ? getPlaceholderValue?.(cssProperty) : placeholder;
     // ========================================
     // Specific states and constants for font/weight
     // ========================================
@@ -1471,6 +1797,59 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     const weightNameOrder = ['Thin','Extra Light','Light','Regular','Medium','Semi Bold','Bold','Extra Bold','Black'];
     const reverseMap = fontWeightMapReverse();
     
+    const getDisplayFromValue = (value) => {
+        if (!value) return '';
+        
+        // Search in the options to find the corresponding display
+        const allOptions = (() => {
+            if (name === 'Font') {
+                return [...(fontOptions || []), ...systemFontOptions];
+            }
+            if (name === 'Weight') {
+                // Check if current font style is italic
+                const currentFontStyle = getGlobalCSSValue?.('font-style');
+                const isWeightItalic = currentFontStyle === 'italic';
+                
+                return isWeightItalic 
+                    ? [...(weightOptions || []), '---', ...italicWeightOptions]
+                    : (weightOptions || []);
+            }
+            return options2 ? [...(options || []), '---', ...(options2 || [])] : (options || []);
+        })();
+        
+        
+        for (const opt of allOptions) {
+            if (typeof opt === 'object') {
+                if (opt.family && opt.family === value) {
+                    return opt.family;
+                } else if (!opt.family) {
+                    const key = Object.keys(opt)[0];
+                    const val = Object.values(opt)[0];
+                    if (val === value) {
+                        return key;
+                    }
+                }
+            } else if (opt === value) {
+                return opt;
+            }
+        }
+        
+        return value; // Fallback if not found
+    };
+
+    const getDisplayAndValue = (opt) => {
+        if (typeof opt === 'object') {
+            if (opt.family) {
+                return { display: opt.family, value: opt.family };
+            } else {
+                const key = Object.keys(opt)[0];
+                const value = Object.values(opt)[0];
+                return { display: key, value: value };
+            }
+        }
+        return { display: opt, value: opt };
+    };
+
     // ========================================
     // Specific functions for font/weight
     // ========================================
@@ -1668,6 +2047,14 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     useEffect(() => {
         if (!selectedId) return;
     
+        // Priority: dataAttribute > JSONProperty > cssProperty
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        if (dataAttribute && getGlobalJSONValue) {
+            const next = getGlobalJSONValue(`attributes.${dataAttribute}`) ?? '';
+            if (next !== selected) setSelected(next);
+            return;
+        }
+        
         // If using JSON, respect that flow
         if (JSONProperty && getGlobalJSONValue) {
             const next = getGlobalJSONValue(JSONProperty) ?? '';
@@ -1704,7 +2091,7 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
                 if (next !== selected) setSelected(next);
             }
         }
-    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue]);
+    }, [selectedId, JSONProperty, cssProperty, name, getGlobalCSSValue, getGlobalJSONValue, dataAttribute]);
     
     // ========================================
     // Handler
@@ -1862,8 +2249,10 @@ if (name === 'Weight') {
     return;
 }
         
-        // General case: other selects
-        if (JSONProperty && applyGlobalJSONChange) {
+        // General case: other selects - Priority: dataAttribute > JSONProperty > cssProperty
+        if (dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, newValue);
+        } else if (JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
         } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, newValue);
@@ -1910,8 +2299,8 @@ if (name === 'Weight') {
         const filterLower = searchFilter.toLowerCase();
         return allOptions.filter(opt => {
             if (opt === '---') return true;
-            const displayValue = typeof opt === 'object' ? opt.family : opt;
-            return displayValue.toLowerCase().includes(filterLower);
+            const { display } = getDisplayAndValue(opt);
+            return display.toLowerCase().includes(filterLower);
         });
     })();
     
@@ -1935,6 +2324,8 @@ if (name === 'Weight') {
                         setSelected('');
                         if (onChange) onChange('');
                     }}
+                    notDelete={notDelete}
+                    isPlaceholder={!selected && !!placeholderValue}
                 />
             </span>
             
@@ -1947,12 +2338,10 @@ if (name === 'Weight') {
                 >
                     {selected ? 
                         <span className={`tw-builder__settings-select-value ${name === 'Font' ? 'tw-builder__settings-select-value--font' : ''}`}>
-                            {selected}
+                            {getDisplayFromValue(selected)}
                         </span>
                         :
-                        <span className="tw-builder__settings-select-placeholder">
-                            {placeholder}
-                        </span>
+                        <span className="tw-builder__settings-select-placeholder">{placeholderValue || placeholder}</span>
                     }
                 </button>
                 
@@ -1966,7 +2355,7 @@ if (name === 'Weight') {
             {/* Dropdown list */}
             <AnimatePresence>
             {open && (
-                <motion.ul className="tw-builder__settings-options" {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
+                <motion.ul className={`tw-builder__settings-options ${name === 'Font' ? 'tw-builder__settings-options--font' : ''}`} {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}>
                     {/* Search for Font - inside the options container */}
                     {name === 'Font' && (
                         <>
@@ -1986,8 +2375,10 @@ if (name === 'Weight') {
                         </>
                     )}
                 {filteredOptions.map((opt, index) => {
-                    const displayValue = typeof opt === 'object' ? opt.family : opt;
-                    const optionValue = typeof opt === 'object' ? opt.family : opt;
+                    const displayValue = typeof opt === 'object' ? 
+                    (opt.family ? opt.family : Object.keys(opt)[0]) : opt;
+                    const optionValue = typeof opt === 'object' ? 
+                    (opt.family ? opt.family : Object.values(opt)[0]) : opt;
                     
                     return (
                         <li
@@ -1995,7 +2386,8 @@ if (name === 'Weight') {
                             role="button"
                             aria-label={`Select ${optionValue}`}
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleSelectChange(optionValue); setOpen(false); setSearchFilter(''); } }}    
-                            key={typeof opt === 'object' ? opt.family : `${opt}-${index}`}
+                            key={typeof opt === 'object' ? 
+                                (opt.family ? opt.family : Object.keys(opt)[0]) : `${opt}-${index}`}
                             onClick={() => {
                                 if (opt === '---') return;
                                 handleSelectChange(optionValue);
@@ -2005,7 +2397,10 @@ if (name === 'Weight') {
                             }}
                             className={`tw-builder__settings-option ${name === 'Font' ? 'tw-builder__settings-option--font' : ''} ${opt === '---' ? 'tw-builder__settings-divider' : ''}`}
                         >
-                            {optionValue === selected ? 
+                            {(() => {
+                                const { value } = getDisplayAndValue(opt);
+                                return value === selected;
+                            })() ? 
                                 <span className={`tw-builder__settings-check ${name === 'Font' ? 'tw-builder__settings-check--font' : ''}`}> 
                                     <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path fillRule="evenodd" clipRule="evenodd" d="M6.63831 0.117043C6.80732 0.27838 6.81354 0.546184 6.65222 0.715204L2.20989 5.36907C2.13123 5.45144 2.02268 5.49866 1.90877 5.49997C1.79487 5.50132 1.68524 5.45665 1.60469 5.37609L0.123915 3.89532C-0.0413051 3.73011 -0.0413051 3.46221 0.123915 3.297C0.28914 3.13179 0.557016 3.13179 0.722241 3.297L1.89681 4.47159L6.04011 0.130954C6.20148 -0.0380656 6.46929 -0.0442933 6.63831 0.117043Z" fill="white"/>
@@ -2024,8 +2419,10 @@ if (name === 'Weight') {
     );
 }
 
-const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified, setBwUnified, brUnified, setBrUnified, nextLine}) => {
+const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified = '', setBwUnified, brUnified = '', setBrUnified, nextLine, notDelete, getPlaceholderValue, default: defaultValue}) => {
 
+    const { getActiveBreakpoint } = useCanvas();
+    const bp = getActiveBreakpoint?.() || 'desktop';
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));
     const [activeTooltip, setActiveTooltip] = useState(null);
@@ -2038,6 +2435,18 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
     const [br, setBr] = useState({tl: '', tr: '', br: '', bl: ''});
     const [bwLinked, setBwLinked] = useState('');
     const [brLinked, setBrLinked] = useState('');  
+
+    const [bwDraft, setBwDraft] = useState('');
+    const [brDraft, setBrDraft] = useState('');
+
+    useEffect(() => {
+        setBwDraft(isWidthLinked ? (bwLinked ?? '') : ''); // en unlinked => ''
+      }, [bp, selectedElementData?.id, isWidthLinked, bwLinked]);
+
+    useEffect(() => {
+        setBrDraft(isRadiusLinked ? brLinked : (brUnified ?? ''));
+    }, [isRadiusLinked, brLinked, brUnified, selectedElementData?.id, bp]);
+
 
 
     
@@ -2149,6 +2558,7 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
                 setBw({ t: a, r: a, b: a, l: a });
                 setBwUnified(a);
                 setBwLinked('');
+                setBwDraft(a);
                 if (applyGlobalCSSChange) {
                     applyGlobalCSSChange({
                         'border-width': '',
@@ -2288,23 +2698,22 @@ const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selec
     //Update the border width when the selected element changes
     useEffect(() => {
         if (currentBorderWidth && !(currentBorderTopWidth && currentBorderRightWidth && currentBorderBottomWidth && currentBorderLeftWidth)) {
-            setBw(parsedBorderWidth.values);
-            setBwLinked(parsedBorderWidth.linkedValue);
-            setIsWidthLinked(parsedBorderWidth.isLinked);
-        }else{
-            setBw({ t: currentBorderTopWidth, r: currentBorderRightWidth, b: currentBorderBottomWidth, l: currentBorderLeftWidth });
-            setBwLinked('');
-            setIsWidthLinked(false);
+          setBw(parsedBorderWidth.values);
+          setBwLinked(parsedBorderWidth.linkedValue);
+          setIsWidthLinked(parsedBorderWidth.isLinked);
+        } else {
+          setBw({ t: currentBorderTopWidth, r: currentBorderRightWidth, b: currentBorderBottomWidth, l: currentBorderLeftWidth });
+          setBwLinked('');
+          setIsWidthLinked(false);
         }
-    }, [selectedElementData, currentBorderWidth, currentBorderTopWidth, currentBorderRightWidth, currentBorderBottomWidth, currentBorderLeftWidth, parsedBorderWidth]);
-
-    useEffect(() => {
+      }, [selectedElementData, currentBorderWidth, currentBorderTopWidth, currentBorderRightWidth, currentBorderBottomWidth, currentBorderLeftWidth, parsedBorderWidth, bp]);
+    
+      useEffect(() => {
         if (!isWidthLinked) {
-            const a = currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth || '';
-            setBwUnified(a);
+          const a = currentBorderTopWidth || currentBorderRightWidth || currentBorderBottomWidth || currentBorderLeftWidth || '';
+          setBwUnified(a);
         }
-    }, [selectedElementData?.id, isWidthLinked]);
-
+      }, [isWidthLinked, currentBorderTopWidth, currentBorderRightWidth, currentBorderBottomWidth, currentBorderLeftWidth, selectedElementData?.id, bp]);
     const handleBorderWidthChange = (sideOrValue, valueIfAny) => {
 
         if (valueIfAny !== undefined) {
@@ -2405,6 +2814,7 @@ const parseRadius = useCallback((radiusStr) => {
     const parsedRadius = useMemo(() => {
         return parseRadius(currentRadius);
     }, [currentRadius, currentBorderTopLeftRadius, currentBorderTopRightRadius, currentBorderBottomRightRadius, currentBorderBottomLeftRadius, parseRadius]);
+    
     useEffect(() => {
         if (currentRadius && !(currentBorderTopLeftRadius && currentBorderTopRightRadius && currentBorderBottomRightRadius && currentBorderBottomLeftRadius)) {
             setBr(parsedRadius.values);
@@ -2422,7 +2832,7 @@ const parseRadius = useCallback((radiusStr) => {
             const a = currentBorderTopLeftRadius || currentBorderTopRightRadius || currentBorderBottomRightRadius || currentBorderBottomLeftRadius || '';
             setBrUnified(a);
         }
-    }, [selectedElementData?.id, isRadiusLinked]);
+    }, [isRadiusLinked, currentBorderTopLeftRadius, currentBorderTopRightRadius, currentBorderBottomRightRadius, currentBorderBottomLeftRadius, selectedElementData?.id, bp]);
 
     const handleRadiusChange = (sideOrValue, valueIfAny) => {
         if (valueIfAny !== undefined) {
@@ -2482,6 +2892,69 @@ const parseRadius = useCallback((radiusStr) => {
         }
     };
 
+    const getBorderWidthPlaceholder = useCallback((side) => {
+        const placeholderBorderWidth = getPlaceholderValue?.('border-width');
+        const placeholderBorderTopWidth = getPlaceholderValue?.('border-top-width');
+        const placeholderBorderRightWidth = getPlaceholderValue?.('border-right-width');
+        const placeholderBorderBottomWidth = getPlaceholderValue?.('border-bottom-width');
+        const placeholderBorderLeftWidth = getPlaceholderValue?.('border-left-width');
+        
+        
+        if (placeholderBorderWidth) {
+            const parsed = parseBorderWidth(placeholderBorderWidth);
+            return parsed.values[side] || '';
+        }
+        
+      
+        const sideMap = {
+            't': placeholderBorderTopWidth,
+            'r': placeholderBorderRightWidth,
+            'b': placeholderBorderBottomWidth,
+            'l': placeholderBorderLeftWidth
+        };
+        
+        return sideMap[side] || '';
+    }, [getPlaceholderValue, parseBorderWidth]);
+
+    const getWidthMainPlaceholder = useCallback(() => {
+        if (isWidthLinked) return getBorderWidthPlaceholder('t') || '';
+        const pT = getBorderWidthPlaceholder('t') || '';
+        const pR = getBorderWidthPlaceholder('r') || '';
+        const pB = getBorderWidthPlaceholder('b') || '';
+        const pL = getBorderWidthPlaceholder('l') || '';
+        return (pT && pT === pR && pT === pB && pT === pL) ? pT : '';
+      }, [isWidthLinked, getBorderWidthPlaceholder, bp]);
+
+    const bwPh = { t: getPlaceholderValue?.('border-top-width') || '', r: getPlaceholderValue?.('border-right-width') || '', b: getPlaceholderValue?.('border-bottom-width') || '', l: getPlaceholderValue?.('border-left-width') || '' };
+
+    
+  
+    const getRadiusPlaceholder = useCallback((corner) => {
+        const placeholderRadius = getPlaceholderValue?.('border-radius');
+        const placeholderTopLeftRadius = getPlaceholderValue?.('border-top-left-radius');
+        const placeholderTopRightRadius = getPlaceholderValue?.('border-top-right-radius');
+        const placeholderBottomRightRadius = getPlaceholderValue?.('border-bottom-right-radius');
+        const placeholderBottomLeftRadius = getPlaceholderValue?.('border-bottom-left-radius');
+        
+       
+        if (placeholderRadius) {
+            const parsed = parseRadius(placeholderRadius);
+            return parsed.values[corner] || '';
+        }
+        
+        
+        const cornerMap = {
+            'tl': placeholderTopLeftRadius,
+            'tr': placeholderTopRightRadius,
+            'br': placeholderBottomRightRadius,
+            'bl': placeholderBottomLeftRadius
+        };
+        
+        return cornerMap[corner] || '';
+    }, [getPlaceholderValue, parseRadius]);
+    
+    
+
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
         <span className="tw-builder__settings-subtitle">{name}
@@ -2507,6 +2980,8 @@ const parseRadius = useCallback((radiusStr) => {
                     setBwUnified('');
                     setBwUnified('');
                 }}
+                notDelete={notDelete}
+                isPlaceholder={!currentBorderWidth && !currentBorderTopWidth && !currentBorderRightWidth && !currentBorderBottomWidth && !currentBorderLeftWidth && !!(bwPh?.t || bwPh?.r || bwPh?.b || bwPh?.l)}
             />
         </span>
             <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
@@ -2537,6 +3012,7 @@ const parseRadius = useCallback((radiusStr) => {
                                     getGlobalCSSValue={getGlobalCSSValue}
                                     selectedElementData={selectedElementData}
                                     name={'Border Color'}
+                                    getPlaceholderValue={getPlaceholderValue}
                                 />
                             
                             <div className="tw-builder__settings-setting">
@@ -2553,16 +3029,33 @@ const parseRadius = useCallback((radiusStr) => {
                                             getGlobalCSSValue={getGlobalCSSValue} 
                                             applyGlobalCSSChange={applyGlobalCSSChange}
                                             onDelete={() => setBwUnified('')}
+                                            notDelete={notDelete}
+                                            isPlaceholder={!currentBorderWidth || !currentBorderTopWidth || !currentBorderRightWidth || !currentBorderBottomWidth || !currentBorderLeftWidth}
                                         />
                                     </span>
                                     <div className="tw-builder__settings-width">
-                                        <input 
-                                            type="text" 
-                                            className={`tw-builder__settings-input`}
-                                            value={isWidthLinked ? bwLinked : bwUnified}
-                                            onChange={(e) => handleBorderWidthChange(e.target.value)}
-                                              
-                                        />
+                                        <input
+                                            type="text"
+                                            className="tw-builder__settings-input"
+                                            value={bwDraft}
+                                            onChange={(e) => setBwDraft(e.target.value)}
+                                            onBlur={() => {
+                                                const val = bwDraft;
+                                                if (isWidthLinked) {
+                                                handleBorderWidthChange(val);
+                                                } else {
+                                                setBw({ t: val, r: val, b: val, l: val });
+                                                setBwUnified(val);
+                                                applyGlobalCSSChange?.({
+                                                    'border-top-width': val || '',
+                                                    'border-right-width': val || '',
+                                                    'border-bottom-width': val || '',
+                                                    'border-left-width': val || ''
+                                                });
+                                                }
+                                            }}
+                                            placeholder={bp === 'desktop' ? '' : getWidthMainPlaceholder()}
+                                            />
                                         <div className="tw-builder__settings-actions">
                                             <div className="tw-builder__settings-slider-width"
                                             style={{
@@ -2601,13 +3094,13 @@ const parseRadius = useCallback((radiusStr) => {
                                     {!isWidthLinked && (
                                     <div className="tw-builder__settings-units">
                                         <div className={`tw-builder__settings-units-label`}>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={bw.t} onChange={(e) => handleBorderWidthChange('t', e.target.value)} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit "value={bw.t} placeholder={getBorderWidthPlaceholder(isWidthLinked ? 't' : 't')} onChange={(e) => handleBorderWidthChange('t', e.target.value)} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} onChange={(e) => handleBorderWidthChange('r', e.target.value)} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.r} placeholder={getBorderWidthPlaceholder(isWidthLinked ? 'r' : 'r')} onChange={(e) => handleBorderWidthChange('r', e.target.value)} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} onChange={(e) => handleBorderWidthChange('b', e.target.value)} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.b} placeholder={getBorderWidthPlaceholder(isWidthLinked ? 'b' : 'b')} onChange={(e) => handleBorderWidthChange('b', e.target.value)} disabled={isWidthLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} onChange={(e) => handleBorderWidthChange('l', e.target.value)} disabled={isWidthLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={bw.l} placeholder={getBorderWidthPlaceholder(isWidthLinked ? 'l' : 'l')} onChange={(e) => handleBorderWidthChange('l', e.target.value)} disabled={isWidthLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">T</span>
@@ -2629,6 +3122,8 @@ const parseRadius = useCallback((radiusStr) => {
                                     getGlobalCSSValue={getGlobalCSSValue}
                                     selectedElementData={selectedElementData}
                                     selectedId={selectedElementData?.id}
+                                    notDelete={notDelete}
+                                    getPlaceholderValue={getPlaceholderValue}
                                 />
                                 <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Radius
@@ -2643,16 +3138,17 @@ const parseRadius = useCallback((radiusStr) => {
                                             }}
                                             getGlobalCSSValue={getGlobalCSSValue} 
                                             applyGlobalCSSChange={applyGlobalCSSChange}
+                                            notDelete={notDelete}
                                         />
                                     </span>
                                     <div className="tw-builder__settings-width">
-                                        <input 
-                                            type="text" 
-                                            className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`} 
-                                            value={isRadiusLinked ? brLinked : brUnified}
-                                            onChange={(e) => handleRadiusChange(e.target.value)}
-          
-                                            
+                                        <input
+                                            type="text"
+                                            className={`tw-builder__settings-input ${isRadiusLinked ? 'tw-builder__settings-input--abled' : 'tw-builder__settings-input--disabled'}`}
+                                            value={brDraft}
+                                            onChange={(e) => setBrDraft(e.target.value)}
+                                            onBlur={() => handleRadiusChange(brDraft)}
+                                            placeholder={bp === 'desktop' ? '' : getRadiusPlaceholder('tl')}
                                         />
                                         <div className="tw-builder__settings-actions">
                                         <div className="tw-builder__settings-slider-width"
@@ -2692,13 +3188,13 @@ const parseRadius = useCallback((radiusStr) => {
                                     {!isRadiusLinked && (
                                     <div className="tw-builder__settings-units">
                                         <div className={`tw-builder__settings-units-label ${isRadiusLinked ? 'tw-builder__settings-input--disabled' : 'tw-builder__settings-input--abled'}`}>
-                                                <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tl} onChange={(e) => handleRadiusChange('tl', e.target.value)} disabled={isRadiusLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tl} placeholder={getRadiusPlaceholder(isRadiusLinked ? 'tl' : 'tl')} onChange={(e) => handleRadiusChange('tl', e.target.value)} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tr} onChange={(e) => handleRadiusChange('tr', e.target.value)} disabled={isRadiusLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.tr} placeholder={getRadiusPlaceholder(isRadiusLinked ? 'tr' : 'tr')} onChange={(e) => handleRadiusChange('tr', e.target.value)} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.br} onChange={(e) => handleRadiusChange('br', e.target.value)} disabled={isRadiusLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.br} placeholder={getRadiusPlaceholder(isRadiusLinked ? 'br' : 'br')} onChange={(e) => handleRadiusChange('br', e.target.value)} disabled={isRadiusLinked}/>
                                             <div className="tw-builder__settings-units-divider"></div>
-                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.bl} onChange={(e) => handleRadiusChange('bl', e.target.value)} disabled={isRadiusLinked}/>
+                                            <input type="text" className="tw-builder__settings-input tw-builder__settings-input--unit" value={isRadiusLinked ? '' : br.bl} placeholder={getRadiusPlaceholder(isRadiusLinked ? 'bl' : 'bl')} onChange={(e) => handleRadiusChange('bl', e.target.value)} disabled={isRadiusLinked}/>
                                         </div>
                                         <div className="tw-builder__settings-units-directions">
                                             <span className="tw-builder__settings-units-direction">TL</span>
@@ -2719,7 +3215,7 @@ const parseRadius = useCallback((radiusStr) => {
     )
 }
 
-const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, nextLine}) => {
+const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, nextLine, notDelete, getPlaceholderValue, default: defaultValue}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));    
@@ -2734,6 +3230,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
         spread: '',
         color: ''
     });
+
 
     //Function to parse the box-shadow string in parts
     const parseBoxShadow = useCallback((shadowStr) => {
@@ -2763,6 +3260,27 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
             color
         };
     }, []);
+
+    const getBoxShadowPlaceholder = useCallback((prop) => {
+        // Obtener el placeholder de la propiedad completa box-shadow
+        const fullShadowPlaceholder = getPlaceholderValue?.('box-shadow');
+        
+        if (!fullShadowPlaceholder) return null;
+        
+        // Parsear el shadow completo
+        const parsed = parseBoxShadow(fullShadowPlaceholder);
+        
+        // Retornar la parte solicitada
+        if (prop === 'box-shadow-x') return parsed.x || '';
+        if (prop === 'box-shadow-y') return parsed.y || '';
+        if (prop === 'box-shadow-blur') return parsed.blur || '';
+        if (prop === 'box-shadow-spread') return parsed.spread || '';
+        if (prop === 'box-shadow-color') return parsed.color || '';
+        
+        return null;
+    }, [getPlaceholderValue, parseBoxShadow]);
+
+    const bsPh = getPlaceholderValue?.('box-shadow') || '';
 
     //Function to compose the box-shadow string from the parts
     const composeBoxShadow = useCallback((parts) => {
@@ -2818,21 +3336,27 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
 
     //Get the current box-shadow string from the global CSS value
     const currentShadow = getGlobalCSSValue?.('box-shadow') || '';
-
-    // Synchronize local state when the selected element changes
+    // Placeholder con herencia (desktop→tablet→mobile) SOLO para decidir inset
+    const placeholderShadow = getPlaceholderValue?.('box-shadow') || '';
+    
+    // Sincroniza: heredar SOLO inset; los demás campos usan solo el valor exacto
     useEffect(() => {
-        const parsed = parseBoxShadow(currentShadow);
-        setInset(!!parsed.inset);
-        
-            setLocalValues({
-                x: parsed.x === '0' ? '' : parsed.x,
-                y: parsed.y === '0' ? '' : parsed.y,
-                blur: parsed.blur === '0' ? '' : parsed.blur,
-                spread: parsed.spread === '0' ? '' : parsed.spread,
-                color: parsed.color
-            });
-        
-    }, [selectedElementData?.id, currentShadow ]);
+        const parsedExact = parseBoxShadow(currentShadow);
+        const parsedPlaceholder = parseBoxShadow(placeholderShadow);
+    
+        const hasExact = !!(currentShadow && currentShadow.trim());
+        const nextInset = hasExact ? parsedExact.inset : parsedPlaceholder.inset;
+        setInset(!!nextInset);
+    
+        // No uses placeholder para los inputs; así mantienen sus placeholders heredados
+        setLocalValues({
+            x: parsedExact.x === '0' ? '' : (parsedExact.x || ''),
+            y: parsedExact.y === '0' ? '' : (parsedExact.y || ''),
+            blur: parsedExact.blur === '0' ? '' : (parsedExact.blur || ''),
+            spread: parsedExact.spread === '0' ? '' : (parsedExact.spread || ''),
+            color: parsedExact.color || ''
+        });
+    }, [selectedElementData?.id, currentShadow, placeholderShadow]);
 
     //Function get the box-shadow values from local state
     const wrappedGetCSS = useCallback((prop) => {
@@ -2846,51 +3370,71 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
     }, [localValues, getGlobalCSSValue]);
 
     //Function apply the box-shadow string to the CSS and JSON.
-const wrappedApplyCSS = useCallback((prop, val) => {
-    let nextLocal = { ...localValues };
-    
-    //Switch the property to apply the value to the correct part.
-    switch (prop) {
-        case 'box-shadow-x':
-            nextLocal.x = val != null ? val.toString().trim() : '';
-            break;
-        case 'box-shadow-y':
-            nextLocal.y = val != null ? val.toString().trim() : '';
-            break;
-        case 'box-shadow-blur':
-            nextLocal.blur = val != null ? val.toString().trim() : '';
-            break;
-        case 'box-shadow-spread':
-            nextLocal.spread = val != null ? val.toString().trim() : '';
-            break;
-        case 'box-shadow-color':
-            nextLocal.color = val != null ? val.toString().trim() : '';
-            break;
+    const wrappedApplyCSS = useCallback((prop, val) => {
+        let nextLocal = { ...localValues };
         
-        case 'box-shadow':
-            if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
-            return;
-        default:
-            if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
-            return;
-    }
+        switch (prop) {
+            case 'box-shadow-x':
+                nextLocal.x = val != null ? val.toString().trim() : '';
+                break;
+            case 'box-shadow-y':
+                nextLocal.y = val != null ? val.toString().trim() : '';
+                break;
+            case 'box-shadow-blur':
+                nextLocal.blur = val != null ? val.toString().trim() : '';
+                break;
+            case 'box-shadow-spread':
+                nextLocal.spread = val != null ? val.toString().trim() : '';
+                break;
+            case 'box-shadow-color':
+                nextLocal.color = val != null ? val.toString().trim() : '';
+                break;
+            case 'box-shadow':
+                if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', val);
+                return;
+            default:
+                if (applyGlobalCSSChange) applyGlobalCSSChange(prop, val);
+                return;
+        }
     
-        
-        // Update local state
         setLocalValues(nextLocal);
-        
-        //Compose the box-shadow string from the parts and then apply it to the CSS.
-        const finalStr = composeBoxShadow({ ...nextLocal, inset });
+    
+        // Fallback a placeholders heredados para no perder X/Y/etc. si no hay override en este breakpoint
+        const px = getBoxShadowPlaceholder?.('box-shadow-x') || '';
+        const py = getBoxShadowPlaceholder?.('box-shadow-y') || '';
+        const pblur = getBoxShadowPlaceholder?.('box-shadow-blur') || '';
+        const pspread = getBoxShadowPlaceholder?.('box-shadow-spread') || '';
+        const pcolor = getBoxShadowPlaceholder?.('box-shadow-color') || '';
+    
+        const effective = {
+            x: (nextLocal.x || px || '').trim(),
+            y: (nextLocal.y || py || '').trim(),
+            blur: (nextLocal.blur || pblur || '').trim(),
+            spread: (nextLocal.spread || pspread || '').trim(),
+            color: (nextLocal.color || pcolor || '').trim(),
+            inset
+        };
+    
+        const finalStr = composeBoxShadow(effective);
         if (applyGlobalCSSChange) applyGlobalCSSChange('box-shadow', finalStr);
-    }, [applyGlobalCSSChange, composeBoxShadow, localValues, inset]);
+    }, [localValues, composeBoxShadow, applyGlobalCSSChange, inset, getBoxShadowPlaceholder]);
 
     //Function to handle the inset checkbox change
     const handleInsetChange = useCallback((e) => {
         const nextInset = typeof e?.target?.checked === 'boolean' ? e.target.checked : !inset;
         setInset(nextInset);
-        const finalStr = composeBoxShadow({ ...localValues, inset: nextInset });
+    
+        const withFallback = {
+            x: (localValues.x || getBoxShadowPlaceholder('box-shadow-x') || '0').trim(),
+            y: (localValues.y || getBoxShadowPlaceholder('box-shadow-y') || '0').trim(),
+            blur: (localValues.blur || getBoxShadowPlaceholder('box-shadow-blur') || '').trim(),
+            spread: (localValues.spread || getBoxShadowPlaceholder('box-shadow-spread') || '').trim(),
+            color: (localValues.color || getBoxShadowPlaceholder('box-shadow-color') || '').trim(),
+        };
+    
+        const finalStr = composeBoxShadow({ ...withFallback, inset: nextInset });
         applyGlobalCSSChange?.('box-shadow', finalStr);
-    }, [localValues, composeBoxShadow, applyGlobalCSSChange, inset]);
+    }, [localValues, composeBoxShadow, applyGlobalCSSChange, inset, getBoxShadowPlaceholder]);
 
     //Function to open and close the border/shadow controls.
     const toggleOpen = () => {
@@ -2990,7 +3534,9 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                 value={currentShadow} 
                 cssProperty="box-shadow" 
                 getGlobalCSSValue={getGlobalCSSValue} 
-                applyGlobalCSSChange={applyGlobalCSSChange}/>
+                applyGlobalCSSChange={applyGlobalCSSChange}
+                isPlaceholder={!currentShadow && !!bsPh}
+                />
             </span>
             <div className="tw-builder__settings-pen-container" ref={containerRef} {...(open ? { 'data-pen': name?.toLowerCase().trim() } : {})}>
                 <span className="tw-builder__settings-pen" tabIndex={0} role="button" aria-label="Toggle pen" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { toggleOpen(); } }} onClick={toggleOpen}>
@@ -3020,6 +3566,8 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                                     applyGlobalCSSChange={wrappedApplyCSS}
                                     getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
+                                    notDelete={notDelete}
+                                    getPlaceholderValue={getBoxShadowPlaceholder}
                                 />
                                 <TextType
                                     name={'X'}
@@ -3029,6 +3577,8 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                                     applyGlobalCSSChange={wrappedApplyCSS}
                                     getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
+                                    notDelete={notDelete}
+                                    getPlaceholderValue={getBoxShadowPlaceholder}
                                 />
                                 <TextType
                                     name={'Y'}
@@ -3038,6 +3588,8 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                                     applyGlobalCSSChange={wrappedApplyCSS}
                                     getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
+                                    notDelete={notDelete}
+                                    getPlaceholderValue={getBoxShadowPlaceholder}
                                 />
                                 <TextType
                                     name={'Blur'}
@@ -3047,6 +3599,8 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                                     applyGlobalCSSChange={wrappedApplyCSS}
                                     getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
+                                    notDelete={notDelete}
+                                    getPlaceholderValue={getBoxShadowPlaceholder}
                                 />
                                 <TextType
                                     name={'Spread'}
@@ -3056,6 +3610,8 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                                     applyGlobalCSSChange={wrappedApplyCSS}
                                     getGlobalCSSValue={wrappedGetCSS}
                                     selectedElementData={selectedElementData}
+                                    notDelete={notDelete}
+                                    getPlaceholderValue={getBoxShadowPlaceholder}
                                 />
                                 <div className="tw-builder__settings-setting">
                                     <span className="tw-builder__settings-subtitle">Inset</span>
@@ -3067,7 +3623,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
                                             checked={!!inset}
                                             onChange={handleInsetChange}
                                         />
-                                        <span className="tw-builder__settings-inset"></span>
+                                        <span className={`tw-builder__settings-inset`}></span>
                                     </label>
                                 </div>
                         </div>
@@ -3079,24 +3635,274 @@ const wrappedApplyCSS = useCallback((prop, val) => {
     )
 }
 
-const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementData, savedProps}) => {
+const IconType = ({name, options, index, dataAttribute, JSONProperty, applyGlobalJSONChange, applyMultipleGlobalJSONChanges, getGlobalJSONValue, placeholder, nextLine, required, allControls, checkRequired, notDelete, default: defaultValue}) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [open, setOpen] = useState(false);
+    const [selected, setSelected] = useState('');
+    const containerRef = useRef(null);
+    const { preloadedIcons } = useCanvas();
+    
+    // Lazy loading state - renderizar solo los primeros iconos y cargar más al hacer scroll
+    const [displayedCount, setDisplayedCount] = useState(50); // Mostrar solo 50 iconos inicialmente
+    const gridRef = useRef(null);
+
+    // Usar iconos precargados del contexto en lugar de calcularlos cada vez
+    const iconOptions = useMemo(() => {
+        if (options && options.length > 0) {
+            return options; // Usar opciones proporcionadas si existen
+        }
+        
+        // Usar iconos precargados del contexto (ya calculados una sola vez al cargar el builder)
+        if (preloadedIcons && preloadedIcons.length > 0) {
+            return preloadedIcons;
+        }
+        
+        // Fallback: calcular si no hay iconos precargados (solo para compatibilidad)
+        const allIconNames = getAllIconNames();
+        return allIconNames.map(iconName => ({
+            value: iconName,
+            label: formatIconName(iconName)
+        }));
+    }, [options, preloadedIcons]);
+
+    // Get saved value from dataAttribute or JSONProperty (using nested path)
+    useEffect(() => {
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        // Priority: dataAttribute > JSONProperty
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
+        const jsonPropValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        const savedValue = dataAttrValue ?? jsonPropValue;
+        setSelected(savedValue || '');
+    }, [getGlobalJSONValue, dataAttribute, JSONProperty]);
+
+
+    // Filter options based on search term
+    const filteredOptions = useMemo(() => {
+        if (!searchTerm) return iconOptions;
+        const lowerSearch = searchTerm.toLowerCase();
+        return iconOptions.filter(opt =>
+            opt.label.toLowerCase().includes(lowerSearch) ||
+            opt.value.toLowerCase().includes(lowerSearch)
+        );
+    }, [iconOptions, searchTerm]);
+    
+    // Reset displayed count when search changes or dropdown opens
+    useEffect(() => {
+        if (open) {
+            setDisplayedCount(50);
+        }
+    }, [open, searchTerm]);
+    
+    // Lazy loading: cargar más iconos al hacer scroll
+    useEffect(() => {
+        const handleScroll = (e) => {
+            const element = e.target;
+            const scrolledToBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 100;
+            
+            if (scrolledToBottom && displayedCount < filteredOptions.length) {
+                // Cargar 50 iconos más
+                setDisplayedCount(prev => Math.min(prev + 50, filteredOptions.length));
+            }
+        };
+        
+        const gridElement = gridRef.current;
+        if (gridElement && open) {
+            gridElement.addEventListener('scroll', handleScroll);
+            return () => gridElement.removeEventListener('scroll', handleScroll);
+        }
+    }, [open, displayedCount, filteredOptions.length]);
+
+
+    // Handle option selection (save to dataAttribute and/or JSONProperty)
+    const handleSelect = (value) => {
+        setSelected(value);
+        
+        // If both dataAttribute and JSONProperty are defined, update both at once to avoid race conditions
+        if (dataAttribute && JSONProperty && applyMultipleGlobalJSONChanges) {
+            const updates = {
+                [`attributes.${dataAttribute}`]: value,
+                [JSONProperty]: value
+            };
+            applyMultipleGlobalJSONChanges(updates);
+        } else if (applyGlobalJSONChange) {
+            // Fallback to single updates if applyMultipleGlobalJSONChanges is not available
+            if (dataAttribute) {
+                applyGlobalJSONChange(`attributes.${dataAttribute}`, value);
+            }
+            if (JSONProperty) {
+                applyGlobalJSONChange(JSONProperty, value);
+            }
+        }
+        
+        setOpen(false);
+        setSearchTerm('');
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setOpen(false);
+                setSearchTerm('');
+            }
+        };
+
+        if (open) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [open]);
+
+    // Get display label for selected value
+    const selectedLabel = useMemo(() => {
+        if (!selected) return '';
+        const option = iconOptions.find(opt => opt.value === selected);
+        return option ? option.label : formatIconName(selected);
+    }, [selected, iconOptions]);
+
+    // Get selected icon for preview
+    const selectedIcon = useMemo(() => {
+        if (!selected) return null;
+        return getIconByName(selected);
+    }, [selected]);
+
+    return (
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+            <span className="tw-builder__settings-subtitle">{name}
+                <StylesDeleter 
+                    applyGlobalJSONChange={applyGlobalJSONChange} 
+                    getGlobalJSONValue={getGlobalJSONValue} 
+                    value={selected} 
+                    JSONProperty={`attributes.${dataAttribute}`}
+                    onDelete={() => setSelected('')}
+                    notDelete={notDelete}
+                />
+            </span>
+            
+            <div className="tw-builder__settings-select-container" tabIndex={0} role="button" aria-label="Select icon" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setOpen(!open); } }} ref={containerRef}>
+                {/* Main button */}
+                <button
+                    onClick={() => setOpen(!open)}
+                    className="tw-builder__settings-select"
+                    tabIndex={-1}
+                >
+                    {selected && selectedIcon ? (
+                        <span className="tw-builder__settings-select-value">
+                            <HugeiconsIcon icon={selectedIcon} size={17} color="currentColor"/>
+                            <span className="tw-builder__settings-select-value--icon">
+                                {selectedLabel}
+                            </span>
+                        </span>
+                    ) : (
+                        <span className="tw-builder__settings-select-placeholder">
+                            {placeholder || 'Select an icon...'}
+                        </span>
+                    )}
+                </button>
+                
+                <span className="tw-builder__settings-arrow">
+                    <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="2.64645" y1="3.64645" x2="5.64645" y2="0.646446" stroke="#999999"/>
+                        <line y1="-0.5" x2="4.24264" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 3 4)" stroke="#999999"/>
+                    </svg>
+                </span>
+        
+                {/* Dropdown list */}
+                <AnimatePresence>
+                {open && (
+                    <motion.div 
+                        className="tw-builder__settings-options tw-builder__settings-options--icons" 
+                        {...getAnimTypes().find(anim => anim.name === 'SCALE_TOP')}
+                        style={{ maxHeight: '320px', overflowY: 'auto' }}
+                        ref={gridRef}
+                    >
+                        {/* Search input inside dropdown */}
+                        <div className="tw-builder__settings-search">
+                            <input
+                                type="text"
+                                placeholder="Search icon..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="tw-builder__settings-search-input"
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => e.stopPropagation()}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="tw-builder__settings-divider"></div>
+                        
+                        {/* Icons grid - Solo renderiza los primeros displayedCount iconos */}
+                        {filteredOptions.length > 0 ? (
+                            <div className="tw-builder__settings-icons-grid">
+                                {filteredOptions.slice(0, displayedCount).map((option) => {
+                                    const icon = getIconByName(option.value);
+                                    const isSelected = selected === option.value;
+                                    
+                                    return (
+                                        <button
+                                            key={option.value}
+                                            onClick={() => handleSelect(option.value)}
+                                            className={`tw-builder__settings-icon-option ${isSelected ? 'tw-builder__settings-icon-option--selected' : ''}`}
+                                            title={option.label}
+                                        >
+                                            {icon && (
+                                                <HugeiconsIcon 
+                                                    icon={icon} 
+                                                    size={21} 
+                                                    strokeWidth={1.5} 
+                                                />
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="tw-builder__settings-icons-grid-empty">
+                                No icons found
+                            </div>
+                        )}
+                    </motion.div>
+                )}
+                </AnimatePresence>
+            </div>
+        </div>
+    );
+};
+
+const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementData, savedProps, styleDeleter, notDelete, getEnterAnimationPlaceholder, activeRoot, getActiveBreakpoint}) => {
     const [properties, setProperties] = useState([ { property: '', value: '' } ]);
 
-    const prevPropsRef = useRef([]);
+//Update the properties when the selected element changes
+useEffect(() => {
+    const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    const placeholders = getEnterAnimationPlaceholder ? getEnterAnimationPlaceholder(scope) : {};
+    const placeholderKeys = Object.keys(placeholders);
+    const placeholderCount = placeholderKeys.length;
     
 
-    //Update the properties when the selected element changes
-    useEffect(() => {
-        //Convert the saved props to a list of properties
-        const list = Object.entries(savedProps || {}).map(([property, value]) => ({ property, value }));
-        //If there are saved props, set the properties
-        if (list.length) {
-            setProperties(list);
+    const savedEntries = Object.entries(savedProps || {});
+    const propsMatchingPlaceholders = [];
+    const additionalProps = [];
+    
+    savedEntries.forEach(([property, value]) => {
+        if (placeholderKeys.includes(property)) {
+            propsMatchingPlaceholders.push({ property, value });
         } else {
-            //If there are no saved props, set the properties to an empty list
-            setProperties([ { property: '', value: '' } ]);
+            additionalProps.push({ property, value });
         }
-    }, [selectedElementData, savedProps]);
+    });
+    
+
+    const placeholderSlots = placeholderCount > 0
+        ? placeholderKeys.map(key => {
+            const match = propsMatchingPlaceholders.find(p => p.property === key);
+            return match || { property: '', value: '' };
+        })
+        : [];
+    
+
+    setProperties([...placeholderSlots, ...additionalProps]);
+}, [selectedElementData, savedProps, activeRoot, getEnterAnimationPlaceholder]);
 
     //Add a new property row to the list
     const handleAddProperty = () => {
@@ -3117,51 +3923,86 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
         });
     };
 
-    const handlePropertyBlur = useCallback((i) => {
-        const prev = prevPropsRef.current[i];
-        const now = (properties[i]?.property || '').trim();
-        const val = (properties[i]?.value ?? '').trim();
-        //If the property is empty, remove it
-        if (prev && !now) {
-            applyEnterAnimationChange(prev, "");
-            setProperties(prevList => prevList.filter((_, idx) => idx !== i));
-		return;
+    // Remove a specific property/value pair only via styleDeleter
+    const handleRemoveProperty = (i) => {
+        const propKey = (properties[i]?.property || '').trim();
+        if (propKey && typeof styleDeleter === 'function') {
+            styleDeleter(propKey);
         }
-        //If the property is not empty, apply the value
-        if (now && val) {
-            applyEnterAnimationChange(now, val);
+        setProperties(prevList => prevList.filter((_, idx) => idx !== i));
+    };
+    const placeholderEnterAnimation = useMemo(() => {
+        if (!getEnterAnimationPlaceholder) return [];
+        const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+        const result = getEnterAnimationPlaceholder(scope);
+        const converted = Object.entries(result || {}).map(([prop, val]) => ({ property: prop, value: val }));
+        return converted;
+    }, [getEnterAnimationPlaceholder, activeRoot, selectedElementData]); 
+    
+    const getEnterAnimationPlaceholderValue = useCallback((propIndex, key) => {
+        if (!placeholderEnterAnimation || placeholderEnterAnimation.length === 0) {
+            return '';
         }
-    }, [applyEnterAnimationChange, properties]);
+        
+      
+        if (propIndex >= placeholderEnterAnimation.length) {
+            return '';
+        }
+        
+        const item = placeholderEnterAnimation[propIndex];
+        
+        if (key === 'property') {
+            return item?.property || '';
+        }
+        
+        if (key === 'value') {
+            return item?.value || '';
+        }
+        
+        return '';
+    }, [placeholderEnterAnimation]);
 
     return (
         <div className="tw-builder__settings-animation" key={index}>
             <div className="tw-builder__settings-animation-container">
-            {properties.map((prop, i) => (
-                <div className="tw-builder__settings-properties" key={`prop-${i}`}>
+            {properties.map((prop, i) => {
+                const isInPlaceholderRange = i < placeholderEnterAnimation.length;
+                
+                return (
+                    <div className="tw-builder__settings-properties" key={`prop-${i}`}>
                         <div className="tw-builder__settings-properties-pair">
                             <span className="tw-builder__settings-properties-span">Property</span>
                             <input
-                            className="tw-builder__settings-properties-input"
-                            placeholder="top"
-                            value={prop.property}
-                            onFocus={() => { prevPropsRef.current[i] = prop.property; }}
-                            onChange={(e)=>handlePropertyChange(i, 'property', e.target.value)}
-                            onBlur={()=>handlePropertyBlur(i)}
-                              onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
+                                className="tw-builder__settings-properties-input"
+                                placeholder={isInPlaceholderRange ? (getEnterAnimationPlaceholderValue(i, 'property') || 'top') : 'property'}
+                                value={prop.property}
+                                onChange={(e)=>handlePropertyChange(i, 'property', e.target.value)}
+                                onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'property', e.target.value))}
                             />
                         </div>
                         <div className="tw-builder__settings-properties-pair">
                             <span className="tw-builder__settings-properties-span">Value</span>
-
-                            <input className="tw-builder__settings-properties-input" type="text" placeholder="-20px"
+                            <input 
+                                className="tw-builder__settings-properties-input" 
+                                type="text" 
+                                placeholder={isInPlaceholderRange ? (getEnterAnimationPlaceholderValue(i, 'value') || '0') : 'value'}
                                 value={prop.value}
                                 onChange={(e)=>handlePropertyChange(i, 'value', e.target.value)}
                                 onBlur={()=> { if (prop.property) applyEnterAnimationChange(prop.property, prop.value || ''); }}
                                 onKeyDown={(e) => applyOnEnter(e, handlePropertyChange(i, 'value', e.target.value))}
                             />
                         </div>
-                </div>
-            ))}
+                        <div className="tw-builder__settings-properties-actions">
+                            <StylesDeleter
+                                value={prop.value || prop.property}
+                                onDelete={() => handleRemoveProperty(i)}
+                                notDelete={notDelete}
+                                isPlaceholder={isInPlaceholderRange && (!prop.property && !prop.value)}
+                            />
+                        </div>
+                    </div>
+                );
+            })}
                 <div className="tw-builder__settings-add-property" tabIndex={0} role="button" aria-label="Add property" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleAddProperty(); } }} onClick={handleAddProperty}>
                     <span className="tw-builder__settings-add-property-label">Add Property</span>
                 </div>
@@ -3169,9 +4010,212 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
         </div>
 )};
 
+const SeparatorControl = () => {
+    return (
+        <div className="tw-builder__separator-control"></div>
+    );
+};
+
+const RepeaterType = ({controls, whatType, index, globalControlProps, setBwUnified, setBrUnified, allControls, checkRequired}) => {
+    // State to track which items are open/collapsed
+    const [openItems, setOpenItems] = useState({});
+
+    const toggleItem = (itemIndex) => {
+        setOpenItems(prev => ({
+            ...prev,
+            [itemIndex]: !prev[itemIndex]
+        }));
+    };
+
+    // Get global control props
+    const applyGlobalCSSChange = globalControlProps?.applyGlobalCSSChange;
+    const getGlobalCSSValue = globalControlProps?.getGlobalCSSValue;
+    const applyGlobalJSONChange = globalControlProps?.applyGlobalJSONChange;
+    const getGlobalJSONValue = globalControlProps?.getGlobalJSONValue;
+    const selectedElementData = globalControlProps?.selectedElementData;
+    const elementId = selectedElementData?.id;
+
+    // Helper to check if a value is non-empty
+    const isNonEmpty = (v) => {
+        if (v == null) return false;
+        if (typeof v === 'string') return v.trim() !== '';
+        return Boolean(v);
+    };
+
+    // Helper to check if a CSS property has a value
+    const hasCSS = useCallback((prop, selector) => {
+        if (!getGlobalCSSValue || !prop) return false;
+        const v = getGlobalCSSValue(prop, selector);
+        return isNonEmpty(v);
+    }, [getGlobalCSSValue]);
+
+    // Compute if each repeater item has values
+    const itemsWithValues = useMemo(() => {
+        if (!controls) return {};
+        
+        const result = {};
+        
+        controls.forEach((item, itemIndex) => {
+            if (!item.controls) {
+                result[itemIndex] = { hasAnyValue: false, hasDeletableValue: false };
+                return;
+            }
+
+            let hasAnyValue = false;
+            let hasDeletableValue = false;
+
+            // Flatten controls (handle both direct controls and groups)
+            const flatControls = [];
+            item.controls.forEach(ctrl => {
+                if (ctrl.label && ctrl.controls && !ctrl.type) {
+                    // It's a group, add its controls
+                    flatControls.push(...ctrl.controls);
+                } else {
+                    // It's a direct control
+                    flatControls.push(ctrl);
+                }
+            });
+
+            // Check each control for values
+            for (const ctrl of flatControls) {
+                // Check JSON properties
+                if (ctrl.JSONProperty && getGlobalJSONValue) {
+                    const v = getGlobalJSONValue(ctrl.JSONProperty);
+                    const hasVal = isNonEmpty(v);
+                    if (hasVal) hasAnyValue = true;
+                    if (!ctrl.notDelete && hasVal) hasDeletableValue = true;
+                }
+
+                // Check CSS properties
+                if (ctrl.cssProperty) {
+                    const hasPropVal = hasCSS(ctrl.cssProperty, ctrl.selector);
+                    if (hasPropVal) hasAnyValue = true;
+                    if (!ctrl.notDelete && hasPropVal) hasDeletableValue = true;
+                }
+
+                // Check data attributes
+                if (ctrl.dataAttribute && getGlobalJSONValue) {
+                    const v = getGlobalJSONValue(`attributes.${ctrl.dataAttribute}`);
+                    const hasVal = isNonEmpty(v);
+                    if (hasVal) hasAnyValue = true;
+                    if (!ctrl.notDelete && hasVal) hasDeletableValue = true;
+                }
+            }
+
+            result[itemIndex] = { hasAnyValue, hasDeletableValue };
+        });
+
+        return result;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [controls, getGlobalJSONValue, elementId]);
+
+    // Handle clearing all values for an item
+    const handleItemClear = useCallback((itemIndex) => {
+        const item = controls[itemIndex];
+        if (!item || !item.controls) return;
+
+        // Flatten controls
+        const flatControls = [];
+        item.controls.forEach(ctrl => {
+            if (ctrl.label && ctrl.controls && !ctrl.type) {
+                flatControls.push(...ctrl.controls);
+            } else {
+                flatControls.push(ctrl);
+            }
+        });
+
+        // Clear JSON properties
+        if (applyGlobalJSONChange) {
+            flatControls.forEach(ctrl => {
+                if (ctrl.JSONProperty && !ctrl.notDelete) {
+                    applyGlobalJSONChange(ctrl.JSONProperty, '');
+                }
+                if (ctrl.dataAttribute && !ctrl.notDelete) {
+                    applyGlobalJSONChange(`attributes.${ctrl.dataAttribute}`, '');
+                }
+            });
+        }
+
+        // Clear CSS properties
+        if (applyGlobalCSSChange) {
+            const cssBatches = new Map(); // selector -> {prop: ''}
+            
+            flatControls.forEach(ctrl => {
+                if (ctrl.cssProperty && !ctrl.notDelete) {
+                    const selector = ctrl.selector;
+                    if (!cssBatches.has(selector)) {
+                        cssBatches.set(selector, {});
+                    }
+                    cssBatches.get(selector)[ctrl.cssProperty] = '';
+                }
+            });
+
+            // Apply CSS clears
+            for (const [selector, batch] of cssBatches.entries()) {
+                applyGlobalCSSChange(batch, undefined, selector);
+            }
+        }
+    }, [controls, applyGlobalCSSChange, applyGlobalJSONChange]);
+
+    return (
+        <div className="tw-builder__repeater-control">
+            {controls && controls.map((item, itemIndex) => {
+                const { hasAnyValue, hasDeletableValue } = itemsWithValues[itemIndex] || {};
+                
+                return (
+                    <div key={itemIndex} className="tw-builder__repeater-item">
+                        <div 
+                            className="tw-builder__repeater-item-header" 
+                            onClick={() => toggleItem(itemIndex)}
+                        >
+                            {/* Item deleter: stop click from toggling accordion */}
+                            <span className="tw-builder__repeater-item-deleter" onClick={(e) => e.stopPropagation()}>
+                                <StylesDeleter
+                                    value={hasAnyValue}
+                                    notDelete={hasAnyValue && !hasDeletableValue}
+                                    onDelete={() => handleItemClear(itemIndex)}
+                                />
+                            </span>
+                            <span className="tw-builder__repeater-item-label">{item.label || `Item ${itemIndex + 1}`}</span>
+                            <div className="tw-builder__repeater-item-icons" tabIndex={0} role="button" aria-label="Toggle item">
+                                <span className={`tw-builder__repeater-item-icon ${!openItems[itemIndex] ? 'tw-builder__repeater-item-icon--active' : ''}`}>
+                                    <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <line y1="3.5" x2="7" y2="3.5" stroke="currentColor"/>
+                                        <line x1="3.5" x2="3.5" y2="7" stroke="currentColor"/>
+                                    </svg>
+                                </span>
+                                <span className={`tw-builder__repeater-item-icon ${openItems[itemIndex] ? 'tw-builder__repeater-item-icon--active' : ''}`}>
+                                    <svg width="7" height="1" viewBox="0 0 7 1" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <line y1="0.5" x2="7" y2="0.5" stroke="currentColor" strokeWidth="1"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                        {/* If the item is open, show its controls */}
+                        {openItems[itemIndex] && (
+                            <div className="tw-builder__repeater-item-content">
+                                {/* Render controls directly using whatType */}
+                                {item.controls && item.controls.map((control, controlIndex) => whatType(control, controlIndex))}
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
+const LabelControl = ({text}) => {
+    return (
+        <div className="tw-builder__label-control">
+            {text || ''}
+        </div>
+    );
+};
+
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, addMultipleJSONProperties, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
 
 
     const [bwUnified, setBwUnified] = useState('');
@@ -3288,6 +4332,8 @@ const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
     applyGlobalCSSChange(cssPropertyOrObject, value, { enterScope: scope });
 }, [activeRoot, applyGlobalCSSChange]);
 
+
+
 /// Get CSS (prioritizes breakpoint and state, makes fallback to desktop/base)
 const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
     if (!selectedId) return null;
@@ -3297,7 +4343,7 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         ? { nestedSelector: options } 
         : options;
     
-    const { nestedSelector = null, enterScope = null, returnAll = false } = normalizedOptions;
+    let { nestedSelector = null, enterScope = null, returnAll = false, defaultValue = null } = normalizedOptions;
     
     // For returnAll mode, cssProperty can be null
     if (!returnAll && !cssProperty) return null;
@@ -3307,6 +4353,16 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
     // Determine selector type and value
     let type = activeClass ? 'class' : 'id';
     let selector = activeClass ? activeClass : selectedId;
+    
+    // Process '&' character in nestedSelector to reference current element selector
+    // Keep original selector to also search in defaults that may have '&' unprocessed
+    const originalNestedSelector = nestedSelector;
+    // '&' will be replaced with the current element's ID or class selector
+    // Example: '&[data-type="switch"]' becomes '#tw-tnkhhx[data-type="switch"]'
+    if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.includes('&')) {
+        const currentSelector = type === 'id' ? `#${selector}` : `.${selector}`;
+        nestedSelector = nestedSelector.replace(/&/g, currentSelector);
+    }
     
     // Special handling for enter animations on root elements
     if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
@@ -3369,7 +4425,12 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
 
         // NESTED SELECTOR
         if (nestedSelector && nestedSelector.trim()) {
-            const node = entry.nested?.[nestedSelector.trim()];
+            // Try with processed selector first
+            let node = entry.nested?.[nestedSelector.trim()];
+            // If not found and we have an original selector with '&', try with that
+            if (!node && originalNestedSelector && originalNestedSelector !== nestedSelector) {
+                node = entry.nested?.[originalNestedSelector.trim()];
+            }
             if (!node) return returnAll ? {} : null;
             return getCSSValueWithState(node.states, node.properties);
         }
@@ -3378,7 +4439,7 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return getCSSValueWithState(entry.states, entry.properties);
     };
     
-    // Try breakpoint first, then fallback to desktop
+    // Only return the value of the current breakpoint, no fallback
     const bpEntry = getEntry(bp);
     const result = readFromEntry(bpEntry);
     
@@ -3386,15 +4447,188 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return result;
     }
     
-    // Fallback to desktop if not found in breakpoint
-    if (bp !== 'desktop') {
-        const desktopEntry = getEntry('desktop');
-        return readFromEntry(desktopEntry);
+    // If there's nothing in the current breakpoint, return defaultValue or null/empty
+    if (defaultValue !== null && defaultValue !== undefined) {
+        return defaultValue;
     }
     
     return returnAll ? {} : null;
 }, [JSONtree, selectedId, activeClass, activeRoot, getActiveBreakpoint, activeState]);
 
+// Get placeholder value from previous breakpoint (for display only, not applied)
+const getPlaceholderValue = useCallback((cssProperty, options = {}) => {
+    if (!selectedId || !cssProperty) return null;
+    
+    let { nestedSelector = null, enterScope = null } = options;
+    const bp = getActiveBreakpoint?.() || 'desktop';
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    // Process '&' character in nestedSelector to reference current element selector
+    // Keep original selector to also search in defaults that may have '&' unprocessed
+    const originalNestedSelector = nestedSelector;
+    // '&' will be replaced with the current element's ID or class selector
+    // Example: '&[data-type="switch"]' becomes '#tw-tnkhhx[data-type="switch"]'
+    if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.includes('&')) {
+        const currentSelector = type === 'id' ? `#${selector}` : `.${selector}`;
+        nestedSelector = nestedSelector.replace(/&/g, currentSelector);
+    }
+    
+    // Special handling for enter animations on root elements
+    if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+        const isRoot = selectedId === activeRoot;
+        if (isRoot) {
+            type = 'class';
+            selector = enterScope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+        }
+    }
+    
+    // Get the appropriate data arrays
+    const getEntry = (breakpoint) => {
+        const isResponsive = breakpoint !== 'desktop';
+        
+        if (type === 'class') {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.classesCSSData || []
+                : JSONtree?.classesCSSData || [];
+            return arr.find(item => item.className === selector);
+        } else {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.idsCSSData || []
+                : JSONtree?.idsCSSData || [];
+            return arr.find(item => item.id === selector);
+        }
+    };
+    
+    // Read from entry (same logic as getGlobalCSSValue but for placeholder)
+    const readFromEntry = (entry) => {
+        if (!entry) return null;
+        
+        // ENTER ANIMATION SCOPE
+        if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
+            const enterData = entry.enter?.[enterScope];
+            return cssProperty ? (enterData?.[cssProperty] ?? null) : null;
+        }
+        
+        // Helper to get CSS value with state support
+        const getCSSValueWithState = (states, properties) => {
+            if (!cssProperty) return null;
+
+            // If there is an active state, try state value first, then fallback to base property
+            if (activeState) {
+                const stVal = states?.[activeState]?.[cssProperty];
+                if (typeof stVal !== 'undefined' && stVal !== null) return stVal;
+                const baseVal = properties?.[cssProperty];
+                return typeof baseVal !== 'undefined' && baseVal !== null ? baseVal : null;
+            }
+            
+            return properties?.[cssProperty] ?? null;
+        };
+
+        // NESTED SELECTOR
+        if (nestedSelector && nestedSelector.trim()) {
+            // Try with processed selector first
+            let node = entry.nested?.[nestedSelector.trim()];
+            // If not found and we have an original selector with '&', try with that
+            if (!node && originalNestedSelector && originalNestedSelector !== nestedSelector) {
+                node = entry.nested?.[originalNestedSelector.trim()];
+            }
+            if (!node) return null;
+            return getCSSValueWithState(node.states, node.properties);
+        }
+        
+        // NORMAL (with optional state)
+        return getCSSValueWithState(entry.states, entry.properties);
+    };
+    
+    // Try current breakpoint first
+    const bpEntry = getEntry(bp);
+    const result = readFromEntry(bpEntry);
+    
+    if (result !== null) {
+        return result;
+    }
+    
+    // Fallback logic for placeholders
+    if (bp === 'mobile') {
+        // For mobile: try tablet first, then desktop
+        const tabletEntry = getEntry('tablet');
+        const tabletResult = readFromEntry(tabletEntry);
+        if (tabletResult !== null) return tabletResult;
+        
+        const desktopEntry = getEntry('desktop');
+        return readFromEntry(desktopEntry);
+    } else if (bp === 'tablet') {
+        // For tablet: fallback to desktop
+        const desktopEntry = getEntry('desktop');
+        return readFromEntry(desktopEntry);
+    }
+    
+    return null;
+}, [JSONtree, selectedId, activeClass, activeRoot, getActiveBreakpoint, activeState]);
+
+// Get enter animation placeholder (all properties for a given scope)
+
+const getEnterAnimationPlaceholder = useCallback((enterScope) => {
+    if (!selectedId) return {};
+    
+    const bp = getActiveBreakpoint?.() || 'desktop';
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    const isRoot = selectedId === activeRoot;
+    if (isRoot) {
+        type = 'class';
+        selector = enterScope === 'modal' ? 'tw-modal--open' : 'tw-banner--open';
+    }
+    
+    // Get the appropriate data arrays
+    const getEntry = (breakpoint) => {
+        const isResponsive = breakpoint !== 'desktop';
+        
+        if (type === 'class') {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.classesCSSData || []
+                : JSONtree?.classesCSSData || [];
+            return arr.find(item => item.className === selector);
+        } else {
+            const arr = isResponsive
+                ? JSONtree?.responsive?.[breakpoint]?.idsCSSData || []
+                : JSONtree?.idsCSSData || [];
+            return arr.find(item => item.id === selector);
+        }
+    };
+    
+
+    let merged = {};
+    
+    if (bp === 'mobile') {
+     
+        const desktopEntry = getEntry('desktop');
+        if (desktopEntry?.enter?.[enterScope]) {
+            merged = { ...merged, ...desktopEntry.enter[enterScope] };
+        }
+        
+        const tabletEntry = getEntry('tablet');
+        if (tabletEntry?.enter?.[enterScope]) {
+            merged = { ...merged, ...tabletEntry.enter[enterScope] };
+        }
+    } else if (bp === 'tablet') {
+        // Tablet: solo desktop
+        const desktopEntry = getEntry('desktop');
+        if (desktopEntry?.enter?.[enterScope]) {
+            merged = { ...merged, ...desktopEntry.enter[enterScope] };
+        }
+    }
+
+
+    
+    return merged;
+}, [JSONtree, selectedId, activeClass, activeRoot, getActiveBreakpoint]);
 
 const getEnterAnimationProps = useCallback(() => {
     if (!selectedId) return {};
@@ -3402,7 +4636,24 @@ const getEnterAnimationProps = useCallback(() => {
     return getGlobalCSSValue(null, { enterScope: scope, returnAll: true });
 }, [selectedId, activeRoot, getGlobalCSSValue]);
 
+const styleDeleter = useCallback((prop) => {
+    if (!prop) return;
+    applyEnterAnimationChange(prop, '');
+}, [applyEnterAnimationChange]);
 
+const clearAllEnterAnimations = useCallback(() => {
+    const enterProps = getEnterAnimationProps();
+    
+    // Create an object with all properties to delete
+    const clearBatch = {};
+    Object.keys(enterProps).forEach(prop => {
+        clearBatch[prop] = '';
+    });
+    
+    // Delete all properties at once using applyGlobalCSSChange
+    const scope = activeRoot === 'tw-root--modal' ? 'modal' : 'banner';
+    applyGlobalCSSChange(clearBatch, undefined, { enterScope: scope });
+}, [getEnterAnimationProps, applyGlobalCSSChange, activeRoot]);
     //Function to apply the json to the element and save it in jsonTree
     const applyGlobalJSONChange = useCallback((JSONProperty, value)=>{
 
@@ -3410,10 +4661,17 @@ const getEnterAnimationProps = useCallback(() => {
 
         addJSONProperty(selectedId, JSONProperty, value);
      },[selectedId, addJSONProperty]);
+     
+    // Apply multiple JSON changes at once to avoid race conditions
+    const applyMultipleGlobalJSONChanges = useCallback((properties) => {
+        if (!selectedId || !properties || Object.keys(properties).length === 0) return null;
+        
+        addMultipleJSONProperties(selectedId, properties);
+    }, [selectedId, addMultipleJSONProperties]);
 
      //Function to get the json value from the jsonTree
-     const getGlobalJSONValue = useCallback((JSONProperty)=>{
-        if(!selectedId || !JSONProperty || !JSONtree?.roots) return null;
+     const getGlobalJSONValue = useCallback((JSONProperty, defaultValue = null)=>{
+        if(!selectedId || !JSONProperty || !JSONtree?.roots) return defaultValue;
 
         // Find the element in the JSON tree
         const findElement = (node, targetId) => {
@@ -3429,162 +4687,187 @@ const getEnterAnimationProps = useCallback(() => {
         };
 
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
-        if(!activeRootNode) return null;
+        if(!activeRootNode) return defaultValue;
 
         const selectedElement = findElement(activeRootNode, selectedId);
-        return selectedElement?.[JSONProperty] || null;
+        if(!selectedElement) return defaultValue;
+
+        // Support nested properties with dot notation (e.g., "attributes.data-icon-name")
+        if (JSONProperty.includes('.')) {
+            const keys = JSONProperty.split('.');
+            let current = selectedElement;
+            
+            for (const key of keys) {
+                if (current && typeof current === 'object' && key in current) {
+                    current = current[key];
+                } else {
+                    return defaultValue;
+                }
+            }
+            
+            return current;
+        }
+
+        const value = selectedElement[JSONProperty];
+        return (value !== null && value !== undefined) ? value : defaultValue;
 
     },[JSONtree, selectedId, activeRoot]);
-
-/* // Initialize defaults (value) immediately for ALL controls once per element/control
-useEffect(() => {
-    if (!selectedId || !control) return;
-
-    const items = [];
-
-    // Collect all control items from header and body
-    if (Array.isArray(control.header)) {
-        items.push(...control.header);
-    }
-    if (Array.isArray(control.body)) {
-        control.body.forEach(section => {
-            if (Array.isArray(section?.controls)) {
-                items.push(...section.controls);
-            }
-        });
-    }
-
-    items.forEach((item) => {
-        if (!item) return;
-        
-        // Skip if no value is defined (this is the default value to apply)
-        if (item.value == null || item.value === '') return;
-
-        // Create unique key for this control instance
-        const key = `${selectedId}::${item.name}::${item.cssProperty || item.JSONProperty || ''}::${item.selector || ''}`;
-        
-        // Skip if already processed (prevents re-applying after user clears)
-        if (defaultsValuesRef.current.has(key)) return;
-
-        // Mark as processed to avoid re-applying after user clears
-        defaultsValuesRef.current.add(key);
-
-        // Special handling for panel type (applies to 4 sides: top, right, bottom, left)
-        if (item.type === 'panel' && Array.isArray(item.value) && item.cssProperty) {
-            const sides = ['top', 'right', 'bottom', 'left'];
-            let hasAnyCurr = false;
-
-            // Check if any side already has a value
-            sides.forEach((side, index) => {
-                const curr = getGlobalCSSValue?.(`${item.cssProperty}-${side}`, item.selector);
-                if (curr && curr.trim() !== '') {
-                    hasAnyCurr = true;
-                }
-            });
-
-            // If any side has a value, don't override
-            if (hasAnyCurr) return;
-
-            // Apply default values to all sides
-            sides.forEach((side, index) => {
-                if (item.value[index]) {
-                    applyGlobalCSSChange?.(`${item.cssProperty}-${side}`, item.value[index], item.selector);
-                }
-            });
-
-            return; // Skip the normal logic below
-        }
-
-        // Get current saved value (from CSS or JSON depending on control type)
-        const curr = item.JSONProperty
-            ? getGlobalJSONValue?.(item.JSONProperty)
-            : (item.cssProperty ? getGlobalCSSValue?.(item.cssProperty, item.selector) : null);
-
-        // Check if there's already a value set
-        const hasCurr = typeof curr === 'string' ? curr.trim() !== '' : Boolean(curr);
-        
-        // If value already exists, don't override it
-        if (hasCurr) return;
-
-        // Apply the default value based on control type
-        let valueToApply = item.value;
-
-        // Handle different value types
-        if (item.type === 'select' || item.type === 'super-select' || item.type === 'choose') {
-            // For select-type controls, ensure the value is a valid string
-            valueToApply = String(item.value);
-        } else if (item.type === 'color') {
-            // Color controls might need special handling if they have a value prop
-            // (currently ColorType doesn't use a simple value prop, but this future-proofs it)
-            valueToApply = String(item.value);
-        } else if (item.type === 'textarea') {
-            // TextArea already has its own default logic, but we can still support it here
-            valueToApply = String(item.value);
-        } else {
-            // For text, image, and other controls
-            valueToApply = String(item.value);
-        }
-
-        // Apply the value to JSON or CSS depending on the control configuration
-        if (item.JSONProperty && applyGlobalJSONChange) {
-            applyGlobalJSONChange(item.JSONProperty, valueToApply);
-        } else if (item.cssProperty && applyGlobalCSSChange) {
-            applyGlobalCSSChange(item.cssProperty, valueToApply, item.selector);
-        }
-    });
-}, [selectedId, control, getGlobalCSSValue, getGlobalJSONValue, applyGlobalCSSChange, applyGlobalJSONChange]); */
-
-
 
      const globalControlProps = {
         selectedElementData,
         applyGlobalCSSChange,
         getGlobalCSSValue,
         applyGlobalJSONChange,
+        applyMultipleGlobalJSONChanges,
         getGlobalJSONValue,
         selectedId,
+        getPlaceholderValue,
+     };
+
+     // Collect all controls from header and body for required evaluation
+     const allControls = useMemo(() => {
+        const controls = [];
+        if (control.header) {
+            controls.push(...control.header);
+        }
+        if (control.body) {
+            control.body.forEach(section => {
+                // Check if it's a group (has controls array) or a standalone control (has type)
+                if (section.controls) {
+                    // It's a group with controls
+                    controls.push(...section.controls);
+                } else if (section.type !== undefined) {
+                    // It's a standalone control
+                    controls.push(section);
+                }
+            });
+        }
+        return controls;
+     }, [control]);
+
+     // Function to check if a required condition is met
+     // Don't use useCallback here to ensure it always uses the latest values from JSONtree
+     const checkRequired = (required) => {
+        return evaluateRequired(required, allControls, getGlobalJSONValue, getGlobalCSSValue);
+     };
+
+     // Wrapper component that handles required condition reactively
+     const RequiredWrapper = ({ item, index, children }) => {
+        const [shouldShow, setShouldShow] = useState(() => {
+            if (!item.required) return true;
+            return checkRequired(item.required);
+        });
+
+        // Get the control name from required condition
+        const getRequiredControlName = (required) => {
+            if (!required) return null;
+            if (typeof required === 'string') {
+                return required.split('=')[0].trim();
+            } else if (typeof required === 'object') {
+                return required.control;
+            }
+            return null;
+        };
+
+        const requiredControlName = getRequiredControlName(item.required);
+
+        // Find the control that this depends on
+        const dependentControl = useMemo(() => {
+            if (!requiredControlName) return null;
+            return allControls.find(ctrl => ctrl?.name === requiredControlName);
+        }, [requiredControlName]);
+
+        // Get the current value of the dependent control
+        const dependentJsonValue = dependentControl?.JSONProperty ? getGlobalJSONValue(dependentControl.JSONProperty) : null;
+        const dependentAttrValue = dependentControl?.dataAttribute ? getGlobalJSONValue(`attributes.${dependentControl.dataAttribute}`) : null;
+        const dependentCssValue = dependentControl?.cssProperty ? getGlobalCSSValue(dependentControl.cssProperty) : null;
+        const elementId = selectedElementData?.id;
+
+        // Listen to changes in the dependent control's value
+        useEffect(() => {
+            if (!item.required) {
+                setShouldShow(true);
+                return;
+            }
+
+            // Re-evaluate the required condition
+            const isConditionMet = checkRequired(item.required);
+            setShouldShow(isConditionMet);
+        }, [dependentJsonValue, dependentAttrValue, dependentCssValue, elementId, item.required]);
+
+        if (!shouldShow) return null;
+        return children;
      };
 
      const whatType = (item, index) => {
         // If the control defines a selector, override helpers to use it
         const overrideProps = item.selector ? {
             applyGlobalCSSChange: (propOrObj, val) => applyGlobalCSSChange(propOrObj, val, item.selector),
-            getGlobalCSSValue: (prop) => getGlobalCSSValue(prop, item.selector),
+            getGlobalCSSValue: (prop, options = {}) => {
+                // Merge selector with any options passed (like defaultValue)
+                const mergedOptions = typeof options === 'string' 
+                    ? { nestedSelector: options }
+                    : { ...options, nestedSelector: item.selector };
+                return getGlobalCSSValue(prop, mergedOptions);
+            },
           } : {};
 
         const enhancedItem = {
             ...item,
             elementId: selectedId,
             ...globalControlProps,
-            
+            required: item.required,
+            allControls,
+            checkRequired,
         };
 
         
 
-        switch(item.type) {
-            case 'text':
-                return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} nextLine={item.nextLine} />;
-            case 'super-select':
-                return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
-            case 'panel':
-                return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
-            case 'color':
-                return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
-            case 'image':
-                return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site} nextLine={item.nextLine} nextLine2={item.nextLine2}/>;
-            case 'choose':
-                return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} category={item.category} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
-            case 'textarea':
-                return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
-            case 'select':
-                return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} nextLine={item.nextLine}/>;
-            case 'border':
-                return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
-            case 'box-shadow':
-                return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
-            case 'enter-animation':
-                return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()}/>;
+        const renderControl = () => {
+            switch(item.type) {
+                case 'text':
+                    return <TextType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine} notDelete={item.notDelete} />;
+                case 'super-select':
+                    return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
+                case 'icons':
+                    return <IconType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} dataAttribute={item.dataAttribute} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
+                case 'panel':
+                    return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
+                case 'color':
+                    return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
+                case 'image':
+                    return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site} nextLine={item.nextLine} nextLine2={item.nextLine2}/>;
+                case 'choose':
+                    return <ChooseType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} category={item.category} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
+                case 'textarea':
+                    return <TextAreaType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} placeholder={item.placeholder} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
+                case 'select':
+                    return <SelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} JSONProperty={item.JSONProperty} selectedId={selectedId} nextLine={item.nextLine} dataAttribute={item.dataAttribute}/>;
+                case 'border':
+                    return <BorderType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} bwUnified={bwUnified} brUnified={brUnified} setBwUnified={setBwUnified} setBrUnified={setBrUnified} nextLine={item.nextLine}/>;
+                case 'box-shadow':
+                    return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
+                case 'enter-animation':
+                    return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()} styleDeleter={styleDeleter} notDelete={item.notDelete} activeRoot={activeRoot} getEnterAnimationPlaceholder={getEnterAnimationPlaceholder} getActiveBreakpoint={getActiveBreakpoint}/>;
+                case 'separator':
+                    return <SeparatorControl key={index} />;
+                case 'label':
+                    return <LabelControl key={index} text={item.text} />;
+                case 'repeater':
+                    return <RepeaterType key={index} controls={item.controls} whatType={whatType} index={index} globalControlProps={globalControlProps} setBwUnified={setBwUnified} setBrUnified={setBrUnified} allControls={allControls} checkRequired={checkRequired} />;
+            }
+        };
+
+        // Wrap with RequiredWrapper if item has required condition
+        if (item.required) {
+            return (
+                <RequiredWrapper key={index} item={item} index={index}>
+                    {renderControl()}
+                </RequiredWrapper>
+            );
         }
+
+        return renderControl();
     }
 
     return (
@@ -3596,18 +4879,52 @@ useEffect(() => {
             </div>
             <div className="tw-builder__settings-body">
                 {/* Map the controls */}
-                {control.body && control.body.map((section, sectionIndex) => (
-                    <BuilderControl 
-                    key={sectionIndex} 
-                    label={section.label} 
-                    controls={section.controls} 
-                    whatType={whatType}
-                    globalControlProps={globalControlProps}
-                    setBwUnified={setBwUnified}
-                    setBrUnified={setBrUnified}
-                    />
-                ))}
-               <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} setBwUnified={setBwUnified} setBrUnified={setBrUnified} />
+                {control.body && control.body.map((section, sectionIndex) => {
+                    const elements = [];
+                    
+                    // Check if it's a group (has label and controls) or a standalone control (has type)
+                    if (section.label !== undefined) {
+                        // It's a group with label
+                        elements.push(
+                            <BuilderControl 
+                            key={sectionIndex}
+                            label={section.label} 
+                            controls={section.controls} 
+                            whatType={whatType}
+                            globalControlProps={globalControlProps}
+                            setBwUnified={setBwUnified}
+                            setBrUnified={setBrUnified}
+                            required={section.required}
+                            checkRequired={checkRequired}
+                            allControls={allControls}
+                            />
+                        );
+                        
+                        // Insert Enter Animation after Styles group
+                        if (section.label === 'Styles') {
+                            elements.push(
+                                <BuilderControl 
+                                key="enter-animation"
+                                label="Enter Animation" 
+                                controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} 
+                                whatType={whatType} 
+                                globalControlProps={globalControlProps} 
+                                activeRoot={activeRoot} 
+                                setBwUnified={setBwUnified} 
+                                setBrUnified={setBrUnified} 
+                                styleDeleter={styleDeleter} 
+                                getEnterAnimationProps={getEnterAnimationProps} 
+                                clearAllEnterAnimations={clearAllEnterAnimations}
+                                />
+                            );
+                        }
+                    } else if (section.type !== undefined) {
+                        // It's a standalone control
+                        elements.push(whatType(section, sectionIndex));
+                    }
+                    
+                    return elements;
+                })}
             </div>
         </div>
     )

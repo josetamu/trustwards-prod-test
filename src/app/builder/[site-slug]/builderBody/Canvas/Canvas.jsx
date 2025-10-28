@@ -181,7 +181,8 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
             !e.target.closest('.tw-builder__right-header') &&
             !e.target.closest('.tw-builder__settings-classes-pool') &&
             !e.target.closest('.modal__backdrop') &&
-            !e.target.closest('.tw-builder__settings-class')) {
+            !e.target.closest('.tw-builder__settings-class') &&
+            !e.target.closest('.tw-builder__settings-properties-actions')) {
                 setSelectedId(null);
                 setSelectedItem(null);
             }
@@ -548,7 +549,7 @@ useEffect(() => {
         //valid units. If user types for example 100 or 100a it will add px to the value
         const validUnits = ['px','%', 'em', 'rem', 'vh', 'vw', 'vmin', 'vmax', 'deg', 'rad', 'grad', 'turn', 's', 'ms', 'hz', 'khz'];
         //properties that need units. opacity is not in the list because it doesn't need units
-        const unitsProperties = ['width','max-width', 'height', 'max-height', 'font-size', 'line-height', 'border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-radius','border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'gap', 'grid-gap', 'grid-column-gap', 'grid-row-gap', 'column-gap', 'row-gap','flex-basis', 'top', 'right', 'bottom', 'left'];
+        const unitsProperties = ['width','max-width','min-width', 'height', 'max-height','min-height', 'font-size', 'line-height', 'border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-radius','border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'gap', 'grid-gap', 'grid-column-gap', 'grid-row-gap', 'column-gap', 'row-gap','flex-basis', 'top', 'right', 'bottom', 'left'];
         
         // Build the CSS content
         let cssContent = '';
@@ -590,7 +591,7 @@ useEffect(() => {
             // If the property needs units and value is a number or doesn't have valid units
             if (unitsProperties.includes(prop)) {
                 // Check if value is just a number (no units)
-                if (/^\d+$/.test(value)) {
+                if (/^-?\d+$/.test(value)) {
                     return `${value}px`;
                 }
                 // Check if value has valid units
@@ -686,6 +687,15 @@ useEffect(() => {
             '.tw-builder__canvas[data-bp="tablet"] '
         );
         if (tbScoped.trim()) cssContent += `${tbScoped}`;
+
+        // Also apply tablet styles when data-bp="mobile" (so mobile inherits tablet before mobile overrides)
+        const tbInsideMobile = writeBlock(
+            JSONtree?.responsive?.tablet?.idsCSSData,
+            JSONtree?.responsive?.tablet?.classesCSSData,
+            '.tw-builder__canvas[data-bp="mobile"] '
+        );
+        if (tbInsideMobile.trim()) cssContent += `${tbInsideMobile}`;
+
         const moScoped = writeBlock(
             JSONtree?.responsive?.mobile?.idsCSSData,
             JSONtree?.responsive?.mobile?.classesCSSData,
@@ -764,23 +774,70 @@ useEffect(() => {
         cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'banner');
         cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'modal');
 
+        // Helper function to merge enter animation data from multiple breakpoints
+        const mergeEnterData = (baseData, responsiveData) => {
+            if (!baseData || baseData.length === 0) return responsiveData || [];
+            if (!responsiveData || responsiveData.length === 0) return baseData || [];
+            
+            // Create a map of all items by id/className
+            const merged = new Map();
+            
+            // Add base data first
+            baseData.forEach(item => {
+                const key = item.id || item.className;
+                if (key) merged.set(key, JSON.parse(JSON.stringify(item)));
+            });
+            
+            // Merge responsive data on top
+            responsiveData.forEach(item => {
+                const key = item.id || item.className;
+                if (!key) return;
+                
+                if (merged.has(key)) {
+                    const existing = merged.get(key);
+                    // Merge enter animations
+                    if (item.enter) {
+                        existing.enter = existing.enter || {};
+                        ['modal', 'banner'].forEach(scope => {
+                            if (item.enter[scope]) {
+                                existing.enter[scope] = {
+                                    ...(existing.enter[scope] || {}),
+                                    ...item.enter[scope]
+                                };
+                            }
+                        });
+                    }
+                } else {
+                    merged.set(key, JSON.parse(JSON.stringify(item)));
+                }
+            });
+            
+            return Array.from(merged.values());
+        };
+
+        // Build merged data for tablet and mobile
+        const tabletIdsMerged = mergeEnterData(JSONtree?.idsCSSData, JSONtree?.responsive?.tablet?.idsCSSData);
+        const tabletClassesMerged = mergeEnterData(JSONtree?.classesCSSData, JSONtree?.responsive?.tablet?.classesCSSData);
+
+        const mobileIdsMerged = mergeEnterData(tabletIdsMerged, JSONtree?.responsive?.mobile?.idsCSSData);
+        const mobileClassesMerged = mergeEnterData(tabletClassesMerged, JSONtree?.responsive?.mobile?.classesCSSData);
+
         // Build the CSS for the enter animation for banner and modal for tablet and mobile
         const tabletEnter = 
-            writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner') +
-            writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal');
+        writeEnterBlock(tabletIdsMerged, tabletClassesMerged, 'banner') +
+        writeEnterBlock(tabletIdsMerged, tabletClassesMerged, 'modal');
         if (tabletEnter.trim()) cssContent += `@media (max-width: ${tabletMax}) {\n${tabletEnter}}\n`;
 
         const mobileEnter = 
-            writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner') +
-            writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal');
+            writeEnterBlock(mobileIdsMerged, mobileClassesMerged, 'banner') +
+            writeEnterBlock(mobileIdsMerged, mobileClassesMerged, 'modal');
         if (mobileEnter.trim()) cssContent += `@media (max-width: ${mobileMax}) {\n${mobileEnter}}\n`;
 
         // Build the CSS for the enter animation for banner and modal for tablet and mobile for canvas-scoped
-        cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="tablet"] ');
-        cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="tablet"] ');
-        cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="mobile"] ');
-        cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="mobile"] ');
-    
+        cssContent += writeEnterBlock(tabletIdsMerged, tabletClassesMerged, 'banner', '.tw-builder__canvas[data-bp="tablet"] ');
+        cssContent += writeEnterBlock(tabletIdsMerged, tabletClassesMerged, 'modal', '.tw-builder__canvas[data-bp="tablet"] ');
+        cssContent += writeEnterBlock(mobileIdsMerged, mobileClassesMerged, 'banner', '.tw-builder__canvas[data-bp="mobile"] ');
+        cssContent += writeEnterBlock(mobileIdsMerged, mobileClassesMerged, 'modal', '.tw-builder__canvas[data-bp="mobile"] ');
         //Check if the style exists. If it does, update the content. If it doesn't, create a new style
         let existingStyle = document.getElementById(styleId);
         if (existingStyle) {
