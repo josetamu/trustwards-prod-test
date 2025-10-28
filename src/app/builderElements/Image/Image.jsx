@@ -2,6 +2,60 @@
 
 import './Image.css';
 
+// Export groupControls separately for use in CanvasContext
+export const imageGroupControls = {
+    header: [
+        { name: 'Tag', type: 'select', placeholder: 'img', options: ['img', 'figure', 'div'], JSONProperty: 'tagName'},
+        { name: 'Image', type: 'image', JSONProperty: 'src', nextLine: true, nextLine2: true},
+
+    ],
+    body: [
+        {
+            label: 'Spacing',
+            controls: [
+                { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
+                { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
+                { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
+            ]
+        },
+        {
+            label: 'Size',
+            controls: [
+                { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px'},
+                { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px', default: '200px'},
+                { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
+                { name: 'Min. Height', type: 'text', cssProperty: 'min-height', autoUnit: 'px'},
+                { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px', default: '200px'},
+                { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
+            ]
+        },
+        {
+            label: 'Background',
+            controls: [
+                { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color', nextLine: true },
+            ]
+        },
+        {
+            label: 'Styles',
+            controls: [
+                { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
+                { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                {
+                    name: 'Mix blend mode',
+                    type: 'select',
+                    placeholder: 'normal',
+                    options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
+                    cssProperty: 'mix-blend-mode'
+                },
+                {name: 'Border', type: 'border'},
+                {name: 'Shadow', type: 'box-shadow'},
+                {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
+            ]
+        },
+    ]
+};
+
 export const Image = (node, nodeProps = {}) => {
     // nodeProps adds HTML id and classList
 
@@ -16,58 +70,7 @@ export const Image = (node, nodeProps = {}) => {
     any html attribute (tag, text, data-attribute) is changed on the JSONtree by right panel controls
     */
 
-    const groupControls =  {
-        header: [
-            { name: 'Tag', type: 'select', placeholder: 'img', options: ['img', 'figure', 'div'], JSONProperty: 'tagName'},
-            { name: 'Image', type: 'image', JSONProperty: 'src', nextLine: true, nextLine2: true},
-
-        ],
-        body: [
-            {
-                label: 'Spacing',
-                controls: [
-                    { name: 'Margin', type: 'panel', cssProperty: 'margin', autoUnit: 'px', nextLine: true},
-                    { name: 'Padding', type: 'panel', cssProperty: 'padding', autoUnit: 'px', nextLine: true},
-                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
-                ]
-            },
-            {
-                label: 'Size',
-                controls: [
-                    { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px'},
-                    { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
-                    { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
-                    { name: 'Min. Height', type: 'text', cssProperty: 'min-height', autoUnit: 'px'},
-                    { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
-                    { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
-                ]
-            },
-            {
-                label: 'Background',
-                controls: [
-                    { name: 'Background Color', type: 'color', value: '000000', opacity: '100%', cssProperty: 'background-color', nextLine: true },
-                ]
-            },
-            {
-                label: 'Styles',
-                controls: [
-                    { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
-                    { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
-                    { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
-                    {
-                        name: 'Mix blend mode',
-                        type: 'select',
-                        placeholder: 'normal',
-                        options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
-                        cssProperty: 'mix-blend-mode'
-                    },
-                    {name: 'Border', type: 'border'},
-                    {name: 'Shadow', type: 'box-shadow'},
-                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
-                ]
-            },
-        ]
-    }
+    const groupControls = imageGroupControls;
 
     const render = () => {
         return (

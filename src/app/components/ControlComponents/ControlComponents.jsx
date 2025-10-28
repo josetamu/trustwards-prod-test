@@ -79,10 +79,11 @@ const evaluateRequired = (required, allControls, getGlobalJSONValue, getGlobalCS
 }
 
 //Define each type of control.
-const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, dataAttribute, notDelete, required, allControls, checkRequired,getPlaceholderValue}) => {
+const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue,  applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, dataAttribute, notDelete, required, allControls, checkRequired,getPlaceholderValue, default: defaultValue}) => {
     //If something is saved in the json or css, use it, otherwise use the value.
     const [textValue, setTextValue] = useState(() => {
         // Support dataAttribute (for nested attributes like data-icon-size)
+        // NOTE: defaultValue is NOT used as fallback here - it's only for visual reference
         const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
@@ -96,11 +97,12 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
     //Update the value when the selected element changes
     useEffect(() => {
         // Support dataAttribute (for nested attributes like data-icon-size)
+        // NOTE: defaultValue is NOT used as fallback here - it's only for visual reference
         const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
         const savedValue = dataAttrValue ?? savedJSONValue ?? savedCSSValue;
-      
+
         setTextValue(savedValue ?? '');
         
     }, [getGlobalJSONValue, getGlobalCSSValue, JSONProperty, cssProperty, dataAttribute, value]);
@@ -152,10 +154,11 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
         </div>
     )
 }
-const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, nextLine, required, allControls, checkRequired, dataAttribute, getPlaceholderValue, notDelete}) => {
+const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedId, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, placeholder, nextLine, required, allControls, checkRequired, dataAttribute, getPlaceholderValue, notDelete, default: defaultValue}) => {
     //function to get the correct value depending on the category
     const getCurrentSelectValue = () => {
         // Priority: dataAttribute > JSONProperty > cssProperty
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         if (dataAttribute && getGlobalJSONValue) {
             const savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`);
             return savedValue || '';
@@ -171,11 +174,6 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
     const dynamicPlaceholder = cssProperty ? getPlaceholderValue?.(cssProperty) : placeholder;
 
     const handleSuperSelectChange = (newValue) => {
-        // Check if required condition is met before applying
-        if (checkRequired && !checkRequired(required)) {
-            return; // Don't apply if required condition is not met
-        }
-        
         // Priority: dataAttribute > JSONProperty > cssProperty
         if(dataAttribute && applyGlobalJSONChange){
             applyGlobalJSONChange(`attributes.${dataAttribute}`, newValue);
@@ -476,12 +474,13 @@ const SuperSelectType = ({name, index, category, cssProperty, applyGlobalCSSChan
     )
 }
 
-const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, getPlaceholderValue, notDelete}) => {
+const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, placeholder=['', '', '', ''], nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, getPlaceholderValue, notDelete, default: defaultValue}) => {
 
     //Starts each side with the value saved in jsonTree, if not starts empty
     const [topValue, setTopValue] = useState(() => {
         // For panel with dataAttribute, we would need to store as JSON object
         // For now, panel typically only uses CSS, so we keep it simple
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         const saved = cssProperty ? getGlobalCSSValue?.(`${cssProperty}-top`) : null;
         return saved || '';
     });
@@ -517,6 +516,7 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     //Update values when dependencies changes, like the element selected
     useEffect(() => {
         if(!getGlobalCSSValue || !cssProperty) return;
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         setTopValue(getGlobalCSSValue?.(`${cssProperty}-top`) || '');
         setRightValue(getGlobalCSSValue?.(`${cssProperty}-right`) || '');
         setBottomValue(getGlobalCSSValue?.(`${cssProperty}-bottom`) || '');
@@ -571,7 +571,7 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     )
 }
 
-const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, notDelete, getPlaceholderValue}) => {
+const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, notDelete, getPlaceholderValue, default: defaultValue}) => {
 
     //Function to convert rgb to hex
     const rgbToHex = (r, g, b) => {
@@ -599,6 +599,7 @@ const anyColorToHex = (color) => {
 //Function to get the color from jsonTree
 const getSavedValue = useCallback(() => {
     // Priority: dataAttribute > cssProperty
+    // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
     let savedValue;
     if (dataAttribute && getGlobalJSONValue) {
         savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`);
@@ -722,11 +723,6 @@ const getPlaceholderColor = () => {
      // Function to apply the CSS style
      const applyCSSChange = (newColor, newOpacity) => {
         if (!cssProperty && !dataAttribute) return;
-        
-        // Check if required condition is met before applying
-        if (checkRequired && !checkRequired(required)) {
-            return; // Don't apply if required condition is not met
-        }
     
         const effectiveOpacity = (newOpacity === '' || newOpacity == null)
             ? (lastOpacityRef.current || '100%')
@@ -893,7 +889,6 @@ const handlePercentageBlur = (e) => {
 const perc = parseInt((percentage??'').replace('%', ''));
 const effectivePerc = (isNaN(perc) || perc === 0) ? 100 : perc;
 const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'transparent';
-console.log(finalColor);
 
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
@@ -918,7 +913,7 @@ console.log(finalColor);
     )
 }
 
-const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, nextLine, nextLine2, required, allControls, checkRequired, notDelete}) => {
+const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, applyGlobalJSONChange, nextLine, nextLine2, required, allControls, checkRequired, notDelete, default: defaultValue}) => {
     
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState('');
@@ -932,6 +927,7 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
 
     //Update the image when the selected element changes
     useEffect(() => {
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         const savedValue = getGlobalJSONValue?.(JSONProperty);
         //Store the default image source
         const defaultImage = "/assets/builder-default-image.svg";
@@ -999,11 +995,6 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             setImage(publicUrl);
             setImageUrl(publicUrl);
             
-            // Check if required condition is met before applying
-            if (checkRequired && !checkRequired(required)) {
-                return; // Don't apply if required condition is not met
-            }
-            
             applyGlobalJSONChange?.(JSONProperty, publicUrl);
     
         } catch (error) {
@@ -1038,11 +1029,6 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
             }
     
             setErrors({});
-            
-            // Check if required condition is met before applying
-            if (checkRequired && !checkRequired(required)) {
-                return; // Don't apply if required condition is not met
-            }
             
             setImage(url);
             setImageUrl(url);
@@ -1092,10 +1078,11 @@ const ImageType = ({name, index, getGlobalJSONValue, JSONProperty, user, site, a
     )
 }
 
-const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, getPlaceholderValue, notDelete}) => {
+const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, getPlaceholderValue, notDelete, default: defaultValue}) => {
 
     const [selectedChoose, setSelectedChoose] = useState(() => {
         // Priority: dataAttribute > cssProperty
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         let savedValue = '';
         if (dataAttribute && getGlobalJSONValue) {
             savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`) || '';
@@ -1128,6 +1115,7 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     // Update when selected element changes
     useEffect(() => {
         // Priority: dataAttribute > cssProperty
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         let savedValue = '';
         if (dataAttribute && getGlobalJSONValue) {
             savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`) || '';
@@ -1171,11 +1159,6 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
         const newValue = selectedChoose === choose ? '' : choose;
         setSelectedChoose(newValue);
         
-        // Check if required condition is met before applying
-        if (checkRequired && !checkRequired(required)) {
-            return; // Don't apply if required condition is not met
-        }
-        
         let finalValue = newValue;
         //If reverse is active row === row-reverse, and column === column-reverse
         if(category === 'flex-direction' && isReverse) {
@@ -1194,11 +1177,6 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
     const handleReverseToggle = useCallback(() => {
         const newReverse = !isReverse;
         setIsReverse(newReverse);
-        
-        // Check if required condition is met before applying
-        if (checkRequired && !checkRequired(required)) {
-            return; // Don't apply if required condition is not met
-        }
         
         // Apply reverse immediately if we have a direction selected
         if (selectedChoose) {
@@ -1719,15 +1697,17 @@ const ChooseType = ({name, index, category, cssProperty, applyGlobalCSSChange, g
 const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONChange, getGlobalJSONValue, value, nextLine,
     required,
     allControls,
-    checkRequired,notDelete}) => {
+    checkRequired,notDelete, default: defaultValue}) => {
 
     const [textareaValue, setTextareaValue] = useState(() => {
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         return savedJSONValue ?? '';
     });
 
     // Sync value with external changes (when selected element, property, etc. changes)
     useEffect(() => {
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
         // update state always (even if "")
         setTextareaValue(savedJSONValue ?? '');
@@ -1745,11 +1725,6 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     const handleChange = (e) => {
         const newValue = e.target.value;
         setTextareaValue(newValue);
-        
-        // Check if required condition is met before applying
-        if (checkRequired && !checkRequired(required)) {
-            return; // Don't apply if required condition is not met
-        }
         
         if(JSONProperty && applyGlobalJSONChange) {
             applyGlobalJSONChange(JSONProperty, newValue);
@@ -1780,7 +1755,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
     );
 }
 
-const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine, required, allControls, checkRequired, dataAttribute, notDelete, getPlaceholderValue}) =>{
+const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, applyGlobalJSONChange, getGlobalCSSValue, cssProperty, applyGlobalCSSChange, options2, selectedId, placeholder, onChange, nextLine, required, allControls, checkRequired, dataAttribute, notDelete, getPlaceholderValue, default: defaultValue}) =>{
     
     // ========================================
     // General states (for all types)
@@ -2072,6 +2047,7 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
         if (!selectedId) return;
     
         // Priority: dataAttribute > JSONProperty > cssProperty
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
         if (dataAttribute && getGlobalJSONValue) {
             const next = getGlobalJSONValue(`attributes.${dataAttribute}`) ?? '';
             if (next !== selected) setSelected(next);
@@ -2123,11 +2099,6 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     // Handle changes in the select
     const handleSelectChange = (newValue) => {
         setSelected(newValue);
-        
-        // Check if required condition is met before applying
-        if (checkRequired && !checkRequired(required)) {
-            return; // Don't apply if required condition is not met
-        }
         
 // Special case: Font
 if (name === 'Font') {
@@ -2447,7 +2418,7 @@ if (name === 'Weight') {
     );
 }
 
-const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified = '', setBwUnified, brUnified = '', setBrUnified, nextLine, notDelete, getPlaceholderValue}) => {
+const BorderType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, bwUnified = '', setBwUnified, brUnified = '', setBrUnified, nextLine, notDelete, getPlaceholderValue, default: defaultValue}) => {
 
     const { getActiveBreakpoint } = useCanvas();
     const bp = getActiveBreakpoint?.() || 'desktop';
@@ -3243,7 +3214,7 @@ const parseRadius = useCallback((radiusStr) => {
     )
 }
 
-const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, nextLine, notDelete, getPlaceholderValue}) => {
+const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, selectedElementData, nextLine, notDelete, getPlaceholderValue, default: defaultValue}) => {
 
     const [open, setOpen] = useState(false);
     const instanceId = useRef(Symbol('pen'));    
@@ -3663,7 +3634,7 @@ const BoxShadowType = ({name, index, applyGlobalCSSChange, getGlobalCSSValue, se
     )
 }
 
-const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, placeholder, nextLine, required, allControls, checkRequired, notDelete}) => {
+const IconType = ({name, options, index, dataAttribute, JSONProperty, applyGlobalJSONChange, applyMultipleGlobalJSONChanges, getGlobalJSONValue, placeholder, nextLine, required, allControls, checkRequired, notDelete, default: defaultValue}) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState('');
@@ -3693,11 +3664,15 @@ const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, g
         }));
     }, [options, preloadedIcons]);
 
-    // Get saved value from dataAttribute (using nested path)
+    // Get saved value from dataAttribute or JSONProperty (using nested path)
     useEffect(() => {
-        const savedValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
+        // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+        // Priority: dataAttribute > JSONProperty
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
+        const jsonPropValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        const savedValue = dataAttrValue ?? jsonPropValue;
         setSelected(savedValue || '');
-    }, [getGlobalJSONValue, dataAttribute]);
+    }, [getGlobalJSONValue, dataAttribute, JSONProperty]);
 
 
     // Filter options based on search term
@@ -3737,18 +3712,27 @@ const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, g
     }, [open, displayedCount, filteredOptions.length]);
 
 
-    // Handle option selection (save to nested path)
+    // Handle option selection (save to dataAttribute and/or JSONProperty)
     const handleSelect = (value) => {
         setSelected(value);
         
-        // Check if required condition is met before applying
-        if (checkRequired && !checkRequired(required)) {
-            return; // Don't apply if required condition is not met
+        // If both dataAttribute and JSONProperty are defined, update both at once to avoid race conditions
+        if (dataAttribute && JSONProperty && applyMultipleGlobalJSONChanges) {
+            const updates = {
+                [`attributes.${dataAttribute}`]: value,
+                [JSONProperty]: value
+            };
+            applyMultipleGlobalJSONChanges(updates);
+        } else if (applyGlobalJSONChange) {
+            // Fallback to single updates if applyMultipleGlobalJSONChanges is not available
+            if (dataAttribute) {
+                applyGlobalJSONChange(`attributes.${dataAttribute}`, value);
+            }
+            if (JSONProperty) {
+                applyGlobalJSONChange(JSONProperty, value);
+            }
         }
         
-        if (dataAttribute && applyGlobalJSONChange) {
-            applyGlobalJSONChange(`attributes.${dataAttribute}`, value);
-        }
         setOpen(false);
         setSearchTerm('');
     };
@@ -4025,9 +4009,23 @@ useEffect(() => {
         </div>
 )};
 
+const SeparatorControl = () => {
+    return (
+        <div className="tw-builder__separator-control"></div>
+    );
+};
+
+const LabelControl = ({text}) => {
+    return (
+        <div className="tw-builder__label-control">
+            {text || ''}
+        </div>
+    );
+};
+
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, addMultipleJSONProperties, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
 
 
     const [bwUnified, setBwUnified] = useState('');
@@ -4155,7 +4153,7 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         ? { nestedSelector: options } 
         : options;
     
-    const { nestedSelector = null, enterScope = null, returnAll = false } = normalizedOptions;
+    let { nestedSelector = null, enterScope = null, returnAll = false, defaultValue = null } = normalizedOptions;
     
     // For returnAll mode, cssProperty can be null
     if (!returnAll && !cssProperty) return null;
@@ -4165,6 +4163,16 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
     // Determine selector type and value
     let type = activeClass ? 'class' : 'id';
     let selector = activeClass ? activeClass : selectedId;
+    
+    // Process '&' character in nestedSelector to reference current element selector
+    // Keep original selector to also search in defaults that may have '&' unprocessed
+    const originalNestedSelector = nestedSelector;
+    // '&' will be replaced with the current element's ID or class selector
+    // Example: '&[data-type="switch"]' becomes '#tw-tnkhhx[data-type="switch"]'
+    if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.includes('&')) {
+        const currentSelector = type === 'id' ? `#${selector}` : `.${selector}`;
+        nestedSelector = nestedSelector.replace(/&/g, currentSelector);
+    }
     
     // Special handling for enter animations on root elements
     if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
@@ -4227,7 +4235,12 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
 
         // NESTED SELECTOR
         if (nestedSelector && nestedSelector.trim()) {
-            const node = entry.nested?.[nestedSelector.trim()];
+            // Try with processed selector first
+            let node = entry.nested?.[nestedSelector.trim()];
+            // If not found and we have an original selector with '&', try with that
+            if (!node && originalNestedSelector && originalNestedSelector !== nestedSelector) {
+                node = entry.nested?.[originalNestedSelector.trim()];
+            }
             if (!node) return returnAll ? {} : null;
             return getCSSValueWithState(node.states, node.properties);
         }
@@ -4244,7 +4257,11 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
         return result;
     }
     
-    // If there's nothing in the current breakpoint, return null or empty
+    // If there's nothing in the current breakpoint, return defaultValue or null/empty
+    if (defaultValue !== null && defaultValue !== undefined) {
+        return defaultValue;
+    }
+    
     return returnAll ? {} : null;
 }, [JSONtree, selectedId, activeClass, activeRoot, getActiveBreakpoint, activeState]);
 
@@ -4252,12 +4269,22 @@ const getGlobalCSSValue = useCallback((cssProperty, options = {}) => {
 const getPlaceholderValue = useCallback((cssProperty, options = {}) => {
     if (!selectedId || !cssProperty) return null;
     
-    const { nestedSelector = null, enterScope = null } = options;
+    let { nestedSelector = null, enterScope = null } = options;
     const bp = getActiveBreakpoint?.() || 'desktop';
     
     // Determine selector type and value
     let type = activeClass ? 'class' : 'id';
     let selector = activeClass ? activeClass : selectedId;
+    
+    // Process '&' character in nestedSelector to reference current element selector
+    // Keep original selector to also search in defaults that may have '&' unprocessed
+    const originalNestedSelector = nestedSelector;
+    // '&' will be replaced with the current element's ID or class selector
+    // Example: '&[data-type="switch"]' becomes '#tw-tnkhhx[data-type="switch"]'
+    if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.includes('&')) {
+        const currentSelector = type === 'id' ? `#${selector}` : `.${selector}`;
+        nestedSelector = nestedSelector.replace(/&/g, currentSelector);
+    }
     
     // Special handling for enter animations on root elements
     if (enterScope && (enterScope === 'modal' || enterScope === 'banner')) {
@@ -4312,7 +4339,12 @@ const getPlaceholderValue = useCallback((cssProperty, options = {}) => {
 
         // NESTED SELECTOR
         if (nestedSelector && nestedSelector.trim()) {
-            const node = entry.nested?.[nestedSelector.trim()];
+            // Try with processed selector first
+            let node = entry.nested?.[nestedSelector.trim()];
+            // If not found and we have an original selector with '&', try with that
+            if (!node && originalNestedSelector && originalNestedSelector !== nestedSelector) {
+                node = entry.nested?.[originalNestedSelector.trim()];
+            }
             if (!node) return null;
             return getCSSValueWithState(node.states, node.properties);
         }
@@ -4421,12 +4453,10 @@ const styleDeleter = useCallback((prop) => {
 
 const clearAllEnterAnimations = useCallback(() => {
     const enterProps = getEnterAnimationProps();
-    console.log('Clearing all enter animations:', enterProps);
     
     // Create an object with all properties to delete
     const clearBatch = {};
     Object.keys(enterProps).forEach(prop => {
-        console.log('Clearing prop:', prop);
         clearBatch[prop] = '';
     });
     
@@ -4441,10 +4471,17 @@ const clearAllEnterAnimations = useCallback(() => {
 
         addJSONProperty(selectedId, JSONProperty, value);
      },[selectedId, addJSONProperty]);
+     
+    // Apply multiple JSON changes at once to avoid race conditions
+    const applyMultipleGlobalJSONChanges = useCallback((properties) => {
+        if (!selectedId || !properties || Object.keys(properties).length === 0) return null;
+        
+        addMultipleJSONProperties(selectedId, properties);
+    }, [selectedId, addMultipleJSONProperties]);
 
      //Function to get the json value from the jsonTree
-     const getGlobalJSONValue = useCallback((JSONProperty)=>{
-        if(!selectedId || !JSONProperty || !JSONtree?.roots) return null;
+     const getGlobalJSONValue = useCallback((JSONProperty, defaultValue = null)=>{
+        if(!selectedId || !JSONProperty || !JSONtree?.roots) return defaultValue;
 
         // Find the element in the JSON tree
         const findElement = (node, targetId) => {
@@ -4460,10 +4497,10 @@ const clearAllEnterAnimations = useCallback(() => {
         };
 
         const activeRootNode = JSONtree.roots.find(root => root.id === activeRoot);
-        if(!activeRootNode) return null;
+        if(!activeRootNode) return defaultValue;
 
         const selectedElement = findElement(activeRootNode, selectedId);
-        if(!selectedElement) return null;
+        if(!selectedElement) return defaultValue;
 
         // Support nested properties with dot notation (e.g., "attributes.data-icon-name")
         if (JSONProperty.includes('.')) {
@@ -4474,122 +4511,24 @@ const clearAllEnterAnimations = useCallback(() => {
                 if (current && typeof current === 'object' && key in current) {
                     current = current[key];
                 } else {
-                    return null;
+                    return defaultValue;
                 }
             }
             
             return current;
         }
 
-        return selectedElement[JSONProperty] || null;
+        const value = selectedElement[JSONProperty];
+        return (value !== null && value !== undefined) ? value : defaultValue;
 
     },[JSONtree, selectedId, activeRoot]);
-
-/* // Initialize defaults (value) immediately for ALL controls once per element/control
-useEffect(() => {
-    if (!selectedId || !control) return;
-
-    const items = [];
-
-    // Collect all control items from header and body
-    if (Array.isArray(control.header)) {
-        items.push(...control.header);
-    }
-    if (Array.isArray(control.body)) {
-        control.body.forEach(section => {
-            if (Array.isArray(section?.controls)) {
-                items.push(...section.controls);
-            }
-        });
-    }
-
-    items.forEach((item) => {
-        if (!item) return;
-        
-        // Skip if no value is defined (this is the default value to apply)
-        if (item.value == null || item.value === '') return;
-
-        // Create unique key for this control instance
-        const key = `${selectedId}::${item.name}::${item.cssProperty || item.JSONProperty || ''}::${item.selector || ''}`;
-        
-        // Skip if already processed (prevents re-applying after user clears)
-        if (defaultsValuesRef.current.has(key)) return;
-
-        // Mark as processed to avoid re-applying after user clears
-        defaultsValuesRef.current.add(key);
-
-        // Special handling for panel type (applies to 4 sides: top, right, bottom, left)
-        if (item.type === 'panel' && Array.isArray(item.value) && item.cssProperty) {
-            const sides = ['top', 'right', 'bottom', 'left'];
-            let hasAnyCurr = false;
-
-            // Check if any side already has a value
-            sides.forEach((side, index) => {
-                const curr = getGlobalCSSValue?.(`${item.cssProperty}-${side}`, item.selector);
-                if (curr && curr.trim() !== '') {
-                    hasAnyCurr = true;
-                }
-            });
-
-            // If any side has a value, don't override
-            if (hasAnyCurr) return;
-
-            // Apply default values to all sides
-            sides.forEach((side, index) => {
-                if (item.value[index]) {
-                    applyGlobalCSSChange?.(`${item.cssProperty}-${side}`, item.value[index], item.selector);
-                }
-            });
-
-            return; // Skip the normal logic below
-        }
-
-        // Get current saved value (from CSS or JSON depending on control type)
-        const curr = item.JSONProperty
-            ? getGlobalJSONValue?.(item.JSONProperty)
-            : (item.cssProperty ? getGlobalCSSValue?.(item.cssProperty, item.selector) : null);
-
-        // Check if there's already a value set
-        const hasCurr = typeof curr === 'string' ? curr.trim() !== '' : Boolean(curr);
-        
-        // If value already exists, don't override it
-        if (hasCurr) return;
-
-        // Apply the default value based on control type
-        let valueToApply = item.value;
-
-        // Handle different value types
-        if (item.type === 'select' || item.type === 'super-select' || item.type === 'choose') {
-            // For select-type controls, ensure the value is a valid string
-            valueToApply = String(item.value);
-        } else if (item.type === 'color') {
-            // Color controls might need special handling if they have a value prop
-            // (currently ColorType doesn't use a simple value prop, but this future-proofs it)
-            valueToApply = String(item.value);
-        } else if (item.type === 'textarea') {
-            // TextArea already has its own default logic, but we can still support it here
-            valueToApply = String(item.value);
-        } else {
-            // For text, image, and other controls
-            valueToApply = String(item.value);
-        }
-
-        // Apply the value to JSON or CSS depending on the control configuration
-        if (item.JSONProperty && applyGlobalJSONChange) {
-            applyGlobalJSONChange(item.JSONProperty, valueToApply);
-        } else if (item.cssProperty && applyGlobalCSSChange) {
-            applyGlobalCSSChange(item.cssProperty, valueToApply, item.selector);
-        }
-    });
-}, [selectedId, control, getGlobalCSSValue, getGlobalJSONValue, applyGlobalCSSChange, applyGlobalJSONChange]); */
-
-
 
      const globalControlProps = {
         selectedElementData,
         applyGlobalCSSChange,
         getGlobalCSSValue,
         applyGlobalJSONChange,
+        applyMultipleGlobalJSONChanges,
         getGlobalJSONValue,
         selectedId,
         getPlaceholderValue,
@@ -4603,8 +4542,13 @@ useEffect(() => {
         }
         if (control.body) {
             control.body.forEach(section => {
+                // Check if it's a group (has controls array) or a standalone control (has type)
                 if (section.controls) {
+                    // It's a group with controls
                     controls.push(...section.controls);
+                } else if (section.type !== undefined) {
+                    // It's a standalone control
+                    controls.push(section);
                 }
             });
         }
@@ -4669,7 +4613,13 @@ useEffect(() => {
         // If the control defines a selector, override helpers to use it
         const overrideProps = item.selector ? {
             applyGlobalCSSChange: (propOrObj, val) => applyGlobalCSSChange(propOrObj, val, item.selector),
-            getGlobalCSSValue: (prop) => getGlobalCSSValue(prop, item.selector),
+            getGlobalCSSValue: (prop, options = {}) => {
+                // Merge selector with any options passed (like defaultValue)
+                const mergedOptions = typeof options === 'string' 
+                    ? { nestedSelector: options }
+                    : { ...options, nestedSelector: item.selector };
+                return getGlobalCSSValue(prop, mergedOptions);
+            },
           } : {};
 
         const enhancedItem = {
@@ -4690,7 +4640,7 @@ useEffect(() => {
                 case 'super-select':
                     return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
                 case 'icons':
-                    return <IconType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine}/>;
+                    return <IconType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} dataAttribute={item.dataAttribute} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
                 case 'panel':
                     return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
                 case 'color':
@@ -4709,6 +4659,10 @@ useEffect(() => {
                     return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
                 case 'enter-animation':
                     return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()} styleDeleter={styleDeleter} notDelete={item.notDelete} activeRoot={activeRoot} getEnterAnimationPlaceholder={getEnterAnimationPlaceholder} getActiveBreakpoint={getActiveBreakpoint}/>;
+                case 'separator':
+                    return <SeparatorControl key={index} />;
+                case 'label':
+                    return <LabelControl key={index} text={item.text} />;
             }
         };
 
@@ -4733,21 +4687,52 @@ useEffect(() => {
             </div>
             <div className="tw-builder__settings-body">
                 {/* Map the controls */}
-                {control.body && control.body.map((section, sectionIndex) => (
-                    <BuilderControl 
-                    key={sectionIndex}
-                    label={section.label} 
-                    controls={section.controls} 
-                    whatType={whatType}
-                    globalControlProps={globalControlProps}
-                    setBwUnified={setBwUnified}
-                    setBrUnified={setBrUnified}
-                    required={section.required}
-                    checkRequired={checkRequired}
-                    allControls={allControls}
-                    />
-                ))}
-                <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} setBwUnified={setBwUnified} setBrUnified={setBrUnified} styleDeleter={styleDeleter} getEnterAnimationProps={getEnterAnimationProps} clearAllEnterAnimations={clearAllEnterAnimations}/>
+                {control.body && control.body.map((section, sectionIndex) => {
+                    const elements = [];
+                    
+                    // Check if it's a group (has label and controls) or a standalone control (has type)
+                    if (section.label !== undefined) {
+                        // It's a group with label
+                        elements.push(
+                            <BuilderControl 
+                            key={sectionIndex}
+                            label={section.label} 
+                            controls={section.controls} 
+                            whatType={whatType}
+                            globalControlProps={globalControlProps}
+                            setBwUnified={setBwUnified}
+                            setBrUnified={setBrUnified}
+                            required={section.required}
+                            checkRequired={checkRequired}
+                            allControls={allControls}
+                            />
+                        );
+                        
+                        // Insert Enter Animation after Styles group
+                        if (section.label === 'Styles') {
+                            elements.push(
+                                <BuilderControl 
+                                key="enter-animation"
+                                label="Enter Animation" 
+                                controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} 
+                                whatType={whatType} 
+                                globalControlProps={globalControlProps} 
+                                activeRoot={activeRoot} 
+                                setBwUnified={setBwUnified} 
+                                setBrUnified={setBrUnified} 
+                                styleDeleter={styleDeleter} 
+                                getEnterAnimationProps={getEnterAnimationProps} 
+                                clearAllEnterAnimations={clearAllEnterAnimations}
+                                />
+                            );
+                        }
+                    } else if (section.type !== undefined) {
+                        // It's a standalone control
+                        elements.push(whatType(section, sectionIndex));
+                    }
+                    
+                    return elements;
+                })}
             </div>
         </div>
     )

@@ -481,6 +481,11 @@
     width: 8px;
     height: 8px;
 }
+.tw-builder__tree-item-icon .tw-builder__tree-item-hugeicons{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+}
 
 
 
