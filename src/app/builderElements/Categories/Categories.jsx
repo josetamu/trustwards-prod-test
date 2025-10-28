@@ -120,7 +120,8 @@ export const categoriesGroupControls = {
                     options: ['switch', 'checkbox'], 
                     dataAttribute: 'data-type', 
                     default: 'switch', 
-                    notDelete: true
+                    notDelete: true,
+                    
                 },
                 { 
                     name: 'Disabled Color', 

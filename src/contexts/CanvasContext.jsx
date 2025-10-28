@@ -324,6 +324,14 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * value - the value of the property (if empty string "", the property will be removed)
     */
     const addCSSProperty = (type, selector, propertyOrObject, value, options = {}) => {
+        console.log('🔧 addCSSProperty called:', {
+            type,
+            selector,
+            propertyOrObject,
+            value,
+            options
+        });
+        
         // Support legacy API: if options is a string, treat it as nestedSelector
         const normalizedOptions = typeof options === 'string' 
             ? { nestedSelector: options } 
@@ -331,6 +339,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         
         let { nestedSelector = null, enterScope = null } = normalizedOptions;
         
+        console.log('🔧 After normalization:', { nestedSelector, enterScope });
         // Process '&' character in nestedSelector to reference current element selector
         // Keep original selector to also update defaults that may have '&' unprocessed
         const originalNestedSelector = nestedSelector;

@@ -182,6 +182,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
             !e.target.closest('.tw-builder__settings-classes-pool') &&
             !e.target.closest('.modal__backdrop') &&
             !e.target.closest('.tw-builder__settings-class') &&
+            !e.target.closest('.tw-builder__settings-deleter') &&
             !e.target.closest('.tw-builder__settings-properties-actions')) {
                 setSelectedId(null);
                 setSelectedItem(null);

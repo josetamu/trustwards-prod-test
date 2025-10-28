@@ -52,6 +52,15 @@ export const blockGroupControls = {
                 {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
             ]
         },
+        { type: 'separator' },
+        { type: 'label', text: 'Prueba' },
+        {
+            label: 'prueba',
+            controls: [
+                { name: 'prueba', type: 'color', cssProperty: 'color', default: '#FF0000',  nextLine: true, selector: '> *'},
+                { name: 'prueba2', type: 'text', cssProperty: 'opacity', default: '0.5', nextLine: true, selector: '> * > *'},
+            ]
+        },
     ]
 };
 

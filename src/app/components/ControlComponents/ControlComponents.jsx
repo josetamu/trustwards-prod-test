@@ -1765,7 +1765,8 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     const [open, setOpen] = useState(false);
     const containerRef = useRef(null);
     
-    const placeholderValue = cssProperty ? getPlaceholderValue?.(cssProperty) : placeholder;
+    const cssPlaceholder = cssProperty ? getPlaceholderValue?.(cssProperty) : '';
+    const placeholderValue = cssPlaceholder || placeholder;
     // ========================================
     // Specific states and constants for font/weight
     // ========================================
@@ -2321,10 +2322,9 @@ if (name === 'Weight') {
                     cssDeleteBatch={name === 'Weight' ? { [cssProperty]: '', 'font-style': '' } : undefined}
                     onDelete={() => {
                         setSelected('');
-                        if (onChange) onChange('');
                     }}
                     notDelete={notDelete}
-                    isPlaceholder={!selected && !!placeholderValue}
+                    isPlaceholder={!selected && !!cssPlaceholder}
                 />
             </span>
             
@@ -4109,6 +4109,14 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = 
     
     const { nestedSelector = null, enterScope = null } = normalizedOptions;
     
+    console.log('🎨 applyGlobalCSSChange called:', {
+        cssPropertyOrObject,
+        value,
+        options,
+        normalizedOptions,
+        nestedSelector
+    });
+
     // Determine selector type and value
     let type = activeClass ? 'class' : 'id';
     let selector = activeClass ? activeClass : selectedId;
@@ -4128,6 +4136,13 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = 
     if (nestedSelector) cssOptions.nestedSelector = nestedSelector;
     if (enterScope) cssOptions.enterScope = enterScope;
     
+    console.log('🎨 About to call addCSSProperty:', {
+        type,
+        selector,
+        cssPropertyOrObject,
+        cssOptions
+    });
+
     // Apply
     if (typeof cssPropertyOrObject === 'string') {
         addCSSProperty(type, selector, cssPropertyOrObject, value, cssOptions);
@@ -4723,6 +4738,7 @@ const clearAllEnterAnimations = useCallback(() => {
                                 styleDeleter={styleDeleter} 
                                 getEnterAnimationProps={getEnterAnimationProps} 
                                 clearAllEnterAnimations={clearAllEnterAnimations}
+                                getEnterAnimationPlaceholder={getEnterAnimationPlaceholder}
                                 />
                             );
                         }
