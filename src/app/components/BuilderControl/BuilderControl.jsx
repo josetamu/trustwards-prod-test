@@ -20,6 +20,7 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 	const applyGlobalJSONChange = globalControlProps?.applyGlobalJSONChange;
 	const getGlobalJSONValue = globalControlProps?.getGlobalJSONValue;
 	const selectedElementData = globalControlProps?.selectedElementData;
+	const getPlaceholderValue = globalControlProps?.getPlaceholderValue;
 
 	//get the name of the active root to show in the tooltip
 	const activeRootName = {
@@ -72,7 +73,7 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 	};
 
 		// Compute if any control has a value and prepare CSS/JSON 
-		const { hasAnyValue, selectorBatches, jsonProps, hasDeletableValue} = useMemo(() => {
+		const { hasAnyValue, selectorBatches, jsonProps, hasDeletableValue, hasPlaceholder} = useMemo(() => {
 			// Return empty state if no controls are provided
 			if (!Array.isArray(controls) || controls.length === 0) {
 				return { hasAnyValue: false, selectorBatches: new Map(), jsonProps: new Set(), hasDeletableValue: false };

@@ -43,3 +43,12 @@
     display: block;
  }
 
+ .tw-builder__settings-deleter--placeholder {
+    display: flex;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.tw-builder__settings-deleter--placeholder .tw-builder__settings-deleter-point {
+    background-color: #888;
+}

@@ -774,23 +774,70 @@ useEffect(() => {
         cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'banner');
         cssContent += writeEnterBlock(JSONtree?.idsCSSData, JSONtree?.classesCSSData, 'modal');
 
+        // Helper function to merge enter animation data from multiple breakpoints
+        const mergeEnterData = (baseData, responsiveData) => {
+            if (!baseData || baseData.length === 0) return responsiveData || [];
+            if (!responsiveData || responsiveData.length === 0) return baseData || [];
+            
+            // Create a map of all items by id/className
+            const merged = new Map();
+            
+            // Add base data first
+            baseData.forEach(item => {
+                const key = item.id || item.className;
+                if (key) merged.set(key, JSON.parse(JSON.stringify(item)));
+            });
+            
+            // Merge responsive data on top
+            responsiveData.forEach(item => {
+                const key = item.id || item.className;
+                if (!key) return;
+                
+                if (merged.has(key)) {
+                    const existing = merged.get(key);
+                    // Merge enter animations
+                    if (item.enter) {
+                        existing.enter = existing.enter || {};
+                        ['modal', 'banner'].forEach(scope => {
+                            if (item.enter[scope]) {
+                                existing.enter[scope] = {
+                                    ...(existing.enter[scope] || {}),
+                                    ...item.enter[scope]
+                                };
+                            }
+                        });
+                    }
+                } else {
+                    merged.set(key, JSON.parse(JSON.stringify(item)));
+                }
+            });
+            
+            return Array.from(merged.values());
+        };
+
+        // Build merged data for tablet and mobile
+        const tabletIdsMerged = mergeEnterData(JSONtree?.idsCSSData, JSONtree?.responsive?.tablet?.idsCSSData);
+        const tabletClassesMerged = mergeEnterData(JSONtree?.classesCSSData, JSONtree?.responsive?.tablet?.classesCSSData);
+
+        const mobileIdsMerged = mergeEnterData(tabletIdsMerged, JSONtree?.responsive?.mobile?.idsCSSData);
+        const mobileClassesMerged = mergeEnterData(tabletClassesMerged, JSONtree?.responsive?.mobile?.classesCSSData);
+
         // Build the CSS for the enter animation for banner and modal for tablet and mobile
         const tabletEnter = 
-            writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner') +
-            writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal');
+        writeEnterBlock(tabletIdsMerged, tabletClassesMerged, 'banner') +
+        writeEnterBlock(tabletIdsMerged, tabletClassesMerged, 'modal');
         if (tabletEnter.trim()) cssContent += `@media (max-width: ${tabletMax}) {\n${tabletEnter}}\n`;
 
         const mobileEnter = 
-            writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner') +
-            writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal');
+            writeEnterBlock(mobileIdsMerged, mobileClassesMerged, 'banner') +
+            writeEnterBlock(mobileIdsMerged, mobileClassesMerged, 'modal');
         if (mobileEnter.trim()) cssContent += `@media (max-width: ${mobileMax}) {\n${mobileEnter}}\n`;
 
         // Build the CSS for the enter animation for banner and modal for tablet and mobile for canvas-scoped
-        cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="tablet"] ');
-        cssContent += writeEnterBlock(JSONtree?.responsive?.tablet?.idsCSSData, JSONtree?.responsive?.tablet?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="tablet"] ');
-        cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'banner', '.tw-builder__canvas[data-bp="mobile"] ');
-        cssContent += writeEnterBlock(JSONtree?.responsive?.mobile?.idsCSSData, JSONtree?.responsive?.mobile?.classesCSSData, 'modal', '.tw-builder__canvas[data-bp="mobile"] ');
-    
+        cssContent += writeEnterBlock(tabletIdsMerged, tabletClassesMerged, 'banner', '.tw-builder__canvas[data-bp="tablet"] ');
+        cssContent += writeEnterBlock(tabletIdsMerged, tabletClassesMerged, 'modal', '.tw-builder__canvas[data-bp="tablet"] ');
+        cssContent += writeEnterBlock(mobileIdsMerged, mobileClassesMerged, 'banner', '.tw-builder__canvas[data-bp="mobile"] ');
+        cssContent += writeEnterBlock(mobileIdsMerged, mobileClassesMerged, 'modal', '.tw-builder__canvas[data-bp="mobile"] ');
         //Check if the style exists. If it does, update the content. If it doesn't, create a new style
         let existingStyle = document.getElementById(styleId);
         if (existingStyle) {
