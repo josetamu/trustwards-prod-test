@@ -3409,7 +3409,7 @@ const wrappedApplyCSS = useCallback((prop, val) => {
     )
 }
 
-const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, placeholder, nextLine, required, allControls, checkRequired, notDelete, default: defaultValue}) => {
+const IconType = ({name, options, index, dataAttribute, JSONProperty, applyGlobalJSONChange, applyMultipleGlobalJSONChanges, getGlobalJSONValue, placeholder, nextLine, required, allControls, checkRequired, notDelete, default: defaultValue}) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState('');
@@ -3439,12 +3439,15 @@ const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, g
         }));
     }, [options, preloadedIcons]);
 
-    // Get saved value from dataAttribute (using nested path)
+    // Get saved value from dataAttribute or JSONProperty (using nested path)
     useEffect(() => {
         // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
-        const savedValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
+        // Priority: dataAttribute > JSONProperty
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
+        const jsonPropValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        const savedValue = dataAttrValue ?? jsonPropValue;
         setSelected(savedValue || '');
-    }, [getGlobalJSONValue, dataAttribute]);
+    }, [getGlobalJSONValue, dataAttribute, JSONProperty]);
 
 
     // Filter options based on search term
@@ -3484,13 +3487,27 @@ const IconType = ({name, options, index, dataAttribute, applyGlobalJSONChange, g
     }, [open, displayedCount, filteredOptions.length]);
 
 
-    // Handle option selection (save to nested path)
+    // Handle option selection (save to dataAttribute and/or JSONProperty)
     const handleSelect = (value) => {
         setSelected(value);
         
-        if (dataAttribute && applyGlobalJSONChange) {
-            applyGlobalJSONChange(`attributes.${dataAttribute}`, value);
+        // If both dataAttribute and JSONProperty are defined, update both at once to avoid race conditions
+        if (dataAttribute && JSONProperty && applyMultipleGlobalJSONChanges) {
+            const updates = {
+                [`attributes.${dataAttribute}`]: value,
+                [JSONProperty]: value
+            };
+            applyMultipleGlobalJSONChanges(updates);
+        } else if (applyGlobalJSONChange) {
+            // Fallback to single updates if applyMultipleGlobalJSONChanges is not available
+            if (dataAttribute) {
+                applyGlobalJSONChange(`attributes.${dataAttribute}`, value);
+            }
+            if (JSONProperty) {
+                applyGlobalJSONChange(JSONProperty, value);
+            }
         }
+        
         setOpen(false);
         setSearchTerm('');
     };
@@ -3713,9 +3730,23 @@ const EnterAnimationType = ({index, applyEnterAnimationChange, selectedElementDa
         </div>
 )};
 
+const SeparatorControl = () => {
+    return (
+        <div className="tw-builder__separator-control"></div>
+    );
+};
+
+const LabelControl = ({text}) => {
+    return (
+        <div className="tw-builder__label-control">
+            {text || ''}
+        </div>
+    );
+};
+
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, addMultipleJSONProperties, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
 
 
     const [bwUnified, setBwUnified] = useState('');
@@ -4100,6 +4131,13 @@ const clearAllEnterAnimations = useCallback(() => {
 
         addJSONProperty(selectedId, JSONProperty, value);
      },[selectedId, addJSONProperty]);
+     
+    // Apply multiple JSON changes at once to avoid race conditions
+    const applyMultipleGlobalJSONChanges = useCallback((properties) => {
+        if (!selectedId || !properties || Object.keys(properties).length === 0) return null;
+        
+        addMultipleJSONProperties(selectedId, properties);
+    }, [selectedId, addMultipleJSONProperties]);
 
      //Function to get the json value from the jsonTree
      const getGlobalJSONValue = useCallback((JSONProperty, defaultValue = null)=>{
@@ -4150,6 +4188,7 @@ const clearAllEnterAnimations = useCallback(() => {
         applyGlobalCSSChange,
         getGlobalCSSValue,
         applyGlobalJSONChange,
+        applyMultipleGlobalJSONChanges,
         getGlobalJSONValue,
         selectedId,
         getPlaceholderValue,
@@ -4163,8 +4202,13 @@ const clearAllEnterAnimations = useCallback(() => {
         }
         if (control.body) {
             control.body.forEach(section => {
+                // Check if it's a group (has controls array) or a standalone control (has type)
                 if (section.controls) {
+                    // It's a group with controls
                     controls.push(...section.controls);
+                } else if (section.type !== undefined) {
+                    // It's a standalone control
+                    controls.push(section);
                 }
             });
         }
@@ -4256,7 +4300,7 @@ const clearAllEnterAnimations = useCallback(() => {
                 case 'super-select':
                     return <SuperSelectType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} value={item.value} placeholder={item.placeholder} category={item.category} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
                 case 'icons':
-                    return <IconType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} dataAttribute={item.dataAttribute} nextLine={item.nextLine}/>;
+                    return <IconType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} options={item.options} index={index} dataAttribute={item.dataAttribute} JSONProperty={item.JSONProperty} nextLine={item.nextLine}/>;
                 case 'panel':
                     return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
                 case 'color':
@@ -4275,6 +4319,10 @@ const clearAllEnterAnimations = useCallback(() => {
                     return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
                 case 'enter-animation':
                     return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()} styleDeleter={styleDeleter}/>;
+                case 'separator':
+                    return <SeparatorControl key={index} />;
+                case 'label':
+                    return <LabelControl key={index} text={item.text} />;
             }
         };
 
@@ -4299,21 +4347,52 @@ const clearAllEnterAnimations = useCallback(() => {
             </div>
             <div className="tw-builder__settings-body">
                 {/* Map the controls */}
-                {control.body && control.body.map((section, sectionIndex) => (
-                    <BuilderControl 
-                    key={sectionIndex}
-                    label={section.label} 
-                    controls={section.controls} 
-                    whatType={whatType}
-                    globalControlProps={globalControlProps}
-                    setBwUnified={setBwUnified}
-                    setBrUnified={setBrUnified}
-                    required={section.required}
-                    checkRequired={checkRequired}
-                    allControls={allControls}
-                    />
-                ))}
-                <BuilderControl label="Enter Animation" controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} whatType={whatType} globalControlProps={globalControlProps} activeRoot={activeRoot} setBwUnified={setBwUnified} setBrUnified={setBrUnified} styleDeleter={styleDeleter} getEnterAnimationProps={getEnterAnimationProps} clearAllEnterAnimations={clearAllEnterAnimations}/>
+                {control.body && control.body.map((section, sectionIndex) => {
+                    const elements = [];
+                    
+                    // Check if it's a group (has label and controls) or a standalone control (has type)
+                    if (section.label !== undefined) {
+                        // It's a group with label
+                        elements.push(
+                            <BuilderControl 
+                            key={sectionIndex}
+                            label={section.label} 
+                            controls={section.controls} 
+                            whatType={whatType}
+                            globalControlProps={globalControlProps}
+                            setBwUnified={setBwUnified}
+                            setBrUnified={setBrUnified}
+                            required={section.required}
+                            checkRequired={checkRequired}
+                            allControls={allControls}
+                            />
+                        );
+                        
+                        // Insert Enter Animation after Styles group
+                        if (section.label === 'Styles') {
+                            elements.push(
+                                <BuilderControl 
+                                key="enter-animation"
+                                label="Enter Animation" 
+                                controls={[{type: 'enter-animation', name: 'Enter Animation', index: 0}]} 
+                                whatType={whatType} 
+                                globalControlProps={globalControlProps} 
+                                activeRoot={activeRoot} 
+                                setBwUnified={setBwUnified} 
+                                setBrUnified={setBrUnified} 
+                                styleDeleter={styleDeleter} 
+                                getEnterAnimationProps={getEnterAnimationProps} 
+                                clearAllEnterAnimations={clearAllEnterAnimations}
+                                />
+                            );
+                        }
+                    } else if (section.type !== undefined) {
+                        // It's a standalone control
+                        elements.push(whatType(section, sectionIndex));
+                    }
+                    
+                    return elements;
+                })}
             </div>
         </div>
     )

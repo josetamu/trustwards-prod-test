@@ -2,10 +2,12 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    border-bottom: 1px solid var(--border-fresco-color);
+    border-top: 1px solid var(--border-fresco-color);
 
 }
-
+.tw-builder__control:last-child{
+    border-bottom: 1px solid var(--border-fresco-color);
+}
 
 .tw-builder__control-header{
     display: flex;

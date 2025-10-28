@@ -3,6 +3,15 @@
 import React, { createContext, useReducer, useContext, useEffect, useState, useCallback } from "react";
 import { JSfunctions } from '@contexts/JSfunctionsContext'; //Used by runElementScript() eval
 import { checkboxGroupControls } from '@app/builderElements/Checkbox/Checkbox';
+import { buttonGroupControls } from '@app/builderElements/Button/Button';
+import { iconGroupControls } from '@app/builderElements/Icon/Icon';
+import { blockGroupControls } from '@app/builderElements/Block/Block';
+import { dividerGroupControls } from '@app/builderElements/Divider/Divider';
+import { textGroupControls } from '@app/builderElements/Text/Text';
+import { imageGroupControls } from '@app/builderElements/Image/Image';
+import { categoriesGroupControls } from '@app/builderElements/Categories/Categories';
+import { bannerGroupControls } from '@app/builderElements/Banner/Banner';
+import { modalGroupControls } from '@app/builderElements/Modal/Modal';
 
 const CanvasContext = createContext(null);
 
@@ -579,6 +588,65 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         updated.roots.forEach(root => findAndUpdateElement(root)); // Search through all roots to find and update the element
         setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
     };
+    
+    // Update multiple properties at once to avoid race conditions
+    const addMultipleJSONProperties = (id, properties) => {
+        const findAndUpdateElement = (node) => {
+            if (node.id === id) {
+                // Iterate through all properties and update them
+                Object.entries(properties).forEach(([property, value]) => {
+                    // Support nested properties with dot notation
+                    if (property.includes('.')) {
+                        const keys = property.split('.');
+                        let current = node;
+                        
+                        // Navigate to the parent object
+                        for (let i = 0; i < keys.length - 1; i++) {
+                            if (!current[keys[i]]) {
+                                current[keys[i]] = {}; // Create nested object if it doesn't exist
+                            }
+                            current = current[keys[i]];
+                        }
+                        
+                        const lastKey = keys[keys.length - 1];
+                        // If value is empty string, remove the property
+                        if (value === "") {
+                            delete current[lastKey];
+                        } else {
+                            // Update the nested property with the new value
+                            current[lastKey] = value;
+                        }
+                    } else {
+                        // Handle simple property (no nesting)
+                        // If value is empty string, remove the property
+                        if (value === "") {
+                            delete node[property];
+                        } else {
+                            // Update the property with the new value
+                            node[property] = value;
+                        }
+                    }
+                });
+                runElementScript(node); //re-run the javascript function of the node if it has one
+                return true; // Element found and updated
+            }
+            
+            // Recursively search through children
+            if (node.children) {
+                for (let child of node.children) {
+                    if (findAndUpdateElement(child)) {
+                        return true; // Element found in children
+                    }
+                }
+            }
+            return false; // Element not found
+        };
+
+        const updated = deepCopy(JSONtree); //Make a copy of the current JSONtree before the addProperty
+        updated.roots.forEach(root => findAndUpdateElement(root)); // Search through all roots to find and update the element
+        setJSONtree(updated); //Update the JSONtree state with the changed JSONtree
+    };
+    
     //re-run the javascript function of a node if it has one
     const runElementScript = (node) => {
         if(node.script) {
@@ -954,13 +1022,66 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         // Process body controls
         if (controls.body) {
             controls.body.forEach(section => {
+                // Check if it's a group (has controls array) or a standalone control (has type)
                 if (section.controls) {
+                    // It's a group with controls
                     section.controls.forEach(processControl);
+                } else if (section.type !== undefined) {
+                    // It's a standalone control
+                    processControl(section);
                 }
             });
         }
 
         return defaults;
+    };
+
+    /*
+    * Helper function to apply defaults from groupControls to an element
+    * Allows custom CSS and attributes to be merged with extracted defaults
+    */
+    const applyDefaults = (groupControls, customDefaults = {}) => {
+        const defaults = extractDefaultsFromControls(groupControls);
+        return {
+            attributes: {
+                ...customDefaults.attributes,
+                ...defaults.attributes,
+            },
+            defaultCSS: {
+                ...customDefaults.css,
+                ...defaults.css,
+            },
+            ...(Object.keys(defaults.nested).length > 0 && {
+                defaultNested: defaults.nested
+            })
+        };
+    };
+
+    /*
+    * Helper function to extract unique categories from scriptsScanned and iframesScanned
+    */
+    const extractCategories = () => {
+        const categories = new Set();
+        const scriptsScanned = siteData?.scriptsScanned || [];
+        const iframesScanned = siteData?.iframesScanned || [];
+        
+        // Extract categories from scriptsScanned
+        scriptsScanned.forEach(script => {
+            if (script?.category && script.category !== 'Other' && script.category !== 'Unknown') {
+                categories.add(script.category);
+            }
+        });
+        
+        // Extract categories from iframesScanned
+        iframesScanned.forEach(iframe => {
+            if (iframe?.category && iframe.category !== 'Other' && iframe.category !== 'Unknown') {
+                categories.add(iframe.category);
+            }
+        });
+        
+        // Convert to array and return, if empty return ['Functional']
+        const categoriesArray = Array.from(categories);
+        return categoriesArray.length > 0 ? categoriesArray : ['Functional'];
     };
 
     /*
@@ -978,7 +1099,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 children: [],
                 classList: ["tw-block"],
                 nestable: true,
-                defaultCSS: {'display': 'flex' },
+                ...applyDefaults(blockGroupControls)
             },
             'image': {
                 elementType: "image",
@@ -986,13 +1107,8 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 tagName: "img",
                 label: "Image",
                 src: '/assets/builder-default-image.svg',
-                defaultCSS: {
-                    'width': '200px',
-                    'height': '200px',
-                    'display': 'block',
-                    'object-fit': 'cover'
-                },
-                classList: ["tw-image"]
+                classList: ["tw-image"],
+                ...applyDefaults(imageGroupControls)
             },
             'divider': {
                 elementType: "divider",
@@ -1000,7 +1116,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 tagName: "div",
                 label: "Divider",
                 classList: ["tw-divider"],
-                defaultCSS: { 'background-color': '#E6E6E6' }
+                ...applyDefaults(dividerGroupControls, {
+                    css: { 'background-color': '#E6E6E6' }
+                })
             },
             'text': {
                 elementType: "text",
@@ -1009,6 +1127,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Text",
                 text: "Text",
                 classList: ["tw-text"],
+                ...applyDefaults(textGroupControls)
             },
             'accept-all': {
                 elementType: "button",
@@ -1017,17 +1136,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Accept all",
                 text: "Accept all",
                 classList: ["tw-accept-all"],
-                defaultCSS: { 
-                    'font-size': '14px',
-                    'color': '#ffffff',
-                    'font-weight': '500',
-                    'border-radius': '8px',
-                    'background-color': '#19D85C',
-                    'padding-top': '6px',
-                    'padding-bottom': '6px',
-                    'padding-left': '12px',
-                    'padding-right': '12px',
-                }
+                ...applyDefaults(buttonGroupControls, {
+                    css: { 'background-color': '#19D85C' }
+                })
             },
             'reject-all': {
                 elementType: "button",
@@ -1036,17 +1147,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Reject all",
                 text: "Reject all",
                 classList: ["tw-reject-all"],
-                defaultCSS: {
-                    'font-size': '14px',
-                    'color': '#ffffff',
-                    'font-weight': '500',
-                    'border-radius': '8px',
-                    'background-color': '#FA243B',
-                    'padding-top': '6px',
-                    'padding-bottom': '6px',
-                    'padding-left': '12px',
-                    'padding-right': '12px',
-                }
+                ...applyDefaults(buttonGroupControls, {
+                    css: { 'background-color': '#FA243B' }
+                })
             },
             'open-modal': {
                 elementType: "button",
@@ -1055,17 +1158,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Open Modal",
                 text: "Settings",
                 classList: ["tw-open-modal"],
-                defaultCSS: { 
-                    'font-size': '14px',
-                    'color': '#ffffff',
-                    'font-weight': '500',
-                    'border-radius': '8px',
-                    'background-color': '#111111',
-                    'padding-top': '6px',
-                    'padding-bottom': '6px',
-                    'padding-left': '12px',
-                    'padding-right': '12px',
-                }
+                ...applyDefaults(buttonGroupControls, {
+                    css: { 'background-color': '#111111' }
+                })
             },
             'enable-categories': {
                 elementType: "button",
@@ -1074,17 +1169,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Enable Categories",
                 text: "Enable all",
                 classList: ["tw-enable-categories"],
-                defaultCSS: { 
-                    'font-size': '14px',
-                    'color': '#ffffff',
-                    'font-weight': '500',
-                    'border-radius': '8px',
-                    'background-color': '#111111',
-                    'padding-top': '6px',
-                    'padding-bottom': '6px',
-                    'padding-left': '12px',
-                    'padding-right': '12px',
-                }
+                ...applyDefaults(buttonGroupControls, {
+                    css: { 'background-color': '#111111' }
+                })
             },
             'disable-categories': {
                 elementType: "button",
@@ -1093,17 +1180,9 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Disable Categories",
                 text: "Disable all",
                 classList: ["tw-disable-categories"],
-                defaultCSS: { 
-                    'font-size': '14px',
-                    'color': '#ffffff',
-                    'font-weight': '500',
-                    'border-radius': '8px',
-                    'background-color': '#111111',
-                    'padding-top': '6px',
-                    'padding-bottom': '6px',
-                    'padding-left': '12px',
-                    'padding-right': '12px',
-                }
+                ...applyDefaults(buttonGroupControls, {
+                    css: { 'background-color': '#111111' }
+                })
             },
             'save-categories': {
                 elementType: "button",
@@ -1112,145 +1191,20 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 label: "Save Categories",
                 text: "Save",
                 classList: ["tw-save-categories"],
-                defaultCSS: { 
-                    'font-size': '14px',
-                    'color': '#ffffff',
-                    'font-weight': '500',
-                    'border-radius': '8px',
-                    'background-color': '#0099FE',
-                    'padding-top': '6px',
-                    'padding-bottom': '6px',
-                    'padding-left': '12px',
-                    'padding-right': '12px',
-                }
+                ...applyDefaults(buttonGroupControls, {
+                    css: { 'background-color': '#0099FE' }
+                })
             },
             'categories': {
                 elementType: "categories",
                 icon: "categories",
                 tagName: "div",
                 label: "Categories",
-                classList: ["tw-block", "tw-categories"],
+                classList: ["tw-categories"],
                 script: 'categoriesElementsFunction()',
-                attributes: {
-                    'data-duration': '0.6s',
-                },
-                defaultCSS: {
-                    "--expanded-icon-rotate": "45deg",
-                    "--expanded-icon-duration": "0.2s"
-                },
-                children: [
-                    {
-                        elementType: "block",
-                        icon: "block",
-                        tagName: "div", //Expander
-                        label: "Expander",
-                        classList: ["tw-block", "tw-categories__expander"],
-                        script: 'categoriesElementsFunction()',
-                        defaultCSS: {
-                            'display': 'flex',
-                            'flex-direction': 'column',
-                            'cursor': 'pointer'
-                        },
-                        children: [
-                            {
-                                elementType: "block",
-                                icon: "block",
-                                tagName: "div", //Expander Header
-                                label: "Header",
-                                classList: ["tw-block", "tw-categories__expander-header"],
-                                defaultCSS: {
-                                    'display': 'flex',
-                                    'justify-content': 'space-between',
-                                    'align-items': 'center'
-                                },
-                                children: [
-                                    {
-                                        elementType: "block",
-                                        icon: "block",
-                                        tagName: "div", //Expander Header Label
-                                        label: "Label",
-                                        classList: ["tw-block", "tw-categories__expander-header-title"],
-                                        defaultCSS: {
-                                            'display': 'flex',
-                                            'align-items': 'center',
-                                            'gap': '10px'
-                                        },
-                                        children: [
-                                            {
-                                                elementType: "icon",
-                                                icon: "block",
-                                                tagName: "div", //Expander Header Label Icon
-                                                label: "Icon",
-                                                classList: ["tw-categories__expander-icon"],
-                                                attributes: {
-                                                    'data-icon-name': 'AddIcon',
-                                                    'data-icon-size': '24',
-                                                    'data-stroke-width': '1.5',
-                                                },
-                                                defaultCSS: {
-                                                    'color': "#000000",
-                                                }
-                                            },
-                                            {
-                                                elementType: "text",
-                                                icon: "text",
-                                                tagName: "span", //Expander Header Label Title
-                                                label: "Text",
-                                                classList: ["tw-text"],
-                                                text: "Category",
-                                                defaultCSS: { 'color': '#000000', 'width': 'fit-content', 'min-width': 'fit-content' }
-                                            },
-                                        ],
-                                    },
-                                    (() => {
-                                        // Extract defaults from checkboxGroupControls
-                                        const defaults = extractDefaultsFromControls(checkboxGroupControls);
-                                        return {
-                                            elementType: "checkbox",
-                                            icon: "block",
-                                            tagName: "div", //Expander Switch
-                                            label: "Checkbox",
-                                            classList: ["tw-checkbox", "tw-categories__expander-checkbox", "tw-categories__expander-checkbox--category"],
-                                            attributes: {
-                                                ...defaults.attributes,
-                                            },
-                                            defaultCSS: {
-                                                ...defaults.css,
-                                            },
-                                            ...(Object.keys(defaults.nested).length > 0 && {
-                                                defaultNested: defaults.nested
-                                            })
-                                        };
-                                    })(),
-                                ],
-                            },
-                            {
-                                elementType: "block",
-                                icon: "block",
-                                tagName: "div", //Expander content
-                                label: "Block",
-                                classList: ["tw-block", "tw-categories__expander-content"],
-                                defaultCSS: {
-                                    'height': "0",
-                                    'overflow': "hidden",
-                                    'transition': "height 0.2s"
-                                },
-                                children: [
-                                    {
-                                        elementType: "text",
-                                        icon: "text",
-                                        tagName: "p", //Expander Content Paragraph
-                                        label: "Text",
-                                        classList: ["tw-text"],
-                                        text: "Here goes a great description of the category.",
-                                        defaultCSS: { 'color': '#000000' }
-                                    },
-                                    
-                                ],
-                            },
-                        ],
-                    },
-                ]
+                categoriesScanned: extractCategories(),
+                ...applyDefaults(categoriesGroupControls),
+
             }
         };
 
@@ -1396,7 +1350,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState, fontOptions, preloadedIcons}}>
+            addCSSProperty, addJSONProperty, addMultipleJSONProperties, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState, fontOptions, preloadedIcons}}>
             {children}
         </CanvasContext.Provider>
     );

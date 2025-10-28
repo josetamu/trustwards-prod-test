@@ -9,7 +9,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    border-bottom: 1px solid var(--border-fresco-color);
     padding-bottom: 10px;
 }
 
@@ -852,4 +851,28 @@
 .tw-builder__settings-action--placeholder {
     opacity: 0.5;
     border: 1px dashed currentColor;
+}
+
+/*Separator control*/
+.tw-builder__separator-control{
+    width: calc(100% + 20px);
+    height: 1px;
+    background-color: var(--border-fresco-color);
+    margin-top: 2px;
+    margin-bottom: 10px;
+    margin-left: -10px;
+}
+
+/*Label control*/
+.tw-builder__label-control{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--value-color);
+
+    margin-bottom: 10px;
+    margin-top: 2px;
+}
+.tw-builder__label-control + .tw-builder__control{
+    border: none !important;
 }
