@@ -511,8 +511,6 @@
 }
 
 
-
-
 .tw-builder__settings-inset-container {
     display: flex;
     align-items: center;
@@ -555,10 +553,16 @@
 .tw-builder__settings-checkbox:checked + .tw-builder__settings-inset {
     background-color: var(--accent-bg-color);
 }
+.tw-builder__settings-inset--placeholder {
+    background-color: var(--placeholder-color);
+}
 .tw-builder__settings-checkbox:checked + .tw-builder__settings-inset:before {
     transform: translateX(10px);
 }
 
+.tw-builder__settings-inset--placeholder:before {
+    transform: translateX(10px);
+}
 .tw-builder__settings-pen-body .tw-builder__settings-select {
     background-color: var(--control-background);
     color:  #000000;
@@ -861,3 +865,7 @@
 .tw-builder__settings-properties-actions .tw-builder__settings-deleter{
     top: -4px;
 }
+
+.tw-builder__settings-width > .tw-builder__settings-input:focus::placeholder { color: transparent; }
+
+.tw-builder__settings-width .tw-builder__settings-input:focus::placeholder { color: transparent; }

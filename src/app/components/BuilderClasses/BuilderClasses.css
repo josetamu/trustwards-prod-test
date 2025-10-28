@@ -84,7 +84,7 @@
     width: 100%;
     height: auto;
     background-color: var(--right-panel-dropdown-background);
-    z-index: 2;
+    z-index: 3;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
