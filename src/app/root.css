@@ -628,6 +628,7 @@ html[data-theme="dark"] {
   --no-selected-item-background: #363636;
   --no-selected-item-text-color: #999999;
   --control-background: #363636;
+  --control-background-repeater: #555555;
   --control-context-background: #282828;
 
   --classes-background: #363636;

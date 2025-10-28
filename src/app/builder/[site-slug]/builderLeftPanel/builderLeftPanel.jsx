@@ -1042,25 +1042,26 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
                                     return <div className="tw-builder__tree-item-divider-icon"></div>;
                                 case 'button':
                                     return <div className="tw-builder__tree-item-button-icon"></div>;
-                                default:
-                                    // Try to render HugeIcon if the icon name looks like a HugeIcon (ends with 'Icon')
-                                    if (item.icon && typeof item.icon === 'string' && item.icon.endsWith('Icon')) {
-                                        try {
-                                            const selectedIcon = getIconByName(item.icon);
-                                            if (selectedIcon) {
-                                                return <HugeiconsIcon
-                                                    className="tw-builder__tree-item-hugeicons"
-                                                    icon={selectedIcon} 
-                                                    size={10} 
-                                                    color="currentColor" 
-                                                    strokeWidth={1.5} 
-                                                />;
-                                            }
-                                        } catch (e) {
-                                            // If icon not found, fall through to default
+                                case 'icon':
+                                    try {
+                                        const selectedIcon = getIconByName(item.icon);
+                                        if (selectedIcon) {
+                                            return <HugeiconsIcon
+                                                className="tw-builder__tree-item-hugeicons"
+                                                icon={selectedIcon} 
+                                                size={10} 
+                                                color="currentColor" 
+                                                strokeWidth={1.5} 
+                                            />;
                                         }
+                                    } catch (e) {
+                                        // If icon not found, fall through to default
                                     }
                                     // Default fallback icon (block)
+                                    return  <svg className="tw-builder__tree-item-block-icon" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect width="8" height="8" rx="2" fill="currentColor"/>
+                                            </svg>;
+                                default:
                                     return <svg className="tw-builder__tree-item-block-icon" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <rect width="8" height="8" rx="2" fill="currentColor"/>
                                             </svg>;
