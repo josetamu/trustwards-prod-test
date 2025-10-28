@@ -24,6 +24,12 @@ a {
   outline: var(--focus-outline-dashed);
   outline-offset: var(--focus-outline-offset);
 }
+
+/* Suppress focus outlines when Shift key is being held */
+html[data-shift-pressed="true"] *:focus-visible {
+  outline: none;
+}
+
 /* Solid focus for accent color buttons and important actions */
 [style*="background-color: var(--accent-bg-color)"]:focus-visible,
 button[style*="background-color: var(--accent-bg-color)"]:focus-visible,

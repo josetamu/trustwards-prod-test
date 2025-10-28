@@ -769,26 +769,23 @@
    ACCESSIBILITY FOCUS STYLES
    ======================= */
 
-/* Tree item selected state - solid outline when selected */
-.tw-builder__tree-item-header--selected:focus-visible {
+/* ALL tree focus outlines - only show when Shift is NOT pressed */
+html:not([data-shift-pressed="true"]) .tw-builder__tree-item-header--selected:focus-visible {
   outline: var(--focus-outline-solid) !important;
-  outline-offset: var(--focus-outline-offset-inner); /* inner outline to prevent clipping/overflow */
+  outline-offset: var(--focus-outline-offset-inner) !important;
 }
 
-/* Tree expand button solid outline when parent item is selected */
-.tw-builder__tree-item-header--selected .tw-builder__tree-expand-button:focus-visible {
+html:not([data-shift-pressed="true"]) .tw-builder__tree-item-header--selected .tw-builder__tree-expand-button:focus-visible {
   outline: var(--focus-outline-solid) !important;
-  outline-offset: var(--focus-outline-offset);
+  outline-offset: var(--focus-outline-offset) !important;
 }
 
-/* Builder Left Panel (Tree) - default focus for non-selected items uses inner dashed */
-.tw-builder__tree-item-header:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: var(--focus-outline-offset-inner); /* inner outline to avoid overflow with container */
+html:not([data-shift-pressed="true"]) .tw-builder__tree-item-header:focus-visible {
+  outline: var(--focus-outline-dashed) !important;
+  outline-offset: var(--focus-outline-offset-inner) !important;
 }
 
-/* Tree expand button - external outline */
-.tw-builder__tree-expand-button:focus-visible {
-  outline: var(--focus-outline-dashed);
-  outline-offset: var(--focus-outline-offset); /* external outline for the arrow */
+html:not([data-shift-pressed="true"]) .tw-builder__tree-expand-button:focus-visible {
+  outline: var(--focus-outline-dashed) !important;
+  outline-offset: var(--focus-outline-offset) !important;
 }
