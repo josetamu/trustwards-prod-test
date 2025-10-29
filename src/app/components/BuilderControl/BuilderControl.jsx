@@ -22,7 +22,9 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 	const selectedElementData = globalControlProps?.selectedElementData;
 	const getPlaceholderValue = globalControlProps?.getPlaceholderValue;
 	const applyMultipleGlobalJSONChanges = globalControlProps?.applyMultipleGlobalJSONChanges;
-
+	const applyMultipleGlobalCSSChanges = globalControlProps?.applyMultipleGlobalCSSChanges;
+	const applyMultipleCSSAndJSONChanges = globalControlProps?.applyMultipleCSSAndJSONChanges;
+	
 	//get the name of the active root to show in the tooltip
 	const activeRootName = {
 		'tw-root--banner': 'Banner',
@@ -272,37 +274,47 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 
 
 		const handleSectionClear = useCallback(() => {
-			// Debug: log what we're about to clear
-			console.log('🗑️ Clearing section - selectorBatches:', selectorBatches);
 			
-			// Apply CSS clears grouped by selector
-			if (applyGlobalCSSChange && selectorBatches && selectorBatches.size > 0) {
-				for (const [selector, batch] of selectorBatches.entries()) {
-					const keys = Object.keys(batch || {});
-					console.log(`  Selector: "${selector}", Properties:`, keys, batch);
-					
-					if (keys.length > 0) {
-						// Pass selector correctly (it can be undefined, null, or a string)
-						applyGlobalCSSChange(batch, undefined, selector || undefined);
+			const hasCSSChanges = selectorBatches && selectorBatches.size > 0;
+			const hasJSONChanges = jsonProps && jsonProps.size > 0;
+			
+			// If we have BOTH CSS and JSON changes, use combined function
+			if (hasCSSChanges && hasJSONChanges && applyMultipleCSSAndJSONChanges) {
+				const jsonBatch = {};
+				for (const key of jsonProps.values()) jsonBatch[key] = '';
+				applyMultipleCSSAndJSONChanges(selectorBatches, jsonBatch);
+			} 
+			// Otherwise, apply separately
+			else {
+				if (hasCSSChanges) {
+					if (applyMultipleGlobalCSSChanges) {
+						applyMultipleGlobalCSSChanges(selectorBatches);
+					} else if (applyGlobalCSSChange) {
+						for (const [selector, batch] of selectorBatches.entries()) {
+							const keys = Object.keys(batch || {});
+							if (keys.length > 0) {
+								applyGlobalCSSChange(batch, undefined, selector || undefined);
+							}
+						}
+					}
+				}
+				
+				if (hasJSONChanges) {
+					if (applyMultipleGlobalJSONChanges) {
+						const batch = {};
+						for (const key of jsonProps.values()) batch[key] = '';
+						applyMultipleGlobalJSONChanges(batch);
+					} else if (applyGlobalJSONChange) {
+						for (const key of jsonProps.values()) {
+							applyGlobalJSONChange(key, '');
+						}
 					}
 				}
 			}
 			
-			// Apply JSON clears (batch preferred to avoid last-write-wins)
-			if (jsonProps && jsonProps.size > 0) {
-				console.log('  JSON props to clear:', Array.from(jsonProps));
-				if (applyMultipleGlobalJSONChanges) {
-					const batch = {};
-					for (const key of jsonProps.values()) batch[key] = '';
-					applyMultipleGlobalJSONChanges(batch);
-				} else if (applyGlobalJSONChange) {
-					for (const key of jsonProps.values()) {
-						applyGlobalJSONChange(key, '');
-					}
-				}
-			}
-		}, [applyGlobalCSSChange, applyGlobalJSONChange, applyMultipleGlobalJSONChanges, selectorBatches, jsonProps]);
-	
+			setBwUnified('');
+			setBrUnified('');
+		}, [applyGlobalCSSChange, applyMultipleGlobalCSSChanges, applyMultipleCSSAndJSONChanges, applyGlobalJSONChange, applyMultipleGlobalJSONChanges, selectorBatches, jsonProps]);	
 
 	// Check if required condition is met for this group (after all hooks)
 	if (!shouldShow) {
@@ -324,7 +336,6 @@ export default function BuilderControl({label, controls, whatType, activeRoot, g
 									// For Enter Animation, delete all properties at once
 									clearAllEnterAnimations();
 								} else {
-									console.log('Clearing section');
 									// For other sections, use handleSectionClear
 									handleSectionClear();
 								}

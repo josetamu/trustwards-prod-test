@@ -4025,7 +4025,7 @@ const LabelControl = ({text}) => {
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, addMultipleJSONProperties, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, addMultipleJSONProperties, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty, addMultipleCSSProperties, applyMultipleCSSAndJSONProperties} = useCanvas();
 
 
     const [bwUnified, setBwUnified] = useState('');
@@ -4109,14 +4109,6 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = 
     
     const { nestedSelector = null, enterScope = null } = normalizedOptions;
     
-    console.log('🎨 applyGlobalCSSChange called:', {
-        cssPropertyOrObject,
-        value,
-        options,
-        normalizedOptions,
-        nestedSelector
-    });
-
     // Determine selector type and value
     let type = activeClass ? 'class' : 'id';
     let selector = activeClass ? activeClass : selectedId;
@@ -4136,13 +4128,6 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = 
     if (nestedSelector) cssOptions.nestedSelector = nestedSelector;
     if (enterScope) cssOptions.enterScope = enterScope;
     
-    console.log('🎨 About to call addCSSProperty:', {
-        type,
-        selector,
-        cssPropertyOrObject,
-        cssOptions
-    });
-
     // Apply
     if (typeof cssPropertyOrObject === 'string') {
         addCSSProperty(type, selector, cssPropertyOrObject, value, cssOptions);
@@ -4150,6 +4135,19 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = 
         addCSSProperty(type, selector, cssPropertyOrObject, undefined, cssOptions);
     }
 }, [selectedId, activeClass, activeRoot, addCSSProperty]);
+
+// Apply multiple CSS changes across different selectors (batch update to avoid race conditions)
+const applyMultipleGlobalCSSChanges = useCallback((selectorBatches) => {
+    if (!selectedId || !selectorBatches || selectorBatches.size === 0) return;
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    // Call the batch update function from CanvasContext
+    addMultipleCSSProperties(type, selector, selectorBatches);
+}, [selectedId, activeClass, addMultipleCSSProperties]);
+
 
 // Enter Animation: saves in ids/classes CSSData with the scope of the root and the correct selector
 const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
@@ -4537,17 +4535,28 @@ const clearAllEnterAnimations = useCallback(() => {
         return (value !== null && value !== undefined) ? value : defaultValue;
 
     },[JSONtree, selectedId, activeRoot]);
+    // Apply multiple CSS and JSON changes in a single update
+const applyMultipleCSSAndJSONChanges = useCallback((selectorBatches, jsonBatch) => {
+    if (!selectedId) return;
+    
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    applyMultipleCSSAndJSONProperties(type, selector, selectorBatches, jsonBatch);
+}, [selectedId, activeClass, applyMultipleCSSAndJSONProperties]);
 
-     const globalControlProps = {
+    const globalControlProps = {
         selectedElementData,
         applyGlobalCSSChange,
+        applyMultipleGlobalCSSChanges,
+        applyMultipleCSSAndJSONChanges,
         getGlobalCSSValue,
         applyGlobalJSONChange,
         applyMultipleGlobalJSONChanges,
         getGlobalJSONValue,
         selectedId,
         getPlaceholderValue,
-     };
+    };
 
      // Collect all controls from header and body for required evaluation
      const allControls = useMemo(() => {

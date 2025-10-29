@@ -132,7 +132,6 @@ const captureCanvas = useCallback(async () => {
             return;
         }
 
-        //console.log('Canvas capture saved successfully:', filePath);
         
     } catch (error) {
         console.error('Error capturing canvas:', error);

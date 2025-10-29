@@ -19,6 +19,7 @@ function Home() {
     const [range, setRange] = useState({ from: undefined, to: undefined });
     const datesRef = useRef(null);
     const [openCalendar, setOpenCalendar] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
 
     const selectedSite = webs.find(site => site.id === siteSlug);
 
@@ -66,7 +67,7 @@ function Home() {
         }, [range]);
     
 
-    const monthlyLimit = 3;
+    const monthlyLimit = 30;
     const monthlyUsed = Number(selectedSite?.['Monthly proof'] ?? 0);
     
 
@@ -153,7 +154,9 @@ function Home() {
     const handleCreate = async () => {
         if (!isValidRange) return;
         if (monthlyUsed >= monthlyLimit) return;
-    
+        if (isCreating) return;
+
+        setIsCreating(true);
         try {   
             // 1 Generate CSV
             const fromStart = new Date(range.from); fromStart.setHours(0,0,0,0);
@@ -225,6 +228,8 @@ function Home() {
 
     } catch (e) {
         showNotification('Error creating proof');
+    }finally {
+        setIsCreating(false);
     }
 };
 
@@ -284,8 +289,15 @@ function Home() {
                                 </div>
                             )}
                         </div>
-                        <div className={`proof-of-consent__header-btn ${monthlyUsed >= monthlyLimit ? 'proof-of-consent__header-btn-disabled' : ''}`} onClick={handleCreate} disabled={monthlyUsed >= monthlyLimit}>
-                            <span className="proof-of-consent__header-btn-text">Create</span>
+                        <div className={`proof-of-consent__header-btn ${monthlyUsed >= monthlyLimit || isCreating ? 'proof-of-consent__header-btn-disabled' : ''}`}
+                             role="button"
+                             aria-disabled={monthlyUsed >= monthlyLimit || isCreating}
+                             onClick={() => { if (!isCreating && monthlyUsed < monthlyLimit) handleCreate(); }}>
+                            {isCreating ? (
+                                <span className="proof-of-consent__header-btn-spinner" aria-hidden="true"></span>
+                            ) : (
+                                <span className="proof-of-consent__header-btn-text">Create</span>
+                            )}
                         </div>
                     </div>
                     <div className="proof-of-consent__header-monthly">

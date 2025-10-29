@@ -90,7 +90,6 @@ export const categoriesGroupControls = {
                     name: 'Icon', 
                     type: 'icons', 
                     dataAttribute: 'data-icon-name',
-                    JSONProperty: 'icon',
                     default: 'AddIcon',
                 },
                 { name: 'Size', type: 'text', dataAttribute: 'data-icon-size', default: '24' },

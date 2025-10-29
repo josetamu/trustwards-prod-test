@@ -53,7 +53,8 @@
     cursor: pointer;
     position: relative;
     border-radius: 8px;
-    padding: 6px 10px;
+    padding: 4px 10px;
+   
 }
 .proof-of-consent__calendar-popover {
     position: absolute;
@@ -71,10 +72,14 @@
     padding: 6px 10px;
     border-radius: 8px;
     cursor: pointer;
+    min-width: 59px;
+    align-items: center;
+    justify-content: center;
 }
 .proof-of-consent__header-btn-disabled{
     opacity: 0.5;
     cursor: not-allowed;
+    pointer-events: none;
 }
 .proof-of-consent__header-btn-text{
     font-size: var(--font-size-small);
@@ -262,6 +267,7 @@
     padding: 10px;
     border: 1px solid var(--border-fresco-color);
     border-radius: 8px;
+    box-shadow: var(--fancy-shadow);
 }
 .proof-of-consent__content-created-download-text{
     font-size: var(--font-size-medium);
@@ -269,6 +275,22 @@
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-strong-color);
     cursor: pointer;
+}
+
+/* Spinner for Create button */
+.proof-of-consent__header-btn-spinner{
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: poc-spin 0.8s linear infinite;
+}
+
+@keyframes poc-spin {
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 920px) {

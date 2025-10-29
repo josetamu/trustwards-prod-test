@@ -324,13 +324,6 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     * value - the value of the property (if empty string "", the property will be removed)
     */
     const addCSSProperty = (type, selector, propertyOrObject, value, options = {}) => {
-        console.log('🔧 addCSSProperty called:', {
-            type,
-            selector,
-            propertyOrObject,
-            value,
-            options
-        });
         
         // Support legacy API: if options is a string, treat it as nestedSelector
         const normalizedOptions = typeof options === 'string' 
@@ -339,7 +332,6 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         
         let { nestedSelector = null, enterScope = null } = normalizedOptions;
         
-        console.log('🔧 After normalization:', { nestedSelector, enterScope });
         // Process '&' character in nestedSelector to reference current element selector
         // Keep original selector to also update defaults that may have '&' unprocessed
         const originalNestedSelector = nestedSelector;
@@ -535,6 +527,255 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         }
         setJSONtree(updated);
     };
+
+    /*
+* Add multiple CSS properties across different selectors at once to avoid race conditions
+* Similar to addMultipleJSONProperties but for CSS properties
+*/
+const addMultipleCSSProperties = (type, selector, selectorBatches) => {
+
+    const bp = getActiveBreakpoint();
+    const isResponsive = bp !== 'desktop';
+
+    const getIdsArr = () => {
+        if(isResponsive) return JSONtree.responsive?.[bp]?.idsCSSData || [];
+        return JSONtree.idsCSSData || [];
+    };
+    const getClassesArr = () => {
+        if(isResponsive) return JSONtree.responsive?.[bp]?.classesCSSData || [];
+        return JSONtree.classesCSSData || [];
+    };
+
+    let currentIds = getIdsArr();
+    let currentClasses = getClassesArr();
+    let updatedIdsCSSData = [...currentIds];
+    let updatedClassesCSSData = [...currentClasses];
+    
+    // Helper to clean properties (remove empty strings)
+    const cleanProperties = (oldProps, newProps) => {
+        const updated = { ...oldProps };
+        Object.entries(newProps).forEach(([prop, val]) => {
+            if (val === "") {
+                delete updated[prop];
+            } else {
+                updated[prop] = val;
+            }
+        });
+        return updated;
+    };
+
+    // Process each selector batch
+    for (const [nestedSelector, batch] of selectorBatches.entries()) {
+        // Handle ID or CLASS
+        const targetArray = type === 'id' ? updatedIdsCSSData : updatedClassesCSSData;
+        const findKey = type === 'id' ? 'id' : 'className';
+        const existingIndex = targetArray.findIndex(item => item[findKey] === selector);
+        
+        let entry;
+        if (existingIndex !== -1) {
+            entry = { ...targetArray[existingIndex] };
+        } else {
+            // Create new entry
+            entry = type === 'id' 
+                ? { id: selector, properties: {} }
+                : { className: selector, properties: {} };
+        }
+        
+        // Apply changes based on whether we have a nested selector
+        if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.trim() !== '') {
+            const key = nestedSelector.trim();
+            const nest = { ...(entry.nested || {}) };
+            let node = { ...(nest[key] || {}) };
+            
+            // Clean properties for this nested selector
+            const cleanedProps = { ...(node.properties || {}) };
+            Object.entries(batch).forEach(([prop, val]) => {
+                if (val === "") {
+                    delete cleanedProps[prop];
+                }
+            });
+            
+            node.properties = cleanedProps;
+            
+            // Remove nested node if empty
+            if (Object.keys(node.properties).length === 0 && (!node.states || Object.keys(node.states).length === 0)) {
+                delete nest[key];
+            } else {
+                nest[key] = node;
+            }
+            
+            entry.nested = Object.keys(nest).length ? nest : undefined;
+        } else {
+            // Apply to main properties (no nested selector)
+            entry.properties = cleanProperties(entry.properties || {}, batch);
+        }
+        
+        // Update the array
+        if (existingIndex !== -1) {
+            targetArray[existingIndex] = entry;
+        } else {
+            targetArray.push(entry);
+        }
+    }
+    
+    // Update JSONtree ONCE with all changes
+    const updated = deepCopy(JSONtree);
+    if(isResponsive) {
+        if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
+        if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+        updated.responsive[bp].idsCSSData = updatedIdsCSSData;
+        updated.responsive[bp].classesCSSData = updatedClassesCSSData;
+    } else {
+        updated.idsCSSData = updatedIdsCSSData;
+        updated.classesCSSData = updatedClassesCSSData;
+    }
+    setJSONtree(updated);
+};
+
+/*
+* Apply multiple CSS and JSON changes in a single update to avoid race conditions
+* Used when clearing a section that has both CSS and JSON properties
+*/
+const applyMultipleCSSAndJSONProperties = (type, selector, selectorBatches, jsonPropertyBatch) => {
+
+    const bp = getActiveBreakpoint();
+    const isResponsive = bp !== 'desktop';
+
+    // Get current data
+    const getIdsArr = () => {
+        if(isResponsive) return JSONtree.responsive?.[bp]?.idsCSSData || [];
+        return JSONtree.idsCSSData || [];
+    };
+    const getClassesArr = () => {
+        if(isResponsive) return JSONtree.responsive?.[bp]?.classesCSSData || [];
+        return JSONtree.classesCSSData || [];
+    };
+
+    let currentIds = getIdsArr();
+    let currentClasses = getClassesArr();
+    let updatedIdsCSSData = [...currentIds];
+    let updatedClassesCSSData = [...currentClasses];
+    
+    // Helper to clean properties
+    const cleanProperties = (oldProps, newProps) => {
+        const updated = { ...oldProps };
+        Object.entries(newProps).forEach(([prop, val]) => {
+            if (val === "") {
+                delete updated[prop];
+            } else {
+                updated[prop] = val;
+            }
+        });
+        return updated;
+    };
+
+    // PART 1: Process CSS changes (if any)
+    if (selectorBatches && selectorBatches.size > 0) {
+        const targetArray = type === 'id' ? updatedIdsCSSData : updatedClassesCSSData;
+        const findKey = type === 'id' ? 'id' : 'className';
+        const existingIndex = targetArray.findIndex(item => item[findKey] === selector);
+        
+        let entry;
+        if (existingIndex !== -1) {
+            entry = { ...targetArray[existingIndex] };
+        } else {
+            entry = type === 'id' 
+                ? { id: selector, properties: {} }
+                : { className: selector, properties: {} };
+        }
+
+        // Process each selector batch on the SAME entry
+        for (const [nestedSelector, batch] of selectorBatches.entries()) {
+            if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.trim() !== '') {
+                const key = nestedSelector.trim();
+                const nest = { ...(entry.nested || {}) };
+                let node = { ...(nest[key] || {}) };
+                
+                node.properties = cleanProperties(node.properties || {}, batch);
+                
+                if (Object.keys(node.properties).length === 0 && (!node.states || Object.keys(node.states).length === 0)) {
+                    delete nest[key];
+                } else {
+                    nest[key] = node;
+                }
+                
+                entry.nested = Object.keys(nest).length ? nest : undefined;
+            } else {
+                entry.properties = cleanProperties(entry.properties || {}, batch);
+            }
+        }
+        
+        if (existingIndex !== -1) {
+            targetArray[existingIndex] = entry;
+        } else {
+            targetArray.push(entry);
+        }
+    }
+    
+    // PART 2: Process JSON changes (if any) - update the tree structure
+    const updated = deepCopy(JSONtree);
+    
+    if (jsonPropertyBatch && Object.keys(jsonPropertyBatch).length > 0) {
+        const findAndUpdateElement = (node) => {
+            if (node.id === selector) {
+                Object.entries(jsonPropertyBatch).forEach(([property, value]) => {
+                    if (property.includes('.')) {
+                        const keys = property.split('.');
+                        let current = node;
+                        
+                        for (let i = 0; i < keys.length - 1; i++) {
+                            if (!current[keys[i]]) {
+                                current[keys[i]] = {};
+                            }
+                            current = current[keys[i]];
+                        }
+                        
+                        const lastKey = keys[keys.length - 1];
+                        if (value === "") {
+                            delete current[lastKey];
+                        } else {
+                            current[lastKey] = value;
+                        }
+                    } else {
+                        if (value === "") {
+                            delete node[property];
+                        } else {
+                            node[property] = value;
+                        }
+                    }
+                });
+                return true;
+            }
+            
+            if (node.children) {
+                for (let child of node.children) {
+                    if (findAndUpdateElement(child)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
+
+        updated.roots.forEach(root => findAndUpdateElement(root));
+    }
+    
+    // Apply CSS updates to the already-modified tree
+    if (isResponsive) {
+        if(!updated.responsive) updated.responsive = {tablet: {idsCSSData: [], classesCSSData: []}, mobile: {idsCSSData: [], classesCSSData: []}};
+        if(!updated.responsive[bp]) updated.responsive[bp] = {idsCSSData: [], classesCSSData: []};
+        updated.responsive[bp].idsCSSData = updatedIdsCSSData;
+        updated.responsive[bp].classesCSSData = updatedClassesCSSData;
+    } else {
+        updated.idsCSSData = updatedIdsCSSData;
+        updated.classesCSSData = updatedClassesCSSData;
+    }
+    
+    // ONE single tree update with both CSS and JSON changes
+    setJSONtree(updated);
+};
+
+    
 
 
 
@@ -1359,7 +1600,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
     return (
         <CanvasContext.Provider value={{ JSONtree, setJSONtree, addElement, removeElement, selectedId, setSelectedId, addClass, removeClass,
             moveElement, createElement, activeRoot, updateActiveRoot, activeTab, generateUniqueId, deepCopy, CallContextMenu, selectedItem, setSelectedItem,
-            addCSSProperty, addJSONProperty, addMultipleJSONProperties, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState, fontOptions, preloadedIcons}}>
+            addCSSProperty, addJSONProperty, addMultipleJSONProperties, removeJSONProperty, runElementScript, handleToolbarDragStart, handleToolbarDragEnd, notifyElementCreatedFromToolbar, isToolbarDragActive, isUnsaved, markClean, undo, redo, canUndo, canRedo, getActiveBreakpoint, activeState, setActiveState, fontOptions, preloadedIcons, addMultipleCSSProperties, applyMultipleCSSAndJSONProperties}}>
             {children}
         </CanvasContext.Provider>
     );
