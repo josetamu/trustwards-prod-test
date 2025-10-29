@@ -10,13 +10,6 @@ import { InstallationFirst } from './homeComponents/InstallationFirst';
 import { HomeInstallationSkeleton } from '@components/Skeletons/HomeInstallationSkeleton';
 import ScriptCopy from '@components/ScriptCopy/ScriptCopy';
 
-
-
-
-
-
-
-
 //Home page
 function Home() {
     const params = useParams();

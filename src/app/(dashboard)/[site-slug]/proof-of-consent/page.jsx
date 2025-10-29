@@ -67,7 +67,7 @@ function Home() {
         }, [range]);
     
 
-    const monthlyLimit = 30;
+    const monthlyLimit = 3;
     const monthlyUsed = Number(selectedSite?.['Monthly proof'] ?? 0);
     
 
@@ -125,30 +125,40 @@ function Home() {
             return items;
         };
     
-    const buildCSVFromConsents = (items) => {
+        const buildCSVFromConsents = (items) => {
         
-        const headers = ['Date','User IP','Analytics','Marketing','Functional'];
-        const rows = items.map(cd => {
-            const dateStr = format(new Date(cd.ts), 'yyyy-MM-dd');
-            const cat = cd?.categories || {};
-            const get = (k) => {
-                if (k in cat) return !!cat[k];
-                const mk = Object.keys(cat).find(kk => kk.toLowerCase() === k.toLowerCase());
-                return mk ? !!cat[mk] : false;
+            const DELIM = ';'; // Excel (ES) suele usar ';'
+            const EOL = '\r\n'; // CRLF para Excel en Windows
+    
+            const q = (v) => {
+                const s = String(v ?? '');
+                const needsQuotes = /[",;\r\n]/.test(s);
+                const esc = s.replace(/"/g, '""');
+                return needsQuotes ? `"${esc}"` : esc;
             };
-            const row = [
-                dateStr,
-                cd.userip || 'N/A', 
-                get('Analytics') ? 'true' : 'false',
-                get('Marketing') ? 'true' : 'false',
-                get('Functional') ? 'true' : 'false'
-            ].join(',');
-            return row;
-        });
-        
-        const result = [headers.join(','), ...rows].join('\n');
-        return result;
-    };
+    
+            const headers = ['Date','User IP','Analytics','Marketing','Functional'];
+            const rows = items.map(cd => {
+                const dateStr = format(new Date(cd.ts), 'yyyy-MM-dd');
+                const cat = cd?.categories || {};
+                const get = (k) => {
+                    if (k in cat) return !!cat[k];
+                    const mk = Object.keys(cat).find(kk => kk.toLowerCase() === k.toLowerCase());
+                    return mk ? !!cat[mk] : false;
+                };
+                const row = [
+                    q(dateStr),
+                    q(cd.userip || 'N/A'),
+                    q(get('Analytics') ? 'true' : 'false'),
+                    q(get('Marketing') ? 'true' : 'false'),
+                    q(get('Functional') ? 'true' : 'false')
+                ].join(DELIM);
+                return row;
+            });
+            
+            const result = [headers.map(q).join(DELIM), ...rows].join(EOL) + EOL;
+            return result;
+        };
     
 
     const handleCreate = async () => {
@@ -164,8 +174,21 @@ function Home() {
     
             const items = await fetchConsentsForRange(siteSlug);
             
-            // Generate CSV from consent_data
-            const csv = buildCSVFromConsents(items);
+            // Filter by selected range (using cd.ts)
+            const fromMs = fromStart.getTime();
+            const toMs = toEnd.getTime();
+            const filtered = (items || []).filter(cd => {
+                const t = cd?.ts ? new Date(cd.ts).getTime() : NaN;
+                return Number.isFinite(t) && t >= fromMs && t <= toMs;
+            });
+
+            if (filtered.length === 0) {
+                showNotification('No consents found for the selected range');
+                return;
+            }
+
+            // Generate CSV with only the records for the selected range
+            const csv = buildCSVFromConsents(filtered);
             
             // 2 Upload to Supabase Storage...
             const bucket = 'Consents';
@@ -175,8 +198,8 @@ function Home() {
             const filePath = `${siteSlug}/${filename}`;
             const uploadRes = await supabase.storage.from(bucket).upload(
                 filePath,
-                new Blob([csv], { type: 'text/csv' }),
-                { upsert: true, contentType: 'text/csv', cacheControl: '3600' }
+                new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }),
+                { upsert: true, contentType: 'text/csv; charset=utf-8', cacheControl: '3600' }
             );
             if (uploadRes?.error) {
                 showNotification(`Error uploading proof file`);
