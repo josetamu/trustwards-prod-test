@@ -26,9 +26,6 @@ function Home() {
     const [isButtonAnimating, setIsButtonAnimating] = useState(false);
     
 
-
-
-    
     //update site data when the selected site changes
     useEffect(() => {
             if(!webs || webs.length === 0) return;

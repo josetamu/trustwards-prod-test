@@ -28,6 +28,7 @@
     z-index: 0;
     overflow: hidden;
     background: var(--site-background);
+    min-height: 252px;
 }
 
 /* Styles for preview with canvas capture */

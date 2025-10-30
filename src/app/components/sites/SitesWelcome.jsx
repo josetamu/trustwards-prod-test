@@ -3,11 +3,11 @@ import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 
 
 export const SitesWelcome = () => {
-  const { allUserDataResource } = useDashboard();
+  const { allUserDataResource, userDataResource } = useDashboard();
 
-  if (!allUserDataResource) return <UserNameSkeleton />;
+  if (!allUserDataResource || !userDataResource) return <UserNameSkeleton />;
 
-  const {user} = allUserDataResource.read();
+  const {user} = userDataResource.read();
 
   return (
     <h2 className="sites__welcome">Hello, {user?.Name || "User"}</h2>

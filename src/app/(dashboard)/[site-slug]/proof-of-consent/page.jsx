@@ -14,7 +14,7 @@ import { supabase } from '@supabase/supabaseClient';
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { webs,setWebs, consents, showNotification } = useDashboard();
+    const { webs,setWebs, showNotification } = useDashboard();
 
     const [range, setRange] = useState({ from: undefined, to: undefined });
     const datesRef = useRef(null);
