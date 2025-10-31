@@ -7,7 +7,7 @@
     border-bottom: 1px solid var(--border-fresco-color);
     justify-content: center;
     gap: 5px;
-
+    position: relative;
 }
 
 .dashboard-header__header{
@@ -117,6 +117,8 @@
     justify-content: flex-end;
     gap: 10px;
     padding-right: 15px;
+    position: absolute;
+    right: 0;
 }
 
 .dashboard-header__dots{

@@ -420,20 +420,18 @@ export function Sidebar({
                         <div className="sidebar__sites">
                             <div className="sidebar__sites-header">
                                 {/* render different headers depending you are inside site or not */}
-                                {isSiteOpen ? (
-                                    
-                                    <Suspense fallback={<UserNameSkeleton />}>
+                                
+                                <Suspense fallback={<UserNameSkeleton />}>
+                                    {siteSlug ? (
                                         <SiteName siteSlug={siteSlug}/>
-                                    </Suspense>
-                                    
-                                ) : (
-                                    <>
+                                    ) : (
                                         <span className='sidebar__sites-title'>Sites</span>
-                                    </>
-                                )}
+                                    )}
+                                </Suspense>
+                              
                             </div>
                             <div className="sidebar__sites-container">
-                                {isSiteOpen ? (
+                                {!!siteSlug ? (
                                     // if we are inside a site, show the overviewPages
                                     <div className={`sidebar__sites-display ${hasSitesOverflow ? 'sidebar__sites-display--overflow' : ''}`} ref={sitesDisplayRef}>
                                         <div className="sidebar__sites-display-links">

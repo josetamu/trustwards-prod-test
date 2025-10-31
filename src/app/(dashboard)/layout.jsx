@@ -423,19 +423,26 @@ const SiteStyle = (site) => {
         if (selectedSite) {
           setSiteData(selectedSite);
         } 
-      }// Don't set siteData to null when webs is empty, wait for webs to load
+      }
     else {
       setSiteData(null);
     } 
   }, [params, webs, setSiteData, setIsSiteOpen]);
+  
 
   useEffect(() => {
     const prev = prevSiteSlugRef.current;
-    const curr = params['site-slug'];
+    const curr = params['site-slug'] || null;
   
-    if (prev && !curr) {
-      reloadAllUserData(); 
+    // dashboard -> site-slug
+    if (!prev && curr) {
+      reloadAllUserData();
     }
+    // site-slug -> dashboard
+    if (prev && !curr) {
+      reloadAllUserData();
+    }
+  
     prevSiteSlugRef.current = curr;
   }, [params['site-slug']]);
 
@@ -885,7 +892,7 @@ useEffect(() => {
                     
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockContent ? 'content__container--blocked' : ''}`}>
-                    {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}
+                {!!params['site-slug'] && !pathname.startsWith('/builder') && <DashboardHeader />}
                     {children}
 
 

@@ -9,7 +9,7 @@
 .proof-of-consent__header{
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 72%;
     padding: 50px 0 10px 0;
     gap: 15px;
 }
@@ -26,6 +26,7 @@
     letter-spacing: var(--letter-spacing-negative);
     color: var(--body-fresco-color);
     white-space: nowrap;
+    text-align: justify;
     min-width: 175px;
 }
 .proof-of-consent__header-actions{
@@ -120,7 +121,7 @@
 }
 .proof-of-consent__divider{
     height: 1px;
-    width: 50%;
+    width: 72%;
     background-color: var(--border-fresco-color);
     
 }
@@ -223,7 +224,7 @@
 
 
 .proof-of-consent__content{
-    width: 50%;
+    width: 72%;
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -294,19 +295,12 @@
 }
 
 @media (max-width: 920px) {
-  .proof-of-consent__content-created-dates{
-    flex-direction: column;
-    align-items: start;
-    justify-content: start;
-    gap: 10px;
-  }
+ 
 
   .proof-of-consent__header-actions{
-    flex-direction: column;
+    flex-direction: row;
   }
-  .proof-of-consent__header-dates-wrapper{
-    justify-content: center;
-  }
+
   .proof-of-consent__header-text{
     white-space: normal;
     min-width: 175px;
