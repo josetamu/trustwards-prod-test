@@ -10,6 +10,8 @@ import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { enUS } from 'date-fns/locale';
 import { supabase } from '@supabase/supabaseClient';
 import { HomeInstallationSkeleton } from '@components/Skeletons/HomeInstallationSkeleton';
+import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
+import MonthlyFilesSkeleton from '@components/Skeletons/MonthlyFilesSkeleton';
 
 function createResource(promise) {
   let status = 'pending';
@@ -383,7 +385,7 @@ function Home() {
     const resource = useMemo(() => {
       if (!siteSlug) return null;
       const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-      const delay = 1500;
+      const delay = 60000;
   
       const res = allUserDataResource;
       const gate = (async () => {
@@ -408,11 +410,58 @@ function Home() {
         Promise.all([fetchProofData(siteSlug), gate]).then(([data]) => data)
       );
     }, [siteSlug, allUserDataResource]);
+
+    const Skeleton = (
+        <div className='proof-of-consent'>
+        <div className="proof-of-consent__header">
+          <span className="proof-of-consent__header-title">Proof of Consent</span>
+          <span className="proof-of-consent__header-text">
+            In this area you can select a range of days (max. 1 week)<br/>and create a Proof of Consent file for this website (csv format).
+          </span>
+          <div className="proof-of-consent__header-actions">
+            <div className="proof-of-consent__header-dates-wrapper">
+              <PlanSkeleton />
+              <div
+                className="proof-of-consent__header-btn "
+              >
+                  <span className="proof-of-consent__header-btn-text">Create</span>
+              </div>
+            </div>
+            <div className="proof-of-consent__header-monthly">
+                <MonthlyFilesSkeleton />
+            </div>
+          </div>
+        </div>
+  
+        <div className="proof-of-consent__divider"></div>
+  
+        <div className="proof-of-consent__content">
+          {/* {proofEntries.length === 0 ? null : proofEntries.map(([id, [rangeText, todayText, fileUrl]]) => (
+            <div key={id} className="proof-of-consent__content-created">
+              <div className="proof-of-consent__content-created-dates">
+                <span className="proof-of-consent__content-created-dates-range">{rangeText}</span>
+                <span className="proof-of-consent__content-created-dates-today">Created on {todayText}</span>
+              </div>
+              <div
+                className="proof-of-consent__content-created-download"
+                tabIndex={0}
+                role="button"
+                aria-label="Download proof"
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') window.open(fileUrl, '_blank'); }}
+                onClick={(e) => { e.stopPropagation(); window.open(fileUrl, '_blank'); }}
+              >
+                <span className="proof-of-consent__content-created-download-text">Download</span>
+              </div>
+            </div>
+          ))} */}
+        </div>
+      </div>
+    );
   
     return (
       <div className='proof-of-consent'>
-        <Suspense fallback={<HomeInstallationSkeleton />}>
-          {resource ? <ProofContent resource={resource} /> : <HomeInstallationSkeleton />}
+        <Suspense fallback={Skeleton}>
+          {resource ? <ProofContent resource={resource} /> : Skeleton}
         </Suspense>
       </div>
     );

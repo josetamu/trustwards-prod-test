@@ -528,7 +528,7 @@ function Home() {
       if (!siteSlug) return null;
 
       const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-      const delay = 3000;
+      const delay = 1500;
 
       const res = allUserDataResource;
       const gate = (async () => {

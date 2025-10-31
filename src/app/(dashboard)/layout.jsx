@@ -357,6 +357,7 @@ const SiteStyle = (site) => {
 
   //Redirect to login if no session
   const [checkingAuth, setCheckingAuth] = useState(true);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -374,7 +375,7 @@ const SiteStyle = (site) => {
       if (!cancelled) setCheckingAuth(false);
     })();
     return () => { cancelled = true; };
-  }, [pathname, router, supabase]);
+  }, [router, pathname, supabase]);
   
     // Function to update the appearance settings in the database
     const updateAppearanceSettings = async (settings) => {

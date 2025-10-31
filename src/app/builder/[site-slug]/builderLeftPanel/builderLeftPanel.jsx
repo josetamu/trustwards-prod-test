@@ -1108,6 +1108,7 @@ function BuilderLeftPanel({ isPanelOpen, onPanelToggle, setModalType, setIsModal
     const dropdownMenu = (
         <>
             <Link
+            shallow={true}
             href="/"
             className="dropdown__item tw-builder__dropdown-item tw-builder__dropdown-item--home"
             onClick={(e) => {

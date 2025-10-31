@@ -2,28 +2,9 @@
 
 import './integrations.css';
 import { useParams, notFound } from 'next/navigation';
-import { useDashboard } from '@dashboard/layout';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
-import { useMemo, Suspense } from 'react';
-import { HomeInstallationSkeleton } from '@components/Skeletons/HomeInstallationSkeleton';
+import { useEffect, useState } from 'react';
 import { supabase } from '@supabase/supabaseClient';
-
-function createResource(promise) {
-  let status = 'pending';
-  let result;
-  const suspender = promise.then(
-    r => { status = 'success'; result = r; },
-    e => { status = 'error'; result = e; }
-  );
-  return {
-    read() {
-      if (status === 'pending') throw suspender;
-      if (status === 'error') throw result;
-      return result;
-    }
-  };
-}
-
 
 async function fetchIntegrationsData(siteSlug) {
   const { data: site, error } = await supabase
@@ -35,8 +16,7 @@ async function fetchIntegrationsData(siteSlug) {
   return { site };
 }
 
-function IntegrationsContent({ resource }) {
-  const { site } = resource.read();
+function IntegrationsContent({ site }) {
   const params = useParams();
   const siteSlug = params['site-slug'];
 
@@ -83,47 +63,54 @@ function IntegrationsContent({ resource }) {
 }
 
 function Home() {
-    const params = useParams();
-    const siteSlug = params['site-slug'];
-    const { allUserDataResource } = useDashboard();
-  
-    const resource = useMemo(() => {
-      if (!siteSlug) return null;
-  
-      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-      const delay = 1500;
-  
-      const res = allUserDataResource;
-      const gate = (async () => {
-        if (!res) {
-          await sleep(delay);
-          return null;
+  const params = useParams();
+  const siteSlug = params['site-slug'];
+
+
+  const [site, setSite] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!siteSlug) {
+      setSite(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    fetchIntegrationsData(siteSlug)
+      .then(({ site }) => {
+        if (!cancelled) {
+          setSite(site);
+          setLoading(false);
         }
-        try {
-          const v = res.read();
-          await sleep(delay);
-          return v;
-        } catch (p) {
-          if (p && typeof p.then === 'function') {
-            await p;
-            return null;
-          }
-          throw p;
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setSite(null);
+          setError(err);
+          setLoading(false);
         }
-      })();
-  
-      return createResource(
-        Promise.all([fetchIntegrationsData(siteSlug), gate]).then(([data]) => data)
-      );
-    }, [siteSlug, allUserDataResource]);
-  
-    return (
-      <div className='integrations'>
-        <Suspense fallback={<HomeInstallationSkeleton />}>
-          {resource ? <IntegrationsContent resource={resource} /> : <HomeInstallationSkeleton />}
-        </Suspense>
-      </div>
-    );
-  }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [siteSlug]);
+
+  if (loading) return null; 
+  if (error) return null;   
+
+  return (
+    <div className='integrations'>
+      {site ? <IntegrationsContent site={site} /> : null}
+    </div>
+  );
+}
 
 export default Home;
