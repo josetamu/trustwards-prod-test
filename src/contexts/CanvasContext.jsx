@@ -1271,12 +1271,39 @@ const applyMultipleCSSAndJSONProperties = (type, selector, selectorBatches, json
 
         // Process body controls
         if (controls.body) {
-            controls.body.forEach(section => {
-                // Check if it's a group (has controls array) or a standalone control (has type)
-                if (section.controls) {
+            controls.body.forEach((section) => {
+                // IMPORTANT: Check for repeater FIRST before checking for groups
+                // because repeaters have BOTH type AND controls properties
+                if (section.type === 'repeater' && section.controls) {
+                    // Process the repeater items
+                    section.controls.forEach((repeaterItem) => {
+                        // Each repeater item has a label and controls array
+                        // The controls can be either:
+                        // 1. Simple controls (with name, type, JSONProperty, default, etc.)
+                        // 2. Groups (with label and their own controls array)
+                        if (repeaterItem.controls) {
+                            repeaterItem.controls.forEach((itemControl) => {
+                                // Check if this is a group (has label AND controls, but NO type)
+                                // Groups have label + controls, but simple controls have name + type
+                                if (itemControl.label && itemControl.controls && !itemControl.type) {
+                                    itemControl.controls.forEach(subControl => {
+                                        processControl(subControl);
+                                    });
+                                } else {
+                                    // It's a direct control, process it
+                                    processControl(itemControl);
+                                }
+                            });
+                        }
+                    });
+                }
+                // Check if it's a group (has controls array but not a repeater)
+                else if (section.controls && !section.type) {
                     // It's a group with controls
                     section.controls.forEach(processControl);
-                } else if (section.type !== undefined) {
+                } 
+                // It's a standalone control (has type but not a repeater or doesn't have controls)
+                else if (section.type !== undefined) {
                     // It's a standalone control
                     processControl(section);
                 }
@@ -1292,6 +1319,7 @@ const applyMultipleCSSAndJSONProperties = (type, selector, selectorBatches, json
     */
     const applyDefaults = (groupControls, customDefaults = {}) => {
         const defaults = extractDefaultsFromControls(groupControls);
+        
         return {
             attributes: {
                 ...customDefaults.attributes,
@@ -1303,7 +1331,9 @@ const applyMultipleCSSAndJSONProperties = (type, selector, selectorBatches, json
             },
             ...(Object.keys(defaults.nested).length > 0 && {
                 defaultNested: defaults.nested
-            })
+            }),
+            // Spread JSON properties directly into the element
+            ...defaults.json
         };
     };
 

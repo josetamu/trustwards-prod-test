@@ -24,6 +24,12 @@ a {
   outline: var(--focus-outline-dashed);
   outline-offset: var(--focus-outline-offset);
 }
+
+/* Suppress focus outlines when Shift key is being held */
+html[data-shift-pressed="true"] *:focus-visible {
+  outline: none;
+}
+
 /* Solid focus for accent color buttons and important actions */
 [style*="background-color: var(--accent-bg-color)"]:focus-visible,
 button[style*="background-color: var(--accent-bg-color)"]:focus-visible,
@@ -632,6 +638,7 @@ html[data-theme="dark"] {
   --no-selected-item-background: #363636;
   --no-selected-item-text-color: #999999;
   --control-background: #363636;
+  --control-background-repeater: #555555;
   --control-context-background: #282828;
 
   --classes-background: #363636;

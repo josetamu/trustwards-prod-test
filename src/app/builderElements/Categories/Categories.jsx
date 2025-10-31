@@ -59,6 +59,45 @@ export const categoriesGroupControls = {
         { type: 'separator' },
         { type: 'label', text: 'Category Items' },
 
+        { type: 'repeater', controls: [
+            {
+                label: 'Functional',
+                controls: [
+                    { name: 'Title', type: 'text', JSONProperty: 'functionalTitle', nextLine: true, default: 'Functional'},
+                    { name: 'Description', type: 'textarea', JSONProperty: 'functionalDescription', nextLine: true,
+                        default: 'These cookies are essential in order to use the website and its features.'
+                    },
+                ]
+            },
+            {
+                label: 'Analytics',
+                controls: [
+                    { name: 'Title', type: 'text', JSONProperty: 'analyticsTitle', nextLine: true, default: 'Analytics'},
+                    { name: 'Description', type: 'textarea', JSONProperty: 'analyticsDescription', nextLine: true,
+                        default: 'Analytics cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. This data is used to improve the user experience and optimize our services.'
+                    },
+                ]
+            },
+            {
+                label: 'Marketing',
+                controls: [
+                    { name: 'Title', type: 'text', JSONProperty: 'marketingTitle', nextLine: true, default: 'Marketing'},
+                    { name: 'Description', type: 'textarea', JSONProperty: 'marketingDescription', nextLine: true,
+                        default: 'Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third-party advertisers.'
+                    },
+                ]
+            },
+            {
+                label: 'Other',
+                controls: [
+                    { name: 'Title', type: 'text', JSONProperty: 'otherTitle', nextLine: true, default: 'Other'},
+                    { name: 'Description', type: 'textarea', JSONProperty: 'otherDescription', nextLine: true,
+                        default: 'Other cookies are used to collect information about how you use our site, while you are on it. This includes information about the pages you view, the links you click and other actions you take on our site.'
+                    },
+                ]
+            },
+        ]},
+
         {
             label: 'Header',
             controls: [
@@ -358,54 +397,78 @@ export const Categories = (node, nodeProps = {}) => {
             ? node.categoriesScanned 
             : ['Functional'];
 
+        // Map categories to their JSON properties
+        const categoryDataMap = {
+            'Functional': {
+                title: node.functionalTitle || 'Functional',
+                description: node.functionalDescription || 'These cookies are essential in order to use the website and its features.'
+            },
+            'Analytics': {
+                title: node.analyticsTitle || 'Analytics',
+                description: node.analyticsDescription || 'Analytics cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. This data is used to improve the user experience and optimize our services.'
+            },
+            'Marketing': {
+                title: node.marketingTitle || 'Marketing',
+                description: node.marketingDescription || 'Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third-party advertisers.'
+            },
+            'Other': {
+                title: node.otherTitle || 'Other',
+                description: node.otherDescription || 'Other cookies are used to collect information about how you use our site, while you are on it. This includes information about the pages you view, the links you click and other actions you take on our site.'
+            }
+        };
+
         return (
             <Tag key={id} {...nodeProps} {...dataAttributes}>
-                {categories.map((category, index) => (
-                    <div key={`${id}-${category}-${index}`} className="tw-categories__expander">
-                        <div className="tw-categories__expander-header">
+                {categories.map((category, index) => {
+                    const categoryData = categoryDataMap[category];
+                    
+                    return (
+                        <div key={`${id}-${category}-${index}`} className="tw-categories__expander">
+                            <div className="tw-categories__expander-header">
 
-                            <div className="tw-categories__expander-header-title">
+                                <div className="tw-categories__expander-header-title">
 
-                                <HugeiconsIcon
-                                    className="tw-categories__expander-icon"
-                                    icon={selectedIcon} 
-                                    size={iconSize} 
-                                    color="currentColor" 
-                                    strokeWidth={strokeWidth} 
-                                />
-                                <span className="tw-categories__expander-title">{category}</span>
+                                    <HugeiconsIcon
+                                        className="tw-categories__expander-icon"
+                                        icon={selectedIcon} 
+                                        size={iconSize} 
+                                        color="currentColor" 
+                                        strokeWidth={strokeWidth} 
+                                    />
+                                    <span className="tw-categories__expander-title">{categoryData.title}</span>
+
+                                </div>
+                                <div className="tw-checkbox tw-categories__expander-checkbox tw-categories__expander-checkbox--category" data-type={checkboxType}>
+                                    {checkboxType === 'switch' ? (
+                                        <>
+                                            <input 
+                                                type="checkbox" 
+                                                name="category"
+                                                className="tw-categories__expander-input tw-categories__expander-input--category"
+                                            />
+                                            <span 
+                                                className="tw-categories__expander-switch"
+                                            />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <input className="tw-categories__expander-input" type="checkbox" id={`${id}-${category}-checkbox-input`}/>
+                                            <label className="tw-categories__expander-checkbox" htmlFor={`${id}-${category}-checkbox-input`}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+                                                    <path d="M4.25 13.5L8.75 18L19.75 6" strokeLinecap="round" strokeLinejoin="round"></path>
+                                                </svg>
+                                            </label>
+                                        </>
+                                    )}
+                                </div>
 
                             </div>
-                            <div className="tw-checkbox tw-categories__expander-checkbox tw-categories__expander-checkbox--category" data-type={checkboxType}>
-                                {checkboxType === 'switch' ? (
-                                    <>
-                                        <input 
-                                            type="checkbox" 
-                                            name="category"
-                                            className="tw-categories__expander-input tw-categories__expander-input--category"
-                                        />
-                                        <span 
-                                            className="tw-categories__expander-switch"
-                                        />
-                                    </>
-                                ) : (
-                                    <>
-                                        <input className="tw-categories__expander-input" type="checkbox" id={`${id}-${category}-checkbox-input`}/>
-                                        <label className="tw-categories__expander-checkbox" htmlFor={`${id}-${category}-checkbox-input`}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-                                                <path d="M4.25 13.5L8.75 18L19.75 6" strokeLinecap="round" strokeLinejoin="round"></path>
-                                            </svg>
-                                        </label>
-                                    </>
-                                )}
+                            <div className="tw-categories__expander-content">
+                                <div className="tw-categories__expander-paragraph">{categoryData.description}</div>
                             </div>
-
                         </div>
-                        <div className="tw-categories__expander-content">
-                            <div className="tw-categories__expander-paragraph">Here goes a great description of the category.</div>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </Tag>
         )
     }

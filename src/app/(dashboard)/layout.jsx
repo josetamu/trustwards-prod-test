@@ -220,6 +220,42 @@ const reloadAllUserData = () => {
     }
   }, [appearanceSettings]);
 
+  // Shift key detector - suppress focus outlines when Shift is held
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const setShiftPressed = (pressed) => {
+      document.documentElement.setAttribute('data-shift-pressed', pressed.toString());
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Shift') {
+        setShiftPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      if (e.key === 'Shift') {
+        setShiftPressed(false);
+      }
+    };
+
+    const handleBlur = () => {
+      // Reset when window loses focus (in case Shift is released outside the window)
+      setShiftPressed(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, []);
+
 
 
    // function to open sidebar in desktop toggleing the .open class. Also we save the state in the database only on desktop

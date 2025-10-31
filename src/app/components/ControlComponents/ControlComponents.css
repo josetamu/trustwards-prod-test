@@ -356,9 +356,10 @@
     resize: vertical;
     background-color: var(--control-background);
     color: var(--value-color);
-    &::placeholder{
-        color: var(--placeholder-color);
-    }
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
 }
 
 .tw-builder__settings-textarea:focus {
@@ -891,4 +892,82 @@
 }
 .tw-builder__label-control + .tw-builder__control{
     border: none !important;
+}
+
+/*Repeater control*/
+.tw-builder__repeater-control{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tw-builder__repeater-item{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-fresco-color);
+    border-radius: 8px;
+    background-color: var(--control-background);
+}
+
+.tw-builder__repeater-item-header{
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.tw-builder__repeater-item-header:hover{
+    background-color: var(--border-fresco-color);
+}
+
+.tw-builder__repeater-item-deleter{
+    position: absolute;
+    right: calc(100% + 1px);
+    top: 12%;
+    height: 26px;
+}
+
+.tw-builder__repeater-item-label{
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-negative);
+    color: var(--value-color);
+    flex: 1;
+}
+
+.tw-builder__repeater-item-icons{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tw-builder__repeater-item-icon{
+    display: none;
+    color: var(--placeholder-color);
+}
+
+.tw-builder__repeater-item-icon--active{
+    display: block;
+    color: var(--value-color);
+}
+
+.tw-builder__repeater-item-content{
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: transparent;
+
+    border-top: 1px solid #555555;
+}
+.tw-builder__repeater-item-content input,
+.tw-builder__repeater-item-content textarea{
+    background: var(--control-background-repeater);
 }

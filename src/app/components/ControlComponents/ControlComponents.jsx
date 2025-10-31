@@ -1749,6 +1749,7 @@ const TextAreaType = ({name, index, placeholder, JSONProperty, applyGlobalJSONCh
                 placeholder={placeholder}
                 value={textareaValue}
                 onChange={handleChange}
+                spellCheck={false}
                 className="tw-builder__settings-textarea"
             />
         </div>
@@ -4015,6 +4016,195 @@ const SeparatorControl = () => {
     );
 };
 
+const RepeaterType = ({controls, whatType, index, globalControlProps, setBwUnified, setBrUnified, allControls, checkRequired}) => {
+    // State to track which items are open/collapsed
+    const [openItems, setOpenItems] = useState({});
+
+    const toggleItem = (itemIndex) => {
+        setOpenItems(prev => ({
+            ...prev,
+            [itemIndex]: !prev[itemIndex]
+        }));
+    };
+
+    // Get global control props
+    const applyGlobalCSSChange = globalControlProps?.applyGlobalCSSChange;
+    const getGlobalCSSValue = globalControlProps?.getGlobalCSSValue;
+    const applyGlobalJSONChange = globalControlProps?.applyGlobalJSONChange;
+    const getGlobalJSONValue = globalControlProps?.getGlobalJSONValue;
+    const selectedElementData = globalControlProps?.selectedElementData;
+    const elementId = selectedElementData?.id;
+
+    // Helper to check if a value is non-empty
+    const isNonEmpty = (v) => {
+        if (v == null) return false;
+        if (typeof v === 'string') return v.trim() !== '';
+        return Boolean(v);
+    };
+
+    // Helper to check if a CSS property has a value
+    const hasCSS = useCallback((prop, selector) => {
+        if (!getGlobalCSSValue || !prop) return false;
+        const v = getGlobalCSSValue(prop, selector);
+        return isNonEmpty(v);
+    }, [getGlobalCSSValue]);
+
+    // Compute if each repeater item has values
+    const itemsWithValues = useMemo(() => {
+        if (!controls) return {};
+        
+        const result = {};
+        
+        controls.forEach((item, itemIndex) => {
+            if (!item.controls) {
+                result[itemIndex] = { hasAnyValue: false, hasDeletableValue: false };
+                return;
+            }
+
+            let hasAnyValue = false;
+            let hasDeletableValue = false;
+
+            // Flatten controls (handle both direct controls and groups)
+            const flatControls = [];
+            item.controls.forEach(ctrl => {
+                if (ctrl.label && ctrl.controls && !ctrl.type) {
+                    // It's a group, add its controls
+                    flatControls.push(...ctrl.controls);
+                } else {
+                    // It's a direct control
+                    flatControls.push(ctrl);
+                }
+            });
+
+            // Check each control for values
+            for (const ctrl of flatControls) {
+                // Check JSON properties
+                if (ctrl.JSONProperty && getGlobalJSONValue) {
+                    const v = getGlobalJSONValue(ctrl.JSONProperty);
+                    const hasVal = isNonEmpty(v);
+                    if (hasVal) hasAnyValue = true;
+                    if (!ctrl.notDelete && hasVal) hasDeletableValue = true;
+                }
+
+                // Check CSS properties
+                if (ctrl.cssProperty) {
+                    const hasPropVal = hasCSS(ctrl.cssProperty, ctrl.selector);
+                    if (hasPropVal) hasAnyValue = true;
+                    if (!ctrl.notDelete && hasPropVal) hasDeletableValue = true;
+                }
+
+                // Check data attributes
+                if (ctrl.dataAttribute && getGlobalJSONValue) {
+                    const v = getGlobalJSONValue(`attributes.${ctrl.dataAttribute}`);
+                    const hasVal = isNonEmpty(v);
+                    if (hasVal) hasAnyValue = true;
+                    if (!ctrl.notDelete && hasVal) hasDeletableValue = true;
+                }
+            }
+
+            result[itemIndex] = { hasAnyValue, hasDeletableValue };
+        });
+
+        return result;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [controls, getGlobalJSONValue, elementId]);
+
+    // Handle clearing all values for an item
+    const handleItemClear = useCallback((itemIndex) => {
+        const item = controls[itemIndex];
+        if (!item || !item.controls) return;
+
+        // Flatten controls
+        const flatControls = [];
+        item.controls.forEach(ctrl => {
+            if (ctrl.label && ctrl.controls && !ctrl.type) {
+                flatControls.push(...ctrl.controls);
+            } else {
+                flatControls.push(ctrl);
+            }
+        });
+
+        // Clear JSON properties
+        if (applyGlobalJSONChange) {
+            flatControls.forEach(ctrl => {
+                if (ctrl.JSONProperty && !ctrl.notDelete) {
+                    applyGlobalJSONChange(ctrl.JSONProperty, '');
+                }
+                if (ctrl.dataAttribute && !ctrl.notDelete) {
+                    applyGlobalJSONChange(`attributes.${ctrl.dataAttribute}`, '');
+                }
+            });
+        }
+
+        // Clear CSS properties
+        if (applyGlobalCSSChange) {
+            const cssBatches = new Map(); // selector -> {prop: ''}
+            
+            flatControls.forEach(ctrl => {
+                if (ctrl.cssProperty && !ctrl.notDelete) {
+                    const selector = ctrl.selector;
+                    if (!cssBatches.has(selector)) {
+                        cssBatches.set(selector, {});
+                    }
+                    cssBatches.get(selector)[ctrl.cssProperty] = '';
+                }
+            });
+
+            // Apply CSS clears
+            for (const [selector, batch] of cssBatches.entries()) {
+                applyGlobalCSSChange(batch, undefined, selector);
+            }
+        }
+    }, [controls, applyGlobalCSSChange, applyGlobalJSONChange]);
+
+    return (
+        <div className="tw-builder__repeater-control">
+            {controls && controls.map((item, itemIndex) => {
+                const { hasAnyValue, hasDeletableValue } = itemsWithValues[itemIndex] || {};
+                
+                return (
+                    <div key={itemIndex} className="tw-builder__repeater-item">
+                        <div 
+                            className="tw-builder__repeater-item-header" 
+                            onClick={() => toggleItem(itemIndex)}
+                        >
+                            {/* Item deleter: stop click from toggling accordion */}
+                            <span className="tw-builder__repeater-item-deleter" onClick={(e) => e.stopPropagation()}>
+                                <StylesDeleter
+                                    value={hasAnyValue}
+                                    notDelete={hasAnyValue && !hasDeletableValue}
+                                    onDelete={() => handleItemClear(itemIndex)}
+                                />
+                            </span>
+                            <span className="tw-builder__repeater-item-label">{item.label || `Item ${itemIndex + 1}`}</span>
+                            <div className="tw-builder__repeater-item-icons" tabIndex={0} role="button" aria-label="Toggle item">
+                                <span className={`tw-builder__repeater-item-icon ${!openItems[itemIndex] ? 'tw-builder__repeater-item-icon--active' : ''}`}>
+                                    <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <line y1="3.5" x2="7" y2="3.5" stroke="currentColor"/>
+                                        <line x1="3.5" x2="3.5" y2="7" stroke="currentColor"/>
+                                    </svg>
+                                </span>
+                                <span className={`tw-builder__repeater-item-icon ${openItems[itemIndex] ? 'tw-builder__repeater-item-icon--active' : ''}`}>
+                                    <svg width="7" height="1" viewBox="0 0 7 1" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <line y1="0.5" x2="7" y2="0.5" stroke="currentColor" strokeWidth="1"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                        {/* If the item is open, show its controls */}
+                        {openItems[itemIndex] && (
+                            <div className="tw-builder__repeater-item-content">
+                                {/* Render controls directly using whatType */}
+                                {item.controls && item.controls.map((control, controlIndex) => whatType(control, controlIndex))}
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
 const LabelControl = ({text}) => {
     return (
         <div className="tw-builder__label-control">
@@ -4687,6 +4877,8 @@ const applyMultipleCSSAndJSONChanges = useCallback((selectorBatches, jsonBatch) 
                     return <SeparatorControl key={index} />;
                 case 'label':
                     return <LabelControl key={index} text={item.text} />;
+                case 'repeater':
+                    return <RepeaterType key={index} controls={item.controls} whatType={whatType} index={index} globalControlProps={globalControlProps} setBwUnified={setBwUnified} setBrUnified={setBrUnified} allControls={allControls} checkRequired={checkRequired} />;
             }
         };
 
