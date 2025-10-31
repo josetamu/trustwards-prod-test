@@ -5,7 +5,7 @@ import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/layout';
 import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 import { Area, AreaChart, XAxis, RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
-import { useState, useEffect, useMemo, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense, useRef } from 'react';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
 import { Tooltip } from '@components/tooltip/Tooltip';
 import { Dropdown } from '@components/dropdown/Dropdown';
@@ -28,129 +28,121 @@ function createResource(promise) {
   };
 }
 
-// Fetch propio del Site para sincronizar carga y evitar flicker
+
 async function fetchSite(siteId) {
   const { data: site, error } = await supabase.from('Site').select('*').eq('id', siteId).single();
   if (error) throw error;
   return { site };
 }
 
-function AnalyticsContent({ resource }) {
-  if (resource) resource.read();
+async function fetchChartData(siteId, timeRange) {
+    const { data: consents, error } = await supabase
+      .from('Consents')
+      .select('id, site_id, consent_data')
+      .eq('site_id', siteId);
+  
+    if (error) throw error;
+  
+    const now = new Date();
+    let startDate = new Date();
+    if (timeRange === "7d") startDate.setDate(now.getDate() - 7);
+    else if (timeRange === "1m") startDate.setMonth(now.getMonth() - 1);
+    else if (timeRange === "1y") startDate.setFullYear(now.getFullYear() - 1);
+  
+    const latestConsentsByIP = {};
+    consents.forEach(consent => {
+      const consentData = consent.consent_data;
+      if (!consentData || !consentData.userip || !consentData.ts) return;
+      const userip = consentData.userip;
+      const timestamp = new Date(consentData.ts);
+      if (timestamp < startDate || timestamp > now) return;
+      if (!latestConsentsByIP[userip] || new Date(latestConsentsByIP[userip].ts) < timestamp) {
+        latestConsentsByIP[userip] = consentData;
+      }
+    });
+  
+    const consentsByDate = {};
+    Object.values(latestConsentsByIP).forEach(consentData => {
+      const date = new Date(consentData.ts);
+      let dateKey;
+      if (timeRange === "7d" || timeRange === "1m") {
+        dateKey = date.toISOString().split('T')[0];
+      } else if (timeRange === "1y") {
+        dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`;
+      }
+      if (!consentsByDate[dateKey]) {
+        consentsByDate[dateKey] = {
+          fullConsentGiven: 0,
+          parseConsentGiven: 0,
+          fullConsentRejected: 0
+        };
+      }
+      const categories = consentData.categories || {};
+      const relevant = Object.entries(categories).filter(([k]) => k !== 'Functional').map(([, v]) => v);
+      if (relevant.length === 0) consentsByDate[dateKey].fullConsentRejected++;
+      else if (relevant.every(Boolean)) consentsByDate[dateKey].fullConsentGiven++;
+      else if (relevant.every(v => v === false)) consentsByDate[dateKey].fullConsentRejected++;
+      else consentsByDate[dateKey].parseConsentGiven++;
+    });
+  
+    const dates = [];
+    const currentDate = new Date(startDate);
+    while (currentDate <= now) {
+      let dateKey;
+      if (timeRange === "7d" || timeRange === "1m") {
+        dateKey = currentDate.toISOString().split('T')[0];
+      } else if (timeRange === "1y") {
+        dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-01`;
+      }
+      dates.push({
+        date: dateKey,
+        fullConsentGiven: consentsByDate[dateKey]?.fullConsentGiven || 0,
+        parseConsentGiven: consentsByDate[dateKey]?.parseConsentGiven || 0,
+        fullConsentRejected: consentsByDate[dateKey]?.fullConsentRejected || 0
+      });
+      if (timeRange === "7d" || timeRange === "1m") currentDate.setDate(currentDate.getDate() + 1);
+      else if (timeRange === "1y") currentDate.setMonth(currentDate.getMonth() + 1);
+    }
+  
+    return timeRange === "1y"
+      ? Array.from(new Map(dates.map(item => [item.date, item])).values())
+      : dates;
+  }
+
+
+
+function AnalyticsContent({ site, initialChartData, defaultTimeRange = "7d" }) {
+
 
   const params = useParams();
   const siteSlug = params['site-slug'];
   const { setOffcanvasType, setIsOffcanvasOpen } = useDashboard();
-  const [timeRange, setTimeRange] = useState("7d");
+  const [timeRange, setTimeRange] = useState(defaultTimeRange);
   const [timeRangeDropdownOpen, setTimeRangeDropdownOpen] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState(null);
-  const [chartData, setChartData] = useState([]);
-  const [isLoadingChartData, setIsLoadingChartData] = useState(true);
+  const [chartData, setChartData] = useState(initialChartData || []);
+  const [isLoadingChartData, setIsLoadingChartData] = useState(!initialChartData);
   const [chartKey, setChartKey] = useState(0);
 
-  const { site } = resource.read();
 
 
 
   useEffect(() => {
     const fetchConsentData = async () => {
       if (!site || !site.id || !site.Verified) return;
+
+      
+      if (initialChartData && timeRange === defaultTimeRange && chartData === initialChartData) {
+        setIsLoadingChartData(false);
+        return;
+      }
+
       setIsLoadingChartData(true);
       try {
-        const now = new Date();
-        let startDate = new Date();
-        if (timeRange === "7d") {
-          startDate.setDate(now.getDate() - 7);
-        } else if (timeRange === "1m") {
-          startDate.setMonth(now.getMonth() - 1);
-        } else if (timeRange === "1y") {
-          startDate.setFullYear(now.getFullYear() - 1);
-        }
-
-        const { data: consents, error } = await supabase
-          .from('Consents')
-          .select('id, site_id, consent_data')
-          .eq('site_id', site.id);
-
-        if (error) {
-          console.error('Error fetching consents:', error);
-          setChartData([]);
-          setIsLoadingChartData(false);
-          return;
-        }
-
-        const latestConsentsByIP = {};
-        consents.forEach(consent => {
-          const consentData = consent.consent_data;
-          if (!consentData || !consentData.userip || !consentData.ts) return;
-          const userip = consentData.userip;
-          const timestamp = new Date(consentData.ts);
-          if (timestamp < startDate || timestamp > now) return;
-          if (!latestConsentsByIP[userip] || new Date(latestConsentsByIP[userip].ts) < timestamp) {
-            latestConsentsByIP[userip] = consentData;
-          }
-        });
-
-        const consentsByDate = {};
-        Object.values(latestConsentsByIP).forEach(consentData => {
-          const date = new Date(consentData.ts);
-          let dateKey;
-          if (timeRange === "7d" || timeRange === "1m") {
-            dateKey = date.toISOString().split('T')[0];
-          } else if (timeRange === "1y") {
-            dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`;
-          }
-          if (!consentsByDate[dateKey]) {
-            consentsByDate[dateKey] = {
-              fullConsentGiven: 0,
-              parseConsentGiven: 0,
-              fullConsentRejected: 0
-            };
-          }
-          const categories = consentData.categories || {};
-          const relevant = Object.entries(categories)
-            .filter(([k]) => k !== 'Functional')
-            .map(([, v]) => v);
-          if (relevant.length === 0) {
-            consentsByDate[dateKey].fullConsentRejected++;
-          } else if (relevant.every(Boolean)) {
-            consentsByDate[dateKey].fullConsentGiven++;
-          } else if (relevant.every(v => v === false)) {
-            consentsByDate[dateKey].fullConsentRejected++;
-          } else {
-            consentsByDate[dateKey].parseConsentGiven++;
-          }
-        });
-
-        const dates = [];
-        const currentDate = new Date(startDate);
-        while (currentDate <= now) {
-          let dateKey;
-          if (timeRange === "7d" || timeRange === "1m") {
-            dateKey = currentDate.toISOString().split('T')[0];
-          } else if (timeRange === "1y") {
-            dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-01`;
-          }
-          dates.push({
-            date: dateKey,
-            fullConsentGiven: consentsByDate[dateKey]?.fullConsentGiven || 0,
-            parseConsentGiven: consentsByDate[dateKey]?.parseConsentGiven || 0,
-            fullConsentRejected: consentsByDate[dateKey]?.fullConsentRejected || 0
-          });
-          if (timeRange === "7d" || timeRange === "1m") {
-            currentDate.setDate(currentDate.getDate() + 1);
-          } else if (timeRange === "1y") {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-          }
-        }
-
-        const uniqueDates = timeRange === "1y"
-          ? Array.from(new Map(dates.map(item => [item.date, item])).values())
-          : dates;
-
-        setChartData(uniqueDates);
+        const data = await fetchChartData(site.id, timeRange);
+        setChartData(data);
         setIsLoadingChartData(false);
-        setChartKey(prev => prev + 1);
+   
       } catch (error) {
         console.error('Error processing consent data:', error);
         setChartData([]);
@@ -514,50 +506,77 @@ function AnalyticsContent({ resource }) {
     </div>
   );
 }
+function AnalyticsResourceContent({ resource, defaultTimeRange = "7d" }) {
+    const { site, initialChartData } = resource.read();
+    return (
+      <AnalyticsContent
+        site={site}
+        initialChartData={initialChartData}
+        defaultTimeRange={defaultTimeRange}
+      />
+    );
+  }
 
 function Home() {
-  const params = useParams();
-  const siteSlug = params['site-slug'];
-  const { allUserDataResource } = useDashboard();
+    const params = useParams();
+    const siteSlug = params['site-slug'];
+    const { allUserDataResource } = useDashboard();
 
-  const resource = useMemo(() => {
-    if (!siteSlug) return null;
+    const defaultTimeRange = "7d";
 
-    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-    const delay = 1500;
+    const resource = useMemo(() => {
+      if (!siteSlug) return null;
 
-    const res = allUserDataResource;
-    const gate = (async () => {
-      if (!res) {
-        await sleep(delay);
-        return null;
-      }
-      try {
-        const v = res.read();
-        await sleep(delay);
-        return v;
-      } catch (p) {
-        if (p && typeof p.then === 'function') {
-          await p;
+      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+      const delay = 3000;
+
+      const res = allUserDataResource;
+      const gate = (async () => {
+        if (!res) {
+          await sleep(delay);
           return null;
         }
-        throw p;
-      }
-    })();
+        try {
+          const v = res.read(); // resolved
+          await sleep(delay);
+          return v;
+        } catch (p) {
+          if (p && typeof p.then === 'function') {
+            await p; // pendiente
+            return null;
+          }
+          throw p;
+        }
+      })();
 
-    // Fetch site data + gate global to synchronize with Sidebar/Header
-    return createResource(
-      Promise.all([fetchSite(siteSlug), gate]).then(([siteData]) => siteData)
+      const dataLoader = (async () => {
+        const { site: s } = await fetchSite(siteSlug);
+        let chartData = null;
+        if (s?.Verified) {
+          chartData = await fetchChartData(s.id, defaultTimeRange);
+        }
+        return { site: s, initialChartData: chartData };
+      })();
+
+      return createResource(
+        Promise.all([dataLoader, gate]).then(([data]) => data)
+      );
+    }, [siteSlug, allUserDataResource]);
+
+    return (
+      <div className='analytics'>
+        <Suspense fallback={<HomeInstallationSkeleton />}>
+          {resource ? (
+            <AnalyticsResourceContent
+              resource={resource}
+              defaultTimeRange={defaultTimeRange}
+            />
+          ) : (
+            <HomeInstallationSkeleton />
+          )}
+        </Suspense>
+      </div>
     );
-  }, [siteSlug, allUserDataResource]);
-
-  return (
-    <div className='analytics'>
-      <Suspense fallback={<HomeInstallationSkeleton />}>
-        {resource ? <AnalyticsContent resource={resource} /> : <HomeInstallationSkeleton />}
-      </Suspense>
-    </div>
-  );
-}
+  }
 
 export default Home;
