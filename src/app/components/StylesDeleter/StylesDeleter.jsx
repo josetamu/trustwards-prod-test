@@ -34,7 +34,7 @@ export const StylesDeleter = ({ applyGlobalCSSChange, applyGlobalJSONChange, get
 
 //Function to delete the styles
 const handleDelete = useCallback(() => {
-    if (notDelete || isPlaceholder) return;
+    if (notDelete) return;
     //If jsonProperty is set, apply the empty marker to it
     if (JSONProperty && applyGlobalJSONChange) applyGlobalJSONChange(JSONProperty, effectiveEmptyMarker);
 
@@ -79,19 +79,20 @@ const handleDelete = useCallback(() => {
         <div 
         className={`tw-builder__settings-deleter ${deleterClass}`}
 
-        onClick={handleDelete}>
-                <div className='tw-builder__settings-deleter-point' onClick={handleDelete}
+>
+                <div className='tw-builder__settings-deleter-point' onClick={(e) => { e.stopPropagation(); handleDelete()}}
                         tabIndex={0}
                         role="button"
                         aria-label="Delete style"
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
+                                e.stopPropagation();
                                 handleDelete();
                             }
                         }}>
 
                 </div>
-                <span className={`tw-builder__settings-deleter-cross ${notDelete || isPlaceholder ? 'tw-builder__settings-deleter-cross--not-delete' : ''}`} onClick={handleDelete}>X</span>
+                <span className={`tw-builder__settings-deleter-cross ${notDelete || isPlaceholder ? 'tw-builder__settings-deleter-cross--not-delete' : ''}`} onClick={(e) => { e.stopPropagation(); handleDelete()}}>X</span>
         </div>
     )
 }

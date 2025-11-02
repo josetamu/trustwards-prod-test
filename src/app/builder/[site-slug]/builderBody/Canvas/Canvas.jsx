@@ -182,6 +182,7 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
             '.tw-builder__settings-classes-pool',
             '.modal__backdrop',
             '.tw-builder__settings-class',
+            '.tw-builder__settings-deleter',
             '.tw-builder__settings-properties-actions'
         ];
 

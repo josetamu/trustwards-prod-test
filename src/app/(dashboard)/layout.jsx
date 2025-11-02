@@ -26,6 +26,8 @@ import { useTheme } from 'next-themes'
 const DashboardContext = createContext(null);
 export const useDashboard = () => useContext(DashboardContext);
 
+
+
 function DashboardLayout({ children }) {
   const router = useRouter();
   const params = useParams();
@@ -85,9 +87,25 @@ function DashboardLayout({ children }) {
     const [user, setUser] = useState(null);
     const [webs, setWebs] = useState([]);
     const [appearanceSettings, setAppearanceSettings] = useState(null);
-    const [consents, setConsents] = useState([]);
     const [allUserDataResource, setAllUserDataResource] = useState(null);
     const allUserDataResourceRef = useRef({ userId: null, resource: null });
+    const [userDataResource, setUserDataResource] = useState(null);
+    const userDataResourceRef = useRef({ userId: null, resource: null });
+    const prevSiteSlugRef = useRef(params['site-slug']);
+    
+    const allDataPromiseCache = new Map();
+
+    function getAllDataShared(userId) {
+      if (!userId) return Promise.resolve(null);
+      if (!allDataPromiseCache.has(userId)) {
+        const p = getAllData(userId)
+          .finally(() => {
+            allDataPromiseCache.delete(userId);
+          });
+        allDataPromiseCache.set(userId, p);
+      }
+      return allDataPromiseCache.get(userId);
+    }
 
 
   //NEW BD CODE
@@ -96,7 +114,7 @@ function DashboardLayout({ children }) {
       setUser(null);
       setWebs([]);
       setAppearanceSettings(null);
-      setConsents([]);
+
       return;
     }
 
@@ -110,45 +128,26 @@ function DashboardLayout({ children }) {
     const userData = userResult.status === 'fulfilled' && !userResult.value.error ? userResult.value.data : null;
     const sitesData = sitesResult.status === 'fulfilled' && !sitesResult.value.error ? sitesResult.value.data : [];
     const appearanceData = appearanceResult.status === 'fulfilled' && !appearanceResult.value.error ? appearanceResult.value.data : null;
-    
-    // Fetch Consents for all the user's sites
-    let consentsData = [];
-    if (Array.isArray(sitesData) && sitesData.length > 0) {
-      const siteIds = sitesData.map(s => s.id).filter(Boolean);
-      const { data: cData, error: cErr } = await supabase
-        .from('Consents') 
-        .select('*') 
-        .in('site_id', siteIds);
-    
-      if (cErr) console.error('Consents fetch error:', cErr);
-      if (Array.isArray(cData)) consentsData = cData;
-    }
+
 
     setUser(userData);
     setWebs(sitesData);
     setAppearanceSettings(appearanceData);
-    setConsents(consentsData);
-    return { user: userData, webs: sitesData, appearance: appearanceData, consents: consentsData };
+
+    return { user: userData, webs: sitesData, appearance: appearanceData};
     } catch (error) {
       console.error('Error fetching data:', error);
       throw error;
     }
 }
 
-function createAllUserDataResource(userId) {
+function createAllUserDataResource(userId, { allPromise } = {}) {
   let status = 'pending';
   let result;
-  const suspender = getAllData(userId).then(
-    r => {
-      status = 'success';
-      result = r;
-    },
-    e => {
-      status = 'error';
-      result = e;
-    }
+  const suspender = (allPromise ?? getAllDataShared(userId)).then(
+    r => { status = 'success'; result = r; },
+    e => { status = 'error'; result = e; }
   );
-  
   return {
     read() {
       if (status === 'pending') throw suspender;
@@ -157,6 +156,54 @@ function createAllUserDataResource(userId) {
     }
   };
 }
+const getUserData = async (userId) => {
+  const [userRes, appearanceRes] = await Promise.allSettled([
+    supabase.from('User').select('*').eq('id', userId).single(),
+    supabase.from('Appearance').select('*').eq('userid', userId).single()
+  ]);
+  return {
+    user: userRes.status === 'fulfilled' && !userRes.value.error ? userRes.value.data : null,
+    appearance: appearanceRes.status === 'fulfilled' && !appearanceRes.value.error ? appearanceRes.value.data : null,
+  };
+};
+
+
+
+function createUserDataResource(userId, { allPromise, userPromise } = {}) {
+  let status = 'pending';
+  let result;
+
+  // Ambas empiezan YA (promesas inyectadas o disparadas aquí mismo)
+  const allP = allPromise ?? getAllDataShared(userId);
+  const userP = userPromise ?? getUserData(userId);
+
+  const suspender = Promise.allSettled([allP, userP])
+    .then(([_, userRes]) => {
+      if (userRes.status === 'fulfilled') return userRes.value;
+      throw userRes.reason;
+    })
+    .then(
+      r => { status = 'success'; result = r; },
+      e => { status = 'error'; result = e; }
+    );
+
+  return {
+    read() {
+      if (status === 'pending') throw suspender;
+      if (status === 'error') throw result;
+      return result;
+    }
+  };
+}
+
+const reloadAllUserData = () => {
+  const userId = allUserDataResourceRef.current.userId;
+  if (!userId) return;
+
+  const newResource = createAllUserDataResource(userId);
+  allUserDataResourceRef.current = { userId, resource: newResource };
+  setAllUserDataResource(newResource);
+};
 
   // We set the appearance settings when they are loaded. appearanceSettings is a object with the settings of the user(database)
   // Theme is controlled with next-themes and Accent Color is an attribute of the html tag
@@ -172,6 +219,42 @@ function createAllUserDataResource(userId) {
       }
     }
   }, [appearanceSettings]);
+
+  // Shift key detector - suppress focus outlines when Shift is held
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const setShiftPressed = (pressed) => {
+      document.documentElement.setAttribute('data-shift-pressed', pressed.toString());
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Shift') {
+        setShiftPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      if (e.key === 'Shift') {
+        setShiftPressed(false);
+      }
+    };
+
+    const handleBlur = () => {
+      // Reset when window loses focus (in case Shift is released outside the window)
+      setShiftPressed(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, []);
 
 
 
@@ -260,30 +343,57 @@ const SiteStyle = (site) => {
 
 
   //set the user data from the database
-  useEffect(() =>{
+  useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-          if (session) {
-            if(allUserDataResourceRef.current.userId !== session.user.id){
-              const allDataResource = createAllUserDataResource(session.user.id);
-              allUserDataResourceRef.current = { userId: session.user.id, resource: allDataResource };
-              setAllUserDataResource(allDataResource);
-            } else {
-              setAllUserDataResource(allUserDataResourceRef.current.resource);
-            }
+        if (session) {
+          // Crear ambos recursos simultáneamente si el userId cambió
+          if (allUserDataResourceRef.current.userId !== session.user.id) {
+            const allPromise = getAllDataShared(session.user.id);
+            const userPromise = getUserData(session.user.id);
+
+            const allDataResource = createAllUserDataResource(session.user.id, { allPromise });
+            const uRes = createUserDataResource(session.user.id, { allPromise, userPromise });
+            
+            allUserDataResourceRef.current = { 
+              userId: session.user.id, 
+              resource: allDataResource 
+            };
+            userDataResourceRef.current = { 
+              userId: session.user.id, 
+              resource: uRes 
+            };
+            
+            setAllUserDataResource(allDataResource);
+            setUserDataResource(uRes);
           } else {
-            allUserDataResourceRef.current = { userId: null, resource: null };
-            setAllUserDataResource(null);
+            // Si el userId no cambió, solo actualizar las refs
+            setAllUserDataResource(allUserDataResourceRef.current.resource);
+            setUserDataResource(userDataResourceRef.current.resource);
           }
+        } else {
+          setCheckingAuth(true);
+
+          allUserDataResourceRef.current = { userId: null, resource: null };
+          userDataResourceRef.current = { userId: null, resource: null };
+          setAllUserDataResource(null);
+          setUserDataResource(null);
+        
+          setUser(null);
+          setWebs([]);
+          setAppearanceSettings(null);
         }
-      );
-      return () => {
-        authListener?.subscription.unsubscribe();
-      };
+      }
+    );
+    
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
   }, []);
 
   //Redirect to login if no session
   const [checkingAuth, setCheckingAuth] = useState(true);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -301,7 +411,7 @@ const SiteStyle = (site) => {
       if (!cancelled) setCheckingAuth(false);
     })();
     return () => { cancelled = true; };
-  }, [pathname, router, supabase]);
+  }, [router, pathname, supabase]);
   
     // Function to update the appearance settings in the database
     const updateAppearanceSettings = async (settings) => {
@@ -339,30 +449,7 @@ const SiteStyle = (site) => {
       delete window.onDeleteSite;
     };
   }, []);
-
-
-  //set the user data from the database
-    useEffect(() =>{
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          if (session) {
-            if(allUserDataResourceRef.current.userId !== session.user.id){
-              const allDataResource = createAllUserDataResource(session.user.id);
-              allUserDataResourceRef.current = { userId: session.user.id, resource: allDataResource };
-              setAllUserDataResource(allDataResource);
-            } else {
-              setAllUserDataResource(allUserDataResourceRef.current.resource);
-            }
-          } else {
-            allUserDataResourceRef.current = { userId: null, resource: null };
-            setAllUserDataResource(null);
-          }
-        }
-      );
-      return () => {
-        authListener?.subscription.unsubscribe();
-      };
-    }, []);                                                                                                               
+                                                                                                           
 
   // Update global siteData when navigating to a specific site
   useEffect(() => {
@@ -373,11 +460,28 @@ const SiteStyle = (site) => {
         if (selectedSite) {
           setSiteData(selectedSite);
         } 
-      }// Don't set siteData to null when webs is empty, wait for webs to load
+      }
     else {
       setSiteData(null);
     } 
   }, [params, webs, setSiteData, setIsSiteOpen]);
+  
+
+  useEffect(() => {
+    const prev = prevSiteSlugRef.current;
+    const curr = params['site-slug'] || null;
+  
+    // dashboard -> site-slug
+    if (!prev && curr) {
+      reloadAllUserData();
+    }
+    // site-slug -> dashboard
+    if (prev && !curr) {
+      reloadAllUserData();
+    }
+  
+    prevSiteSlugRef.current = curr;
+  }, [params['site-slug']]);
 
   // Set userSettings based on modalType
   useEffect(() => {
@@ -756,6 +860,7 @@ useEffect(() => {
         openChangeModalSettings,
         openChangeModal,
         allUserDataResource,
+        userDataResource,
         isScanning,
         setIsScanning,
         scanDone,
@@ -771,8 +876,6 @@ useEffect(() => {
         setIsOffcanvasOpen,
         userSettings,
         setUserSettings,
-        consents,
-        setConsents,
     };
    
     // Show loading state while checking authentication to avoid flickering
@@ -826,7 +929,7 @@ useEffect(() => {
                     
                 />
                 <div className={`content__container ${isSidebarOpen ? 'open' : ''} ${blockContent ? 'content__container--blocked' : ''}`}>
-                    {isSiteOpen && !pathname.startsWith('/builder') && <DashboardHeader />}
+                {!!params['site-slug'] && !pathname.startsWith('/builder') && <DashboardHeader />}
                     {children}
 
 

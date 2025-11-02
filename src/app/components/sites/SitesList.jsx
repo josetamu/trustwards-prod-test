@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 export function SitesList({ openChangeModal, setIsModalOpen, setModalType, showNotification, isModalOpen, isDropdownOpen, setIsDropdownOpen, setSiteData, checkSitePicture, SiteStyle, openChangeModalSettings }) {
     const { allUserDataResource, appearanceSettings, webs, user } = useDashboard();
     
+    
     const sortedSites = useMemo(() => {
       if(!webs || !allUserDataResource) return [];
 

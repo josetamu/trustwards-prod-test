@@ -133,7 +133,6 @@ const getCategoriesGroupControls = (categoriesScanned = []) => ({
                     name: 'Icon', 
                     type: 'icons', 
                     dataAttribute: 'data-icon-name',
-                    JSONProperty: 'icon',
                     default: 'AddIcon',
                 },
                 { name: 'Size', type: 'text', dataAttribute: 'data-icon-size', default: '24' },
@@ -163,7 +162,8 @@ const getCategoriesGroupControls = (categoriesScanned = []) => ({
                     options: ['switch', 'checkbox'], 
                     dataAttribute: 'data-type', 
                     default: 'switch', 
-                    notDelete: true
+                    notDelete: true,
+                    
                 },
                 { name: 'Functional Opacity', type: 'text', cssProperty: 'opacity', default: '0.5', selector: '.tw-checkbox[data-functional-opacity]'},
                 { 

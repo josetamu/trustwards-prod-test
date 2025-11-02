@@ -1776,7 +1776,8 @@ const SelectType = ({name, options, index, JSONProperty, getGlobalJSONValue, app
     const [open, setOpen] = useState(false);
     const containerRef = useRef(null);
     
-    const placeholderValue = cssProperty ? getPlaceholderValue?.(cssProperty) : placeholder;
+    const cssPlaceholder = cssProperty ? getPlaceholderValue?.(cssProperty) : '';
+    const placeholderValue = cssPlaceholder || placeholder;
     // ========================================
     // Specific states and constants for font/weight
     // ========================================
@@ -2332,10 +2333,9 @@ if (name === 'Weight') {
                     cssDeleteBatch={name === 'Weight' ? { [cssProperty]: '', 'font-style': '' } : undefined}
                     onDelete={() => {
                         setSelected('');
-                        if (onChange) onChange('');
                     }}
                     notDelete={notDelete}
-                    isPlaceholder={!selected && !!placeholderValue}
+                    isPlaceholder={!selected && !!cssPlaceholder}
                 />
             </span>
             
@@ -4313,7 +4313,7 @@ const LabelControl = ({text}) => {
 
 //This component is the master component for all the controls. It is used to render the controls for the selected element.
 function ControlComponent({control, selectedId, showNotification, selectedLabel, user, site}) {
-    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, addMultipleJSONProperties, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty} = useCanvas();
+    const {JSONtree, activeRoot, addCSSProperty, addJSONProperty, addMultipleJSONProperties, setJSONtree, deepCopy, runElementScript,getActiveBreakpoint,activeState,addEnterAnimationProperty, addMultipleCSSProperties, applyMultipleCSSAndJSONProperties} = useCanvas();
 
 
     const [bwUnified, setBwUnified] = useState('');
@@ -4423,6 +4423,19 @@ const applyGlobalCSSChange = useCallback((cssPropertyOrObject, value, options = 
         addCSSProperty(type, selector, cssPropertyOrObject, undefined, cssOptions);
     }
 }, [selectedId, activeClass, activeRoot, addCSSProperty]);
+
+// Apply multiple CSS changes across different selectors (batch update to avoid race conditions)
+const applyMultipleGlobalCSSChanges = useCallback((selectorBatches) => {
+    if (!selectedId || !selectorBatches || selectorBatches.size === 0) return;
+    
+    // Determine selector type and value
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    // Call the batch update function from CanvasContext
+    addMultipleCSSProperties(type, selector, selectorBatches);
+}, [selectedId, activeClass, addMultipleCSSProperties]);
+
 
 // Enter Animation: saves in ids/classes CSSData with the scope of the root and the correct selector
 const applyEnterAnimationChange = useCallback((cssPropertyOrObject, value) => {
@@ -4810,17 +4823,28 @@ const clearAllEnterAnimations = useCallback(() => {
         return (value !== null && value !== undefined) ? value : defaultValue;
 
     },[JSONtree, selectedId, activeRoot]);
+    // Apply multiple CSS and JSON changes in a single update
+const applyMultipleCSSAndJSONChanges = useCallback((selectorBatches, jsonBatch) => {
+    if (!selectedId) return;
+    
+    let type = activeClass ? 'class' : 'id';
+    let selector = activeClass ? activeClass : selectedId;
+    
+    applyMultipleCSSAndJSONProperties(type, selector, selectorBatches, jsonBatch);
+}, [selectedId, activeClass, applyMultipleCSSAndJSONProperties]);
 
-     const globalControlProps = {
+    const globalControlProps = {
         selectedElementData,
         applyGlobalCSSChange,
+        applyMultipleGlobalCSSChanges,
+        applyMultipleCSSAndJSONChanges,
         getGlobalCSSValue,
         applyGlobalJSONChange,
         applyMultipleGlobalJSONChanges,
         getGlobalJSONValue,
         selectedId,
         getPlaceholderValue,
-     };
+    };
 
      // Collect all controls from header and body for required evaluation
      const allControls = useMemo(() => {
@@ -5029,6 +5053,7 @@ const clearAllEnterAnimations = useCallback(() => {
                                 styleDeleter={styleDeleter} 
                                 getEnterAnimationProps={getEnterAnimationProps} 
                                 clearAllEnterAnimations={clearAllEnterAnimations}
+                                getEnterAnimationPlaceholder={getEnterAnimationPlaceholder}
                                 />
                             );
                         }

@@ -160,7 +160,6 @@ const buildScript = async (siteId) => {
         mangle: true,
     });
 
-    //console.log(minifiedScript.code)
 
     return minifiedScript.code;
 }

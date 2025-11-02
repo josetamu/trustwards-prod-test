@@ -102,18 +102,17 @@ function DashboardHeader() {
     return (  
         <div className='dashboard-header'>
             <div className='dashboard-header__header'>
-                <div className='dashboard-header__avatar'>
-                    <Suspense fallback={<UserAvatarSkeleton />}> 
-                      <DashboardAvatar siteSlug={siteSlug}  SiteStyle={SiteStyle} setSiteData={setSiteData} />
-                    </Suspense>
-                    <Suspense fallback={<UserNameSkeleton />}>
-                        <DashboardHeaderName siteSlug={siteSlug} openChangeModalSettings={openChangeModalSettings} />
-                    </Suspense>
-                </div>
-                <Suspense fallback={<PlanSkeleton />}>
-                    <DashboardHeaderPlan siteSlug={siteSlug} setModalType={setModalType} setIsModalOpen={setIsModalOpen} />
-                </Suspense>
-
+                  <div className='dashboard-header__avatar'>
+                      <Suspense fallback={<UserAvatarSkeleton />}> 
+                        <DashboardAvatar siteSlug={siteSlug}  SiteStyle={SiteStyle} setSiteData={setSiteData} />
+                      </Suspense>
+                      <Suspense fallback={<UserNameSkeleton />}>
+                          <DashboardHeaderName siteSlug={siteSlug} openChangeModalSettings={openChangeModalSettings} />
+                      </Suspense>
+                  </div>
+                  <Suspense fallback={<PlanSkeleton />}>
+                      <DashboardHeaderPlan siteSlug={siteSlug} setModalType={setModalType} setIsModalOpen={setIsModalOpen} />
+                  </Suspense>
             </div>
             <div className="dashboard-header__actions">
                 <Dropdown
