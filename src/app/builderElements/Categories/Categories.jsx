@@ -4,8 +4,8 @@ import './Categories.css';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { getIconByName } from '@/lib/hugeicons';
 
-// Export groupControls separately for use in CanvasContext
-export const categoriesGroupControls = {
+// Helper function to generate categoriesGroupControls with opacity logic
+const getCategoriesGroupControls = (categoriesScanned = []) => ({
     header: [
         { name: 'Tag', type: 'super-select', category: 'block', JSONProperty: 'tagName', placeholder: 'div'},
         { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'block', default: 'block'},
@@ -62,6 +62,7 @@ export const categoriesGroupControls = {
         { type: 'repeater', controls: [
             {
                 label: 'Functional',
+                itemStyle: categoriesScanned.includes('Functional') ? undefined : { opacity: 0.5 },
                 controls: [
                     { name: 'Title', type: 'text', JSONProperty: 'functionalTitle', nextLine: true, default: 'Functional'},
                     { name: 'Description', type: 'textarea', JSONProperty: 'functionalDescription', nextLine: true,
@@ -71,6 +72,7 @@ export const categoriesGroupControls = {
             },
             {
                 label: 'Analytics',
+                itemStyle: categoriesScanned.includes('Analytics') ? undefined : { opacity: 0.5 },
                 controls: [
                     { name: 'Title', type: 'text', JSONProperty: 'analyticsTitle', nextLine: true, default: 'Analytics'},
                     { name: 'Description', type: 'textarea', JSONProperty: 'analyticsDescription', nextLine: true,
@@ -80,6 +82,7 @@ export const categoriesGroupControls = {
             },
             {
                 label: 'Marketing',
+                itemStyle: categoriesScanned.includes('Marketing') ? undefined : { opacity: 0.5 },
                 controls: [
                     { name: 'Title', type: 'text', JSONProperty: 'marketingTitle', nextLine: true, default: 'Marketing'},
                     { name: 'Description', type: 'textarea', JSONProperty: 'marketingDescription', nextLine: true,
@@ -89,6 +92,7 @@ export const categoriesGroupControls = {
             },
             {
                 label: 'Other',
+                itemStyle: categoriesScanned.includes('Other') ? undefined : { opacity: 0.5 },
                 controls: [
                     { name: 'Title', type: 'text', JSONProperty: 'otherTitle', nextLine: true, default: 'Other'},
                     { name: 'Description', type: 'textarea', JSONProperty: 'otherDescription', nextLine: true,
@@ -161,6 +165,7 @@ export const categoriesGroupControls = {
                     default: 'switch', 
                     notDelete: true
                 },
+                { name: 'Functional Opacity', type: 'text', cssProperty: 'opacity', default: '0.5', selector: '.tw-checkbox[data-functional-opacity]'},
                 { 
                     name: 'Disabled Color', 
                     type: 'color', 
@@ -370,6 +375,12 @@ export const categoriesGroupControls = {
             ],
         },
     ]
+});
+
+// Export groupControls as a function instead to add opacity 0.5 to repeater items if not found
+export const categoriesGroupControls = (node = null) => {
+    const categoriesScanned = node?.categoriesScanned || [];
+    return getCategoriesGroupControls(categoriesScanned);
 };
 
 export const Categories = (node, nodeProps = {}) => {
@@ -378,7 +389,7 @@ export const Categories = (node, nodeProps = {}) => {
     const id = node.id;
     const Tag = node.tagName || 'div';
     const dataAttributes = node.attributes;
-    const groupControls = categoriesGroupControls;
+    const groupControls = categoriesGroupControls(node);
 
     const render = () => {
         // Get icon configuration from data attributes (with safe fallbacks)
@@ -438,13 +449,14 @@ export const Categories = (node, nodeProps = {}) => {
                                     <span className="tw-categories__expander-title">{categoryData.title}</span>
 
                                 </div>
-                                <div className="tw-checkbox tw-categories__expander-checkbox tw-categories__expander-checkbox--category" data-type={checkboxType}>
+                                <div {...(category === 'Functional' ? { 'data-functional-opacity': '' } : {})} className="tw-checkbox tw-categories__expander-checkbox tw-categories__expander-checkbox--category" data-type={checkboxType}>
                                     {checkboxType === 'switch' ? (
                                         <>
                                             <input 
                                                 type="checkbox" 
-                                                name="category"
+                                                name={categoryData.title.toLowerCase()}
                                                 className="tw-categories__expander-input tw-categories__expander-input--category"
+                                                {...(category === 'Functional' ? { disabled: true, checked: true } : {})}
                                             />
                                             <span 
                                                 className="tw-categories__expander-switch"
@@ -452,7 +464,13 @@ export const Categories = (node, nodeProps = {}) => {
                                         </>
                                     ) : (
                                         <>
-                                            <input className="tw-categories__expander-input" type="checkbox" id={`${id}-${category}-checkbox-input`}/>
+                                            <input
+                                                type="checkbox"
+                                                name={categoryData.title.toLowerCase()}
+                                                className="tw-categories__expander-input"
+                                                id={`${id}-${category}-checkbox-input`}
+                                                {...(category === 'Functional' ? { disabled: true, checked: true } : {})}
+                                            />
                                             <label className="tw-categories__expander-checkbox" htmlFor={`${id}-${category}-checkbox-input`}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
                                                     <path d="M4.25 13.5L8.75 18L19.75 6" strokeLinecap="round" strokeLinejoin="round"></path>

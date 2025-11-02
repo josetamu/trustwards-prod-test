@@ -1,0 +1,42 @@
+/* Backdrop */
+.tw-banner-overlay{
+    position: fixed;
+    z-index: 9999;
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    pointer-events: none;
+    user-select: none;
+
+    opacity: 0;
+    transition: opacity var(--backdrop-fade-duration) var(--backdrop-fade-easing);
+}
+.tw-banner-overlay:has(> .tw-banner--open){
+    opacity: 1;
+    pointer-events: auto;
+    user-select: auto;
+}
+.tw-banner-overlay:has(> .tw-banner[data-backdrop="true"]){
+    background-color: var(--backdrop-color);
+    
+    backdrop-filter: blur(var(--filter-blur));
+    -webkit-backdrop-filter: blur(var(--filter-blur));
+}
+
+/* Pop Up */
+.tw-banner[data-type="Pop Up"]{
+    will-change: transform;
+    transform-origin: var(--popup-scale-from);
+    transform: scale(var(--popup-scale));
+    opacity: 0;
+
+    transition: transform var(--popup-scale-duration) var(--popup-scale-easing), opacity var(--popup-fade-duration) var(--popup-fade-easing);
+}
+.tw-banner--open[data-type="Pop Up"]{
+    opacity: 1;
+    transform: scale(1);
+}

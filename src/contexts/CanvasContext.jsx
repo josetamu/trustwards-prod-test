@@ -87,8 +87,133 @@ function treeReducer(state, action) {
     }
 }
 
+/*
+* Helper function to extract defaults from groupControls
+* Supports both simple values and complex objects (for border, box-shadow, etc.)
+* Also supports nested selectors
+*/
+const extractDefaultsFromControls = (controls) => {
+    const defaults = {
+        css: {},
+        nested: {},
+        attributes: {},
+        json: {}
+    };
+
+    const processControl = (control) => {
+        if (!control.default) return;
+
+        // Check if default is an object (for complex controls like border, box-shadow, panel)
+        const isObjectDefault = typeof control.default === 'object' && !Array.isArray(control.default);
+
+        // If control has a selector, defaults go to nested structure
+        if (control.selector) {
+            if (!defaults.nested[control.selector]) {
+                defaults.nested[control.selector] = {};
+            }
+
+            if (isObjectDefault) {
+                // Object default: merge all properties
+                Object.assign(defaults.nested[control.selector], control.default);
+            } else if (control.cssProperty) {
+                // Simple default with cssProperty
+                defaults.nested[control.selector][control.cssProperty] = control.default;
+            }
+        }
+        // No selector: defaults go to root element
+        else {
+            if (isObjectDefault) {
+                // Object default: merge all CSS properties
+                Object.assign(defaults.css, control.default);
+            } else if (control.cssProperty) {
+                // Simple default with cssProperty
+                defaults.css[control.cssProperty] = control.default;
+            } else if (control.dataAttribute) {
+                // dataAttribute default
+                defaults.attributes[control.dataAttribute] = control.default;
+            } else if (control.JSONProperty) {
+                // JSONProperty default
+                defaults.json[control.JSONProperty] = control.default;
+            }
+        }
+    };
+
+    // Process header controls
+    if (controls.header) {
+        controls.header.forEach(processControl);
+    }
+
+    // Process body controls
+    if (controls.body) {
+        controls.body.forEach((section) => {
+            // IMPORTANT: Check for repeater FIRST before checking for groups
+            // because repeaters have BOTH type AND controls properties
+            if (section.type === 'repeater' && section.controls) {
+                // Process the repeater items
+                section.controls.forEach((repeaterItem) => {
+                    // Each repeater item has a label and controls array
+                    // The controls can be either:
+                    // 1. Simple controls (with name, type, JSONProperty, default, etc.)
+                    // 2. Groups (with label and their own controls array)
+                    if (repeaterItem.controls) {
+                        repeaterItem.controls.forEach((itemControl) => {
+                            // Check if this is a group (has label AND controls, but NO type)
+                            // Groups have label + controls, but simple controls have name + type
+                            if (itemControl.label && itemControl.controls && !itemControl.type) {
+                                itemControl.controls.forEach(subControl => {
+                                    processControl(subControl);
+                                });
+                            } else {
+                                // It's a direct control, process it
+                                processControl(itemControl);
+                            }
+                        });
+                    }
+                });
+            }
+            // Check if it's a group (has controls array but not a repeater)
+            else if (section.controls && !section.type) {
+                // It's a group with controls
+                section.controls.forEach(processControl);
+            } 
+            // It's a standalone control (has type but not a repeater or doesn't have controls)
+            else if (section.type !== undefined) {
+                // It's a standalone control
+                processControl(section);
+            }
+        });
+    }
+
+    return defaults;
+};
+
+/*
+* Helper function to apply defaults from groupControls to an element
+* Allows custom CSS and attributes to be merged with extracted defaults
+*/
+export const applyDefaults = (groupControls, customDefaults = {}) => {
+    const defaults = extractDefaultsFromControls(groupControls);
+    
+    return {
+        attributes: {
+            ...customDefaults.attributes,
+            ...defaults.attributes,
+        },
+        defaultCSS: {
+            ...customDefaults.css,
+            ...defaults.css,
+        },
+        ...(Object.keys(defaults.nested).length > 0 && {
+            defaultNested: defaults.nested
+        }),
+        // Spread JSON properties directly into the element
+        ...defaults.json
+    };
+};
+
 export const CanvasProvider = ({ children, siteData, CallContextMenu = null, setIsFirstTime, fontOptions, preloadedIcons = [] }) => {
     /*Canvas Context manages all actions related to the JSONtree*/
+    
     const defaultTree = {
         idsCSSData: [], /*for each id, stores its right panel properties*/
         classesCSSData: [], /*for each class, stores its right panel properties*/
@@ -117,23 +242,47 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 tagName: "div",
                 children: [],
                 nestable: true,
+                ...applyDefaults(bannerGroupControls)
             },
             {
                 id: "tw-root--modal", //modal root
                 elementType: "modal",
                 icon: "modal",
                 label: "Modal",
-                classList: [],
+                classList: ["tw-modal"],
                 tagName: "div",
                 children: [],
                 nestable: true,
+                ...applyDefaults(modalGroupControls)
             }
         ]
     };
     
+    // Before creating the reducer, add defaultCSS to idsCSSData for root elements
+    // This ensures root defaults are available for controls to read
+    const treeWithRootDefaults = {
+        ...defaultTree,
+        idsCSSData: defaultTree.roots.map(root => {
+            const entry = { id: root.id };
+            
+            if (root.defaultCSS) {
+                entry.properties = root.defaultCSS;
+            }
+            
+            if (root.defaultNested) {
+                entry.nested = {};
+                Object.entries(root.defaultNested).forEach(([selector, props]) => {
+                    entry.nested[selector] = { properties: props };
+                });
+            }
+            
+            return (entry.properties || entry.nested) ? entry : null;
+        }).filter(Boolean)
+    };
+    
     const [state, dispatch] = useReducer(treeReducer, {
         past: [], //undo stack
-        present: defaultTree, // initial tree until data is fetched
+        present: treeWithRootDefaults, // initial tree with defaults in idsCSSData
         future: [] //redo stack
     });
 
@@ -145,8 +294,93 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         if (siteData) {
             const userJSON = siteData.JSON;
             // Merge userJSON with defaultTree to ensure all properties exist
-            const mergedTree = userJSON ? { ...defaultTree, ...userJSON } : defaultTree;
+            let mergedTree;
+            
+            if (userJSON) {
+                mergedTree = { ...defaultTree, ...userJSON };
+                
+                // IMPORTANT: Intelligently merge roots to preserve updated defaults
+                // This ensures that when we update element controls (add/remove defaults),
+                // existing sites get the new defaults without losing their customizations
+                if (userJSON.roots && Array.isArray(userJSON.roots)) {
+                    mergedTree.roots = userJSON.roots.map(userRoot => {
+                        // Find the corresponding default root by id
+                        const defaultRoot = defaultTree.roots.find(r => r.id === userRoot.id);
+                        
+                        if (defaultRoot) {
+                            // Merge: keep user's children and custom properties,
+                            // but update defaultCSS and defaultNested from current code
+                            return {
+                                ...defaultRoot,  // Get updated defaults from code
+                                ...userRoot,     // Override with user's saved data
+                                defaultCSS: defaultRoot.defaultCSS,       // Force use updated defaults
+                                defaultNested: defaultRoot.defaultNested  // Force use updated defaults
+                            };
+                        }
+                        
+                        return userRoot; // Keep user root as-is if no matching default
+                    });
+                }
+            } else {
+                mergedTree = defaultTree;
+            }
 
+            // Update categoriesScanned for all Categories elements with the latest scan results
+            const latestCategories = extractCategories();
+            const updateCategoriesScanned = (node) => {
+                if (node.elementType === 'categories') {
+                    node.categoriesScanned = latestCategories;
+                }
+                if (node.children && Array.isArray(node.children)) {
+                    node.children.forEach(child => updateCategoriesScanned(child));
+                }
+            };
+            
+            // Update all roots
+            if (mergedTree.roots && Array.isArray(mergedTree.roots)) {
+                mergedTree.roots.forEach(root => updateCategoriesScanned(root));
+            }
+
+            // Add root defaults to idsCSSData if they're not already there
+            const rootDefaults = mergedTree.roots.map(root => {
+                // Check if this root already has an entry in idsCSSData
+                const existingEntry = mergedTree.idsCSSData?.find(entry => entry.id === root.id);
+                
+                // If entry exists and has properties, skip (user has customizations)
+                if (existingEntry?.properties || existingEntry?.nested) {
+                    return null;
+                }
+                
+                // Otherwise, add defaults
+                const entry = { id: root.id };
+                
+                if (root.defaultCSS) {
+                    entry.properties = root.defaultCSS;
+                }
+                
+                if (root.defaultNested) {
+                    entry.nested = {};
+                    Object.entries(root.defaultNested).forEach(([selector, props]) => {
+                        entry.nested[selector] = { properties: props };
+                    });
+                }
+                
+                return (entry.properties || entry.nested) ? entry : null;
+            }).filter(Boolean);
+            
+            // Merge defaults with existing idsCSSData
+            // Filter out any existing entries for the same root IDs first to avoid duplicates
+            const existingNonRootEntries = (mergedTree.idsCSSData || []).filter(entry => 
+                !rootDefaults.some(rootDefault => rootDefault.id === entry.id)
+            );
+            
+            if (rootDefaults.length > 0) {
+                mergedTree.idsCSSData = [
+                    ...existingNonRootEntries,
+                    ...rootDefaults
+                ];
+            }
+            
             const initialState = {
                 past: [],
                 present: mergedTree,
@@ -410,21 +644,23 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
             
             // PRIORITY 2: NESTED SELECTOR
             if (nestedSelector && typeof nestedSelector === 'string' && nestedSelector.trim() !== '') {
-                const key = nestedSelector.trim();
+                const processedKey = nestedSelector.trim();
+                const hasOriginalSelector = typeof originalNestedSelector === 'string' && originalNestedSelector.trim() !== '';
+                const originalKey = hasOriginalSelector ? originalNestedSelector.trim() : null;
+                const shouldUseOriginalKey = Boolean(originalKey && originalNestedSelector.includes('&') && originalKey !== processedKey);
+                const key = shouldUseOriginalKey ? originalKey : processedKey;
+                const alternateKey = shouldUseOriginalKey ? processedKey : null;
                 const nest = { ...(entry.nested || {}) };
-                
-                // Try to get existing node with processed selector first
-                let node = { ...(nest[key] || {}) };
-                
-                // If node doesn't exist and we have an original selector with '&', check if that exists
-                // This handles the case where defaults were saved with '&' unprocessed
-                const originalKey = originalNestedSelector?.trim();
-                if ((!nest[key] || Object.keys(nest[key]).length === 0) && originalKey && originalKey !== key && nest[originalKey]) {
-                    // Migrate from original key to processed key
-                    node = { ...nest[originalKey] };
-                    delete nest[originalKey];
+
+                let node = key ? { ...(nest[key] || {}) } : {};
+                const isNodeEmpty = (!node.properties || Object.keys(node.properties).length === 0) && (!node.states || Object.keys(node.states).length === 0);
+
+                // If we are switching back to the original selector key, migrate any existing processed entry
+                if (isNodeEmpty && alternateKey && nest[alternateKey]) {
+                    node = { ...nest[alternateKey] };
+                    delete nest[alternateKey];
                 }
-                
+
                 if (activeState) {
                     const st = { ...(node.states || {}) };
                     const cur = { ...(st[activeState] || {}) };
@@ -438,16 +674,18 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 } else {
                     node.properties = cleanProperties(node.properties || {}, propertiesToAdd);
                 }
-                
+
                 const emptyProps = !node.properties || Object.keys(node.properties).length === 0;
                 const emptyStates = !node.states || Object.keys(node.states).length === 0;
-                
-                if (emptyProps && emptyStates) {
-                    delete nest[key];
-                } else {
-                    nest[key] = node;
-                } 
-                
+
+                if (key) {
+                    if (emptyProps && emptyStates) {
+                        delete nest[key];
+                    } else {
+                        nest[key] = node;
+                    }
+                }
+
                 entry.nested = Object.keys(nest).length ? nest : undefined;
                 return entry;
             }
@@ -964,130 +1202,6 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
 
 
     /*
-    * Helper function to extract defaults from groupControls
-    * Supports both simple values and complex objects (for border, box-shadow, etc.)
-    * Also supports nested selectors
-    */
-    const extractDefaultsFromControls = (controls) => {
-        const defaults = {
-            css: {},
-            nested: {},
-            attributes: {},
-            json: {}
-        };
-
-        const processControl = (control) => {
-            if (!control.default) return;
-
-            // Check if default is an object (for complex controls like border, box-shadow, panel)
-            const isObjectDefault = typeof control.default === 'object' && !Array.isArray(control.default);
-
-            // If control has a selector, defaults go to nested structure
-            if (control.selector) {
-                if (!defaults.nested[control.selector]) {
-                    defaults.nested[control.selector] = {};
-                }
-
-                if (isObjectDefault) {
-                    // Object default: merge all properties
-                    Object.assign(defaults.nested[control.selector], control.default);
-                } else if (control.cssProperty) {
-                    // Simple default with cssProperty
-                    defaults.nested[control.selector][control.cssProperty] = control.default;
-                }
-            }
-            // No selector: defaults go to root element
-            else {
-                if (isObjectDefault) {
-                    // Object default: merge all CSS properties
-                    Object.assign(defaults.css, control.default);
-                } else if (control.cssProperty) {
-                    // Simple default with cssProperty
-                    defaults.css[control.cssProperty] = control.default;
-                } else if (control.dataAttribute) {
-                    // dataAttribute default
-                    defaults.attributes[control.dataAttribute] = control.default;
-                } else if (control.JSONProperty) {
-                    // JSONProperty default
-                    defaults.json[control.JSONProperty] = control.default;
-                }
-            }
-        };
-
-        // Process header controls
-        if (controls.header) {
-            controls.header.forEach(processControl);
-        }
-
-        // Process body controls
-        if (controls.body) {
-            controls.body.forEach((section) => {
-                // IMPORTANT: Check for repeater FIRST before checking for groups
-                // because repeaters have BOTH type AND controls properties
-                if (section.type === 'repeater' && section.controls) {
-                    // Process the repeater items
-                    section.controls.forEach((repeaterItem) => {
-                        // Each repeater item has a label and controls array
-                        // The controls can be either:
-                        // 1. Simple controls (with name, type, JSONProperty, default, etc.)
-                        // 2. Groups (with label and their own controls array)
-                        if (repeaterItem.controls) {
-                            repeaterItem.controls.forEach((itemControl) => {
-                                // Check if this is a group (has label AND controls, but NO type)
-                                // Groups have label + controls, but simple controls have name + type
-                                if (itemControl.label && itemControl.controls && !itemControl.type) {
-                                    itemControl.controls.forEach(subControl => {
-                                        processControl(subControl);
-                                    });
-                                } else {
-                                    // It's a direct control, process it
-                                    processControl(itemControl);
-                                }
-                            });
-                        }
-                    });
-                }
-                // Check if it's a group (has controls array but not a repeater)
-                else if (section.controls && !section.type) {
-                    // It's a group with controls
-                    section.controls.forEach(processControl);
-                } 
-                // It's a standalone control (has type but not a repeater or doesn't have controls)
-                else if (section.type !== undefined) {
-                    // It's a standalone control
-                    processControl(section);
-                }
-            });
-        }
-
-        return defaults;
-    };
-
-    /*
-    * Helper function to apply defaults from groupControls to an element
-    * Allows custom CSS and attributes to be merged with extracted defaults
-    */
-    const applyDefaults = (groupControls, customDefaults = {}) => {
-        const defaults = extractDefaultsFromControls(groupControls);
-        
-        return {
-            attributes: {
-                ...customDefaults.attributes,
-                ...defaults.attributes,
-            },
-            defaultCSS: {
-                ...customDefaults.css,
-                ...defaults.css,
-            },
-            ...(Object.keys(defaults.nested).length > 0 && {
-                defaultNested: defaults.nested
-            }),
-            // Spread JSON properties directly into the element
-            ...defaults.json
-        };
-    };
-
-    /*
     * Helper function to extract unique categories from scriptsScanned and iframesScanned
     */
     const extractCategories = () => {
@@ -1097,21 +1211,31 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
         
         // Extract categories from scriptsScanned
         scriptsScanned.forEach(script => {
-            if (script?.category && script.category !== 'Other' && script.category !== 'Unknown') {
+            if (script?.category && script.category !== 'Unknown') {
                 categories.add(script.category);
             }
         });
         
         // Extract categories from iframesScanned
         iframesScanned.forEach(iframe => {
-            if (iframe?.category && iframe.category !== 'Other' && iframe.category !== 'Unknown') {
+            if (iframe?.category && iframe.category !== 'Unknown') {
                 categories.add(iframe.category);
             }
         });
         
-        // Convert to array and return, if empty return ['Functional']
+        // Convert to array and sort in the correct order: Functional -> Analytics -> Marketing -> Other
         const categoriesArray = Array.from(categories);
-        return categoriesArray.length > 0 ? categoriesArray : ['Functional'];
+        const categoryOrder = ['Functional', 'Analytics', 'Marketing', 'Other'];
+        const sortedCategories = categoriesArray.sort((a, b) => {
+            const indexA = categoryOrder.indexOf(a);
+            const indexB = categoryOrder.indexOf(b);
+            // If category not found in order array, put it at the end
+            const orderA = indexA === -1 ? categoryOrder.length : indexA;
+            const orderB = indexB === -1 ? categoryOrder.length : indexB;
+            return orderA - orderB;
+        });
+        
+        return sortedCategories.length > 0 ? sortedCategories : ['Functional'];
     };
 
     /*
@@ -1233,7 +1357,7 @@ export const CanvasProvider = ({ children, siteData, CallContextMenu = null, set
                 classList: ["tw-categories"],
                 script: 'categoriesElementsFunction()',
                 categoriesScanned: extractCategories(),
-                ...applyDefaults(categoriesGroupControls),
+                ...applyDefaults(categoriesGroupControls(null)),
 
             }
         };

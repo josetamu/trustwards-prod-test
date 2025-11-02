@@ -8,9 +8,9 @@ class TrustwardsFrontend {
         this.twShadowRoot = null;
 
         this.createShadowDOM(); //Create the shadow DOM wrapper and the shadow DOM itself
-        this.insertBannerAndModalHTML(); //Insert the banner and modal html into the shadow DOM
+        this.insertBannerAndModalHTMLAndInertState(); //Insert the banner and modal html into the shadow DOM and set the inert state and tabindex for the overlays
         this.insertIdsAndClassesCSSAndDefaultCSS(); //Insert the ids and classes css into the shadow DOM
-        this.appendBannerContainer(); //Append the banner container to the body
+        this.appendShadowContainer(); //Append the shadow container to the body
 
         this.blockEventsFlag = false;
         this.blockScrollFlag = false;
@@ -23,9 +23,24 @@ class TrustwardsFrontend {
         this.twShadowRoot = this.twShadowContainer.attachShadow({ mode: 'closed' }); //closed to not access the shadow DOM from outside
     }
 
-    insertBannerAndModalHTML() {
+    insertBannerAndModalHTMLAndInertState() {
         this.twShadowRoot.innerHTML = this.jsonBanner;
         this.twShadowRoot.innerHTML += this.jsonModal;
+
+        // Set initial inert state and tabindex for overlays
+        const bannerOverlay = this.twShadowRoot.querySelector('.tw-banner-overlay');
+        const banner = this.twShadowRoot.querySelector('.tw-banner');
+        const modalOverlay = this.twShadowRoot.querySelector('.tw-modal-overlay');
+        
+        if (bannerOverlay) {
+            bannerOverlay.setAttribute('inert', '');
+            bannerOverlay.setAttribute('tabindex', '0');
+        }
+        
+        if (modalOverlay) {
+            modalOverlay.setAttribute('inert', '');
+            modalOverlay.setAttribute('tabindex', '0');
+        }
     }
 
     insertIdsAndClassesCSSAndDefaultCSS() {
@@ -47,23 +62,20 @@ class TrustwardsFrontend {
         this.twShadowRoot.appendChild(styleEl);
     }
 
-    appendBannerContainer() {
+    appendShadowContainer() {
         document.body.appendChild(this.twShadowContainer);
         this.openBanner();
     }
     
     openBanner() {
+        const bannerOverlay = this.twShadowRoot.querySelector('.tw-banner-overlay');
         const banner = this.twShadowRoot.querySelector('.tw-banner');
 
-        // Make it interactive and visible before giving focus
-        banner.removeAttribute('inert');
+        // Remove inert and give focus
+        bannerOverlay.removeAttribute('inert');
+        bannerOverlay.focus();
 
-        // Ensure the banner itself is programmatically focusable as a fallback
-        if (!banner.hasAttribute('tabindex')) {
-            banner.setAttribute('tabindex', '-1');
-        }
-
-        // Prefer focusing the first actionable control inside the banner
+        // Focus the first actionable control inside the banner
         requestAnimationFrame(() => {
             banner.focus();
             banner.classList.add('tw-banner--open');
@@ -71,7 +83,8 @@ class TrustwardsFrontend {
     }
     openModal() {
         const modalOverlay = this.twShadowRoot.querySelector('.tw-modal-overlay');
-        modalOverlay.classList.add('tw-modal-overlay--open');
+        const modal = this.twShadowRoot.querySelector('.tw-modal');
+        modal.classList.add('tw-modal--open');
     
         // Remove inert and give focus
         modalOverlay.removeAttribute('inert');
@@ -86,32 +99,33 @@ class TrustwardsFrontend {
         modalOverlay.addEventListener('click', this._outsideHandler);
     }
     closeModalOnEscape(event, twShadowRoot) {
-        const modalOverlay = twShadowRoot.querySelector('.tw-modal-overlay');
+        const modal = twShadowRoot.querySelector('.tw-modal');
     
-        if (modalOverlay.classList.contains('tw-modal-overlay--open') && event.key === 'Escape') {
+        if (modal.classList.contains('tw-modal--open') && event.key === 'Escape') {
             this.closeModal();
             this.openBanner();
         }
     }
     closeModalOnClickOutside(event, twShadowRoot) {
-        const modalOverlay = twShadowRoot.querySelector('.tw-modal-overlay');
         const modal = twShadowRoot.querySelector('.tw-modal');
     
-        if (modalOverlay.classList.contains('tw-modal-overlay--open') && !modal.contains(event.target)) {
+        if (modal.classList.contains('tw-modal--open') && !modal.contains(event.target)) {
             this.closeModal();
             this.openBanner();
         }
     }
     closeBanner() {
+        const bannerOverlay = this.twShadowRoot.querySelector('.tw-banner-overlay');
         const banner = this.twShadowRoot.querySelector('.tw-banner');
-    
         banner.classList.remove('tw-banner--open');
-        banner.setAttribute('inert', '');
+
+        // Add inert
+        bannerOverlay.setAttribute('inert', '');
     }
     closeModal() {
         const modalOverlay = this.twShadowRoot.querySelector('.tw-modal-overlay');
-    
-        modalOverlay.classList.remove('tw-modal-overlay--open');
+        const modal = this.twShadowRoot.querySelector('.tw-modal');
+        modal.classList.remove('tw-modal--open');
 
         //Clean up event listeners
         document.removeEventListener('keydown', this._escHandler);
@@ -151,73 +165,47 @@ class categoriesExpanders {
     constructor(scriptsScanned, iframesScanned) {
         this.scriptsScanned = scriptsScanned;
         this.iframesScanned = iframesScanned;
-        this.createCategoriesExpanders(); //read scriptsScanned and iframesScanned category names and descriptions and create the expanders dynamically
         this.addExpandersEvents(); //add the expanding animation to the expanders
     }
 
-    createCategoriesExpanders() {
-        function getCategoryDescription(categoryName) {
-            return categoriesDescriptions.find(category => category.name === categoryName).description;
-        }
-
-        const expandersContainer = trustwardsFrontendInstance.twShadowRoot.querySelector('.tw-modal__expanders-container');
-
-        const categoryNames = Array.from(new Set([
-            ...this.scriptsScanned.map(script => script.category),
-            ...this.iframesScanned.map(iframe => iframe.category)
-        ]));
-
-        categoryNames.forEach((categoryName, index) => {
-            const isFunctional = categoryName === 'Functional';
-            const categoryLower = categoryName.toLowerCase();
-            
-            const expanderHTML = `
-                <div class='tw-modal__divider tw-modal__jxikdy'></div>
-                <div class='tw-modal__expander tw-modal__jxikdy' tabindex="0">
-                    <div class='tw-modal__expander-header tw-modal__jxikdz'>
-                        <div class='tw-modal__expander-label tw-modal__jxghdf'>
-                            <div class='tw-modal__expander-icon tw-modal__jxikdb'>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" color="currentColor" fill="none">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.75C12.6904 2.75 13.25 3.30964 13.25 4V10.75H20C20.6904 10.75 21.25 11.3096 21.25 12C21.25 12.6904 20.6904 13.25 20 13.25H13.25V20C13.25 20.6904 12.6904 21.25 12 21.25C11.3096 21.25 10.75 20.6904 10.75 20V13.25H4C3.30964 13.25 2.75 12.6904 2.75 12C2.75 11.3096 3.30964 10.75 4 10.75H10.75V4C10.75 3.30964 11.3096 2.75 12 2.75Z" fill="currentColor" />
-                                </svg>
-                            </div>
-                            <div class='tw-modal__expander-title tw-modal__jxikdb'>${categoryName}</div>
-                        </div>
-                        <div ${isFunctional ? 'data-functional-opacity' : ''} class='tw-modal__expander-toggle tw-modal__jxikgf'>
-                            <input type='checkbox' name='${categoryLower}' class='tw-modal__expander-checkbox tw-modal__jxikgh' ${isFunctional ? 'disabled checked' : ''}>
-                            <span class='tw-modal__jxikgi'></span>
-                        </div>
-                    </div>
-                    <div class='tw-modal__expander-content tw-modal__jxikaq'>
-                        <div class='tw-modal__jxikas'>${getCategoryDescription(categoryName)}</div>
-                    </div>
-                </div>
-                ${index === categoryNames.length - 1 ? '<div class="tw-modal__divider tw-modal__jxikdy"></div>' : ''}
-            `;
-            if (expandersContainer) {
-                expandersContainer.insertAdjacentHTML('beforeend', expanderHTML);
-            }
-        });
-    }
-
     addExpandersEvents() {
-        trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-modal__expander').forEach(expander => {
-            let content = expander.querySelector('.tw-modal__expander-content');
-            expander.addEventListener('click', (event) => {
-                if (event.target.classList.contains('tw-modal__expander-checkbox')) {
+        trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-categories__expander').forEach(expander => {
+            let content = expander.querySelector('.tw-categories__expander-content');
+            const header = expander.querySelector('.tw-categories__expander-header');
+            
+            // Clean up existing event listeners if they exist
+            if (expander._headerClickHandler && header) {
+                header.removeEventListener('click', expander._headerClickHandler);
+            }
+            if (expander._keydownHandler) {
+                expander.removeEventListener('keydown', expander._keydownHandler);
+            }
+            
+            // Define event handlers as named functions
+            const headerClickHandler = (event) => {
+                if (event.target.closest('.tw-checkbox')) {
                     return;
                 }
-                if (expander.classList.toggle('tw-modal__expander--open')) {
+                if (expander.classList.toggle('tw-categories__expander--open')) {
                     content.style.height = content.scrollHeight + 'px';
                 } else {
                     content.style.height = '0px';
                 }
-            });
-            expander.addEventListener('keydown', (event) => {
+            };
+            
+            const keydownHandler = (event) => {
                 if (event.key === 'Enter' && event.target === expander) {
                     expander.click();
                 }
-            });
+            };
+            
+            // Store references to handlers for cleanup on next call
+            expander._headerClickHandler = headerClickHandler;
+            expander._keydownHandler = keydownHandler;
+            
+            // Add event listeners
+            header.addEventListener('click', headerClickHandler);
+            expander.addEventListener('keydown', keydownHandler);
         });
     }
 }
@@ -445,7 +433,7 @@ class TrustwardsConsentManager {
 
         //Set the enabled checkboxes in the expanders categories stored as enabled in the trustwardsCookie
         document.addEventListener('DOMContentLoaded', () => {
-            const checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-modal__expander-checkbox:not([name="functional"])');
+            const checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-categories__expander-checkbox:not([name="functional"])');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = this.categoriesData[checkbox.name.charAt(0).toUpperCase() + checkbox.name.slice(1)].enabled;
             });
@@ -538,7 +526,7 @@ class TrustwardsConsentManager {
     */
 
     toggleCheckboxes(mode, customCategory = null) {
-        var checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-modal__expander-checkbox:not([name="functional"])');
+        var checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-categories__expander-checkbox:not([name="functional"])');
         var checkbox = null;
         if(customCategory) {
             checkbox = trustwardsFrontendInstance.twShadowRoot.querySelector(`[name="${customCategory.toLowerCase()}"]`);
@@ -574,7 +562,7 @@ class TrustwardsConsentManager {
         trustwardsFrontendInstance.toggleBlockEventsAndScroll();
 
         //Update categoriesData array with each category enabled flag updated with the new choices
-        const checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-modal__expander-checkbox:not([name="functional"])');
+        const checkboxes = trustwardsFrontendInstance.twShadowRoot.querySelectorAll('.tw-categories__expander-checkbox:not([name="functional"])');
         checkboxes.forEach(checkbox => {
             const categoryData = this.categoriesData[checkbox.name.charAt(0).toUpperCase() + checkbox.name.slice(1)];
 

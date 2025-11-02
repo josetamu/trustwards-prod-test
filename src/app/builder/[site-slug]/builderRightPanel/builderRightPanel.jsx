@@ -84,7 +84,8 @@ function BuilderRightPanel({user, site, checkProfilePicture, profileStyle, setMo
             case 'button':
                 return Button(tempNode, {}, []).groupControls;
             case 'categories':
-                return Categories(tempNode, {}, []).groupControls;
+                // Pass the actual selected element so categoriesScanned is available
+                return Categories(selectedElement || tempNode, {}, []).groupControls;
             case 'checkbox':
                 return Checkbox(tempNode, {}, []).groupControls;
             case 'icon':

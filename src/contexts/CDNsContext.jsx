@@ -88,7 +88,11 @@ const buildScript = async (siteId) => {
     //Define general constants
     var blockEvents = builderJSON.blockEvents;
     var blockScroll = builderJSON.blockScroll;
-    const defaultCSS = "[data-tw-close-banner], [data-tw-open-settings], [data-tw-close-settings], [data-tw-enable-all], [data-tw-disable-all], [data-tw-save-choices], [data-tw-accept-category], [data-tw-reject-category] { cursor: pointer; }"
+    var defaultHereCSS = "[data-tw-close-banner], [data-tw-open-settings], [data-tw-close-settings], [data-tw-enable-all], [data-tw-disable-all], [data-tw-save-choices], [data-tw-accept-category], [data-tw-reject-category] { cursor: pointer; }";
+    // Extract components used in the builderJSON and fetch only their CSS
+    const usedComponents = extractUsedComponents(builderJSON);
+    var defaultComponentsCSS = await getDefaultComponentsCSS(usedComponents);
+    const defaultCSS = defaultHereCSS + defaultComponentsCSS;
     const trustwardsTextsVersion = "0.0.0";
     const siteID = siteId;
     const TW_COOKIE_RETENTION_MONTHS = 12;
@@ -104,6 +108,10 @@ const buildScript = async (siteId) => {
         {
             "name": "Marketing",
             "description": "Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third-party advertisers.",
+        },
+        {
+            "name": "Other",
+            "description": "Other cookies are used to collect information about how you use our site, while you are on it. This includes information about the pages you view, the links you click and other actions you take on our site.",
         },
     ]
 
@@ -371,4 +379,59 @@ const generateGoogleFontsLink = async (idsCSSData = [], classesCSSData = []) => 
        .join('&');
    
    return `https://fonts.googleapis.com/css2?${fontFamilies}&display=swap`;
+};
+
+/*
+* Function to extract all component types used in the builder JSON
+* Returns a Set of component names (e.g., 'banner', 'modal', 'text', etc.)
+*/
+const extractUsedComponents = (builderJSON) => {
+    const usedComponents = new Set();
+    
+    // Recursive function to traverse the JSON tree
+    const traverse = (node) => {
+        if (!node || typeof node !== 'object') return;
+        
+        // If this node has an elementType, add it to the set
+        if (node.elementType && typeof node.elementType === 'string') {
+            usedComponents.add(node.elementType.toLowerCase());
+        }
+        
+        // Recursively traverse children
+        if (Array.isArray(node.children)) {
+            node.children.forEach(child => traverse(child));
+        }
+        
+        // Handle roots array (banner and modal)
+        if (Array.isArray(node.roots)) {
+            node.roots.forEach(root => traverse(root));
+        }
+    };
+    
+    // Start traversing from the builderJSON root
+    traverse(builderJSON);
+    
+    return usedComponents;
+};
+
+/*
+* Function to gather all CSS from builderElements components
+* Returns a combined string of all component CSS
+* @param {Set} usedComponents - Set of component names to include CSS for
+*/
+const getDefaultComponentsCSS = async (usedComponents) => {
+    try {
+        // Convert Set to array and create query string
+        const components = Array.from(usedComponents).join(',');
+        const response = await fetch(`/api/builder-elements-css?components=${encodeURIComponent(components)}`);
+        if (!response.ok) {
+            console.error('Failed to fetch builder elements CSS');
+            return '';
+        }
+        const data = await response.json();
+        return data.css || '';
+    } catch (error) {
+        console.error('Error fetching builder elements CSS:', error);
+        return '';
+    }
 };

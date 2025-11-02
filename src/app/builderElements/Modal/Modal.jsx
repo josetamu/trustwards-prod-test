@@ -6,9 +6,133 @@ import './Modal.css';
 export const modalGroupControls = {
     header: [
         { name: 'Tag', type: 'super-select', category: 'block', JSONProperty: 'tagName', placeholder: 'div'},
-        { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'block'},
+        { name: 'Type', type: 'select', default: 'Pop Up', options: ['Pop Up', 'OffCanvas'], dataAttribute: 'data-type', notDelete: true },
+        {
+            name: 'Backdrop',
+            type: 'switch',
+            JSONProperty: 'backdrop',
+            default: false,
+        },
+        {
+            name: 'Use Banner Backdrop',
+            type: 'switch',
+            JSONProperty: 'useBannerBackdrop',
+            default: false,
+            required: { control: 'Backdrop', value: true },
+        },
+        {
+            name: 'Show Banner',
+            type: 'switch',
+            JSONProperty: 'showBanner',
+            default: false,
+            required: [
+                { control: 'Backdrop', value: true },
+                { control: 'Use Banner Backdrop', value: false }
+            ],
+        },
     ],
     body: [
+        {
+            label: 'Pop Up',
+            controls: [
+                {
+                    name: 'Center position', type: 'switch', dataAttribute: 'data-centered', default: true,
+                },
+                {
+                    name: 'Position', type: 'super-select', default: 'absolute', cssProperty: 'position', category: 'position', required: { control: 'Center position', value: false }
+                },
+                {
+                    name: 'Scale', type: 'text', cssProperty: '--popup-scale', default: '0.9',
+                },
+                {
+                    name: 'Scale From', type: 'select', default: 'top', options: ['top', 'bottom', 'left', 'right'], cssProperty: '--popup-scale-from',
+                },
+                {
+                    name: 'Scale Duration', type: 'text', cssProperty: '--popup-scale-duration', default: '0.3s',
+                },
+                {
+                    name: 'Scale Easing', type: 'text', cssProperty: '--popup-scale-easing', default: 'cubic-bezier(0.34, 1.56, 0.64, 1)', nextLine: true,
+                },
+                {
+                    name: 'Fade Duration', type: 'text', cssProperty: '--popup-fade-duration', default: '0.2s',
+                },
+                {
+                    name: 'Fade Easing', type: 'text', cssProperty: '--popup-fade-easing', default: 'ease', nextLine: true,
+                },
+            ],
+            required: { control: 'Type', value: 'Pop Up' }
+        },
+        {
+            label: 'Pop Up Size',
+            controls: [
+                { name: 'Min. Width', type: 'text', cssProperty: 'min-width', autoUnit: 'px', selector: '&[data-type="Pop Up"]'},
+                { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px', default: '100%', selector: '&[data-type="Pop Up"]'},
+                { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px', default: '400px', selector: '&[data-type="Pop Up"]'},
+                { name: 'Min. Height', type: 'text', cssProperty: 'min-height', autoUnit: 'px', selector: '&[data-type="Pop Up"]'},
+                { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px', default: '100%', selector: '&[data-type="Pop Up"]'},
+                { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px', default: '350px', selector: '&[data-type="Pop Up"]'},
+            ],
+            required: { control: 'Type', value: 'Pop Up' }
+        },
+        {
+            label: 'OffCanvas',
+            controls: [
+                {
+                    name: 'From', type: 'select', default: 'right', options: ['left', 'right'], dataAttribute: 'data-from',
+                },
+                {
+                    name: 'Duration', type: 'text', cssProperty: '--offcanvas-duration', default: '0.6s',
+                },
+                {
+                    name: 'Easing', type: 'text', cssProperty: '--offcanvas-easing', default: 'cubic-bezier(0.87, 0, 0.13, 1)', nextLine: true,
+                },
+            ],
+            required: { control: 'Type', value: 'OffCanvas' }
+        },
+        {
+            label: 'OffCanvas Size',
+            controls: [
+                { name: 'Width', type: 'text', cssProperty: '--offcanvas-width', autoUnit: 'px', default: '500px', selector: '&[data-type="OffCanvas"]'},
+                { name: 'Min. Height', type: 'text', cssProperty: 'min-height', autoUnit: 'px', default: '100%', selector: '&[data-type="OffCanvas"]'},
+                { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px', selector: '&[data-type="OffCanvas"]'},
+                { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px', selector: '&[data-type="OffCanvas"]'},
+            ],
+            required: { control: 'Type', value: 'OffCanvas' }
+        },
+        {
+            label: 'Backdrop',
+            controls: [
+                {
+                    name: 'Color',
+                    type: 'color',
+                    JSONProperty: 'backdropColor',
+                    default: 'rgba(0, 0, 0, 0.75)',
+                    nextLine: true,
+                },
+                { name: 'Blur', type: 'text', default: '10px', JSONProperty: 'backdropBlur' },
+                {
+                    name: 'Fade Duration', type: 'text', JSONProperty: 'backdropFadeDuration', default: '0.2s',
+                },
+                {
+                    name: 'Fade Easing', type: 'text', JSONProperty: 'backdropFadeEasing', default: 'ease', nextLine: true,
+                },
+            ],
+            required: [
+                { control: 'Backdrop', value: true },
+                { control: 'Use Banner Backdrop', value: false }
+            ]
+        },
+        {
+            label: 'Layout',
+            controls: [
+                { name: 'Display', type: 'super-select', category: 'display', cssProperty: 'display', placeholder: 'flex', default: {
+                    'display': 'flex',
+                    'flex-direction': 'column',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                }},
+            ]
+        },
         {
             label: 'Spacing',
             controls: [
@@ -17,46 +141,29 @@ export const modalGroupControls = {
             ]
         },
         {
-            label: 'Size',
-            controls: [
-                { name: 'Width', type: 'text', cssProperty: 'width', autoUnit: 'px'},
-                { name: 'Max. Width', type: 'text', cssProperty: 'max-width', autoUnit: 'px'},
-                { name: 'Height', type: 'text', cssProperty: 'height', autoUnit: 'px'},
-                { name: 'Max. Height', type: 'text', cssProperty: 'max-height', autoUnit: 'px'},
-            ]
-        },
-        {
             label: 'Background',
             controls: [
-                { name: 'Background Color', type: 'color', cssProperty: 'background-color', nextLine: true},
+                { name: 'Background Color', type: 'color', default: '#CCCCCC', opacity: '100%', cssProperty: 'background-color', nextLine: true },
             ]
         },
         {
-            
-                label: 'Text',
-                controls: [
-                    { name: 'Color', type: 'color', cssProperty: 'color', nextLine: true},
-                    { name: 'Font', type: 'select', cssProperty: 'font-family', placeholder: 'Inter'},
-                    { name: 'Size', type: 'text', cssProperty: 'font-size', autoUnit: 'px'},
-                    { name: 'Weight', type: 'select', placeholder: 'Medium', options: ['Thin', 'Extra Light', 'Light', 'Normal', 'Medium', 'Semi Bold', 'Bold', 'Extra Bold', 'Black'], options2: ['Thin Italic', 'Extra Light Italic', 'Light Italic', 'Normal Italic', 'Medium Italic', 'Semi Bold Italic', 'Bold Italic', 'Extra Bold Italic', 'Black Italic'], cssProperty: 'font-weight' },
-                    { name: 'Spacing', type: 'text', cssProperty: 'letter-spacing', autoUnit: 'px'},
-                    { name: 'Line Height', type: 'text', cssProperty: 'line-height', autoUnit: 'px'},
-                    { name: 'Text Align', type: 'choose', category: 'text-align', cssProperty: 'text-align'},
-                    
-                ]
-            },
-            {   
-                label: 'Styles',
-                controls: [
-                    { name: 'Position', type: 'super-select', placeholder: 'static', cssProperty: 'position', category: 'position'},
-                    { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
-                    { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
-                    { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
-                    {name: 'Border', type: 'border'},
-                    {name: 'Shadow', type: 'box-shadow'},
-                    {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease'},
-                ]
-            }
+            label: 'Styles',
+            controls: [
+                { name: 'Opacity', type: 'text', cssProperty: 'opacity', placeholder: '1'},
+                { name: 'Overflow', type: 'select', placeholder: 'Visible', options: ['Visible', 'Hidden', 'Scroll', 'Auto'], cssProperty: 'overflow' },
+                { name: 'Cursor', type: 'select', placeholder: 'Default', options: ['Default', 'Pointer', 'Text', 'Not Allowed', 'Grab'], cssProperty: 'cursor' },
+                {
+                    name: 'Mix blend mode',
+                    type: 'select',
+                    placeholder: 'normal',
+                    options: ['normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'],
+                    cssProperty: 'mix-blend-mode'
+                },
+                {name: 'Border', type: 'border' },
+                {name: 'Shadow', type: 'box-shadow'},
+                {name: 'Transition', type: 'text', cssProperty: 'transition', placeholder: 'all 0.2s ease', nextLine: true},
+            ]
+        },
     ]
 };
 
@@ -75,9 +182,39 @@ export const Modal = (node, nodeProps = {}, children) => {
 
     const groupControls = modalGroupControls;
 
+    const backdrop = node.backdrop || false;
+
+    //If backdrop is true, useBannerBackdrop is users value otherwise fallback to false
+    var useBannerBackdrop = false;
+    if(backdrop){
+        useBannerBackdrop = node.useBannerBackdrop;
+    }
+
+    //If backdrop is true and useBannerBackdrop is false, showBanner is users value otherwise fallback to false
+    var showBanner = false;
+    if(backdrop && !useBannerBackdrop){
+        showBanner = node.showBanner;
+    }
+
+    const backdropColor = node.backdropColor;
+    const backdropBlur = node.backdropBlur
+    const backdropFadeDuration = node.backdropFadeDuration;
+    const backdropFadeEasing = node.backdropFadeEasing;
+    
     const render = () => {
         return (
-            <Tag key={id} {...nodeProps} {...dataAttributes}>{children}</Tag>
+            <div key={`${id}-overlay`} className="tw-modal-overlay" data-backdrop={backdrop} data-show-banner={showBanner} data-use-banner-backdrop={useBannerBackdrop} style={
+                {
+                    '--filter-blur': backdropBlur,
+                    '--backdrop-color': backdropColor,
+                    '--backdrop-fade-duration': backdropFadeDuration,
+                    '--backdrop-fade-easing': backdropFadeEasing
+                }
+            }>
+                <Tag key={id} {...nodeProps} {...dataAttributes}>
+                    {children}
+                </Tag>
+            </div>
         )
     }
 

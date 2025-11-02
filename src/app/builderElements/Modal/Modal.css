@@ -1,0 +1,87 @@
+/* Backdrop */
+.tw-modal-overlay{
+    position: fixed;
+    z-index: 9999;
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    pointer-events: none;
+    user-select: none;
+
+    opacity: 0;
+    transition: opacity var(--backdrop-fade-duration) var(--backdrop-fade-easing);
+}
+.tw-modal-overlay:has(> .tw-modal--open){
+    opacity: 1;
+    pointer-events: auto;
+    user-select: auto;
+}
+.tw-modal-overlay[data-backdrop="true"]{
+    background-color: var(--backdrop-color);
+    
+    backdrop-filter: blur(var(--filter-blur));
+    -webkit-backdrop-filter: blur(var(--filter-blur));
+}
+
+/* Show Banner */
+.tw-banner-overlay:has(~ .tw-modal-overlay[data-show-banner="true"]){
+    opacity: 1;
+}
+.tw-banner-overlay:has(~ .tw-modal-overlay[data-show-banner="true"]) .tw-banner{
+    opacity: 1;
+    transform: scale(1);
+    visibility: visible !important;
+}
+
+/* Link Banner Backdrop (hide modal backdrop and use banner backdrop) */
+.tw-banner-overlay:has(~ .tw-modal-overlay[data-use-banner-backdrop="true"]){
+    opacity: 1;
+}
+.tw-modal-overlay[data-use-banner-backdrop="true"]{
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Pop Up */
+.tw-modal-overlay:has(> .tw-modal[data-type="Pop Up"][data-centered="true"]){
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.tw-modal[data-type="Pop Up"]{
+    will-change: transform;
+    transform-origin: var(--popup-scale-from);
+    transform: scale(var(--popup-scale));
+    opacity: 0;
+
+    transition: transform var(--popup-scale-duration) var(--popup-scale-easing), opacity var(--popup-fade-duration) var(--popup-fade-easing);
+}
+.tw-modal--open[data-type="Pop Up"]{
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* OffCanvas */
+.tw-modal[data-type="OffCanvas"]{
+    width: 100%;
+    max-width: var(--offcanvas-width);
+
+    position: absolute;
+    transition: transform var(--offcanvas-duration) var(--offcanvas-easing);
+}
+.tw-modal[data-type="OffCanvas"][data-from="right"]{
+    right: 0;
+    transform: translateX(var(--offcanvas-width));
+}
+.tw-modal[data-type="OffCanvas"][data-from="left"]{
+    left: 0;
+    transform: translateX(calc(var(--offcanvas-width) * -1));
+}
+.tw-modal--open[data-type="OffCanvas"]{
+    transform: translateX(0) !important;
+}
