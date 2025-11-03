@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import './Sort.css';
 import { Dropdown } from '@components/dropdown/Dropdown';
-import {useDashboard} from '@dashboard/layout';
+import {useDashboard} from '@dashboard/DashboardContext';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import { supabase } from '@supabase/supabaseClient';
 

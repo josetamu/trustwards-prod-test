@@ -5,7 +5,7 @@ import { useId, useState, useEffect} from "react";
 import { Dropdown } from "@components/dropdown/Dropdown";
 import { Tooltip } from "@components/tooltip/Tooltip";
 import Link from "next/link";
-import { useDashboard } from "@dashboard/layout";
+import { useDashboard } from "@dashboard/DashboardContext";
 import { useRouter } from "next/navigation";
 import { SidebarSiteSkeleton } from "@components/Skeletons/SidebarSiteSkeleton";
 

@@ -1,5 +1,5 @@
 import './scanner.css';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { MonthlyScansSkeleton } from '@components/Skeletons/MonthlyScansSkeleton';
 
 

@@ -9,7 +9,7 @@ import { MonthlyScans } from './MonthlyScans';
 import { MonthlyScansSkeleton } from '@components/Skeletons/MonthlyScansSkeleton';
 import { ScanResult } from './ScanResult';
 import { ScanResultSkeleton } from '@components/Skeletons/ScanResultSkeleton';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { supabase } from '@supabase/supabaseClient';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
 

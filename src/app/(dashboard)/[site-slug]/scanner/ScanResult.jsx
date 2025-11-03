@@ -1,7 +1,7 @@
 import { ScanButton } from "./ScanButton";
 import { ScanResultSkeleton } from "@components/Skeletons/ScanResultSkeleton";
 import { Suspense, useState, useEffect } from "react";
-import { useDashboard } from "@dashboard/layout";
+import { useDashboard } from "@dashboard/DashboardContext";
 import './scanner.css';
 import '../home.css';
 import React from "react";

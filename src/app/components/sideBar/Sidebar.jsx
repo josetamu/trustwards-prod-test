@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react';
-import { useParams, usePathname } from 'next/navigation';     
+import { useParams, usePathname, useRouter } from 'next/navigation';     
 import { Suspense } from 'react';
 import { SidebarSiteSkeleton } from '@components/Skeletons/SidebarSiteSkeleton';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 
 import "./sideBar.css";
 
@@ -163,6 +163,7 @@ export function Sidebar({
     setBlockContent,
     openChangeModalSettings,
     }) {
+    const router = useRouter();
     const { 'site-slug': siteSlug } = useParams();
     const pathname = usePathname();
     const [isActive, setIsActive] = useState('');
@@ -182,6 +183,23 @@ export function Sidebar({
             setIsSiteOpen(false);
         }
     }, [siteSlug, setIsSiteOpen]);
+
+    // Prefetch all routes on sidebar mount (page load)
+    useEffect(() => {
+        // Global routes
+        router.prefetch('/');
+        // If there is a site, prefetch the site's views
+        if (siteSlug) {
+        const routes = [
+            `/${siteSlug}`,
+            `/${siteSlug}/analytics`,
+            `/${siteSlug}/scanner`,
+            `/${siteSlug}/proof-of-consent`,
+            `/${siteSlug}/integrations`,
+        ];
+        routes.forEach((r) => router.prefetch(r));
+        }
+    }, [router, siteSlug]);
 
     // Update isActive based on current pathname
     useEffect(() => {

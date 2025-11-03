@@ -2,7 +2,7 @@
 import 'react-day-picker/style.css';
 import './proof-of-consent.css';
 import { useParams, notFound } from 'next/navigation';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
 import { DayPicker } from 'react-day-picker';
 import { differenceInCalendarDays, format } from 'date-fns';

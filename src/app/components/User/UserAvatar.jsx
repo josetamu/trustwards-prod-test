@@ -1,4 +1,4 @@
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import UserAvatarSkeleton from '@components/Skeletons/UserAvatarSkeleton';
 
 export const UserAvatar = ({checkProfilePicture, profileStyle}) => {

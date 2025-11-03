@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 
 export const SiteName = ({ siteSlug }) => {

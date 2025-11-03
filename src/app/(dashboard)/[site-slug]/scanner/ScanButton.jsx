@@ -1,4 +1,4 @@
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import { supabase } from '@supabase/supabaseClient';
 

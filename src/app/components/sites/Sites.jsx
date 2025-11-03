@@ -6,7 +6,7 @@ import { NewSite } from '@components/NewSite/NewSite';
 import Image from 'next/image';
 import { SitesWelcome } from './SitesWelcome';
 import { UserNameSkeleton } from '@components/Skeletons/UserNameSkeleton';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import './Sites.css'
 import { SitesList } from './SitesList';
 import { SitesSkeleton } from '@components/Skeletons/SitesSkeleton';

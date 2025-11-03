@@ -2,7 +2,7 @@
 
 import './analytics.css';
 import { useParams, notFound } from 'next/navigation';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 import { Area, AreaChart, XAxis, RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
 import { useState, useEffect, useMemo, Suspense, useRef } from 'react';
