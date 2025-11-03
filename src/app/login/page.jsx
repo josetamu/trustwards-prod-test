@@ -2,7 +2,7 @@
 
 import './login.css';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@supabase/supabaseClient';
 
@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getAnimTypes } from '@animations/animations';
 import { ThemeProvider } from 'next-themes';
 
-export default function LoginPage() {
+function LoginContent() {
     const router = useRouter();
     const search = useSearchParams();
     const next = search.get('next') || '/'; // To redirect to the home after the login
@@ -170,5 +170,27 @@ export default function LoginPage() {
                 <div className="tw-login__blur"></div>
             </div>
         </ThemeProvider>
+    );
+}
+
+// Suspense fallback for login page
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <ThemeProvider>
+                <div className="tw-login" tw-login-flickering="true">
+                    <div className="tw-login__content">
+                        <div className="tw-login__top-content">
+                            <div className="tw-login__logo"></div>
+                            <h1 className="tw-login__title">Welcome to Trustwards</h1>
+                            <p className="tw-login__text">Start complying in a few minutes.</p>
+                        </div>
+                    </div>
+                    <div className="tw-login__blur"></div>
+                </div>
+            </ThemeProvider>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }
