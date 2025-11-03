@@ -4,6 +4,7 @@ import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/DashboardContext';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
 import { differenceInCalendarDays, format } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { supabase } from '@supabase/supabaseClient';
