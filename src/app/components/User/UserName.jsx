@@ -1,4 +1,4 @@
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 
 export const UserName = () => {

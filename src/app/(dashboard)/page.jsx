@@ -1,7 +1,7 @@
 'use client'
 
 import { Sites } from '@components/sites/Sites'
-import { useDashboard } from '@dashboard/layout'
+import { useDashboard } from '@dashboard/DashboardContext'
 
 function HomePage() {
   const {

@@ -1,26 +1,186 @@
 import './BuilderThemes.css';
 import { useState, useEffect, useCallback } from 'react';
-import { useCanvas } from '@contexts/CanvasContext';
+import { useCanvas, applyDefaults } from '@contexts/CanvasContext';
 import { supabase } from '@supabase/supabaseClient';
 import { createCDN } from '@contexts/CDNsContext';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAnimTypes } from '@animations/animations';
 
+// Import groupControls for applying defaults
+import { bannerGroupControls } from '@builderElements/Banner/Banner';
+import { modalGroupControls } from '@builderElements/Modal/Modal';
+
 export default function BuilderThemes({isFirstTime, setIsFirstTime, isManualThemesOpen, setIsManualThemesOpen, showNotification, siteSlug}) {
     const { setJSONtree } = useCanvas();
     const [activeTheme, setActiveTheme] = useState(null);
 
-    const blank = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "blockEvents": false, "blockScroll": false, "liveWebsite": false, "canvasColor": "#FFFFFF", "canvasMaxWidth": null, "breakpoints": { "tablet": "1024px", "mobile": "767px" }, "responsive": { "tablet": { "idsCSSData": [], "classesCSSData": [] }, "mobile": { "idsCSSData": [], "classesCSSData": [] } }, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
-    const trustwardsLight = {"roots": [{"id": "tw-root--banner", "icon": "banner", "label": "Banner", "tagName": "div", "children": [{"id": "tw-vghhri", "icon": "text", "text": "New Text", "label": "Text", "tagName": "h3", "classList": ["tw-text"], "elementType": "text"}, {"id": "tw-ycsvhl", "icon": "text", "text": "New Text", "label": "Text", "tagName": "h3", "classList": ["tw-text"], "elementType": "text"}, {"id": "tw-loyhvd", "icon": "text", "text": "New Text", "label": "Text", "tagName": "h3", "classList": ["tw-text"], "elementType": "text"}, {"id": "tw-ljdyrs", "icon": "text", "text": "New Text", "label": "Text", "tagName": "h3", "classList": ["tw-text"], "elementType": "text"}], "nestable": true, "classList": ["tw-banner"], "elementType": "banner"}, {"id": "tw-root--modal", "icon": "modal", "label": "Modal", "tagName": "div", "children": [], "nestable": true, "classList": ["tw-modal"], "elementType": "modal"}], "activeRoot": "tw-root--banner", "idsCSSData": [], "isFirstTime": false, "classesCSSData": []}
-    const trustwardsDark = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
-    const oregano = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
-    const nebula = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
-    const quiero = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
-    const avocado = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
-    const mito = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
-    const grainient = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
-    const brutal = {"idsCSSData": [], "classesCSSData": [], "activeRoot": "tw-root--banner", "isFirstTime": false, "roots": [{"id": "tw-root--banner", "elementType": "banner", "icon": "banner", "label": "Banner", "classList": ["tw-banner"], "tagName": "div", "children": [], "nestable": true}, {"id": "tw-root--modal", "elementType": "modal", "icon": "modal", "label": "Modal", "classList": ["tw-modal"], "tagName": "div", "children": [], "nestable": true}]};
+    // Helper function to create base theme structure with applied defaults
+    const createTheme = (customRoots = []) => {
+        const defaultBannerRoot = {
+            id: "tw-root--banner",
+            elementType: "banner",
+            icon: "banner",
+            label: "Banner",
+            classList: ["tw-banner"],
+            tagName: "div",
+            children: [],
+            nestable: true,
+            ...applyDefaults(bannerGroupControls)
+        };
+
+        const defaultModalRoot = {
+            id: "tw-root--modal",
+            elementType: "modal",
+            icon: "modal",
+            label: "Modal",
+            classList: ["tw-modal"],
+            tagName: "div",
+            children: [],
+            nestable: true,
+            ...applyDefaults(modalGroupControls)
+        };
+
+        // If custom roots are provided, merge defaults into them
+        const roots = customRoots.length > 0 ? customRoots.map(root => {
+            if (root.elementType === 'banner') {
+                return { ...defaultBannerRoot, ...root };
+            } else if (root.elementType === 'modal') {
+                return { ...defaultModalRoot, ...root };
+            }
+            return root;
+        }) : [defaultBannerRoot, defaultModalRoot];
+
+        // Create idsCSSData with defaults from roots
+        const idsCSSData = roots.map(root => {
+            const entry = { id: root.id };
+            
+            if (root.defaultCSS) {
+                entry.properties = root.defaultCSS;
+            }
+            
+            if (root.defaultNested) {
+                entry.nested = {};
+                Object.entries(root.defaultNested).forEach(([selector, props]) => {
+                    entry.nested[selector] = { properties: props };
+                });
+            }
+            
+            return (entry.properties || entry.nested) ? entry : null;
+        }).filter(Boolean);
+
+        return {
+            idsCSSData,
+            classesCSSData: [],
+            activeRoot: "tw-root--banner",
+            isFirstTime: false,
+            blockEvents: false,
+            blockScroll: false,
+            liveWebsite: false,
+            canvasColor: "#FFFFFF",
+            canvasMaxWidth: null,
+            breakpoints: { tablet: "1024px", mobile: "767px" },
+            responsive: { 
+                tablet: { idsCSSData: [], classesCSSData: [] }, 
+                mobile: { idsCSSData: [], classesCSSData: [] } 
+            },
+            roots
+        };
+    };
+
+    const blank = createTheme();
+    
+    // TrustwardsLight theme with custom styles
+    const trustwardsLight = {
+        roots: [
+            {
+                id: "tw-root--banner",
+                icon: "banner",
+                label: "Banner",
+                tagName: "div",
+                children: [],
+                nestable: true,
+                classList: ["tw-banner"],
+                attributes: {},
+                defaultCSS: {
+                    width: "300",
+                    display: "flex",
+                    "--filter-blur": "10px",
+                    "--backdrop-color": "#000000"
+                },
+                elementType: "banner",
+                defaultNested: {
+                    ".tw-categories__expander-switch": {
+                        "background-color": "#FFFFFF"
+                    }
+                }
+            },
+            {
+                id: "tw-root--modal",
+                icon: "modal",
+                label: "Modal",
+                tagName: "div",
+                children: [],
+                nestable: true,
+                classList: ["tw-modal"],
+                attributes: {},
+                defaultCSS: {},
+                elementType: "modal"
+            }
+        ],
+        activeRoot: "tw-root--banner",
+        idsCSSData: [
+            {
+                id: "tw-root--banner",
+                nested: {
+                    ".tw-categories__expander-switch": {
+                        properties: {
+                            "background-color": "#FFFFFF"
+                        }
+                    }
+                },
+                properties: {
+                    width: "100",
+                    display: "flex",
+                    "--filter-blur": "10px",
+                    "--backdrop-color": "#000000"
+                }
+            },
+            {
+                id: "tw-root--modal",
+                properties: {}
+            }
+        ],
+        responsive: {
+            mobile: {
+                idsCSSData: [],
+                classesCSSData: []
+            },
+            tablet: {
+                idsCSSData: [],
+                classesCSSData: []
+            }
+        },
+        blockEvents: false,
+        blockScroll: false,
+        breakpoints: {
+            mobile: "767px",
+            tablet: "1024px"
+        },
+        canvasColor: "#FFFFFF",
+        isFirstTime: false,
+        liveWebsite: false,
+        canvasMaxWidth: null,
+        classesCSSData: []
+    };
+    const trustwardsDark = createTheme();
+    const oregano = createTheme();
+    const nebula = createTheme();
+    const quiero = createTheme();
+    const avocado = createTheme();
+    const mito = createTheme();
+    const grainient = createTheme();
+    const brutal = createTheme();
     /*
     * When clicking Save button, update the theme in real time, save it on the site DB, and declare first time as false to close the themes modal
     * Set JSONtree structure

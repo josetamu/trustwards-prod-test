@@ -24,58 +24,56 @@ const applyOnEnter = (e,f) => {
 
 /**
  * Helper function to evaluate if a 'required' condition is met
- * @param {string|object} required - The required condition. Can be a string like "Type=switch" or object like {control: "Type", value: "switch"}
- * @param {object} allControls - All controls from header and body to search for the referenced control
+ * @param {string|object|Array} required - Condition(s). String like "Control=value", object like {control:"Control", value:any}, or an array of those (AND logic)
+ * @param {object[]} allControls - All controls from header and body to search for the referenced control(s)
  * @param {function} getGlobalJSONValue - Function to get JSON values
  * @param {function} getGlobalCSSValue - Function to get CSS values
  * @returns {boolean} - True if the condition is met, false otherwise
  */
 const evaluateRequired = (required, allControls, getGlobalJSONValue, getGlobalCSSValue) => {
     if (!required) return true; // No required means always show
-    
-    // Parse the required condition
-    let controlName, expectedValue;
-    
-    if (typeof required === 'string') {
-        // Format: "ControlName=value"
-        const parts = required.split('=');
-        if (parts.length !== 2) return true; // Invalid format, show by default
-        controlName = parts[0].trim();
-        expectedValue = parts[1].trim();
-    } else if (typeof required === 'object') {
-        // Format: {control: "ControlName", value: "expectedValue"}
-        controlName = required.control;
-        expectedValue = required.value;
-    } else {
-        return true; // Invalid format, show by default
+
+    const getCurrentValueForControl = (ctrl) => {
+        if (!ctrl) return undefined;
+        if (ctrl.JSONProperty && getGlobalJSONValue) return getGlobalJSONValue(ctrl.JSONProperty);
+        if (ctrl.dataAttribute && getGlobalJSONValue) return getGlobalJSONValue(`attributes.${ctrl.dataAttribute}`);
+        if (ctrl.cssProperty && getGlobalCSSValue) return getGlobalCSSValue(ctrl.cssProperty, ctrl.selector);
+        return ctrl.default;
+    };
+
+    const evaluateSingle = (singleRequired) => {
+        if (!singleRequired) return true;
+
+        let controlName, expectedValue;
+        if (typeof singleRequired === 'string') {
+            const parts = singleRequired.split('=');
+            if (parts.length !== 2) return true;
+            controlName = parts[0].trim();
+            expectedValue = parts[1].trim();
+        } else if (typeof singleRequired === 'object' && !Array.isArray(singleRequired)) {
+            controlName = singleRequired.control;
+            expectedValue = singleRequired.value;
+        } else {
+            return true;
+        }
+
+        const referencedControl = allControls.find(ctrl => ctrl?.name === controlName);
+        if (!referencedControl) return false;
+
+        let currentValue = getCurrentValueForControl(referencedControl);
+        if (currentValue === null || currentValue === undefined) currentValue = referencedControl.default;
+
+        const normalizedCurrent = (currentValue !== null && currentValue !== undefined) ? String(currentValue).trim() : '';
+        const normalizedExpected = String(expectedValue).trim();
+        return normalizedCurrent === normalizedExpected;
+    };
+
+    if (Array.isArray(required)) {
+        // AND logic: all conditions must be satisfied
+        return required.every(cond => evaluateSingle(cond));
     }
-    
-    // Find the referenced control in allControls
-    const referencedControl = allControls.find(ctrl => ctrl?.name === controlName);
-    if (!referencedControl) return false; // Control not found, don't show
-    
-    // Get the current value of the referenced control
-    let currentValue = null;
-    
-    // Check JSONProperty first
-    if (referencedControl.JSONProperty && getGlobalJSONValue) {
-        currentValue = getGlobalJSONValue(referencedControl.JSONProperty);
-    } 
-    // Then check dataAttribute
-    else if (referencedControl.dataAttribute && getGlobalJSONValue) {
-        currentValue = getGlobalJSONValue(`attributes.${referencedControl.dataAttribute}`);
-    }
-    // Then check cssProperty
-    else if (referencedControl.cssProperty && getGlobalCSSValue) {
-        currentValue = getGlobalCSSValue(referencedControl.cssProperty, referencedControl.selector);
-    }
-    
-    // Normalize values for comparison (trim whitespace, handle empty/null)
-    const normalizedCurrent = currentValue ? String(currentValue).trim() : '';
-    const normalizedExpected = String(expectedValue).trim();
-    
-    // Return true if values match
-    return normalizedCurrent === normalizedExpected;
+
+    return evaluateSingle(required);
 }
 
 //Define each type of control.
@@ -150,6 +148,7 @@ const TextType = ({name, value, placeholder, index, cssProperty, applyGlobalCSSC
             value={textValue} 
             placeholder={bpPlaceholder || placeholder} 
             onChange={handleChange}
+            spellCheck={false}
             />
         </div>
     )
@@ -571,15 +570,15 @@ const PanelType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSS
     )
 }
 
-const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, notDelete, getPlaceholderValue, default: defaultValue}) => {
+const ColorType = ({name, index, cssProperty, selectedElementData, applyGlobalCSSChange, getGlobalCSSValue, nextLine, required, allControls, checkRequired, dataAttribute, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, notDelete, getPlaceholderValue, default: defaultValue}) => {
 
     //Function to convert rgb to hex
-    const rgbToHex = (r, g, b) => {
+    const rgbToHex = useCallback((r, g, b) => {
         return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    };
+    }, []);
 
     //Function to convert any color format to hex
-const anyColorToHex = (color) => {
+const anyColorToHex = useCallback((color) => {
     // Create a temporary element to leverage browser's color parsing
     const tempDiv = document.createElement('div');
     tempDiv.style.color = color;
@@ -594,54 +593,60 @@ const anyColorToHex = (color) => {
         return rgbToHex(parseInt(r), parseInt(g), parseInt(b));
     }
     return null;
-};
+}, [rgbToHex]);
 
 //Function to get the color from jsonTree
 const getSavedValue = useCallback(() => {
-    // Priority: dataAttribute > cssProperty
-    // NOTE: defaultValue is NOT used as fallback - it's only applied during element creation
+    // Priority: dataAttribute > JSONProperty > cssProperty > defaultValue (as fallback for display)
     let savedValue;
     if (dataAttribute && getGlobalJSONValue) {
         savedValue = getGlobalJSONValue(`attributes.${dataAttribute}`);
+    } else if (JSONProperty && getGlobalJSONValue) {
+        savedValue = getGlobalJSONValue(JSONProperty);
     } else if (cssProperty && getGlobalCSSValue) {
         savedValue = getGlobalCSSValue(cssProperty);
     }
     
-    if (!savedValue || savedValue === 'transparent') return { color: '', hex: '', percentage: '' };
+    // Use defaultValue as fallback when no saved value exists
+    const valueToProcess = savedValue || defaultValue;
+    
+    if (!valueToProcess || valueToProcess === 'transparent') return { color: '', hex: '', percentage: '' };
 
-    if (savedValue.startsWith('rgba(')) {
-        const m = savedValue.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+    if (valueToProcess.startsWith('rgba(')) {
+        const m = valueToProcess.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
         if (m) {
             const [, r, g, b, a] = m;
             const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
             return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: `${Math.round(parseFloat(a)*100)}%` };
         }
-    } else if (savedValue.startsWith('rgb(')) {
-        const m = savedValue.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    } else if (valueToProcess.startsWith('rgb(')) {
+        const m = valueToProcess.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
         if (m) {
             const [, r, g, b] = m;
             const hexWithHash = rgbToHex(parseInt(r), parseInt(g), parseInt(b)).toUpperCase();
             return { color: hexWithHash, hex: hexWithHash.slice(1), percentage: '100%' };
         }
-    } else if (savedValue.startsWith('#')) {
-        const hexNoHash = savedValue.replace('#', '').toUpperCase();
+    } else if (valueToProcess.startsWith('#')) {
+        const hexNoHash = valueToProcess.replace('#', '').toUpperCase();
         return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
     } else {
-        const any = anyColorToHex(savedValue);
+        const any = anyColorToHex(valueToProcess);
         if (any) {
             const hexNoHash = any.replace('#', '').toUpperCase();
             return { color: `#${hexNoHash}`, hex: hexNoHash, percentage: '100%' };
         }
     }
     return { color: '', hex: '', percentage: '' };
-}, [getGlobalCSSValue, cssProperty, dataAttribute, getGlobalJSONValue]);
+}, [getGlobalCSSValue, cssProperty, dataAttribute, getGlobalJSONValue, JSONProperty, defaultValue, anyColorToHex, rgbToHex]);
     
 
 const getPlaceholderColor = () => {
-    // Priority: dataAttribute > cssProperty
+    // Priority: dataAttribute > JSONProperty > cssProperty
     let placeholderValue;
     if (dataAttribute && getPlaceholderValue) {
         placeholderValue = getPlaceholderValue(`attributes.${dataAttribute}`);
+    } else if (JSONProperty && getPlaceholderValue) {
+        placeholderValue = getPlaceholderValue(JSONProperty);
     } else if (cssProperty && getPlaceholderValue) {
         placeholderValue = getPlaceholderValue(cssProperty);
     }
@@ -721,8 +726,8 @@ const getPlaceholderColor = () => {
     };
 
      // Function to apply the CSS style
-     const applyCSSChange = (newColor, newOpacity) => {
-        if (!cssProperty && !dataAttribute) return;
+     const applyCSSChange = useCallback((newColor, newOpacity) => {
+        if (!cssProperty && !dataAttribute && !JSONProperty) return;
     
         const effectiveOpacity = (newOpacity === '' || newOpacity == null)
             ? (lastOpacityRef.current || '100%')
@@ -733,13 +738,15 @@ const getPlaceholderColor = () => {
             ? hexToRgba(newColor, opacityValue)
             : newColor;
     
-        // Priority: dataAttribute > cssProperty
+        // Priority: dataAttribute > JSONProperty > cssProperty
         if (dataAttribute && applyGlobalJSONChange) {
             applyGlobalJSONChange(`attributes.${dataAttribute}`, finalValue);
+        } else if (JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, finalValue);
         } else if (cssProperty && applyGlobalCSSChange) {
             applyGlobalCSSChange(cssProperty, finalValue);
         }
-    };
+    }, [cssProperty, dataAttribute, JSONProperty, applyGlobalJSONChange, applyGlobalCSSChange]);
 
 
     //Function to change the color
@@ -890,10 +897,13 @@ const perc = parseInt((percentage??'').replace('%', ''));
 const effectivePerc = (isNaN(perc) || perc === 0) ? 100 : perc;
 const finalColor = color && color !== '' ? hexToRgba(color, effectivePerc) : 'transparent';
 
+    // Determine the effective property for StylesDeleter
+    const effectiveJSONProperty = dataAttribute ? `attributes.${dataAttribute}` : JSONProperty;
+
     return (
         <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`}key={index}>
             <span className="tw-builder__settings-subtitle">{name}
-                <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange}  getGlobalCSSValue={getGlobalCSSValue} value={color} cssProperty={cssProperty} notDelete={notDelete} isPlaceholder={!color && !!(placeholderValues?.color)}/>
+                <StylesDeleter applyGlobalCSSChange={applyGlobalCSSChange} applyGlobalJSONChange={applyGlobalJSONChange} getGlobalCSSValue={getGlobalCSSValue} getGlobalJSONValue={getGlobalJSONValue} value={color} cssProperty={cssProperty} JSONProperty={effectiveJSONProperty} notDelete={notDelete} isPlaceholder={!color && !!(placeholderValues?.color)}/>
             </span>
             
         <div className="tw-builder__settings-background">
@@ -4016,6 +4026,92 @@ const SeparatorControl = () => {
     );
 };
 
+const SwitchType = ({name, index, cssProperty, applyGlobalCSSChange, getGlobalCSSValue, applyGlobalJSONChange, getGlobalJSONValue, JSONProperty, nextLine, dataAttribute, notDelete, required, allControls, checkRequired, default: defaultValue}) => {
+    
+    // Initialize state from saved value
+    const [isChecked, setIsChecked] = useState(() => {
+        // Priority: dataAttribute > JSONProperty > cssProperty > defaultValue
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+        const savedValue = dataAttrValue ?? savedJSONValue ?? savedCSSValue;
+        
+        // Convert to boolean - handle string "true"/"false", boolean, or null/undefined
+        if (savedValue === 'true' || savedValue === true) return true;
+        if (savedValue === 'false' || savedValue === false) return false;
+        
+        // If no saved value exists, use defaultValue (if provided), otherwise false
+        if (defaultValue === true || defaultValue === 'true') return true;
+        return false;
+    });
+
+    // Update the value when the selected element changes
+    useEffect(() => {
+        const dataAttrValue = dataAttribute ? getGlobalJSONValue?.(`attributes.${dataAttribute}`) : null;
+        const savedJSONValue = JSONProperty ? getGlobalJSONValue?.(JSONProperty) : null;
+        const savedCSSValue = cssProperty ? getGlobalCSSValue?.(cssProperty) : null;
+        const savedValue = dataAttrValue ?? savedJSONValue ?? savedCSSValue;
+        
+        // Convert to boolean - handle string "true"/"false", boolean, or null/undefined
+        if (savedValue === 'true' || savedValue === true) {
+            setIsChecked(true);
+        } else if (savedValue === 'false' || savedValue === false) {
+            setIsChecked(false);
+        } else {
+            // If no saved value exists, use defaultValue (if provided), otherwise false
+            if (defaultValue === true || defaultValue === 'true') {
+                setIsChecked(true);
+            } else {
+                setIsChecked(false);
+            }
+        }
+    }, [getGlobalCSSValue, cssProperty, getGlobalJSONValue, JSONProperty, dataAttribute, defaultValue]);
+
+    // Handle switch toggle
+    const handleToggle = useCallback((e) => {
+        const newValue = e.target.checked;
+        setIsChecked(newValue);
+        
+        // Apply the change based on priority: dataAttribute > JSONProperty > cssProperty
+        if (dataAttribute && applyGlobalJSONChange) {
+            applyGlobalJSONChange(`attributes.${dataAttribute}`, newValue);
+        } else if (JSONProperty && applyGlobalJSONChange) {
+            applyGlobalJSONChange(JSONProperty, newValue);
+        } else if (cssProperty && applyGlobalCSSChange) {
+            applyGlobalCSSChange(cssProperty, newValue ? 'true' : 'false');
+        }
+
+        // Check required conditions if applicable
+        if (required && checkRequired) {
+            checkRequired();
+        }
+    }, [cssProperty, applyGlobalCSSChange, applyGlobalJSONChange, JSONProperty, dataAttribute, required, checkRequired]);
+
+    return (
+        <div className={`tw-builder__settings-setting ${nextLine ? 'tw-builder__settings-setting--column' : ''}`} key={index}>
+            <span className="tw-builder__settings-subtitle">{name}</span>
+            <label className="tw-builder__settings-switch-container">
+                <input
+                    type="checkbox"
+                    className="tw-builder__settings-switch-checkbox"
+                    checked={isChecked}
+                    onChange={handleToggle}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setIsChecked(!isChecked);
+                            handleToggle({ target: { checked: !isChecked } });
+                        }
+                    }}
+                    aria-checked={isChecked}
+                    aria-label={name}
+                />
+                <span className="tw-builder__settings-switch"></span>
+            </label>
+        </div>
+    );
+};
+
 const RepeaterType = ({controls, whatType, index, globalControlProps, setBwUnified, setBrUnified, allControls, checkRequired}) => {
     // State to track which items are open/collapsed
     const [openItems, setOpenItems] = useState({});
@@ -4161,9 +4257,11 @@ const RepeaterType = ({controls, whatType, index, globalControlProps, setBwUnifi
         <div className="tw-builder__repeater-control">
             {controls && controls.map((item, itemIndex) => {
                 const { hasAnyValue, hasDeletableValue } = itemsWithValues[itemIndex] || {};
+                // Apply itemStyle if provided by the element (e.g., Categories sets opacity)
+                const itemStyle = item.itemStyle || {};
                 
                 return (
-                    <div key={itemIndex} className="tw-builder__repeater-item">
+                    <div key={itemIndex} className="tw-builder__repeater-item" style={itemStyle}>
                         <div 
                             className="tw-builder__repeater-item-header" 
                             onClick={() => toggleItem(itemIndex)}
@@ -4782,29 +4880,43 @@ const applyMultipleCSSAndJSONChanges = useCallback((selectorBatches, jsonBatch) 
             return checkRequired(item.required);
         });
 
-        // Get the control name from required condition
-        const getRequiredControlName = (required) => {
-            if (!required) return null;
-            if (typeof required === 'string') {
-                return required.split('=')[0].trim();
-            } else if (typeof required === 'object') {
-                return required.control;
+        // Get dependent control names from required condition (supports arrays)
+        const getRequiredControlNames = (required) => {
+            if (!required) return [];
+            if (Array.isArray(required)) {
+                return required.map(r => {
+                    if (typeof r === 'string') return r.split('=')[0].trim();
+                    if (typeof r === 'object') return r.control;
+                    return null;
+                }).filter(Boolean);
             }
-            return null;
+            if (typeof required === 'string') return [required.split('=')[0].trim()];
+            if (typeof required === 'object') return [required.control];
+            return [];
         };
 
-        const requiredControlName = getRequiredControlName(item.required);
+        const requiredControlNames = getRequiredControlNames(item.required);
 
-        // Find the control that this depends on
-        const dependentControl = useMemo(() => {
-            if (!requiredControlName) return null;
-            return allControls.find(ctrl => ctrl?.name === requiredControlName);
-        }, [requiredControlName]);
+        // Find the controls that this depends on
+        const dependentControls = useMemo(() => {
+            if (!requiredControlNames.length) return [];
+            return requiredControlNames.map(name => allControls.find(ctrl => ctrl?.name === name)).filter(Boolean);
+        }, [requiredControlNames]);
 
-        // Get the current value of the dependent control
-        const dependentJsonValue = dependentControl?.JSONProperty ? getGlobalJSONValue(dependentControl.JSONProperty) : null;
-        const dependentAttrValue = dependentControl?.dataAttribute ? getGlobalJSONValue(`attributes.${dependentControl.dataAttribute}`) : null;
-        const dependentCssValue = dependentControl?.cssProperty ? getGlobalCSSValue(dependentControl.cssProperty) : null;
+        // Build a signature of current values to trigger updates when any changes
+        const dependentValuesSignature = useMemo(() => {
+            const values = dependentControls.map(dc => {
+                const jsonVal = dc?.JSONProperty ? getGlobalJSONValue(dc.JSONProperty) : undefined;
+                const attrVal = dc?.dataAttribute ? getGlobalJSONValue(`attributes.${dc.dataAttribute}`) : undefined;
+                const cssVal = dc?.cssProperty ? getGlobalCSSValue(dc.cssProperty) : undefined;
+                return { name: dc?.name, jsonVal, attrVal, cssVal };
+            });
+            try {
+                return JSON.stringify(values);
+            } catch {
+                return String(values?.length || 0);
+            }
+        }, [dependentControls, getGlobalJSONValue, getGlobalCSSValue]);
         const elementId = selectedElementData?.id;
 
         // Listen to changes in the dependent control's value
@@ -4817,7 +4929,7 @@ const applyMultipleCSSAndJSONChanges = useCallback((selectorBatches, jsonBatch) 
             // Re-evaluate the required condition
             const isConditionMet = checkRequired(item.required);
             setShouldShow(isConditionMet);
-        }, [dependentJsonValue, dependentAttrValue, dependentCssValue, elementId, item.required]);
+        }, [dependentValuesSignature, elementId, item.required]);
 
         if (!shouldShow) return null;
         return children;
@@ -4858,7 +4970,7 @@ const applyMultipleCSSAndJSONChanges = useCallback((selectorBatches, jsonBatch) 
                 case 'panel':
                     return <PanelType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} value={item.value} placeholder={item.placeholder} nextLine={item.nextLine}/>;
                 case 'color':
-                    return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} nextLine={item.nextLine}/>;
+                    return <ColorType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} placeholder={item.placeholder} opacity={item.opacity} index={index} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} dataAttribute={item.dataAttribute} nextLine={item.nextLine}/>;
                 case 'image':
                     return <ImageType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} user={user} site={site} nextLine={item.nextLine} nextLine2={item.nextLine2}/>;
                 case 'choose':
@@ -4873,6 +4985,8 @@ const applyMultipleCSSAndJSONChanges = useCallback((selectorBatches, jsonBatch) 
                     return <BoxShadowType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} nextLine={item.nextLine}/>;
                 case 'enter-animation':
                     return <EnterAnimationType key={index} {...enhancedItem} {...overrideProps} name={item.name} index={index} cssProperty={item.cssProperty} selectedElementData={selectedElementData} applyEnterAnimationChange={applyEnterAnimationChange} savedProps={getEnterAnimationProps()} styleDeleter={styleDeleter} notDelete={item.notDelete} activeRoot={activeRoot} getEnterAnimationPlaceholder={getEnterAnimationPlaceholder} getActiveBreakpoint={getActiveBreakpoint}/>;
+                case 'switch':
+                    return <SwitchType key={index} {...enhancedItem} {...overrideProps} name={item.name} value={item.value} index={index} cssProperty={item.cssProperty} JSONProperty={item.JSONProperty} dataAttribute={item.dataAttribute} nextLine={item.nextLine} notDelete={item.notDelete}/>;
                 case 'separator':
                     return <SeparatorControl key={index} />;
                 case 'label':

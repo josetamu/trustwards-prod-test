@@ -161,33 +161,53 @@ export const Canvas = ({site, screenshotUrl, setScreenshotUrl}) => {
     * Fallback to set null as the selected element when interacting outside of the canvas and the toolbar
     */
     useEffect(() => {
+        const allowedSelectors = [
+            '.tw-active-root',
+            '.tw-builder__toolbar',
+            '.tw-builder__right-body',
+            '.tw-builder__tab-container',
+            '.tw-builder__tree-content',
+            '.tw-context-menu',
+            '.builder-save__text',
+            '.tw-builder__panel-toggle-btn',
+            '.tw-builder__logo-button',
+            '.tw-builder__settings-class-remove',
+            '.tw-builder__settings-class-unactive',
+            '.tw-builder__settings-classes-item',
+            '.tw-builder__settings-option',
+            '.tw-builder__settings-pen-controls',
+            '.tw-builder__header-breakpoint',
+            '.tw-builder__header-settings',
+            '.tw-builder__right-header',
+            '.tw-builder__settings-classes-pool',
+            '.modal__backdrop',
+            '.tw-builder__settings-class',
+            '.tw-builder__settings-deleter',
+            '.tw-builder__settings-properties-actions'
+        ];
+
         const handleClickOutside = (e) => {
-            if (!e.target.closest('.tw-active-root') && 
-            !e.target.closest('.tw-builder__toolbar') &&
-            !e.target.closest('.tw-builder__right-body') &&
-            !e.target.closest('.tw-builder__tab-container') &&
-            !e.target.closest('.tw-builder__tree-content') &&
-            !e.target.closest('.tw-context-menu') &&
-            !e.target.closest('.builder-save__text') &&
-            !e.target.closest('.tw-builder__panel-toggle-btn') &&
-            !e.target.closest('.tw-builder__logo-button') &&
-            !e.target.closest('.tw-builder__settings-class-remove') &&
-            !e.target.closest('.tw-builder__settings-class-unactive') &&
-            !e.target.closest('.tw-builder__settings-classes-item') &&
-            !e.target.closest('.tw-builder__settings-option') &&
-            !e.target.closest('.tw-builder__settings-pen-controls')&&
-            !e.target.closest('.tw-builder__header-breakpoint') &&
-            !e.target.closest('.tw-builder__header-settings') &&
-            !e.target.closest('.tw-builder__right-header') &&
-            !e.target.closest('.tw-builder__settings-classes-pool') &&
-            !e.target.closest('.modal__backdrop') &&
-            !e.target.closest('.tw-builder__settings-class') &&
-            !e.target.closest('.tw-builder__settings-deleter') &&
-            !e.target.closest('.tw-builder__settings-properties-actions')) {
+            // First, check using closest on the original target
+            const isInsideClosest = allowedSelectors.some(sel => e.target.closest(sel));
+
+            // Additionally, check the composedPath to handle cases where the clicked element
+            // unmounts during the click (e.g., required controls hiding themselves)
+            let isInsidePath = false;
+            if (typeof e.composedPath === 'function') {
+                const path = e.composedPath();
+                isInsidePath = path?.some((el) => {
+                    return el && el.matches && allowedSelectors.some(sel => {
+                        try { return el.matches(sel); } catch { return false; }
+                    });
+                });
+            }
+
+            if (!isInsideClosest && !isInsidePath) {
                 setSelectedId(null);
                 setSelectedItem(null);
             }
         };
+
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, [setSelectedId]);
@@ -638,7 +658,13 @@ useEffect(() => {
             const emitNested = (baseSel, nested) => {
               if (!nested || typeof nested !== 'object') return;
               Object.entries(nested).forEach(([sel, node]) => {
-                const targetSel = sel.includes('&') ? sel.split('&').join(baseSel) : `${baseSel} ${sel.trim()}`;
+                const trimmed = (sel || '').trim();
+                if (!trimmed) return;
+                const targetSel = trimmed.includes('&')
+                  ? trimmed.split('&').join(baseSel)
+                  : (trimmed.startsWith('#') || trimmed.startsWith('.'))
+                    ? trimmed
+                    : `${baseSel} ${trimmed}`;
                 emitBase(targetSel, node.properties, node.states);
               });
             };
@@ -856,6 +882,48 @@ useEffect(() => {
     //Create the CSS for the ids and classes every time the JSONtree changes
     useEffect(() => {
         createCSS(JSONtree);
+    }, [JSONtree]);
+
+    // Force CSS update when viewport resizes (e.g., when opening DevTools)
+    // This ensures styles are properly applied even when JSONtree doesn't change
+    useEffect(() => {
+        let rafId = null;
+        let resizeTimeout = null;
+        
+        const forceStyleUpdate = () => {
+            // Cancel any pending update
+            if (rafId) cancelAnimationFrame(rafId);
+            if (resizeTimeout) clearTimeout(resizeTimeout);
+            
+            // Debounce rapid resize events with a short delay
+            resizeTimeout = setTimeout(() => {
+                // Schedule update on next animation frame to avoid performance issues
+                rafId = requestAnimationFrame(() => {
+                    createCSS(JSONtree);
+                    
+                    // Force browser to recalculate styles by triggering a reflow
+                    const canvas = document.querySelector('.tw-builder__canvas');
+                    if (canvas) {
+                        // Reading offsetHeight forces the browser to apply pending style changes
+                        void canvas.offsetHeight;
+                    }
+                });
+            }, 10); // Short delay to debounce while maintaining responsiveness
+        };
+        
+        // Use ResizeObserver to detect viewport changes (including DevTools open/close)
+        const resizeObserver = new ResizeObserver(() => {
+            forceStyleUpdate();
+        });
+        
+        // Observe document.body to catch DevTools resize
+        resizeObserver.observe(document.body);
+        
+        return () => {
+            if (rafId) cancelAnimationFrame(rafId);
+            if (resizeTimeout) clearTimeout(resizeTimeout);
+            resizeObserver.disconnect();
+        };
     }, [JSONtree]);
 
     //Get the builder breakpoint to set the data-bp attribute

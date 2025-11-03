@@ -1,7 +1,7 @@
 'use client'
 
 import './InstallationFirst.css';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import ScriptCopy from '@components/ScriptCopy/ScriptCopy';
 import { supabase } from '@supabase/supabaseClient.js';
 

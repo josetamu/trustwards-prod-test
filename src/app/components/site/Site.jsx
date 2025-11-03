@@ -4,7 +4,7 @@ import { ModalContainer } from '@components/ModalContainer/ModalContainer';
 import { ModalDelete } from '@components/ModalDelete/ModalDelete';
 import { useState, useEffect } from 'react';
 import { supabase } from '@supabase/supabaseClient';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 

@@ -3,7 +3,7 @@
 import './home.css';
 import './scanner/scanner.css';
 import { useParams, notFound, useRouter } from 'next/navigation';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { useState, useMemo, Suspense } from 'react';
 import { supabase } from '@supabase/supabaseClient.js';
 import { InstallationFirst } from './homeComponents/InstallationFirst';

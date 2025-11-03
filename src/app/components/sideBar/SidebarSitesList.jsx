@@ -1,4 +1,4 @@
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { NewSite } from '@components/NewSite/NewSite';
 import { SidebarSites } from '@components/sidebarSite/SidebarSites';
 import { SidebarSiteSkeleton } from '@components/Skeletons/SidebarSiteSkeleton';

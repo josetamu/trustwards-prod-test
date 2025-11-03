@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './View.css';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import { supabase } from '@supabase/supabaseClient';
 

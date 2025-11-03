@@ -5,25 +5,11 @@
     outline: 1px solid #0099FE !important;
     outline-offset: -1px !important;
 }
-#tw-root--banner,
-#tw-root--modal{
-    height: 100%;
-    min-height: fit-content;
-}
 #tw-root--banner:not(.tw-active-root),
 #tw-root--modal:not(.tw-active-root){
-   visibility: hidden;
-   pointer-events: none;
-   position: absolute;
-    inset: 0;
-}
-
-#tw-root--banner:not(.tw-active-root),
-#tw-root--banner:not(.tw-active-root) *,
-#tw-root--modal:not(.tw-active-root),
-#tw-root--modal:not(.tw-active-root) * {
-    transition: none !important;
-    animation: none !important;
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
 }
 /*Drop indicator*/
 .tw-builder__canvas .tw-builder__drop-indicator {

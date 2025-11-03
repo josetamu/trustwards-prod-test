@@ -1,5 +1,5 @@
 import './DashboardHeader.css';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { useState, Suspense} from 'react';
 import { Dropdown } from '@components/dropdown/Dropdown';
 import { supabase } from '@supabase/supabaseClient';

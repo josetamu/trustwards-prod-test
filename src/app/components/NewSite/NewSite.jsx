@@ -1,5 +1,5 @@
 import './NewSite.css';
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 
 export function NewSite({openChangeModal, showNotification, setIsModalOpen, setModalType}) {

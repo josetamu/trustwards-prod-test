@@ -1,4 +1,4 @@
-import { useDashboard } from '@dashboard/layout';
+import { useDashboard } from '@dashboard/DashboardContext';
 import UserAvatarSkeleton from '@components/Skeletons/UserAvatarSkeleton';
 import { useState, useRef } from 'react';
 import { supabase } from '@supabase/supabaseClient';
