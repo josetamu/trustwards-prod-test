@@ -26,16 +26,9 @@ function createResource(promise) {
   };
 }
 
-async function fetchSite(siteId) {
-  const { data: site, error } = await supabase.from('Site').select('*').eq('id', siteId).single();
-  if (error) throw error;
-  return { site };
-}
-
-function HomeContent({ resource }) {
+function HomeContent({ site }) {
   const router = useRouter();
   const { showNotification } = useDashboard();
-  const { site } = resource.read();
   if (!site) notFound();
 
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -99,17 +92,14 @@ function HomeContent({ resource }) {
 
 function Home() {
   const { ['site-slug']: siteSlug } = useParams();
+  const { siteData, allUserDataResource } = useDashboard();
 
-  const { allUserDataResource } = useDashboard();
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const delay = 1500;
 
   // Unified: site + user-data in one resource to avoid unnecessary re-renders
   const resource = useMemo(() => {
-    if (!siteSlug) return null;
-
-    const sitePromise = fetchSite(siteSlug);
-
-    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-    const delay = 1500;
+    if (!siteSlug || !siteData) return null;
 
     const res = allUserDataResource;
 
@@ -134,19 +124,13 @@ function Home() {
       }
     })();
 
-    return createResource(
-      Promise.all([sitePromise, gate]).then(([siteData]) => siteData)
-    );
-  }, [siteSlug, allUserDataResource]);
-
-  const Combined = ({ resource }) => {
-    return <HomeContent resource={resource} />;
-  };
+    return createResource(gate.then(() => siteData));
+  }, [siteSlug, siteData, allUserDataResource]);
 
   return (
     <div className="home">
       <Suspense fallback={<HomeInstallationSkeleton />}>
-        {resource ? <Combined resource={resource} /> : <HomeInstallationSkeleton />}
+        {resource && siteData ? <HomeContent site={siteData} /> : <HomeInstallationSkeleton />}
       </Suspense>
     </div>
   );

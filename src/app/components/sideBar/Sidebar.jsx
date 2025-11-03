@@ -449,7 +449,7 @@ export function Sidebar({
                               
                             </div>
                             <div className="sidebar__sites-container">
-                                {!!siteSlug ? (
+                                {siteSlug ? (
                                     // if we are inside a site, show the overviewPages
                                     <div className={`sidebar__sites-display ${hasSitesOverflow ? 'sidebar__sites-display--overflow' : ''}`} ref={sitesDisplayRef}>
                                         <div className="sidebar__sites-display-links">

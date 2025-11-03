@@ -3,14 +3,25 @@
 import './analytics.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/DashboardContext';
-import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
-import { Area, AreaChart, XAxis, RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
 import { useState, useEffect, useMemo, Suspense, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
 import { Tooltip } from '@components/tooltip/Tooltip';
 import { Dropdown } from '@components/dropdown/Dropdown';
 import { supabase } from '@/supabase/supabaseClient';
 import { HomeInstallationSkeleton } from '@components/Skeletons/HomeInstallationSkeleton';
+import { AreaChartSkeleton, RadialChartSkeleton } from './ChartSkeleton';
+
+// Dynamic imports for chart components - recharts is quite heavy
+const ConsentAreaChart = dynamic(() => import('./ConsentAreaChart').then(mod => ({ default: mod.ConsentAreaChart })), {
+  ssr: false,
+  suspense: true,
+});
+
+const RadialMetricChart = dynamic(() => import('./RadialMetricChart').then(mod => ({ default: mod.RadialMetricChart })), {
+  ssr: false,
+  suspense: true,
+});
 
 function createResource(promise) {
   let status = 'pending';
@@ -26,13 +37,6 @@ function createResource(promise) {
       return result;
     }
   };
-}
-
-
-async function fetchSite(siteId) {
-  const { data: site, error } = await supabase.from('Site').select('*').eq('id', siteId).single();
-  if (error) throw error;
-  return { site };
 }
 
 async function fetchChartData(siteId, timeRange) {
@@ -302,89 +306,13 @@ function AnalyticsContent({ site, initialChartData, defaultTimeRange = "7d" }) {
 
         <div className="analytics__chart-divider"></div>
 
-        <div className="analytics__area-chart-container">
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-[250px] w-full"
-          >
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="fillFullConsentGiven" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--analytics-area-chart-given-gradient-start)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--analytics-area-chart-given-gradient-end)" stopOpacity={0.5} />
-                </linearGradient>
-                <linearGradient id="fillParseConsentGiven" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--analytics-area-chart-parse-gradient-start)" stopOpacity={1} />
-                  <stop offset="95%" stopColor="var(--analytics-area-chart-parse-gradient-end)" stopOpacity={1} />
-                </linearGradient>
-                <linearGradient id="fillFullConsentRejected" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--analytics-area-chart-rejected-gradient-start)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--analytics-area-chart-rejected-gradient-end)" stopOpacity={0.5} />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={timeRange === "1m" ? 16 : timeRange === "1y" ? 8 : 32}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  if (timeRange === "7d") {
-                    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                  } else if (timeRange === "1m") {
-                    const day = date.getDate();
-                    return day % 2 === 0 ? day : "";
-                  } else if (timeRange === "1y") {
-                    return date.toLocaleDateString("en-US", { month: "long" });
-                  }
-                  return value;
-                }}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    const date = new Date(data.date);
-                    if (isNaN(date.getTime())) return null;
-                    let formattedDate;
-                    if (timeRange === "7d" || timeRange === "1m") {
-                      formattedDate = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                    } else if (timeRange === "1y") {
-                      formattedDate = date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-                    } else {
-                      formattedDate = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                    }
-                    return (
-                      <div className="analytics__tooltip">
-                        <p className="analytics__tooltip-label">{formattedDate}</p>
-                        {payload.map((entry, index) => (
-                          <div key={index} className="analytics__tooltip-value-content">
-                            <div className="analytics__tooltip-left">
-                              <span className="analytics__tooltip-dot" style={{ backgroundColor: entry.color }}></span>
-                              <span className="analytics__tooltip-value">
-                                {entry.dataKey === 'fullConsentGiven' ? 'Full Consent Given' :
-                                 entry.dataKey === 'parseConsentGiven' ? 'Parse Consent Given' :
-                                 'Full Consent Rejected'}
-                              </span>
-                            </div>
-                            <span className="analytics__tooltip-value">{entry.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Area dataKey="fullConsentGiven" type="natural" fill="url(#fillFullConsentGiven)" stroke="var(--analytics-area-chart-given-stroke)" stackId="a" />
-              <Area dataKey="parseConsentGiven" type="natural" fill="url(#fillParseConsentGiven)" stroke="var(--analytics-area-chart-parse-stroke)" stackId="a" />
-              <Area dataKey="fullConsentRejected" type="natural" fill="url(#fillFullConsentRejected)" stroke="var(--analytics-area-chart-rejected-stroke)" stackId="a" />
-              <ChartLegend content={<ChartLegendContent />} />
-            </AreaChart>
-          </ChartContainer>
-        </div>
+        <Suspense fallback={<AreaChartSkeleton />}>
+          <ConsentAreaChart 
+            chartData={chartData} 
+            timeRange={timeRange} 
+            chartConfig={chartConfig} 
+          />
+        </Suspense>
       </div>
 
       <div className="analytics__radial-charts">
@@ -414,16 +342,15 @@ function AnalyticsContent({ site, initialChartData, defaultTimeRange = "7d" }) {
               />
             </span>
           </div>
-          <div className="analytics__radial-chart-container">
-            <RadialBarChart key={`pages-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pagesData} startAngle={90} endAngle={450}>
-              <PolarAngleAxis type="number" domain={[0, pagesMax]} tick={false} />
-              <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
-            </RadialBarChart>
-            <div className="analytics__radial-chart-center">
-              <span className="analytics__radial-chart-value">{pagesValue}</span>
-              <span className="analytics__radial-chart-label">Pages</span>
-            </div>
-          </div>
+          <Suspense fallback={<RadialChartSkeleton />}>
+            <RadialMetricChart
+              chartKey={`pages-${chartKey}`}
+              data={pagesData}
+              max={pagesMax}
+              label="Pages"
+              value={pagesValue}
+            />
+          </Suspense>
         </div>
 
         <div className="analytics__chart">
@@ -452,16 +379,15 @@ function AnalyticsContent({ site, initialChartData, defaultTimeRange = "7d" }) {
               />
             </span>
           </div>
-          <div className="analytics__radial-chart-container">
-            <RadialBarChart key={`scans-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={scansData} startAngle={90} endAngle={450}>
-              <PolarAngleAxis type="number" domain={[0, scansMax]} tick={false} />
-              <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
-            </RadialBarChart>
-            <div className="analytics__radial-chart-center">
-              <span className="analytics__radial-chart-value">{scansValue}</span>
-              <span className="analytics__radial-chart-label">Scans</span>
-            </div>
-          </div>
+          <Suspense fallback={<RadialChartSkeleton />}>
+            <RadialMetricChart
+              chartKey={`scans-${chartKey}`}
+              data={scansData}
+              max={scansMax}
+              label="Scans"
+              value={scansValue}
+            />
+          </Suspense>
         </div>
 
         <div className="analytics__chart">
@@ -490,24 +416,23 @@ function AnalyticsContent({ site, initialChartData, defaultTimeRange = "7d" }) {
               />
             </span>
           </div>
-          <div className="analytics__radial-chart-container">
-            <RadialBarChart key={`poc-${chartKey}`} width={200} height={200} cx="50%" cy="50%" innerRadius="70%" outerRadius="85%" data={pocData} startAngle={90} endAngle={450}>
-              <PolarAngleAxis type="number" domain={[0, pocMax]} tick={false} />
-              <RadialBar dataKey="value" cornerRadius={10} fill="var(--analytics-radial-chart-fill)" background={{ fill: "var(--analytics-radial-chart-background)" }} />
-            </RadialBarChart>
-            <div className="analytics__radial-chart-center">
-              <span className="analytics__radial-chart-value">{pocValue}</span>
-              <span className="analytics__radial-chart-label">PoC</span>
-            </div>
-          </div>
+          <Suspense fallback={<RadialChartSkeleton />}>
+            <RadialMetricChart
+              chartKey={`poc-${chartKey}`}
+              data={pocData}
+              max={pocMax}
+              label="PoC"
+              value={pocValue}
+            />
+          </Suspense>
         </div>
       </div>
 
     </div>
   );
 }
-function AnalyticsResourceContent({ resource, defaultTimeRange = "7d" }) {
-    const { site, initialChartData } = resource.read();
+function AnalyticsResourceContent({ site, resource, defaultTimeRange = "7d" }) {
+    const { initialChartData } = resource.read();
     return (
       <AnalyticsContent
         site={site}
@@ -520,15 +445,15 @@ function AnalyticsResourceContent({ resource, defaultTimeRange = "7d" }) {
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { allUserDataResource } = useDashboard();
+    const { siteData, allUserDataResource } = useDashboard();
 
     const defaultTimeRange = "7d";
 
-    const resource = useMemo(() => {
-      if (!siteSlug) return null;
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    const delay = 1500;
 
-      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-      const delay = 1500;
+    const resource = useMemo(() => {
+      if (!siteSlug || !siteData) return null;
 
       const res = allUserDataResource;
       const gate = (async () => {
@@ -550,24 +475,24 @@ function Home() {
       })();
 
       const dataLoader = (async () => {
-        const { site: s } = await fetchSite(siteSlug);
         let chartData = null;
-        if (s?.Verified) {
-          chartData = await fetchChartData(s.id, defaultTimeRange);
+        if (siteData?.Verified) {
+          chartData = await fetchChartData(siteData.id, defaultTimeRange);
         }
-        return { site: s, initialChartData: chartData };
+        return { initialChartData: chartData };
       })();
 
       return createResource(
         Promise.all([dataLoader, gate]).then(([data]) => data)
       );
-    }, [siteSlug, allUserDataResource]);
+    }, [siteSlug, siteData, allUserDataResource]);
 
     return (
       <div className='analytics'>
         <Suspense fallback={<HomeInstallationSkeleton />}>
-          {resource ? (
+          {resource && siteData ? (
             <AnalyticsResourceContent
+              site={siteData}
               resource={resource}
               defaultTimeRange={defaultTimeRange}
             />

@@ -7,6 +7,8 @@
     gap: 12px;
 
     min-height: 100%;
+
+    padding: 10px 0;
 }
 
 
@@ -59,12 +61,10 @@
     border-radius: 10px;
 }
 .tw-builder__toolbar{
-    background-color: var(--panels-background);
+    background-color: var(--toolbar-background);
     border-radius: 12px;
-    border: 1px solid var(--border-fresco-color);
-    box-shadow: var(--fancy-shadow);
-
- 
+    border: var(--toolbar-border);
+    box-shadow: var(--toolbar-shadow);
 
     height: 100%;
     max-height: fit-content;

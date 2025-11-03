@@ -1,30 +1,21 @@
 'use client'
 
 import './integrations.css';
-import { useParams, notFound } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useDashboard } from '@dashboard/DashboardContext';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
-import { useEffect, useState } from 'react';
-import { supabase } from '@supabase/supabaseClient';
 
-async function fetchIntegrationsData(siteSlug) {
-  const { data: site, error } = await supabase
-    .from('Site')
-    .select('*')
-    .eq('id', siteSlug)
-    .single();
-  if (error) throw error;
-  return { site };
-}
-
-function IntegrationsContent({ site }) {
+function Home() {
   const params = useParams();
   const siteSlug = params['site-slug'];
+  const { siteData } = useDashboard();
 
-  if (!site) {
-    notFound();
+  // Wait for siteData to load
+  if (!siteData) {
+    return null;
   }
 
-  if (!site.Verified) {
+  if (!siteData.Verified) {
     return (
       <div className='integrations'>
         <InstallationFirst siteSlug={siteSlug} />
@@ -58,57 +49,6 @@ function IntegrationsContent({ site }) {
           </a>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Home() {
-  const params = useParams();
-  const siteSlug = params['site-slug'];
-
-
-  const [site, setSite] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!siteSlug) {
-      setSite(null);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    fetchIntegrationsData(siteSlug)
-      .then(({ site }) => {
-        if (!cancelled) {
-          setSite(site);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setSite(null);
-          setError(err);
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [siteSlug]);
-
-  if (loading) return null; 
-  if (error) return null;   
-
-  return (
-    <div className='integrations'>
-      {site ? <IntegrationsContent site={site} /> : null}
     </div>
   );
 }

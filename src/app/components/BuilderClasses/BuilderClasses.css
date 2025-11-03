@@ -241,8 +241,8 @@
     justify-content: center;
 }
 .tw-builder__settings-states--active{
-    background-color: var(--states-active-color);
-    color: var(--accent-color);
+    background-color: var(--accent-bg-color);
+    color: var(--states-active-color);
 }
 .tw-builder__settings-states svg{
     position: absolute;

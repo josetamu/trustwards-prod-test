@@ -20,10 +20,12 @@ export const User = ({  setIsSidebarOpen,user,isDropdownOpen,setIsDropdownOpen,i
     
     const handleLogout = async () => {
         try {
-        await supabase.auth.signOut();
-        } finally {
+            await supabase.auth.signOut();
             router.replace('/login');
-            router.refresh();
+        } catch (error) {
+            console.error('Error during logout:', error);
+            // Redirigir de todas formas si hay un error
+            router.replace('/login');
         }
     };
 

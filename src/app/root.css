@@ -284,7 +284,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --start-end-color: #FFFFFF;
   --calendar-dropdown-background: #e1e1e1;
 
-    /* 
+  /* 
    =======================
           BUILDER
    =======================
@@ -294,7 +294,7 @@ System selected: will fallback to root or html[data-theme="dark"]
   --canvas-min-width: 350px;
   --canvas-max-width: 1480px;
 
-  --panels-radius: 8px;
+  --panels-radius: 0px;
 
   --handlebars-color: #D9D9D9;
   --handlebars-color-active: #AAAAAA;
@@ -318,12 +318,22 @@ System selected: will fallback to root or html[data-theme="dark"]
   /*Builder - Themes Modal*/
   --free-badge-background: #EEEEEE;
 
+  /*Builder - Plan*/
+  --plan-background: #E3E3E3;
+  --plan-text-color: #999999;
+
   /*Builder - Toolbar*/
   --toolbar-items-background: #F0F0F0;
   --toolbar-items-background-hover: #e9e9e9;
   --toolbar-items-text-color: #999999;
   --toolbar-items-icon-color: #999999;
   --toolbar-items-icon-background: #FFFFFF;
+  
+  --toolbar-background: var(--panels-background);
+  --toolbar-nav-items-background-hover: #F0F0F0;
+  --toolbar-border: 1px solid var(--border-fresco-color);
+  --toolbar-shadow: var(--fancy-shadow);
+  --toolbar-divider-color: var(--border-fresco-color);
 
   /*Builder - Left Panel*/
   --logo-background: #FFFFFF;
@@ -434,7 +444,7 @@ html[data-theme="dark"] {
   --body-fresco-color: #9B9B9B;
   --body-semistrong-color: #9B9B9B;
   --body-strong-color: #FFFFFF;
-  --border-fresco-color: #363636;
+  --border-fresco-color: #3C3C3C;
   --border-strong-color: #454545;
 
   --icons-fresco-color: #9B9B9B;
@@ -464,7 +474,7 @@ html[data-theme="dark"] {
   --view-toggle-background: #363636;
 
   /*Buttons*/
-  --secondary-button-border-color: #373737;
+  --secondary-button-border-color: #454545;
 
   /*Dropdown*/
   --dropdown-background: #363636;
@@ -569,10 +579,10 @@ html[data-theme="dark"] {
   --handlebars-color-active: #666666;
 
   --header-plan-background: #363636;
-  --undo-redo-background: #363636;
-  --builder-background: #202020;
+  --undo-redo-background: #555555;
+  --builder-background: #282828;
   --builder-text-color: #F5F5F5;
-  --panels-background: #282828;
+  --panels-background: #2A2A2A;
   --canvas-background: #FFFFFF;
 
   --subtitle-color: #AAAAAA;
@@ -580,31 +590,41 @@ html[data-theme="dark"] {
   --icons-color: #999999;
 
   /* Builder - User Tooltip*/
-  --user-tooltip-background: #363636;
+  --user-tooltip-background: #404040;
   --user-tooltip-color: #F5F5F5;
 
   /*Builder - Themes Modal*/
   --free-badge-background: #363636;
 
+  /*Builder - Plan*/
+  --plan-background: #555555;
+  --plan-text-color: #AAAAAA;
+
   /*Builder - Toolbar*/
-  --toolbar-items-background: #363636;
-  --toolbar-items-background-hover: #404040;
+  --toolbar-items-background: #393939;
+  --toolbar-items-background-hover: #484848;
   --toolbar-items-text-color: #999999;
   --toolbar-items-icon-color: #FFFFFF;
   --toolbar-items-icon-background: #666666;
 
+  --toolbar-background: #343434;
+  --toolbar-nav-items-background-hover: #505050;
+  --toolbar-border: unset;
+  --toolbar-shadow: 0 1px 0 0 #7F7F7F inset, 0 1px 4px 0 rgba(0, 0, 0, 0.25);
+  --toolbar-divider-color: #505050;
+
   /*Builder - Left Panel*/
-  --logo-background: #363636;
-  --toggle-color: #999999;
-  --tab-container-background: #363636;
-  --tab-slider-background: #555555;
-  --tab-color: #999999;
+  --logo-background: #3C3C3C;
+  --toggle-color: #aaaaaa;
+  --tab-container-background: #3C3C3C;
+  --tab-slider-background: #666666;
+  --tab-color: #aaaaaa;
   --tab-active-color: #F5F5F5;
-  --tab-hover-background: #404040;
+  --tab-hover-background: #505050;
   --tab-hover-color: #F5F5F5;
 
   /*Builder - Tree View*/
-  --tree-item-hover-background: #333333;
+  --tree-item-hover-background: #363636;
 
   --tree-item-selected-background: #0099FE;
   --tree-item-selected-color: #FFFFFF;
@@ -626,7 +646,7 @@ html[data-theme="dark"] {
   --drop-indicator-background: #0099FE15;
 
   /*Builder - Right Panel*/
-  --upload-image-background: #555555;
+  --upload-image-background: #606060;
   --value-color: #FFFFFF;
   --subtitle-right-panel-color: #AAAAAA;
   --placeholder-color: #999999;
@@ -635,16 +655,16 @@ html[data-theme="dark"] {
   --border-control-color-color: #555555;
   --slider-border-control-bg-active: #666666;
 
-  --no-selected-item-background: #363636;
+  --no-selected-item-background: #3C3C3C;
   --no-selected-item-text-color: #999999;
-  --control-background: #363636;
+  --control-background: #3C3C3C;
   --control-background-repeater: #555555;
   --control-context-background: #282828;
 
-  --classes-background: #363636;
+  --classes-background: #3C3C3C;
   --right-panel-dropdown-background: #000000;
 
-  --states-background: #505050;
+  --states-background: #666666;
   --states-active-color: #FFFFFF;
 
   --tooltip-right-panel-color: #666;

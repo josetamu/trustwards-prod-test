@@ -23,7 +23,6 @@
   align-content: space-between;
 
   white-space: nowrap;
-  background-color: var(--sidebar-background);
 }
 .sidebar__logos{
   display: flex;

@@ -1,14 +1,11 @@
-import { useId } from 'react';
 import './SidebarLink.css';
 
 // SidebarLink component
 export const SidebarLink = ({ icon, text, onClick, className, children}) => {
-    const sidebarLinkId = useId();      
     return (
         <a 
             className={`${className || 'sidebar__link'}`}
             onClick={onClick}
-            id={sidebarLinkId}
             aria-label={text}
             tabIndex={0}
             onKeyDown={(e) => {

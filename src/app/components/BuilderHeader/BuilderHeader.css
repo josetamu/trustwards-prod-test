@@ -3,19 +3,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    
 }
 .tw-builder__header-settings{
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background-color: var(--panels-background);
-    border-radius: 12px;
+
     height: 40px;
-    border: 1px solid var(--border-fresco-color);
-    box-shadow: var(--fancy-shadow);
+
+    background-color: var(--toolbar-background);
+    border-radius: 12px;
+    border: var(--toolbar-border);
+    box-shadow: var(--toolbar-shadow);
 }
 .tw-builder__header-setting{
     display: flex;
@@ -33,7 +33,7 @@
 .tw-builder__header-divider{
     width: 1px;
     height: 100%;
-    background-color: var(--border-fresco-color);
+    background-color: var(--toolbar-divider-color);
 }
 .tw-builder__header-user{
     display: flex;
@@ -96,8 +96,8 @@
 .tw-builder__header-plan{
     font-size: var(--font-size-extreme-mini);
     font-weight: 700;
-    color: var( --body-light-color);
-    background-color: var(--header-plan-background);
+    color: var(--plan-text-color);
+    background-color: var(--plan-background);
     padding: 3px;
     border-radius: 5px;
     cursor: pointer;

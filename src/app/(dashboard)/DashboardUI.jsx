@@ -6,19 +6,23 @@ import { useRouter, useParams, usePathname } from 'next/navigation';
 import { useTheme, ThemeProvider } from 'next-themes';
 import { createCDN } from '@contexts/CDNsContext';
 import { DashboardContext } from './DashboardContext';
+import dynamic from 'next/dynamic';
 
+// Components loaded immediately
 import { Sidebar } from '@components/sideBar/Sidebar';
-import { ModalContainer } from '@components/ModalContainer/ModalContainer';
-import { ModalDelete } from '@components/ModalDelete/ModalDelete';
-import { ModalSupport } from '@components/ModalSupport/ModalSupport';
-import { ModalChange } from '@components/ModalChange/ModalChange';
-import { ModalUser } from '@components/ModalUser/ModalUser';
-import { ModalWelcome } from '@components/ModalWelcome/ModalWelcome';
-import { ModalCheckout } from '@components/ModalCheckout/ModalCheckout';
 import Notification from '@components/Notification/Notification';
 import DashboardHeader from '@components/DashboardHeader/DashboardHeader';
-import { OffcanvasContainer } from '@components/OffcanvasContainer/OffcanvasContainer';
-import OffcanvasPricing from '@components/OffcanvasPricing/OffcanvasPricing';
+
+// Conditional components - dynamic import
+const ModalContainer = dynamic(() => import('@components/ModalContainer/ModalContainer').then(mod => ({ default: mod.ModalContainer })));
+const ModalDelete = dynamic(() => import('@components/ModalDelete/ModalDelete').then(mod => ({ default: mod.ModalDelete })));
+const ModalSupport = dynamic(() => import('@components/ModalSupport/ModalSupport').then(mod => ({ default: mod.ModalSupport })));
+const ModalChange = dynamic(() => import('@components/ModalChange/ModalChange').then(mod => ({ default: mod.ModalChange })));
+const ModalUser = dynamic(() => import('@components/ModalUser/ModalUser').then(mod => ({ default: mod.ModalUser })));
+const ModalWelcome = dynamic(() => import('@components/ModalWelcome/ModalWelcome').then(mod => ({ default: mod.ModalWelcome })));
+const ModalCheckout = dynamic(() => import('@components/ModalCheckout/ModalCheckout').then(mod => ({ default: mod.ModalCheckout })));
+const OffcanvasContainer = dynamic(() => import('@components/OffcanvasContainer/OffcanvasContainer').then(mod => ({ default: mod.OffcanvasContainer })));
+const OffcanvasPricing = dynamic(() => import('@components/OffcanvasPricing/OffcanvasPricing'));
 
 export function DashboardUI({ children, initialUser, initialWebs, initialAppearance, authUserId, initialSidebarState }) {
   const router = useRouter();

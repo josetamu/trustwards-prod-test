@@ -6,30 +6,46 @@ import './Loader.css';
 const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted, isLiveWebsiteLoading, isHugeIconsLoading }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [progressWidth, setProgressWidth] = useState(0);
+  const [hugeIconsCompleted, setHugeIconsCompleted] = useState(false);
+  const [websiteCompleted, setWebsiteCompleted] = useState(false);
 
-  // Data not available - Progress bar will go to a random width between 0 and 50% of 250px
+  // Initial load - Stage 1: 0-30% (loader has mounted)
   useEffect(() => {
-   
-    // starts with a random width between 0 and 50
-    const initialWidth = Math.floor(Math.random() * 50);
+    const initialWidth = 15 + Math.floor(Math.random() * 15); // 15-30%
     setProgressWidth(initialWidth);
+  }, []);
 
-    // if the live website is loading, the progress bar will advance to a random width between 100 and 150 after 2 seconds
-    if(isLiveWebsiteLoading){
+  // Stage 2: 30-60% when HugeIcons finish loading
+  useEffect(() => {
+    if (!isHugeIconsLoading && !hugeIconsCompleted) {
+      setHugeIconsCompleted(true);
       setTimeout(() => {
-        const nextWidth = 100 + Math.floor(Math.random() * 50); 
+        const nextWidth = 45 + Math.floor(Math.random() * 15); // 45-60%
         setProgressWidth(nextWidth);
-      }, 2000);
+      }, 100);
     }
+  }, [isHugeIconsLoading, hugeIconsCompleted]);
 
-    // if HugeIcons are loading, advance progress to 75-90 range (before the final 100%)
-    if(isHugeIconsLoading){
+  // Stage 3: 60-85% when live website finishes loading (if applicable)
+  useEffect(() => {
+    if (!isLiveWebsiteLoading && !websiteCompleted && hugeIconsCompleted) {
+      setWebsiteCompleted(true);
       setTimeout(() => {
-        const nextWidth = 75 + Math.floor(Math.random() * 15); 
+        const nextWidth = 70 + Math.floor(Math.random() * 15); // 70-85%
         setProgressWidth(nextWidth);
-      }, 50);
+      }, 100);
     }
-  }, [isLiveWebsiteLoading, isHugeIconsLoading]);
+  }, [isLiveWebsiteLoading, websiteCompleted, hugeIconsCompleted]);
+
+  // Fallback: If website loading is not needed, advance to stage 3 after HugeIcons
+  useEffect(() => {
+    if (hugeIconsCompleted && isLiveWebsiteLoading === undefined) {
+      setTimeout(() => {
+        const nextWidth = 70 + Math.floor(Math.random() * 15); // 70-85%
+        setProgressWidth(nextWidth);
+      }, 300);
+    }
+  }, [hugeIconsCompleted, isLiveWebsiteLoading]);
 
   // Data available - Fade out animation
   useEffect(() => {
@@ -43,7 +59,7 @@ const Loader = ({ isVisible, loaderCompleted, setLoaderCompleted, isLiveWebsiteL
         setTimeout(() => {
           setLoaderCompleted(true);
         }, 500); // fade transition lasts 0.5s, then remove loader
-      }, 200); // progress bar transition lasts 0.2s, then start fade
+      }, 600); // progress bar transition lasts 0.6s, then start fade
     }
   }, [isVisible]);
 

@@ -25,6 +25,7 @@ import { OffcanvasContainer } from '@components/OffcanvasContainer/OffcanvasCont
 import  OffcanvasPricing  from '@components/OffcanvasPricing/OffcanvasPricing'
 import { ModalCheckout } from '@components/ModalCheckout/ModalCheckout';
 import { getAllIconNames } from '@/lib/hugeicons';
+import { useTheme, ThemeProvider } from 'next-themes';
 
 function Builder() {
   const params = useParams();
@@ -597,6 +598,7 @@ useEffect(() => {
 
   return (
   <CanvasProvider siteData={site} CallContextMenu={handleContextMenu} setIsFirstTime={setIsFirstTime} fontOptions={fontOptions} preloadedIcons={preloadedIcons}>
+    <ThemeProvider>
 <Loader isVisible={isLoading || isScreenshotLoading || isHugeIconsLoading ||!fontsReady} loaderCompleted={loaderCompleted} setLoaderCompleted={setLoaderCompleted} isLiveWebsiteLoading={isScreenshotLoading} isHugeIconsLoading={isHugeIconsLoading}/>
     {isMobile && <MobileWarning/>}
     {!isMobile && !isLoading && fontsReady && ( 
@@ -679,8 +681,8 @@ useEffect(() => {
                     </OffcanvasContainer>
       </div>
     )}
+    </ThemeProvider>
     </CanvasProvider>
-
   );
 }
 

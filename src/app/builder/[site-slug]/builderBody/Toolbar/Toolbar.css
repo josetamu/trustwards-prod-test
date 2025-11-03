@@ -11,20 +11,18 @@
     padding: 8px;
     border-radius: 8px;
 
-    transition: background 0.4s ease;
-
     position: relative;
     z-index: 1; /*to be above divider*/
 }
 .tw-builder__toolbar-icon:hover{
-    background: var(--toolbar-items-background);
+    background: var(--toolbar-nav-items-background-hover);
 }
 .tw-builder__toolbar-icon svg{
     width: 100%;
     height: 100%;
 }
 .tw-builder__toolbar-divider{
-    background-color: var(--border-fresco-color);
+    background-color: var(--toolbar-divider-color);
     width: 1px;
     height: 100%;
 

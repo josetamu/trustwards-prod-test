@@ -33,9 +33,6 @@ html[data-color] .modalAppearance__accentColor__button {
 
 .content__container {
     display: flex;
-    background-color: var(--content-background);
-    border-radius: 10px;
-    border: 1px solid var(--border-fresco-color);
     min-height: calc(100vh - 40px);
     width: calc(100% - var(--sidebar-width-close));
     height: fit-content;
@@ -48,6 +45,9 @@ html[data-color] .modalAppearance__accentColor__button {
     overflow-y: auto;
 
     box-shadow: var(--fancy-shadow);
+    border: 1px solid var(--border-fresco-color);
+    border-radius: 10px;
+    background-color: var(--content-background);
   }
 
   /* we use this class in the elements we need to readjust when sidebar is open. with only this class we not need modifyers in every element we wanna change*/

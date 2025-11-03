@@ -2,7 +2,7 @@
 .tw-builder__right-panel{
     background-color: var(--panels-background);
     border-radius: var(--panels-radius);
-    border: 1px solid var(--border-fresco-color);
+    border-left: 1px solid var(--border-fresco-color);
     box-shadow: var(--fancy-shadow);
     height: 100%; 
     display: flex;

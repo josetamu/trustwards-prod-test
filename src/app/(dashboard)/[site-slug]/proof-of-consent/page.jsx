@@ -1,17 +1,21 @@
 'use client'
-import 'react-day-picker/style.css';
 import './proof-of-consent.css';
 import { useParams, notFound } from 'next/navigation';
 import { useDashboard } from '@dashboard/DashboardContext';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
-import { DayPicker } from 'react-day-picker';
 import { differenceInCalendarDays, format } from 'date-fns';
 import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
-import { enUS } from 'date-fns/locale';
+import dynamic from 'next/dynamic';
 import { supabase } from '@supabase/supabaseClient';
 import { HomeInstallationSkeleton } from '@components/Skeletons/HomeInstallationSkeleton';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import MonthlyFilesSkeleton from '@components/Skeletons/MonthlyFilesSkeleton';
+
+// Dynamic import for calendar - react-day-picker and date-fns locale are quite heavy
+const DateRangePicker = dynamic(() => import('./DateRangePicker').then(mod => ({ default: mod.DateRangePicker })), {
+  ssr: false,
+  suspense: true,
+});
 
 function createResource(promise) {
   let status = 'pending';
@@ -29,20 +33,7 @@ function createResource(promise) {
   };
 }
 
-
-async function fetchProofData(siteSlug) {
-  const { data: site, error } = await supabase
-    .from('Site')
-    .select('*')
-    .eq('id', siteSlug)
-    .single();
-  if (error) throw error;
-  return { site };
-}
-
-function ProofContent({ resource }) {
-  resource.read();
-
+function ProofContent({ site }) {
   const params = useParams();
   const siteSlug = params['site-slug'];
   const { setWebs, showNotification } = useDashboard();
@@ -52,8 +43,27 @@ function ProofContent({ resource }) {
   const [openCalendar, setOpenCalendar] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  
-  const { site } = resource.read();
+  // Helper function defined before useMemo that uses it
+  function prefsafe(obj) {
+    return obj && typeof obj === 'object' ? obj : {};
+  }
+
+  const proofJSON = site?.['Proof JSON'] ?? null;
+  const proofsObj = useMemo(() => {
+    if (!proofJSON) return {};
+    if (typeof proofJSON === 'object') return proofJSON;
+    try { return JSON.parse(proofJSON); } catch { return {}; }
+  }, [proofJSON]);
+
+  const proofEntries = useMemo(() => {
+    const entries = Object.entries(prefsafe(proofsObj));
+    return entries.sort(([a], [b]) => Number(b) - Number(a));
+  }, [proofsObj]);
+
+  const rangeLength = useMemo(() => {
+    if (!range?.from || !range?.to) return 0;
+    return differenceInCalendarDays(range.to, range.from) + 1;
+  }, [range]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -86,28 +96,6 @@ function ProofContent({ resource }) {
       </div>
     );
   }
-
-  const proofJSON = site?.['Proof JSON'] ?? null;
-  const proofsObj = useMemo(() => {
-    if (!proofJSON) return {};
-    if (typeof proofJSON === 'object') return proofJSON;
-    try { return JSON.parse(proofJSON); } catch { return {}; }
-  }, [proofJSON]);
-
-  const proofEntries = useMemo(() => {
-    const entries = Object.entries(prefsafe(proofsObj));
-    return entries.sort(([a], [b]) => Number(b) - Number(a));
-  }, [proofsObj]);
-
-  function prefsafe(obj) {
- 
-    return obj && typeof obj === 'object' ? obj : {};
-  }
-
-  const rangeLength = useMemo(() => {
-    if (!range?.from || !range?.to) return 0;
-    return differenceInCalendarDays(range.to, range.from) + 1;
-  }, [range]);
 
   const monthlyLimit = 3;
   const monthlyUsed = Number(site?.['Monthly proof'] ?? 0);
@@ -291,31 +279,9 @@ function ProofContent({ resource }) {
               {range?.from && range?.to
                 ? `${format(range.from, 'MMM dd')} - ${format(range.to, 'MMM dd')}`
                 : 'Dates'}
-              {openCalendar && (
-                <div className="proof-of-consent__calendar-popover" onClick={(e) => e.stopPropagation()}>
-                  <DayPicker
-                    mode="range"
-                    numberOfMonths={1}
-                    selected={range}
-                    onSelect={(nextRange, selectedDay) => {
-                      if (range?.from && range?.to && nextRange?.from && !nextRange?.to) {
-                        setRange({ from: selectedDay, to: selectedDay });
-                        return;
-                      }
-                      setRange(nextRange);
-                    }}
-                    max={7}
-                    captionLayout="dropdown"
-                    navLayout="around"
-                    locale={enUS}
-                    formatters={{
-                      formatMonthDropdown: (month, options) => format(month, 'LLL', { locale: options?.locale }),
-                    }}
-                    showOutsideDays={true}
-                    weekStartsOn={1}
-                  />
-                </div>
-              )}
+              <div style={{ display: openCalendar ? 'block' : 'none' }}>
+                <DateRangePicker range={range} onRangeChange={setRange} />
+              </div>
             </div>
             <div
               className={`proof-of-consent__header-btn ${monthlyUsed >= monthlyLimit || isCreating ? 'proof-of-consent__header-btn-disabled' : ''}`}
@@ -380,12 +346,13 @@ function ProofContent({ resource }) {
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { allUserDataResource } = useDashboard();
+    const { siteData, allUserDataResource } = useDashboard();
+  
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    const delay = 600;
   
     const resource = useMemo(() => {
-      if (!siteSlug) return null;
-      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-      const delay = 1000;
+      if (!siteSlug || !siteData) return null;
   
       const res = allUserDataResource;
       const gate = (async () => {
@@ -406,10 +373,8 @@ function Home() {
         }
       })();
   
-      return createResource(
-        Promise.all([fetchProofData(siteSlug), gate]).then(([data]) => data)
-      );
-    }, [siteSlug, allUserDataResource]);
+      return createResource(gate.then(() => siteData));
+    }, [siteSlug, siteData, allUserDataResource]);
 
     const Skeleton = (
         <div className='proof-of-consent'>
@@ -461,7 +426,7 @@ function Home() {
     return (
       <div className='proof-of-consent'>
         <Suspense fallback={Skeleton}>
-          {resource ? <ProofContent resource={resource} /> : Skeleton}
+          {resource && siteData ? <ProofContent site={siteData} /> : Skeleton}
         </Suspense>
       </div>
     );

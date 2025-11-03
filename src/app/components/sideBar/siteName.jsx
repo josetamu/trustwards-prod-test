@@ -5,9 +5,6 @@ import UserNameSkeleton from '@components/Skeletons/UserNameSkeleton';
 export const SiteName = ({ siteSlug }) => {
   const { allUserDataResource } = useDashboard();
 
-  // Guard: if no siteSlug, return null
-  if (!siteSlug) return null;
-
   // Track changes in the resource to force skeleton on the swap
   const lastResourceRef = useRef(allUserDataResource);
   const [showSkeleton, setShowSkeleton] = useState(true);
@@ -32,6 +29,9 @@ export const SiteName = ({ siteSlug }) => {
   useEffect(() => {
     if (canRead) setShowSkeleton(false);
   }, [canRead]);
+
+  // Guard: if no siteSlug, return null
+  if (!siteSlug) return null;
 
   // If the resource has just changed or cannot be read yet, skeleton
   if (resourceChanged || !canRead || showSkeleton) {

@@ -3,15 +3,21 @@
 import './scanner.css';
 import { useParams } from 'next/navigation';
 import React, { useState, Suspense, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import PlanSkeleton from '@components/Skeletons/PlanSkeleton';
 import { ScanButton } from './ScanButton';
 import { MonthlyScans } from './MonthlyScans';
 import { MonthlyScansSkeleton } from '@components/Skeletons/MonthlyScansSkeleton';
-import { ScanResult } from './ScanResult';
 import { ScanResultSkeleton } from '@components/Skeletons/ScanResultSkeleton';
 import { useDashboard } from '@dashboard/DashboardContext';
 import { supabase } from '@supabase/supabaseClient';
 import { InstallationFirst } from '../homeComponents/InstallationFirst';
+
+// Dynamic import for ScanResult - includes Scanner with heavy JSON databases (~11k lines)
+const ScanResult = dynamic(() => import('./ScanResult').then(mod => ({ default: mod.ScanResult })), {
+  ssr: false,
+  suspense: true,
+});
 
 function createResource(promise) {
   let status = 'pending';
@@ -29,19 +35,8 @@ function createResource(promise) {
   };
 }
 
-async function fetchScannerData(siteSlug) {
-  const [{ data: site, error: siteErr }, { data: siteScans, error: scansErr }] = await Promise.all([
-    supabase.from('Site').select('*').eq('id', siteSlug).single(),
-    supabase.from('Site').select('Scans').eq('id', siteSlug).single()
-  ]);
-  if (siteErr) throw siteErr;
-  if (scansErr) throw scansErr;
-  const scanCount = siteScans?.Scans || 0;
-  return { site, scanCount };
-}
-
-function ScannerContent({ resource }) {
-  const { site, scanCount: initialScanCount } = resource.read();
+function ScannerContent({ site }) {
+  const initialScanCount = site?.Scans || 0;
 
   const params = useParams();
   const siteSlug = params['site-slug'];
@@ -96,13 +91,13 @@ function ScannerContent({ resource }) {
 function Home() {
     const params = useParams();
     const siteSlug = params['site-slug'];
-    const { allUserDataResource } = useDashboard();
+    const { siteData, allUserDataResource } = useDashboard();
+  
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    const delay = 1500;
   
     const resource = useMemo(() => {
-      if (!siteSlug) return null;
-  
-      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-      const delay = 1500;
+      if (!siteSlug || !siteData) return null;
   
       const res = allUserDataResource;
       const gate = (async () => {
@@ -123,10 +118,8 @@ function Home() {
         }
       })();
   
-      return createResource(
-        Promise.all([fetchScannerData(siteSlug), gate]).then(([data]) => data)
-      );
-    }, [siteSlug, allUserDataResource]);
+      return createResource(gate.then(() => siteData));
+    }, [siteSlug, siteData, allUserDataResource]);
   
     const Skeleton = (
       <div className="scanner">
@@ -147,7 +140,7 @@ function Home() {
     return (
       <div className="scanner">
         <Suspense fallback={Skeleton}>
-          {resource ? <ScannerContent resource={resource} /> : Skeleton}
+          {resource && siteData ? <ScannerContent site={siteData} /> : Skeleton}
         </Suspense>
       </div>
     );
