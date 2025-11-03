@@ -385,7 +385,7 @@ function Home() {
     const resource = useMemo(() => {
       if (!siteSlug) return null;
       const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-      const delay = 60000;
+      const delay = 1000;
   
       const res = allUserDataResource;
       const gate = (async () => {
